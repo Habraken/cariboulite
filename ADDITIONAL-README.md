@@ -65,6 +65,12 @@ sudo apt install git cmake
 #SoapySDR (optional)
 If you want to have more control over where SoapySDR en SoapyRemote are installed, execute these steps first. If you use these steps, you should say `No` to the `install SoapySDR` question from the CaribouLite install script.
 
+Create a directory where you want to keep your source code. I call mine: `src`. 
+
+```
+mkdir src && cd src
+``` 
+
 Get the source code:
 
 ```
@@ -78,8 +84,13 @@ Or:
 git clone https://github.com/Habraken/SoapySDR.git
 git clone https://github.com/Habraken/SoapyRemote.git
 ```
+The following library is not available by default and SoapyRemakemote will complain but not fail:
 
-In both repositories runs the below commands to build and install SoapySDR and SoapyRemote starting with SoapySDR as SoapyRemote depends on it.
+```
+sudo apt install libavahi-client-dev
+```
+
+In both repositories run the below commands to build and install SoapySDR and SoapyRemote starting with SoapySDR as SoapyRemote depends on it.
 
 ```
 mkdir build && cd build
@@ -259,7 +270,7 @@ At the end of a lot of ouput there should be something like this:
  [99]  Quit
     Choice:
 ```
->Note: I you try option `9` and then select option `2` there will errors that look like this:
+>Note: If you try option `9` and then select option `2` there will errors that look like this:
 >
 ```
 FF D0 FF F4 FF 02 C0 D8  FF C0 FF FC FF C2 FF E6  |  ................ 
@@ -269,7 +280,12 @@ FF E0 FF D2 C0 12 C0 1A  C0 DA FF 02 C0 00 C0 EE  |  ................
 C0 C0 C0 C4 C0 FA C0 E6  C0 30 C0 22 C0 C0 C0 CC  |  .........0.".... 
 05-01 14:00:45.055   644   648 E CARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1276 SMI data synchronization failed
 ```
-This is caused by the Pi0 not beeing able to handle 4 MSPS. During the configuration of SoapyRemote or SDR++ server we shall chnage this to 2 MSPS. 
+
+>~~~This is caused by the Pi0 not being able to handle 4 MSPS. During the configuration of SoapyRemote or SDR++ server we shall change this to 2 MSPS.~~~ 
+
+>I have just discovered that this behaviour is in fact due to a defective cariboulite board. It appears to function normally until you try to start the smi stream. Wait on feedback fromCaribouLabs. (May 1st 2025)
+
+> Also the Pi0 can do 4 MSPS if the data type is set CS8 instead of CS16 or CF32.   
 
 ###Increase the swapfile size
 During the SDR++ build `make` ran out of memory. Hence I increased the swap file from 512 to 1024.
@@ -355,7 +371,7 @@ cd ..
 sh ./create_root.sh
 ```
 ```
-cd/build
+cd build
 ```
 ```
 sudo make install
@@ -401,6 +417,156 @@ When the server starts watch the cli output and confirm that the 'Soapy Source' 
 
 On your remote computer you should now start SDR++ and select SDR++ Server as Source. Provide the correct IP address of the Pi running the SDR++ server. Press `Connect`. At the `Source [REMOTE]` use the drop down menu to select `SoapySDR`. You ay have to press the `Refresh` button first. In the dropdown menu below that make sure you select the device appropriate for your selected frequency.
 
->Observations: The Pi4 can easily handle 4 MSPS but somehow when the `bandwidth` setting is set to `auto` there is no data coming from the radio. When the bandwidth setting is changed to 2 MHz data is streaming again. However the display bandwidth is 4 MHz! Is this a bug or a wrong `config` somewhere? 
+>Observations: The Pi4 can easily handle 4 MSPS but somehow when the `bandwidth` setting is set to `auto` there is no data coming from the radio. When the bandwidth setting is changed to 2 MHz data is streaming again. However the display bandwidth is 4 MHz!
+>The analog bandwidth is only 2.5 MHz according to the datasheet. With `SoapySDRUtil --probe` you'll find a max. sample rate = 4 MSPS and the max. filter bandwidth = 2 MHz. 
 
-#TO DO: GNU-RADIO
+
+#Trouble shooting faulty board
+
+###System
+
+```
+uname -a
+```
+```
+Linux pi0c-bookworm 6.12.20+rpt-rpi-v8 #1 SMP PREEMPT Debian 1:6.12.20-1+rpt1~bpo12+1 (2025-03-19) aarch64 GNU/Linux
+```
+
+###SoapySDRUtil
+
+```
+SoapySDRUtil --find
+```
+
+```
+######################################################
+##     Soapy SDR -- the SDR abstraction library     ##
+######################################################
+
+[INFO] SoapyCaribouliteSession, sessionCount: 0
+05-02 07:55:11.142   644   644 I FPGA caribou_fpga_program_to_fpga@caribou_fpga.c:210 FPGA already operational - not programming (use 'force_prog=true' to force update)
+Printing 'findCariboulite' Request:
+Found device 0
+  channel = S1G
+  device_id = 0
+  driver = Cariboulite
+  label = CaribouLite S1G[1e3bc7c2]
+  name = CaribouLite RPI Hat
+  serial = 1e3bc7c2
+  uuid = 11884996-87f4-4b07-9961-a38c1b78fa08
+  vendor = CaribouLabs LTD
+  version = 0x0001
+
+Found device 1
+  channel = HiF
+  device_id = 1
+  driver = Cariboulite
+  label = CaribouLite HiF[1e3bc7c3]
+  name = CaribouLite RPI Hat
+  serial = 1e3bc7c3
+  uuid = 11884996-87f4-4b07-9961-a38c1b78fa08
+  vendor = CaribouLabs LTD
+  version = 0x0001
+```
+      
+```
+SoapySDRUtil --probe
+```
+
+```
+######################################################
+##     Soapy SDR -- the SDR abstraction library     ##
+######################################################
+
+Probe device 
+[INFO] SoapyCaribouliteSession, sessionCount: 0
+05-02 08:03:21.048   712   712 I FPGA caribou_fpga_program_to_fpga@caribou_fpga.c:210 FPGA already operational - not programming (use 'force_prog=true' to force update)
+Printing 'findCariboulite' Request:
+[INFO] Initializing DeviceID: 0, Label: CaribouLite S1G[1e3bc7c2], ChannelType: S1G
+[INFO] Creating SampleQueue MTU: 131072 I/Q samples (524288 bytes)
+
+----------------------------------------------------
+-- Device identification
+----------------------------------------------------
+  driver=Cariboulite
+  hardware=Cariboulite Rev2.8
+  device_id=0
+  fpga_revision=1
+  hardware_revision=0x0001
+  product_name=CaribouLite RPI Hat
+  serial_number=253617121
+  vendor_name=CaribouLabs LTD
+
+----------------------------------------------------
+-- Peripheral summary
+----------------------------------------------------
+  Channels: 1 Rx, 1 Tx
+  Timestamps: NO
+
+----------------------------------------------------
+-- RX Channel 0
+----------------------------------------------------
+  Full-duplex: NO
+  Supports AGC: YES
+  Stream formats: CS16, CS8, CF32, CF64
+  Native format: CS16 [full-scale=4095]
+  Antennas: TX/RX Sub1GHz
+  Full gain range: [0, 69] dB
+    Modem AGC gain range: [0, 69] dB
+  Full freq range: [389.5, 510], [779, 1020] MHz
+    RF freq range: [389.5, 510], [779, 1020] MHz
+  Sample rates: 4, 2, 1.33333, 1, 0.8, 0.666667, 0.5, 0.4 MSps
+  Filter bandwidths: 0.02, 0.05, 0.1, 0.16, 0.2, 0.8, 1, 1.25, 1.6, 2 MHz
+  Sensors: RSSI, ENERGY, PLL_LOCK_MODEM
+     * RSSI (RX RSSI):[-127, 4] 0.000000
+        Modem level RSSI measurment
+     * ENERGY (RX ENERGY):[-127, 4] 0.000000
+        Modem level ENERGY (EDC) measurment
+     * PLL_LOCK_MODEM (PLL Lock Modem): 1.000000
+        Modem PLL locking indication
+
+----------------------------------------------------
+-- TX Channel 0
+----------------------------------------------------
+  Full-duplex: NO
+  Supports AGC: NO
+  Stream formats: CS16, CS8, CF32, CF64
+  Native format: CS16 [full-scale=4095]
+  Antennas: TX/RX Sub1GHz
+  Full gain range: [0, 31] dB
+    Modem PA gain range: [0, 31] dB
+  Full freq range: [389.5, 510], [779, 1020] MHz
+    RF freq range: [389.5, 510], [779, 1020] MHz
+  Sample rates: 4, 2, 1.33333, 1, 0.8, 0.666667, 0.5, 0.4 MSps
+  Filter bandwidths: 0.08, 0.1, 0.125, 0.16, 0.2, 0.4, 0.5, 0.625, 0.8, 1 MHz
+  Sensors: PLL_LOCK_MODEM
+     * PLL_LOCK_MODEM (PLL Lock Modem): 1.000000
+        Modem PLL locking indication
+```
+
+###Self test
+
+Error messages during the selftest using the `cariboulite_test_app`:
+
+```
+05-02 07:38:08.605   622   622 D CARIBOULITE Setup
+cariboulite_self_test@cariboulite_setup.c:480 Testing modem communication and versions
+05-02 07:38:08.606   622   622 W AT86RF215_Main
+at86rf215_print_version@at86rf215.c:294 MODEM Version: not AT86RF215 IQ capable modem (product number: 0x0d, versions 03)
+05-02 07:38:08.606   622   622 E CARIBOULITE Setup
+cariboulite_self_test@cariboulite_setup.c:486 The assembled modem is not AT86RF215 / IQ variant (product number: 0x0d)
+05-02 07:38:08.606   622   622 D CARIBOULITE Setup
+cariboulite_self_test@cariboulite_setup.c:495 Testing mixer communication and versions
+05-02 07:38:08.608   622   622 E CARIBOULITE Setup
+cariboulite_self_test@cariboulite_setup.c:513 Self-test process finished with errors
+```
+
+I have also tried all the other options such as hard reset of the fpga, soft reset of the fpga, reprogramming of the fpga. During the receive test there are always smi sync errors.
+
+
+
+
+#GNU-RADIO (WIP)
+```
+sudp apt install gnuradio
+```
