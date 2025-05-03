@@ -94,7 +94,7 @@ In both repositories run the below commands to build and install SoapySDR and So
 
 ```
 mkdir build && cd build
-cmake ..
+cmake .. -DENABLE_PYTHON3=ON
 make -j`nproc`
 sudo make install -j`nproc`
 sudo ldconfig #needed on debian systems
