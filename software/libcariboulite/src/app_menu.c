@@ -16,6 +16,7 @@ typedef enum
 	app_selection_modem_tx_cw,
 	app_selection_modem_rx_iq,
 	app_selection_synthesizer,
+	app_selection_nbfm_tx_tone,
 	app_selection_quit = 99,
 } app_selection_en;
 
@@ -39,6 +40,7 @@ static void fpga_smi_fifo(sys_st *sys);
 static void modem_tx_cw(sys_st *sys);
 static void modem_rx_iq(sys_st *sys);
 static void synthesizer(sys_st *sys);
+static void nbfm_tx_tone(sys_st *sys);
 
 //=================================================
 app_menu_item_st handles[] =
@@ -54,6 +56,7 @@ app_menu_item_st handles[] =
 	{app_selection_modem_tx_cw, modem_tx_cw, "Modem transmit CW signal",},
 	{app_selection_modem_rx_iq, modem_rx_iq, "Modem receive I/Q stream",},
     {app_selection_synthesizer, synthesizer, "Synthesizer 85-4200 MHz",},
+	{app_selection_nbfm_tx_tone, nbfm_tx_tone, "NBFM TX Tone",},
 };
 #define NUM_HANDLES 	(int)(sizeof(handles)/sizeof(app_menu_item_st))
 
@@ -726,6 +729,11 @@ static void synthesizer(sys_st *sys)
         }
     }
     
+}
+
+static void nbfm_tx_tone(sys_st *sys)
+{
+	printf("nbfm_tx_tone is not implemented yet\n");
 }
 
 
