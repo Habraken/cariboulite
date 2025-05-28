@@ -2,6 +2,8 @@
 #include "cariboulite.h"
 #include "cariboulite_setup.h"
 
+bool nbfm_tx_ready = false;
+
 //=================================================
 typedef enum
 {
@@ -732,8 +734,30 @@ static void synthesizer(sys_st *sys)
 }
 
 static void nbfm_tx_tone(sys_st *sys)
-{
-	printf("nbfm_tx_tone is not implemented yet\n");
+{   
+	cariboulite_radio_state_st *radio_low = &sys->radio_low;
+    double freq = 900e6;        // Adjust this if needed
+    float tx_gain = -10;      // Conservative TX power
+    int ret = 0;
+
+    printf("Setting up NBFM TX tone path...\n");
+
+    ret = cariboulite_radio_set_frequency(radio_low, true, &freq);
+    if (ret != 0)
+    {
+        printf("Failed to set frequency to %.1f MHz!\n", freq / 1e6);
+    }
+
+    ret = cariboulite_radio_set_tx_power(radio_low, tx_gain);
+    if (ret != 0)
+    {
+        printf("Failed to set TX power to %.1f dBm!\n", tx_gain);
+    }
+
+    
+    nbfm_tx_ready = true;
+    printf("NBFM TX path ready on Lo channel at %.1f MHz, %.1f dBm\n", freq / 1e6, tx_gain);
+    
 }
 
 
