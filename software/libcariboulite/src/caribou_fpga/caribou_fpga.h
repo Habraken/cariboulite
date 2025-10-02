@@ -85,8 +85,9 @@ typedef struct
     uint8_t rx_fifo_empty : 1;       // LSB
     uint8_t tx_fifo_full : 1;
     uint8_t smi_channel: 1;
-    uint8_t i_smi_test : 1;
-    uint8_t reserved : 4;            // MSB
+    uint8_t i_smi_test : 1;          // always zero
+    uint8_t smi_direction : 1;
+    uint8_t reserved : 3;            // MSB
 } caribou_fpga_smi_fifo_status_st;
 
 /**
@@ -94,9 +95,18 @@ typedef struct
  */
 typedef enum
 {
-    caribou_fpga_smi_channel_0 = 0,
-    caribou_fpga_smi_channel_1 = 1,
+    caribou_fpga_smi_channel_0 = 0, // RX09
+    caribou_fpga_smi_channel_1 = 1, // RX24
 } caribou_fpga_smi_channel_en;
+
+/**
+ * @brief SMI direction select
+ */
+typedef enum
+{
+    caribou_fpga_smi_direction_0 = 0, // TX
+    caribou_fpga_smi_direction_1 = 1, // RX
+} caribou_fpga_smi_direction_en;
 
 /**
  * @brief Syncronization bit (metadata) source. Either software
