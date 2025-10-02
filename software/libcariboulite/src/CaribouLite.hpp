@@ -60,6 +60,8 @@ public:
         os << "[" << r._fMin << ',' << r._fMax << ']';
         return os;
     }
+    float fmin(void) const { return _fMin; }
+    float fmax(void) const { return _fMax; }
 private:
     float _fMin, _fMax;
 };
