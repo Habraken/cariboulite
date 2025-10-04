@@ -1642,7 +1642,7 @@ void monitor_modem_status(sys_st *sys)
 
 		time(&current_time);
 		move(0,0);
-		printw("CaribouLite Radio");	
+		printw("CaribouLite Radio    [T]=TX ON/OFF  [R]=RX ON/OFF  [Q]=QUIT  [X]=RESET");	
 		move(0, screen_max_x - 12);
 		printw("%12ld",current_time);
 		move(1,0);
