@@ -1586,18 +1586,18 @@ void monitor_modem_status(sys_st *sys)
 
 	// HARD FAIL if any is NULL — do NOT start threads
     if (!tx_ctrl.fm || !tx_ctrl.a48k || !tx_ctrl.iq4m) {
-    endwin();
-    fprintf(stderr, "[monitor] init failed (fm=%p a48k=%p iq4m=%p)\n",
-            (void*)tx_ctrl.fm, (void*)tx_ctrl.a48k, (void*)tx_ctrl.iq4m);
+		endwin();
+		fprintf(stderr, "[monitor] init failed (fm=%p a48k=%p iq4m=%p)\n",
+				(void*)tx_ctrl.fm, (void*)tx_ctrl.a48k, (void*)tx_ctrl.iq4m);
 
-    if (tx_ctrl.fm)   nbfm4m_destroy(tx_ctrl.fm);
-    if (tx_ctrl.a48k) free(tx_ctrl.a48k);
-    if (tx_ctrl.iq4m) free(tx_ctrl.iq4m);
+		if (tx_ctrl.fm)   nbfm4m_destroy(tx_ctrl.fm);
+		if (tx_ctrl.a48k) free(tx_ctrl.a48k);
+		if (tx_ctrl.iq4m) free(tx_ctrl.iq4m);
 
-    // If you created the FIFO already, destroy it:
-    rf10_fifo_destroy(&txq);
-    return;
-}
+		// If you created the FIFO already, destroy it:
+		rf10_fifo_destroy(&txq);
+		return;
+    }
 	
 
 	// Start the DSP producer thread
@@ -1642,14 +1642,19 @@ void monitor_modem_status(sys_st *sys)
 
 		time(&current_time);
 		move(0,0);
-		printw("CaribouLite Radio    loopback=%s\n",radio->tx_loopback_anabled?"on":"off");	
+		printw("CaribouLite Radio");	
 		move(0, screen_max_x - 12);
-		printw("%12ld\n",current_time);
+		printw("%12ld",current_time);
 		move(1,0);
-		printw("Modem Status Registers:\n");
-		move(1, screen_max_x - 12);
-		printw("%12.0f\n",elapsed_time);
-		//refresh();
+		printw("    TX Loopback: %s",radio->tx_loopback_anabled?"on":"off");
+		printw("    TX Frequency: %.0f Hz", frequency);
+		printw("    TX Power: %d dBm", tx_power);
+        move(1, screen_max_x - 12);
+		printw("%12.0f",elapsed_time);
+		move(2,0);
+		printw("Modem Status Registers:");
+		move(3,0);
+		refresh();
 
 		{
 			uint8_t data[3] = {0};
@@ -1659,7 +1664,6 @@ void monitor_modem_status(sys_st *sys)
 			uint8_t iqifc0 = data[0];
 			uint8_t iqifc1 = data[1];
 			uint8_t iqifc2 = data[2];
-			move(2,0);
 			HW_LOCK();
 			at86rf215_read_buffer(modem, REG_RF_CFG, data, 1);
 			HW_UNLOCK();
@@ -1772,7 +1776,7 @@ void monitor_modem_status(sys_st *sys)
 			HW_LOCK();
 			caribou_fpga_get_sys_ctrl_tx_sample_gap(fpga, &tx_sample_gap);
 			HW_UNLOCK();
-			printw("TX sample gap: %d\n", tx_sample_gap);
+			//printw("TX sample gap: %d\n", tx_sample_gap);
 			//refresh();
 
 			// --- TX FIFO stats panel ---
@@ -1800,18 +1804,18 @@ void monitor_modem_status(sys_st *sys)
 				}
 				last_ts = now; last_s = s;
 
-				printw("\nTX FIFO:\n");
-				printw("  depth: %zu/%zu (%.0f%%), min:%zu max:%zu, lag:%ld\n",
+				printw("Linux TX FIFO:\n");
+				printw("    depth: %zu/%zu (%.0f%%), min:%zu max:%zu, lag:%ld\n",
 					s.count, s.cap, fill_pct, s.min_depth, s.max_depth, lag);
-				printw("  puts:%zu  gets:%zu  drops:%zu  tO_put:%zu  tO_get:%zu\n",
+				printw("    puts:%zu  gets:%zu  drops:%zu  tO_put:%zu  tO_get:%zu\n",
 					s.puts, s.gets, s.drops, s.timeouts_put, s.timeouts_get);
-				printw("  rate: puts %.1f/s, gets %.1f/s  (expect ~100 fps @ 10ms)\n",
+				printw("    rate: puts %.1f/s, gets %.1f/s  (expect ~100 fps @ 10ms)\n",
 					rate_puts, rate_gets);
 				// If you want to highlight trouble:
-				if (s.min_depth == 0)          printw("  NOTE: Under-runs observed (producer late)\n");
-				if (s.drops > 0)               printw("  NOTE: Overwrites occurred (producer faster than writer)\n");
-				if (s.timeouts_put > 0)        printw("  NOTE: Producer timed out waiting to enqueue\n");
-				if (s.timeouts_get > 0)        printw("  NOTE: Writer timed out waiting for frames\n");
+				if (s.min_depth == 0)          printw("    NOTE: Under-runs observed (producer late)\n");
+				if (s.drops > 0)               printw("    NOTE: Overwrites occurred (producer faster than writer)\n");
+				if (s.timeouts_put > 0)        printw("    NOTE: Producer timed out waiting to enqueue\n");
+				if (s.timeouts_get > 0)        printw("    NOTE: Writer timed out waiting for frames\n");
 			}
 		} 
 		
