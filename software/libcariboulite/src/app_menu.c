@@ -1427,7 +1427,7 @@ static void nbfm_tx_tone(sys_st *sys)
     // --- Minimal CLI: 1 = toggle TX, 99 = exit ---
     for (;;) {
         int choice = -1;
-		printf("TX frequency: %.0f Hz\n",frequency);
+		printf("TX frequency: %.0f Hz\n",round(frequency/1000)*1000);
 		printf("TX power: %d dBm\n",tx_power);
         printf(" [ 1] Toggle NBFM TX\n"); 
 		printf(" [99] Return to main menu\n");
