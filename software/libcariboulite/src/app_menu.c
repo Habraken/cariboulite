@@ -127,6 +127,13 @@ app_menu_item_st handles[] =
 #define AMP  2047.0      // amplitude (safe for 13-bit signed)
 
 //=================================================
+static inline uint64_t mono_ns(void){
+    struct timespec ts; 
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t)ts.tv_sec*1000000000ull + ts.tv_nsec;
+}
+
+
 static inline void set_rt_and_affinity(void)
 {
     // Hard RT priority and CPU affinity for the calling thread
@@ -1240,55 +1247,88 @@ static void read_audio_exact(alsa48k_source_t* mic, float* buf, size_t need);
 static void* dsp_producer_thread_func(void* arg)
 {
     pthread_setname_np(pthread_self(), "dsp_producer");
-	set_rt_and_affinity();
-	
-	dsp_producer_ctrl_t* ctrl = (dsp_producer_ctrl_t*)arg;
-	 if (!ctrl || !ctrl->tx || !ctrl->tx->fm || !ctrl->fifo || !ctrl->tx->a48k || !ctrl->tx->iq4m)
+    set_rt_and_affinity();   // make sure this logs failures
+
+    dsp_producer_ctrl_t* ctrl = (dsp_producer_ctrl_t*)arg;
+    if (!ctrl || !ctrl->tx || !ctrl->tx->fm || !ctrl->fifo ||
+        !ctrl->tx->a48k || !ctrl->tx->iq4m)
         return NULL;
 
-    // cadence: exactly 10 ms per frame
-    struct timespec next;
-    clock_gettime(CLOCK_MONOTONIC, &next);
-    const long PERIOD_NS = 10 * 1000 * 1000; // 10 ms
+    const uint64_t PERIOD_NS = 10ull * 1000ull * 1000ull; // 10 ms
+    uint64_t next_ns = mono_ns();   // anchor current time
+    uint64_t last_wake = 0;
+    size_t frame_idx = 0;
 
     while (ctrl->active) {
-        // absolute sleep to hold wall-clock rhythm
-        next.tv_nsec += PERIOD_NS;
-        while (next.tv_nsec >= 1000000000L) { next.tv_nsec -= 1000000000L; next.tv_sec++; }
-        clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next, NULL);
+        // ---- schedule next absolute wake ----
+        next_ns += PERIOD_NS;
+        struct timespec next_ts = {
+            .tv_sec  = (time_t)(next_ns / 1000000000ull),
+            .tv_nsec = (long)(next_ns % 1000000000ull)
+        };
 
-        // 1) Make 10 ms of audio @ 48k (480 floats)
+        // ---- sleep until the absolute deadline, handle EINTR ----
+        int rc;
+        do {
+            rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_ts, NULL);
+        } while (rc == EINTR);
+
+        // ---- timing diagnostics ----
+        uint64_t now = mono_ns();
+        if (last_wake) {
+            double dt_ms = (now - last_wake) / 1e6;
+            if ((frame_idx++ % 50) == 0)
+                fprintf(stderr, "producer: dt = %.3f ms  rc = %d\n", dt_ms, rc);
+        }
+        last_wake = now;
+
+        // ---- if sleep failed or we drifted >50 ms, re-anchor ----
+        if (rc != 0 || now > next_ns + 5 * PERIOD_NS) {
+            next_ns = now;
+            fprintf(stderr, "producer: re-anchor (rc=%d)\n", rc);
+        }
+
+        // ============================================================
+        // 1) Generate 10 ms of audio @ 48 kHz (480 samples)
+        // ============================================================
         if (ctrl->tx->tone_mode) {
             fill_tone_48k(ctrl->tx, ctrl->tx->a48k, 480);
         } else if (ctrl->tx->mic) {
             read_audio_exact(ctrl->tx->mic, ctrl->tx->a48k, 480);
         } else {
-            memset(ctrl->tx->a48k, 0, 480*sizeof(float));
+            memset(ctrl->tx->a48k, 0, 480 * sizeof(float));
         }
 
-        // 2) Push into modulator, pull 10 ms @ 4 MS/s (40k IQ)
+        // ============================================================
+        // 2) Push into NBFM modulator, pull 10 ms @ 4 MS/s (40 k IQ)
+        // ============================================================
         nbfm4m_push_audio(ctrl->tx->fm, ctrl->tx->a48k, 480);
 
         size_t pulled = 0;
         while (pulled < 40000) {
-            pulled += nbfm4m_pull_iq(ctrl->tx->fm, ctrl->tx->iq4m + pulled, 40000 - pulled);
+            pulled += nbfm4m_pull_iq(ctrl->tx->fm,
+                                     ctrl->tx->iq4m + pulled,
+                                     40000 - pulled);
         }
 
-        // 3) Pack into one rf10_frame_t and push to FIFO (tag TX_EN)
+        // ============================================================
+        // 3) Pack one rf10_frame_t and push to FIFO (tag TX_EN)
+        // ============================================================
         rf10_frame_t frm;
-        for (size_t i=0;i<40000;i++) {
-            frm.data[i].i = ctrl->tx->iq4m[i].i | 0x0001; // TX_EN in LSB of I
+        for (size_t i = 0; i < 40000; i++) {
+            frm.data[i].i = ctrl->tx->iq4m[i].i | 0x0001;  // TX_EN in LSB
             frm.data[i].q = ctrl->tx->iq4m[i].q;
         }
-        // Update debug mid-sample (optional)
-        size_t mid = 20000;
-        latest_tx_sample.i = frm.data[mid].i;
-        latest_tx_sample.q = frm.data[mid].q;
 
-        // Non-blocking put: if FIFO full and drop_oldest_on_full==true, it won’t stall
-        //rf10_fifo_put(ctrl->fifo, &frm, /*timeout_ms=*/0);
-		rf10_fifo_put(ctrl->fifo, &frm, /*timeout_ms=*/-1);
+        // Optional live sample for UI/debug
+        latest_tx_sample.i = frm.data[20000].i;
+		latest_tx_sample.q = frm.data[20000].q;
+
+        // Blocking put; don’t drop frames
+        bool ok = rf10_fifo_put(ctrl->fifo, &frm, -1);
+        if (!ok) break; // stop signal
     }
+
     return NULL;
 }
 
