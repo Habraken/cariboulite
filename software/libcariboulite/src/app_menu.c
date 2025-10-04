@@ -1615,17 +1615,17 @@ void monitor_modem_status(sys_st *sys)
 	tx_ctrl.active        = true;
 	tx_ctrl.radio         = radio;
 	tx_ctrl.fifo          = &txq;          // give writer the FIFO
-	tx_ctrl.live_from_mic = true;	       // set true to enable audio input
+	tx_ctrl.live_from_mic = false;	       // set true to enable audio input
 
-	tx_ctrl.tone_mode     = false;         // true => synthesize a audio tone
+	tx_ctrl.tone_mode     = true;         // true => synthesize a audio tone
 	tx_ctrl.tone_hz       = 600.0f;
 	tx_ctrl.tone_amp      = 0.4f;
 	tx_ctrl.tone_phase    = 0.0f;
 
 	// ALSA before threads
-	tx_ctrl.mic = alsa48k_create("plughw:10,1", 1.0f);  // input side of loopback device
+	//tx_ctrl.mic = alsa48k_create("plughw:10,1", 1.0f);  // input side of loopback device
 	//tx_ctrl.mic = alsa48k_create("plughw:3,0", 1.0f); // input side of usb audio device
-	//tx_ctrl.mic = NULL; // uncommnent if you want the use the inbuild tone generator
+	tx_ctrl.mic = NULL; // uncommnent if you want the use the inbuild tone generator
 
 	// Modulator & scratch before threads
 	nbfm4m_cfg_t cfg = {
