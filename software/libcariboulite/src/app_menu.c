@@ -836,204 +836,13 @@ void print_binairy8(uint8_t value) {
 }
 
 //=================================================
-static void nbfm_tx_tone(sys_st *sys)
-{   
-	cariboulite_radio_state_st *radio = &sys->radio_low; // radio_high (HiF) || radio_low (S1G)
-    at86rf215_st* modem = &sys->modem;
-	
-	double tx_frequency = 430.1e6; // Adjust this if needed [Hz]
-    float tx_power = -10;            // Conservative TX power [dBm]
-    int ret = 0;
-	int send = 0;
-	int choice = 0;
-	nbfm_tx_ready = false;
-	nbfm_tx_active = false;
+// --- If needed (when this function appears before the declarations), un-comment these:
+//typedef struct tx_writer_ctrl_st tx_writer_ctrl_st;
+//typedef struct dsp_producer_ctrl_t dsp_producer_ctrl_t;
+//typedef struct rf10_fifo_s rf10_fifo_t;
+//static void* dsp_producer_thread_func(void*);
+//static void* tx_writer_thread_func(void*);
 
-	int iq_buffer_size = pow(2,18);
-	int16_t iq_buffer[iq_buffer_size * 2]; // 1024 complex CS16 samples (I, Q interleaved)
-
-    // I = 16384 (0.5), Q = 0
-    for (int i = 0; i < iq_buffer_size; i++) 
-    {
-        int16_t i_val = (int16_t)(16384 * cos(2 * 3.14159 * 600 * i / 4000000));
-        int16_t q_val = (int16_t)(16384 * sin(2 * 3.14159 * 600 * i / 4000000));
-
-        // Clear LSB of I sample and set it to 1 to enable TX_EN
-        i_val |= 0x0001;
-
-        iq_buffer[2*i + 0] = i_val; // I sample with TX_EN = 1
-        iq_buffer[2*i + 1] = q_val; // Q sample
-    }
-
-    printf("Setting up NBFM TX tone path...\n");
-
-    ret = cariboulite_radio_set_frequency(radio, true, &tx_frequency);
-    if (ret != 0) 
-	{
-        printf("Failed to set frequency to %.1f MHz!\n", tx_frequency / 1e6);
-    }
-
-    ret = cariboulite_radio_set_tx_power(radio, tx_power);
-    if (ret != 0) 
-	{
-        printf("Failed to set TX power to %.1f dBm!\n", tx_power);
-    }
-
-	ret = cariboulite_radio_set_cw_outputs(radio, false, false);
-    if (ret != 0)
-	{
-		printf("Failed to enable or disable CW outputs!\n");
-	}
-    
-    ret = cariboulite_radio_set_tx_bandwidth(radio, cariboulite_radio_tx_cut_off_80khz); // Set TX bandwidth to 100 kHz
-	if (ret != 0)
-	{
-		printf("Failed to set TX bandwidth!\n");
-	}
-
-	nbfm_tx_ready = true;
-    printf("NBFM TX path ready on Lo channel at %.1f MHz, %.1f dBm\n", tx_frequency / 1e6, tx_power);
-    
-
-    while (1)
-	{
-		//printf("	Parameters:\n");
-		printf("	[ 1] toggle NBFM TX\n");
-        //printf("	[ 2]\n");
-		printf("	[99] Return to main menu\n");
-	
-		printf("	Choice: ");
-		if (scanf("%d", &choice) != 1) continue;
-		
-		switch(choice) 
-		{
-		    case 1: 
-			{
-				    nbfm_tx_active = !nbfm_tx_active;
-			}
-			break;
-
-			case 99: 
-			{
-                cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_tx, false);
-	            printf("NBFM TX is now deactivated.\n");
-				return;
-			}
-
-			default: 
-			{
-
-			}
-			break;
-		}
-        
-		if (nbfm_tx_ready && nbfm_tx_active)
-		{
-			// Ensure the RF path actually transmits (so FIFO drains)
-			caribou_fpga_set_io_ctrl_mode(&sys->fpga, 0, caribou_fpga_io_ctrl_rfm_tx_lowpass);
-
-			// Bring up the RF TX chain (mixers, power, etc.)
-			if (cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_tx, true) != 0) {
-				printf("cariboulite_radio_activate_channel failed\n");
-				return;
-			}
-
-			caribou_smi_st *smi = &sys->smi;
-
-			// Put the kernel driver into TX stream state (3 == TX in your prints)
-			caribou_smi_set_driver_streaming_state(smi, (smi_stream_state_en)3);
-
-			// Choose SMI channel to match the radio you’re using
-			caribou_smi_channel_en ch = (radio == &sys->radio_low)
-										? caribou_smi_channel_900
-										: caribou_smi_channel_2400;
-
-			// Flip fd to O_NONBLOCK so we never hang in write()
-			int flags = fcntl(smi->filedesc, F_GETFL, 0);
-			if (flags != -1) fcntl(smi->filedesc, F_SETFL, flags | O_NONBLOCK);
-
-			// Chunk size: use native batch if available; keep moderate
-			size_t native = caribou_smi_get_native_batch_samples(smi);
-			size_t chunk  = native ? native : 4096;
-			if (chunk > (size_t)iq_buffer_size) chunk = (size_t)iq_buffer_size;
-
-			// Treat your interleaved int16 IQ buffer as CS16 array (I LSB, Q MSB per your header)
-			caribou_smi_sample_complex_int16 *ring =
-				(caribou_smi_sample_complex_int16*)iq_buffer;
-
-			// Time-bounded pump (~200 ms)
-			struct timespec t0, now;
-			clock_gettime(CLOCK_MONOTONIC, &t0);
-
-			size_t idx = 0;                 // index in COMPLEX samples
-			size_t total_sent = 0;
-			int min_sent = 1e9, max_sent = 0;
-
-			struct pollfd pfd = { .fd = smi->filedesc, .events = POLLOUT, .revents = 0 };
-
-			for (;;) {
-				static long long last_kick_ns = 0;
-				
-				clock_gettime(CLOCK_MONOTONIC, &now);
-				long long now_ns = (now.tv_sec*1000000000LL + now.tv_nsec);
-				if (now_ns - last_kick_ns > 2*1000*1000) {  // every ~2 ms
-					caribou_smi_set_driver_streaming_state(smi, (smi_stream_state_en)3); // 3 == TX
-					last_kick_ns = now_ns;
-				}
-				
-				long long elapsed_ns =
-					(now.tv_sec - t0.tv_sec)*1000000000LL + (now.tv_nsec - t0.tv_nsec);
-				if (elapsed_ns > 200000000LL) break; // ~200 ms
-
-				// Poll: only try to write when the device says it can take data
-				int pr = poll(&pfd, 1, 0); // 0 ms timeout => non-blocking
-				if (pr <= 0 || !(pfd.revents & POLLOUT)) {
-					// Not ready right now; spin lightly
-					continue;
-				}
-
-				// Never write more than 'chunk', wrap at ring end
-				size_t remain = (size_t)iq_buffer_size - idx;
-				size_t n = (chunk <= remain) ? chunk : remain;
-
-				// Try SMI API first (it knows the channel)
-				int sent = caribou_smi_write(smi, ch, ring + idx, n);
-				if (sent < 0) {
-					if (errno == EAGAIN || errno == EWOULDBLOCK) {
-						continue; // back-pressure; try again
-					}
-					printf("caribou_smi_write error %d (errno=%d)\n", sent, errno);
-					break;
-				}
-				if (sent == 0) {
-					// Back-pressure despite POLLOUT; try again next loop
-					continue;
-				}
-
-				// Advance ring
-				idx = (idx + (size_t)sent) % (size_t)iq_buffer_size;
-				total_sent += (size_t)sent;
-				if (sent < min_sent) min_sent = sent;
-				if (sent > max_sent) max_sent = sent;
-			}
-
-			// Tear down cleanly
-			caribou_smi_set_driver_streaming_state(smi, (smi_stream_state_en)0); // idle
-			cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_tx, false);
-			caribou_fpga_set_io_ctrl_mode(&sys->fpga, 0, caribou_fpga_io_ctrl_rfm_low_power);
-
-			printf("[SMI NB] total_sent=%zu, min_sent=%d, max_sent=%d, chunk=%zu, native=%zu\n",
-				total_sent, (min_sent==1e9?0:min_sent), max_sent, chunk, native);
-		}
-		else
-		{
-			cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_tx, false);
-			caribou_fpga_set_io_ctrl_mode(&sys->fpga, 0, caribou_fpga_io_ctrl_rfm_low_power);
-			printf("NBFM TX is now deactivated.\n");
-		}
-		
-	}
-}
 
 // forward decls placed before tx_writer_ctrl_st
 typedef struct rf10_fifo_s rf10_fifo_t;
@@ -1424,65 +1233,6 @@ static void* rx_reader_thread_func(void* arg)
     return NULL;
 }
 
-// // write up to 'n' samples from a ring buffer starting at idx; advances idx
-// static int write_samples_ring(cariboulite_radio_state_st *radio,
-//                               cariboulite_sample_complex_int16 *buf,
-//                               size_t buf_size, size_t *idx_io, size_t n)
-// {
-//     size_t idx = *idx_io;
-//     size_t total = 0;
-
-//     while (total < n) {
-//         size_t remain_to_end = buf_size - idx;
-//         size_t want = n - total;
-//         size_t first = (want < remain_to_end) ? want : remain_to_end;
-
-//         int sent = cariboulite_radio_write_samples(radio, &buf[idx], first);
-//         if (sent <= 0) return sent;       // 0 = not ready yet, <0 = error
-
-//         total += (size_t)sent;
-//         idx = (idx + (size_t)sent) % buf_size;
-
-//         // short write? don't immediately try to blast more; let caller decide
-//         if ((size_t)sent < first) break;
-//     }
-
-//     *idx_io = idx;
-//     return (int)total;
-// }
-
-// // Returns total samples sent (>0), 0 if not ready, or <0 on error.
-// static int send_chunk_wrap(cariboulite_radio_state_st *radio,
-// 						cariboulite_sample_complex_int16 *buf,
-// 						size_t buf_n,              // buffer length in samples
-// 						size_t *idx_io,            // in/out write index [0..buf_n)
-// 						size_t need)               // samples to try to send
-// {
-// 	size_t idx = *idx_io;
-// 	size_t sent_total = 0;
-
-// 	while (need > 0) {
-// 		size_t head = buf_n - idx;               // contiguous space to end
-// 		size_t part = (need < head) ? need : head;
-
-// 		int ret = cariboulite_radio_write_samples(radio, &buf[idx], part);
-// 		if (ret <= 0) {
-// 			// 0 -> kernel not ready yet; <0 -> error
-// 			if (sent_total > 0) break;          // return what we did manage
-// 			return ret;                         // propagate 0 or negative
-// 		}
-
-// 		idx = (idx + (size_t)ret) % buf_n;
-// 		sent_total += (size_t)ret;
-
-// 		if ((size_t)ret < part) break;          // partial advance
-// 		need -= (size_t)ret;
-// 	}
-
-// 	*idx_io = idx;
-// 	return (int)sent_total;
-// }
-
 // helper: fill exactly N audio frames (blocking in small steps)
 static void read_audio_exact(alsa48k_source_t* mic, float* buf, size_t need)
 {
@@ -1596,6 +1346,160 @@ static void* tx_writer_thread_func(void* arg)
     return NULL;
 }
 
+static void nbfm_tx_tone(sys_st *sys)
+{
+    // mirror monitor_modem_status() semantics, but without ncurses/instrumentation
+    nbfm_tx_active = false;
+    nbfm_rx_active = false;
+
+    double frequency = 430100000;   // Hz
+    int    tx_power  = -3;          // dBm
+
+    // --- TX buffers & control blocks (TX only; no RX thread here) ---
+    const int iq_tx_buffer_size = (1u << 18);
+    cariboulite_sample_complex_int16 iq_tx_buffer[iq_tx_buffer_size];
+
+    cariboulite_radio_state_st *radio = &sys->radio_low;
+
+    // FIFO for 10ms frames
+    rf10_fifo_t txq;
+    rf10_fifo_init(&txq, /*cap=*/32, /*drop_oldest_on_full=*/false);
+
+    tx_writer_ctrl_st tx_ctrl = {
+        .active        = true,
+        .radio         = radio,
+        .tx_buffer     = iq_tx_buffer,
+        .tx_buffer_size= iq_tx_buffer_size,
+        .live_from_mic = false,
+        .mic           = NULL,
+        .tone_mode     = true,
+        .tone_hz       = 600.0f,
+        .tone_amp      = 0.4f,
+        .tone_phase    = 0.0f,
+        .fifo          = &txq,
+        .fm            = NULL,
+        .a48k          = NULL,
+        .iq4m          = NULL,
+    };
+
+    // Modulator & scratch (same config as monitor_modem_status)
+    nbfm4m_cfg_t cfg = {
+        .audio_fs      = 48000.0,
+        .rf_fs         = 4000000.0,
+        .f_dev_hz      = 2500.0,
+        .preemph_tau_s = 0.0,
+        .out_scale     = 4000.0f,
+        .linear_interp = 1,
+    };
+    tx_ctrl.fm   = nbfm4m_create(&cfg);
+    tx_ctrl.a48k = (float*)calloc(480,    sizeof(float));
+    tx_ctrl.iq4m = (iq16_t*)calloc(40000, sizeof(iq16_t));
+
+    if (!tx_ctrl.fm || !tx_ctrl.a48k || !tx_ctrl.iq4m) {
+        fprintf(stderr, "[nbfm_tx_tone] init failed (fm=%p a48k=%p iq4m=%p)\n",
+                (void*)tx_ctrl.fm, (void*)tx_ctrl.a48k, (void*)tx_ctrl.iq4m);
+        if (tx_ctrl.fm)   nbfm4m_destroy(tx_ctrl.fm);
+        if (tx_ctrl.a48k) free(tx_ctrl.a48k);
+        if (tx_ctrl.iq4m) free(tx_ctrl.iq4m);
+        rf10_fifo_destroy(&txq);
+        return;
+    }
+
+    // Start DSP producer + TX writer threads (same as monitor_)
+    pthread_t dsp_thread, tx_thread;
+
+    dsp_producer_ctrl_t dsp_ctrl = {
+        .active = true,
+        .tx     = &tx_ctrl,
+        .fifo   = &txq,
+    };
+    pthread_create(&dsp_thread, NULL, dsp_producer_thread_func, &dsp_ctrl);
+    pthread_create(&tx_thread,  NULL, tx_writer_thread_func,    &tx_ctrl);
+
+    // Radio base config
+    HW_LOCK();
+    cariboulite_radio_set_frequency(radio, true, &frequency);
+    cariboulite_radio_set_tx_power(radio, tx_power);
+    HW_UNLOCK();
+    radio->tx_loopback_anabled   = false;
+    radio->tx_control_with_iq_if = true;
+
+    // --- Minimal CLI: 1 = toggle TX, 99 = exit ---
+    for (;;) {
+        int choice = -1;
+		printf("TX frequency: %.0f Hz\n",frequency);
+		printf("TX power: %d dBm\n",tx_power);
+        printf(" [ 1] Toggle NBFM TX\n"); 
+		printf(" [99] Return to main menu\n");
+        printf(" Choice: ");
+        if (scanf("%d", &choice) != 1) {
+            // flush junk on input error
+            int c; while ((c = getchar()) != '\n' && c != EOF) {}
+            continue;
+        }
+
+        if (choice == 1) {
+            // exactly like 't' path in monitor_modem_status()
+            if (!nbfm_tx_active) {
+                if (nbfm_rx_active) {
+                    nbfm_rx_active = false;
+                    HW_LOCK();
+                    cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_rx, false);
+                    HW_UNLOCK();
+                }
+                HW_LOCK();
+                caribou_fpga_set_io_ctrl_mode(&sys->fpga, 0, caribou_fpga_io_ctrl_rfm_tx_lowpass);
+                cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_tx, true);
+                caribou_smi_set_driver_streaming_state(&sys->smi, (smi_stream_state_en)3); // TX
+                HW_UNLOCK();
+
+                __sync_synchronize();   // memory barrier
+                nbfm_tx_active = true;  // tell writer LAST
+                printf("TX: ON\n");
+            } else {
+                nbfm_tx_active = false;
+                __sync_synchronize();
+
+                HW_LOCK();
+                caribou_smi_set_driver_streaming_state(&sys->smi, (smi_stream_state_en)0); // idle
+                cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_tx, false);
+                caribou_fpga_set_io_ctrl_mode(&sys->fpga, 0, caribou_fpga_io_ctrl_rfm_low_power);
+                HW_UNLOCK();
+                printf("TX: OFF\n");
+            }
+        } else if (choice == 99) {
+            break;
+        }
+    }
+
+    // --- Teardown (same order/pattern as monitor_modem_status) ---
+    nbfm_tx_active = false;
+    nbfm_rx_active = false;
+    smi_idle(sys);
+
+    HW_LOCK();
+    cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_tx, false);
+    cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_rx, false);
+    HW_UNLOCK();
+    usleep(30 * 1000);
+
+    tx_ctrl.active  = false;
+    dsp_ctrl.active = false;
+    rf10_fifo_stop(&txq);
+
+    pthread_cancel(tx_thread);
+    pthread_cancel(dsp_thread);
+    pthread_join(tx_thread, NULL);
+    pthread_join(dsp_thread, NULL);
+
+    rf10_fifo_destroy(&txq);
+
+    if (tx_ctrl.iq4m) free(tx_ctrl.iq4m);
+    if (tx_ctrl.a48k) free(tx_ctrl.a48k);
+    if (tx_ctrl.fm)   nbfm4m_destroy(tx_ctrl.fm);
+
+    printf("NBFM TX tone stopped.\n");
+}
 
 void monitor_modem_status(sys_st *sys)
 {
