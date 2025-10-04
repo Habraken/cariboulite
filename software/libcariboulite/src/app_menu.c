@@ -1647,7 +1647,7 @@ void monitor_modem_status(sys_st *sys)
 		printw("%12ld",current_time);
 		move(1,0);
 		printw("    TX Loopback: %s",radio->tx_loopback_anabled?"on":"off");
-		printw("    TX Frequency: %.0f Hz", frequency);
+		printw("    TX Frequency: %.0f Hz", round(frequency/1000)*1000);
 		printw("    TX Power: %d dBm", tx_power);
         move(1, screen_max_x - 12);
 		printw("%12.0f",elapsed_time);
