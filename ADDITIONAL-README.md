@@ -422,7 +422,7 @@ Linux RX FIFO:
 ```
 with ```T``` you enable TX (650 Hz tone) with ```R``` you enable RX. 
 
->Caution! There is no squelch yet so, when no carrier is present, loud noise is emitted from the speaker or headphones! Redude your volume before you try this!   
+>Caution! There is no squelch yet, so when no carrier is present, loud noise is emitted from the speaker or headphones! Reduce your volume before you try this!   
 
 #Modifying the firmware (FPGA)
 
