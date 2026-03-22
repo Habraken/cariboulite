@@ -3167,6 +3167,9 @@ void monitor_modem_status(sys_st *sys)
 	int screen_max_x;
 	// int ret = 0;
 
+    struct smi_settings smi_set = {0};
+    caribou_smi_get_current_settings(&sys->smi, &smi_set);
+
 	// Set up the radio
 	HW_LOCK(); 
 	cariboulite_radio_set_frequency(radio, true, &frequency);
@@ -3203,8 +3206,14 @@ void monitor_modem_status(sys_st *sys)
         move(1, screen_max_x - 12);
 		printw("%12.5f",elapsed_time);
 		move(2,0);
+        printw("SMI timing settings:");
+        move(3,0);
+        printw("    reading setup: %d strobe: %d  hold: %d pace: %d", smi_set.read_setup_time, smi_set.read_strobe_time, smi_set.read_hold_time, smi_set.read_pace_time);
+        move(4,0);
+        printw("    writing setup: %d strobe: %d  hold: %d pace: %d", smi_set.write_setup_time, smi_set.write_strobe_time, smi_set.write_hold_time, smi_set.write_pace_time);
+        move(5,0);
 		printw("Modem Status Registers:");
-		move(3,0);
+		move(6,0);
 		//refresh();
 
         uint8_t data[3] = {0};

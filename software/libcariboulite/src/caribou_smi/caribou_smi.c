@@ -166,15 +166,15 @@ static int caribou_smi_get_smi_settings(caribou_smi_st *dev, struct smi_settings
 //=========================================================================
 static int caribou_smi_setup_settings (caribou_smi_st* dev, struct smi_settings *settings, bool print)
 {
-    settings->read_setup_time = 1;  // orginal value: 0
-    settings->read_strobe_time = 3; // orginal value: 5
-    settings->read_hold_time = 1;   // orginal value: 0
-    settings->read_pace_time = 0;
+    settings->read_setup_time = 1;   // orginal value: 0, last try 1
+    settings->read_strobe_time = 5;  // orginal value: 5, last try 3
+    settings->read_hold_time = 1;    // orginal value: 0, last try 1
+    settings->read_pace_time = 1;    // orignal value: 0, last try 0
 
-    settings->write_setup_time = 1;  // orginal value: 0
-    settings->write_strobe_time = 3; // orginal value: 5
-    settings->write_hold_time = 1;   // orginal value: 0
-    settings->write_pace_time = 0;
+    settings->write_setup_time = 1;  // orginal value: 0, last try 1
+    settings->write_strobe_time = 5; // orginal value: 5, last try 3
+    settings->write_hold_time = 1;   // orginal value: 0, last try 1
+    settings->write_pace_time = 1;   // orginla value: 0, last try 0
 
 	// 8 bit on each transmission (4 TRX per sample)
     settings->data_width = SMI_WIDTH_8BIT;
@@ -242,6 +242,14 @@ static int caribou_smi_setup_settings (caribou_smi_st* dev, struct smi_settings 
     }
     
     return 0;
+}
+
+int caribou_smi_get_current_settings(caribou_smi_st* dev, struct smi_settings* settings)
+{
+    if (!dev || !dev->initialized || !settings)
+        return -1;
+
+    return caribou_smi_get_smi_settings(dev, settings, false);
 }
 
 //=========================================================================

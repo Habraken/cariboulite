@@ -17,14 +17,14 @@ extern "C" {
 
 /*
  * Time tagging of the module through the 'struct tm' structure 
- *     Date: 2026-03-20
- *     Time: 18:28:57
+ *     Date: 2026-03-22
+ *     Time: 18:38:39
  */
 struct tm cariboulite_firmware_date_time = {
-   .tm_sec = 57,
-   .tm_min = 28,
+   .tm_sec = 39,
+   .tm_min = 38,
    .tm_hour = 18,
-   .tm_mday = 20,
+   .tm_mday = 22,
    .tm_mon = 2,   /* +1    */
    .tm_year = 126,  /* +1900 */
 };

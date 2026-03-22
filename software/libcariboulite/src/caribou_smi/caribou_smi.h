@@ -115,6 +115,8 @@ void caribou_smi_setup_ios(caribou_smi_st* dev);
 void caribou_smi_set_sample_rate(caribou_smi_st* dev, uint32_t sample_rate);
 int caribou_smi_flush_fifo(caribou_smi_st* dev);
 
+int caribou_smi_get_current_settings(caribou_smi_st* dev, struct smi_settings* settings);
+
 #ifdef __cplusplus
 }
 #endif
