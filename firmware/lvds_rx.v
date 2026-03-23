@@ -18,7 +18,7 @@ module lvds_rx (
   localparam modem_i_sync = 2'b10, modem_q_sync = 2'b01;
 
   // Set to 1 for fixed-data-frame testing purposes only
-  parameter TEST_FIXED_FRAME = 1; 
+  parameter TEST_FIXED_FRAME = 0; 
 
   // Internal Registers
   reg [1:0] r_state_if;
