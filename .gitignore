@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# macOS Finder metadata
+.DS_Store
+
 # Object files
 *.o
 *.ko
