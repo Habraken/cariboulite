@@ -1564,9 +1564,11 @@ static int smi_stream_dev_probe(struct platform_device *pdev)
     inst->tx_watch_min_smil = 0;
     /* TX SMIL keepalive: check ACTIVE frequently so idle gaps are ~eliminated.
        Start with 5 µs; you can relax later if stable. */
-    hrtimer_init(&inst->tx_hr, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
-    inst->tx_hr.function = tx_hr_keepalive;
-    inst->tx_hr_period   = ktime_set(0, 5 * 1000);  /* 5 µs */
+    //hrtimer_init(&inst->tx_hr, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
+    //inst->tx_hr.function = tx_hr_keepalive;
+    //inst->tx_hr_period   = ktime_set(0, 5 * 1000);  /* 5 µs */
+    hrtimer_setup(&inst->tx_hr,tx_hr_keepalive, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
+    inst->tx_hr_period = ktime_set(0, 5 * 1000);  /* 5 µs */
 
     return 0;
 }
