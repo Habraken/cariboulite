@@ -112,10 +112,13 @@ in the schematic. Do not auto-populate other pads absent from the Full BOM.
   this exact reproduction. Evidence: Full schematic page 4 and Epson SG-8018
   datasheet, Product Number / Ordering Code section:
   <https://download.epsondevice.com/td/pdf/app/SG-8018CA_en.pdf>.
-- **J7:** BOM and PnP include `CONUFL001-SMD-T`. Schematic page 6 places J7
-  inside a DO NOT PLACE box with R25; R25 is crossed out, J7 is not. Keep J7 in
-  the quotation BOM and CPL, but obtain a population clarification before release.
-  Its source comment `#NAME?` is preserved in the audit, not used as an MPN.
+- **J7 - resolved 2026-09-13:** populate J7 with exact MPN
+  `CONUFL001-SMD-T`. The BOM, PnP and assembly drawing include it, and the owner
+  confirmed it is fitted on the physical reference board. Enlarged inspection
+  of Full schematic page 6 shows J7 outside the dashed DO NOT PLACE boundary;
+  that boundary encloses R25, C108 and C122. Leave those three parts DNP so J7
+  remains electrically isolated in the released configuration. Its source
+  comment `#NAME?` is preserved in the audit, not used as an MPN.
 - **J1:** the original MPN cell explicitly lists three alternatives:
   `M20-7832046`, `PPPC202LFBN-RC`, `61304021821`. The upload BOM selects the
   first, `M20-7832046`, which also matches the original comment. This is an

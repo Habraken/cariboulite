@@ -25,6 +25,8 @@ Quotation strategy:
 - For U25, use exact MPN `SG-8018CG 125.0000M-TJHSA3`. The `TJHPA3` text in
   the original description/comment/PnP was reviewed and is treated as stale
   metadata, not as an alternate or authorized substitution.
+- Populate J7 with exact MPN `CONUFL001-SMD-T`. Leave R25, C108 and C122 DNP;
+  they isolate J7 electrically in the released configuration.
 - Do not buy a second 26 MHz oscillator for U29: the Full schematic explicitly
   marks that optional oscillator block as not fitted.
 - Keep shield costs/supply scope explicit and separate until the mechanical

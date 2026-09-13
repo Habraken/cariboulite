@@ -208,7 +208,10 @@ def main():
                       'TJHPA3 in the source description/comment/PnP is treated as stale metadata. '
                       'Pin 1 is tied high, but the P variant is not an approved substitution.')
         if names == ['J7']:
-            notes += ' HOLD: included in BOM; schematic places connector in DO NOT PLACE box without red cross. Confirm population.'
+            notes += (' RESOLVED: populate J7 with exact MPN CONUFL001-SMD-T. '
+                      'The BOM, PnP, assembly drawing and physical reference board agree; '
+                      'J7 is outside the schematic DO NOT PLACE boundary. '
+                      'Leave R25, C108 and C122 DNP so J7 remains electrically isolated.')
         if names == ['U21']:
             notes += ' Description mentions TC4-19+; that alternative is NOT selected.'
         entry = {'Reference Designators': designators, 'MPN': quote_mpn, 'Quantity': int(qty),

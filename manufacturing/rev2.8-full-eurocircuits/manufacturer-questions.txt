@@ -31,17 +31,13 @@ written approval.
    Coordinates are mm in the unchanged absolute Gerber frame. J1's centre is
    corrected to its 40-hole centroid; original side and rotation are preserved.
 
-5. J7 is included in the BOM but sits in a schematic DO NOT PLACE box without
-   a red cross; its population needs clarification. Keep it in the quotation,
-   but do not treat quotation inclusion as manufacturing-release approval.
-
-6. Please quote exact component sourcing and identify unavailable/ambiguous
+5. Please quote exact component sourcing and identify unavailable/ambiguous
    parts, minimum quantities, assembly spares and any customer-supplied items.
    Revised manufacturer codes require documented identity and approval before
    use. Please pay particular attention to the Abracon 26 MHz TCXO, Coilcraft
    0402CS-5N6XGLW, TC1-1-13M+, and the two Johanson legacy MPNs.
 
-7. Please review the two shield DXFs and assembly drawings. Shield cans are
+6. Please review the two shield DXFs and assembly drawings. Shield cans are
    absent from the BOM and crossed out in the schematic, but we require a
    defined shielding solution for the reproduction. Please identify what
    additional mechanical specifications you require and quote shield supply

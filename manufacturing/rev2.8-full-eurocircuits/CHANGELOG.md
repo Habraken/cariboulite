@@ -9,6 +9,10 @@
   primary BOM MPN agree on the standby (`S`) variant; `TJHPA3` in the original
   description/comment/PnP is retained as stale-source evidence, not an approved
   substitution.
+- Resolved J7 as fitted with exact MPN `CONUFL001-SMD-T`, supported by the BOM,
+  PnP, assembly drawing and physical reference board. Clarified that J7 lies
+  outside the schematic DO NOT PLACE boundary while R25, C108 and C122 remain
+  DNP and leave the connector electrically isolated.
 
 ## 2026-09-12 — Initial technical quotation package
 

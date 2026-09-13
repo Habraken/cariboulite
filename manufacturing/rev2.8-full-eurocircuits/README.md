@@ -36,7 +36,6 @@ Read `technical-review.md` and give `manufacturer-questions.txt` to the technica
 reviewer. They cover:
 
 - Blind-via process and stack-up compatibility.
-- J7's BOM/schematic population ambiguity.
 - Shield cans: absent from BOM, crossed out on the schematic, but described by drawings.
 - J1's corrected placement centre, with its original side/rotation retained for review.
 - Exact-part sourcing, component orientation, PCB finish, and manufacturer DFM warnings.
@@ -44,6 +43,11 @@ reviewer. They cover:
 U25's source-field conflict is resolved: use exact MPN
 `SG-8018CG 125.0000M-TJHSA3`. The `TJHPA3` description/PnP text is retained in
 the audit as original-source evidence but is not an approved substitution.
+
+J7's population is also resolved: fit exact MPN `CONUFL001-SMD-T`. It is
+present in the BOM, PnP, assembly drawing and physical reference board, and is
+outside the schematic's DO NOT PLACE boundary. R25, C108 and C122 remain DNP,
+leaving J7 electrically isolated as released.
 
 No design changes or automatic component substitutions are authorized. Quotation
 assumptions must be shown explicitly. This package does not authorize an order.
