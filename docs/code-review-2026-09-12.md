@@ -211,6 +211,42 @@ only for short state updates that cannot sleep. Also serialize concurrent
 ioctl transitions across stop/start, not just the final state assignment.
 Source-confirmed; no live contention test was run.
 
+Update 2026-09-13: replaced the transition spinlock with a process-context
+mutex held across the state check, TX helper cancellation, DMA shutdown,
+FIFO reset, DMA startup and helper startup. Removed the ioctl's unlocked
+same-state shortcut. TX timer/work helpers are cancelled before DMA shutdown
+to prevent rearming during teardown. Callback state observations remain
+lockless, with `WRITE_ONCE` state updates; callbacks do not take the transition
+mutex. Lock order is open ownership, transition, then writer mutex. Interrupted
+writer-lock acquisition restores the idle hardware address before returning.
+
+Validation: `python3 driver/tests/test_stream_transitions.py` passed against
+the actual transition body with simulated hardware and real pthread mutexes.
+It covers concurrent transitions, writer contention, redundant requests,
+startup/interrupted-lock failures and helper shutdown ordering. Exclusive-open
+regression tests also passed. A fresh kernel-module build in
+`/tmp/cariboulite-issue4-driver` passed for `6.18.39+rpt-rpi-v8`.
+This module has not been installed or loaded; live RX/TX switching and kernel
+diagnostics remain to be checked. Userspace rebuilding is not needed.
+
+Live follow-up: temporarily loaded source version `697F3CF2096C282E312BA14`
+with parameters `6, 2, 3`. Option 12 RX on/off/on succeeded, followed by
+option 11 TX at 430.099936 MHz and -3 dBm for approximately 3.65 seconds,
+then option 12 RX again. The application quit with exit code 0. Kernel logs
+for the application test contained no warning, error, sleeping-in-atomic,
+oops or deadlock messages. This was sequential live switching; concurrent
+contention was tested with the simulated-hardware regression harness above.
+Logs are preserved under `installations/issue4-validation/`. The new module
+remains temporarily loaded; the installed module is still the issue 1 version.
+
+The owner subsequently confirmed hearing both the TX tone and RX chain
+activation. Permanent installation completed for `6.18.39+rpt-rpi-v8` on
+2026-09-13: installed the tested issue 4 module, ran `depmod` successfully,
+and verified installed bytes and source version against the tested artifact.
+The same module was already loaded, so no reload was needed. Existing module
+parameters remain `6, 2, 3`; dependency resolution was verified. The previous
+installed module and installation hashes are in `installations/issue4-driver/`.
+
 ### 5. P1 — TX stop can wait forever before disabling transmission
 
 `software/libcariboulite/src/app_menu.c:1762–1774, 1844–1862, 2758–2762`

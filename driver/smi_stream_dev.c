@@ -113,7 +113,7 @@ struct bcm2835_smi_dev_instance
     smi_stream_state_en state;
     struct mutex read_lock;
     struct mutex write_lock;
-    spinlock_t state_lock;
+    struct mutex transition_lock;
     wait_queue_head_t poll_event;
     uint32_t current_read_chunk;
     uint32_t counter_missed;
@@ -345,28 +345,29 @@ static int set_state(smi_stream_state_en new_state)
 
     if (!inst) return 0;
 
-    /* Fast no-op */
+    /* Process-context callers only. Serialize the entire hardware transition.
+     * Lock order: open_lock -> transition_lock -> write_lock.
+     * DMA/timer/work callbacks must not acquire transition_lock.
+     */
+    mutex_lock(&inst->transition_lock);
+
+    /* Check only after any preceding transition has completed. */
     if (new_state == inst->state) {
         dev_info(inst->dev, "IOCTL SET_STREAM_STATUS old=%d new=%d (noop)", inst->state, new_state);
-        return 0;
+        goto out_unlock;
     }
 
     dev_info(inst->dev, "set_state transition %d -> %d", inst->state, new_state);
 
-    /* Stop previous transfer outside the spinlock to avoid atomic scheduling warnings */
-    if (inst->transfer_thread_running) {
-        transfer_thread_stop(inst);
-    }
-    /* These may sleep; cancel them outside the spinlock too */
+    /* Quiesce TX helpers before DMA shutdown so they cannot rearm SMI. */
     hrtimer_cancel(&inst->tx_hr);
     cancel_delayed_work_sync(&inst->tx_watch_work);
-    
-    /* Now switch under lock */
-    spin_lock(&inst->state_lock);
+    if (inst->transfer_thread_running)
+        transfer_thread_stop(inst);
 
     /* Put HW into a known idle/address before starting a new direction */
     bcm2835_smi_set_address(inst->smi_inst, calc_address_from_state(smi_stream_idle));
-    inst->state = smi_stream_idle;
+    WRITE_ONCE(inst->state, smi_stream_idle);
 
     new_address = calc_address_from_state(new_state);
     bcm2835_smi_set_address(inst->smi_inst, new_address);
@@ -374,8 +375,9 @@ static int set_state(smi_stream_state_en new_state)
     if (new_state == smi_stream_tx_channel) {
         /* Reset TX FIFO so we start clean */
         if (mutex_lock_interruptible(&inst->write_lock)) {
-            spin_unlock(&inst->state_lock);
-            return -EINTR;
+            bcm2835_smi_set_address(inst->smi_inst, calc_address_from_state(smi_stream_idle));
+            ret = -EINTR;
+            goto out_unlock;
         }
         kfifo_reset(&inst->tx_fifo);
         mutex_unlock(&inst->write_lock);
@@ -387,11 +389,11 @@ static int set_state(smi_stream_state_en new_state)
         ret = transfer_thread_init(inst, DMA_MEM_TO_DEV, stream_smi_write_dma_callback);
         if (!ret) {
             /* Arm a long window right away */
-            inst->state = new_state;
+            WRITE_ONCE(inst->state, new_state);
         } else {
             /* Failed → stay idle */
             bcm2835_smi_set_address(inst->smi_inst, calc_address_from_state(smi_stream_idle));
-            inst->state = smi_stream_idle;
+            WRITE_ONCE(inst->state, smi_stream_idle);
         }
     } else if (new_state == smi_stream_rx_channel_0 || new_state == smi_stream_rx_channel_1) {
         /* Start cyclic DMA (RX) */
@@ -399,23 +401,24 @@ static int set_state(smi_stream_state_en new_state)
         if (!ret) {
             /* Same idea for RX: keep it armed long */
             //smi_refresh_dma_command(inst->smi_inst, DMA_BOUNCE_BUFFER_SIZE/4);
-            inst->state = new_state;
+            WRITE_ONCE(inst->state, new_state);
         } else {
             bcm2835_smi_set_address(inst->smi_inst, calc_address_from_state(smi_stream_idle));
-            inst->state = smi_stream_idle;
+            WRITE_ONCE(inst->state, smi_stream_idle);
         }
     } else {
         /* Explicit idle */
-        inst->state = smi_stream_idle;
+        WRITE_ONCE(inst->state, smi_stream_idle);
     }
 
     mb();
-    spin_unlock(&inst->state_lock);
-    /* Start helpers AFTER we've left the spinlock and only if TX started OK */
+    /* Keep serialization until successful TX startup includes its helpers. */
     if (!ret && new_state == smi_stream_tx_channel) {
         schedule_delayed_work(&inst->tx_watch_work, usecs_to_jiffies(inst->tx_watch_period_us));
         hrtimer_start(&inst->tx_hr, inst->tx_hr_period, HRTIMER_MODE_REL_PINNED);
     }
+out_unlock:
+    mutex_unlock(&inst->transition_lock);
     return ret;
 }
 
@@ -713,18 +716,6 @@ static long smi_stream_ioctl(struct file *file, unsigned int cmd, unsigned long 
     case SMI_STREAM_IOC_SET_STREAM_STATUS: 
     {
         smi_stream_state_en req = (smi_stream_state_en)arg;
-        smi_stream_state_en old = READ_ONCE(inst->state);   // snapshot without taking the lock
-
-        if (req == old) {
-            // Ignore redundant TX->TX (or RX->same RX) requests; they cause noisy re-inits
-            dev_info_ratelimited(inst->dev,
-                "IOCTL SET_STREAM_STATUS old=%d new=%d (noop)\n", old, req);
-            ret = 0;
-            break;
-        }
-
-        dev_info_ratelimited(inst->dev,
-            "IOCTL SET_STREAM_STATUS old=%d new=%d\n", old, req);
         ret = set_state(req);
         break;
     }
@@ -1581,7 +1572,7 @@ static int smi_stream_dev_probe(struct platform_device *pdev)
     inst->writer_waiting_sema = false;
     mutex_init(&inst->read_lock);
     mutex_init(&inst->write_lock);
-    spin_lock_init(&inst->state_lock);
+    mutex_init(&inst->transition_lock);
 
     /* TX watch (read-only): default 1000 us period */
     INIT_DELAYED_WORK(&inst->tx_watch_work, tx_watch_workfn);
