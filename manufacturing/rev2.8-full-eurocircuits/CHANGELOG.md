@@ -1,5 +1,15 @@
 # Package change log
 
+## 2026-09-13 — macOS reproducibility hardening
+
+- Excluded Finder `.DS_Store` metadata from source inventory and package archives.
+- Removed stale copied Finder metadata during regeneration so package inputs are
+  independent of whether the builder runs on macOS or Linux.
+- Resolved U25 to exact MPN `SG-8018CG 125.0000M-TJHSA3`: the schematic and
+  primary BOM MPN agree on the standby (`S`) variant; `TJHPA3` in the original
+  description/comment/PnP is retained as stale-source evidence, not an approved
+  substitution.
+
 ## 2026-09-12 — Initial technical quotation package
 
 - Copied Full/shared production originals without changing file contents.

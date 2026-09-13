@@ -22,6 +22,7 @@ SOURCE = ROOT / 'hardware/rev2'
 OUT = ROOT / 'manufacturing/rev2.8-full-eurocircuits'
 PREFIX = 'cariboulite_r2.8'
 DX_MIL, DY_MIL = 12697.26, 7261.81
+IGNORED_METADATA_NAMES = {'.DS_Store'}
 EXCLUDED = {
     'R10': 'DNP: Full schematic page 2, crossed out and marked DNP',
     'R12': 'DNP: Full schematic page 2, crossed out and marked DNP',
@@ -156,10 +157,15 @@ def drill_summary():
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
+    # Finder metadata is host-local, not production source. Remove stale copies
+    # from a prior macOS run so Linux and macOS builds have identical inputs.
+    for p in OUT.rglob('*'):
+        if p.is_file() and p.name in IGNORED_METADATA_NAMES:
+            p.unlink()
     # Inventory all revision-2 sources, explicitly excluding the ISM variant from delivery.
     manifest = []
     for p in sorted(SOURCE.rglob('*')):
-        if not p.is_file():
+        if not p.is_file() or p.name in IGNORED_METADATA_NAMES:
             continue
         rel = p.relative_to(SOURCE)
         excluded = any('ism' in part.lower() for part in rel.parts)
@@ -197,7 +203,10 @@ def main():
             quote_mpn = mpn.split(',')[0].strip()
             notes += ' First original BOM alternative selected for quotation; verify mounting side and mating height.'
         if names == ['U25']:
-            notes += ' HOLD: MPN TJHSA3 conflicts with description/comment/PnP TJHPA3; resolve before purchase.'
+            notes += (' RESOLVED: use primary MPN SG-8018CG 125.0000M-TJHSA3. '
+                      'The schematic and primary BOM MPN agree on the standby (S) variant; '
+                      'TJHPA3 in the source description/comment/PnP is treated as stale metadata. '
+                      'Pin 1 is tied high, but the P variant is not an approved substitution.')
         if names == ['J7']:
             notes += ' HOLD: included in BOM; schematic places connector in DO NOT PLACE box without red cross. Confirm population.'
         if names == ['U21']:
@@ -296,7 +305,7 @@ def main():
     shutil.copyfile(__file__, OUT / 'tools/build_rev2_8_package.py')
     shutil.copyfile(ROOT / 'manufacturing/requirements.txt', OUT / 'tools/requirements.txt')
     files = sorted(p for p in OUT.rglob('*') if p.is_file() and p.name not in
-                   ['SHA256SUMS', 'cariboulite-rev2.8-full-quotation.zip'])
+                   IGNORED_METADATA_NAMES | {'SHA256SUMS', 'cariboulite-rev2.8-full-quotation.zip'})
     (OUT / 'SHA256SUMS').write_text(''.join(f'{digest(p)}  {p.relative_to(OUT).as_posix()}\n' for p in files))
     files.append(OUT / 'SHA256SUMS')
     zip_files(OUT / 'cariboulite-rev2.8-full-quotation.zip',

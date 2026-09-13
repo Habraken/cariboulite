@@ -31,10 +31,9 @@ written approval.
    Coordinates are mm in the unchanged absolute Gerber frame. J1's centre is
    corrected to its 40-hole centroid; original side and rotation are preserved.
 
-5. Please flag U25: the primary BOM MPN ends TJHSA3 but the description and PnP
-   end TJHPA3. We need to resolve that discrepancy before purchase. J7 is
-   included in the BOM but sits in a schematic DO NOT PLACE box without a red
-   cross; population needs clarification. Both are quotation assumptions only.
+5. J7 is included in the BOM but sits in a schematic DO NOT PLACE box without
+   a red cross; its population needs clarification. Keep it in the quotation,
+   but do not treat quotation inclusion as manufacturing-release approval.
 
 6. Please quote exact component sourcing and identify unavailable/ambiguous
    parts, minimum quantities, assembly spares and any customer-supplied items.

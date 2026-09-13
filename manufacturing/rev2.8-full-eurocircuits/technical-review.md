@@ -101,12 +101,17 @@ independent schematic evidence:
 These are the five **extra PnP rows**, not an exhaustive list of all DNP features
 in the schematic. Do not auto-populate other pads absent from the Full BOM.
 
-Open BOM decisions:
+## BOM decisions
 
-- **U25:** primary MPN is `SG-8018CG 125.0000M-TJHSA3`, while description,
-  comment and PnP specify `SG-8018CG 125.0000M-TJHPA3`. Primary MPN is retained
-  for quotation with HOLD in Notes. Do not purchase until the suffix conflict
-  is resolved against the original board/manufacturer information.
+- **U25 - resolved 2026-09-13:** use exact MPN
+  `SG-8018CG 125.0000M-TJHSA3`. The schematic and primary BOM MPN both specify
+  the standby (`S`) variant. `TJHPA3` in the original description, comment and
+  PnP is treated as stale shared metadata. Epson defines `S` as standby and `P`
+  as output enable; U25 pin 1 is tied to `VCC_FP_DIG_3V3`, so either operates
+  continuously in this circuit, but `P` is not an approved substitution for
+  this exact reproduction. Evidence: Full schematic page 4 and Epson SG-8018
+  datasheet, Product Number / Ordering Code section:
+  <https://download.epsondevice.com/td/pdf/app/SG-8018CA_en.pdf>.
 - **J7:** BOM and PnP include `CONUFL001-SMD-T`. Schematic page 6 places J7
   inside a DO NOT PLACE box with R25; R25 is crossed out, J7 is not. Keep J7 in
   the quotation BOM and CPL, but obtain a population clarification before release.

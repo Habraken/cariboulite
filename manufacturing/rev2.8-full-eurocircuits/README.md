@@ -36,11 +36,14 @@ Read `technical-review.md` and give `manufacturer-questions.txt` to the technica
 reviewer. They cover:
 
 - Blind-via process and stack-up compatibility.
-- U25's conflicting oscillator ordering codes in the original BOM.
 - J7's BOM/schematic population ambiguity.
 - Shield cans: absent from BOM, crossed out on the schematic, but described by drawings.
 - J1's corrected placement centre, with its original side/rotation retained for review.
 - Exact-part sourcing, component orientation, PCB finish, and manufacturer DFM warnings.
+
+U25's source-field conflict is resolved: use exact MPN
+`SG-8018CG 125.0000M-TJHSA3`. The `TJHPA3` description/PnP text is retained in
+the audit as original-source evidence but is not an approved substitution.
 
 No design changes or automatic component substitutions are authorized. Quotation
 assumptions must be shown explicitly. This package does not authorize an order.

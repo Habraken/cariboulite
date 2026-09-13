@@ -22,7 +22,9 @@ Quotation strategy:
 - The handover proposes Johanson migrations `2450FB15A050E` to
   `2450FB15A0050001E` and `0896BM15E0025E` to `0896BM15E0025001E`.
   These are NOT applied to this BOM. Identity still needs documented review.
-- Resolve U25 `TJHSA3` versus `TJHPA3` before buying the 125 MHz oscillator.
+- For U25, use exact MPN `SG-8018CG 125.0000M-TJHSA3`. The `TJHPA3` text in
+  the original description/comment/PnP was reviewed and is treated as stale
+  metadata, not as an alternate or authorized substitution.
 - Do not buy a second 26 MHz oscillator for U29: the Full schematic explicitly
   marks that optional oscillator block as not fitted.
 - Keep shield costs/supply scope explicit and separate until the mechanical
