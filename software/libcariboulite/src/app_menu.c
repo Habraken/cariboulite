@@ -1584,7 +1584,7 @@ static void* rx_reader_thread_func(void* arg)
     rx_reader_ctrl_st* ctrl = (rx_reader_ctrl_st*)arg;
     caribou_smi_st *smi = &ctrl->radio->sys->smi;
 
-    const size_t want = 40000; // 10 ms @ 4 MS/s
+    const size_t want = ctrl->rx_buffer_size; // Selected rate * 10 ms
     cariboulite_sample_complex_int16* buf = ctrl->rx_buffer;
     cariboulite_sample_meta* meta = malloc(sizeof(*meta) * want);
     if (!meta) {
@@ -1606,8 +1606,8 @@ static void* rx_reader_thread_func(void* arg)
             }
 
             latest_rx_sample = (cariboulite_sample_complex_int16){
-                .i = frm.data[20000].i,
-                .q = frm.data[20000].q
+                .i = frm.data[want / 2].i,
+                .q = frm.data[want / 2].q
             };
 
             //rf10_fifo_put(ctrl->rx_fifo /*add to ctrl*/, &frm, -1);
@@ -2004,6 +2004,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->sys   = sys;
     p->radio = radio;
 
+    if (par->fs_rf != 2000000 && par->fs_rf != 4000000) return -1;
+
     // FIFOs
     rf10_fifo_init(&p->rxq,  /*cap=*/128, /*drop_oldest_on_full=*/true);
     aud10_fifo_init(&p->afifo, /*cap=*/24);
@@ -2081,9 +2083,9 @@ int rx_pipeline_start(rx_pipeline_t* p)
     if (!p || !p->inited || p->running) return -1;
 
     if (!p->rx_ctrl.rx_buffer) {
-        p->rx_ctrl.rx_buffer = malloc(sizeof(cariboulite_sample_complex_int16) * 40000);
+        p->rx_ctrl.rx_buffer = malloc(sizeof(cariboulite_sample_complex_int16) * (size_t)(p->demod.fs_rf / 100));
         if (!p->rx_ctrl.rx_buffer) return -2;
-        p->rx_ctrl.rx_buffer_size = 40000;
+        p->rx_ctrl.rx_buffer_size = (size_t)(p->demod.fs_rf / 100);
     }
 
     // Stop TX if needed
@@ -2098,6 +2100,7 @@ int rx_pipeline_start(rx_pipeline_t* p)
     }
 
     HW_LOCK();
+    cariboulite_radio_set_rx_sample_rate_flt(p->radio, p->demod.fs_rf);
     caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, caribou_fpga_io_ctrl_rfm_rx_lowpass);
     cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_rx, true);
     caribou_smi_set_driver_streaming_state(&p->sys->smi, (smi_stream_state_en)1); // RX on S1G
@@ -2289,7 +2292,7 @@ static void* nbfm_demod_thread(void* arg)
     if (!c || !c->fifo_in || !c->pcm) return NULL;
 
     // 4e6 -> 50k via integrate & dump: 20x then 4x (total 80x)
-    enum { D1 = 20, D2 = 4 };                // 4e6 / 80 = 50 kS/s
+    const int D1 = (int)(c->fs_rf / 200000.0f), D2 = 4;                // 4e6 / 80 = 50 kS/s
     const float fs_mid = 50000.0f;
 
     // FM deviation (matches your TX)
@@ -2375,7 +2378,7 @@ static void* nbfm_demod_thread(void* arg)
         rf10_frame_t frm;
         if (!rf10_fifo_get(c->fifo_in, &frm, -1)) continue;
 
-        for (size_t n = 0; n < 40000; n++) {
+        for (size_t n = 0; n < (size_t)(c->fs_rf / 100); n++) {
             // --- accumulate @ 4M (stage-1) ---
             ai1 += (float)frm.data[n].i;
             aq1 += (float)frm.data[n].q;
@@ -3057,7 +3060,8 @@ static void nbfm_rx(sys_st *sys)
     for (;;) {
         int choice = -1;
         printf("RX freq: %.0f Hz\n", par.freq_hz);
-        printf(" [1] Toggle NBFM RX   [99] Return\n");
+        printf("RX rate: %.0f samples/s (%.0f samples/10ms)\n", par.fs_rf, par.fs_rf / 100);
+        printf(" [1] Toggle NBFM RX   [2] Select 2 MS/s   [4] Select 4 MS/s   [99] Return\n");
         printf(" Choice: ");
         if (scanf("%d", &choice) != 1) continue;
         if (choice == 1) {
@@ -3067,12 +3071,24 @@ static void nbfm_rx(sys_st *sys)
                 rx_pipeline_stop(&rx);
                 printf("RX: OFF\n");
             }
+        } else if (choice == 2 || choice == 4) {
+            if (rx.running) {
+                printf("Stop RX before changing sample rate.\n");
+                continue;
+            }
+            rx_pipeline_destroy(&rx);
+            par.fs_rf = choice * 1000000.0f;
+            if (rx_pipeline_init(&rx, sys, &sys->radio_low, &par) != 0) {
+                fprintf(stderr, "[rx] rate change failed\n");
+                break;
+            }
         } else if (choice == 99) {
             break;
         }
     }
 
     rx_pipeline_destroy(&rx);
+    cariboulite_radio_set_rx_sample_rate_flt(&sys->radio_low, 4000000);
     printf("NBFM RX stopped.\n");
 }
 

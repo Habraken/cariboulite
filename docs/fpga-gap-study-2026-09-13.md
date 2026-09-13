@@ -527,3 +527,26 @@ The previous committed firmware can be recovered from the parent of the
 promotion commit; the ignored study rollback directory also retains the
 original artifacts. Earlier candidate results and limitations above remain
 part of the experiment record, not promises of exhaustive validation.
+
+## Additional step 1: option-12 RX rate selection
+
+Option 12 now accepts 2/4 for 2 or 4 MS/s while stopped, recreating the RX
+pipeline when the rate changes. The reader uses 20,000/40,000 samples per
+10 ms and applies the selected modem RX rate on start. The demodulator's
+first decimation stage changes from 20 to 10 at 2 MS/s; its second stage
+remains 4, retaining the 50 kHz intermediate and 48 kHz output audio rates.
+The output remains `plughw:Loopback,0,0`; leaving option 12 restores 4 MS/s.
+
+Local build, lifecycle checks at both RX frame sizes and diff checks pass.
+The live UI test started/stopped both rates and rejected changes while
+running, then exited cleanly (`option12-rate-test.log`). RX timeouts remain
+in the log, so audible RX validation is pending user testing. No TX was
+started in this check. No firmware or driver change was made. Option 14's
+rate-selection UI is deferred until this first additional step is validated.
+
+The user subsequently confirmed that option 12's changes work correctly,
+including blocking sample-rate changes while the RX chain is active.
+This completes user functional validation of additional step 1. The changes
+remain uncommitted; option 14 is the next requested step.
+The user additionally confirmed correct audio pitch and quality and authorized
+committing the option-12 changes before proceeding to option 14.

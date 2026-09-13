@@ -50,6 +50,7 @@ int __wrap_cariboulite_radio_read_samples(cariboulite_radio_state_st* r,
     for (;;) { pthread_testcancel(); usleep(1000); }
     return 0;
 }
+int __wrap_cariboulite_radio_set_rx_sample_rate_flt(cariboulite_radio_state_st* r, float fs) { return 0; }
 static float test_tx_rate = 4000000;
 int __wrap_cariboulite_radio_set_tx_samp_cutoff_flt(cariboulite_radio_state_st* r, float fs) { test_tx_rate=fs; return 0; }
 int __wrap_cariboulite_radio_get_tx_samp_cutoff_flt(cariboulite_radio_state_st* r, float* fs) { *fs=test_tx_rate; return 0; }
@@ -102,6 +103,14 @@ int main(void) {
     fail_create = 0;
     assert(rx_pipeline_start(&p) == 0); /* recover after failed start */
     rx_pipeline_destroy(&p); check_clean(&p);
+    for(int rate=2000000;rate<=4000000;rate+=2000000) {
+        par.fs_rf=rate;
+        assert(rx_pipeline_init(&p,&sys,&radio,&par)==0);
+        assert(rx_pipeline_start(&p)==0);
+        assert(p.rx_ctrl.rx_buffer_size==(size_t)rate/100);
+        rx_pipeline_destroy(&p);check_clean(&p);
+    }
+    par.fs_rf=4000000;
     par.pcm_dev = "cariboulite_test_missing_device";
     assert(rx_pipeline_init(&p,&sys,&radio,&par) < 0); check_clean(&p);
 
