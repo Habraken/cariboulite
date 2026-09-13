@@ -181,6 +181,21 @@ test of the actual wrapper body with a mock reader and a protected guard page
 reproduced SIGSEGV for a five-sample request into four-sample internal storage.
 No board access was involved.
 
+Update 2026-09-13: the C++ synchronous wrapper records the allocated read
+capacity and caps each C-reader request to that capacity. Both integer and
+float overloads return the actual count; the public header documents the
+one-MTU-per-call limit. GNU Radio's existing work function returns that count,
+so no change to its caller is needed. A zero-capacity wrapper returns without
+accessing synchronous buffers.
+
+Validation: `python3 software/libcariboulite/tests/test_cpp_read_bounds.py`
+passed using the actual read-method bodies, a mock C reader, and inaccessible
+guard pages immediately after the sample and metadata allocations. Cases
+include below/at/above capacity, `SIZE_MAX`, integer/float conversion, metadata,
+short reads, transport errors, zero-length requests and inactive/empty buffers.
+The complete local C/C++ build passed. No hardware test was run for this fix;
+the menu app's C RX path does not exercise these C++ wrapper methods.
+
 ### 4. P1 — Kernel TX transition takes a sleeping mutex under a spinlock
 
 `driver/smi_stream_dev.c:359–375`
