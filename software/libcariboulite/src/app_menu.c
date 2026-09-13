@@ -2103,7 +2103,8 @@ int rx_pipeline_start(rx_pipeline_t* p)
     cariboulite_radio_set_rx_sample_rate_flt(p->radio, p->demod.fs_rf);
     caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, caribou_fpga_io_ctrl_rfm_rx_lowpass);
     cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_rx, true);
-    caribou_smi_set_driver_streaming_state(&p->sys->smi, (smi_stream_state_en)1); // RX on S1G
+    caribou_smi_set_driver_streaming_state(&p->sys->smi,
+        p->radio == &p->sys->radio_high ? smi_stream_rx_channel_1 : smi_stream_rx_channel_0);
     HW_UNLOCK();
 
     // start reader now (only when RX is active)
@@ -3312,6 +3313,7 @@ void monitor_modem_status(sys_st *sys)
     float  tx_sr     = 4000000.0f;    // Default TX sample rate in Hz
     float  rx_bw     = 2000000.0f;    // Default RX bandwidth in Hz
     float  rx_sr     = 4000000.0f;    // Default RX sample rate in Hz
+    const char* rate_notice = "[2] 2 MS/s  [4] 4 MS/s: stop TX and RX before changing";
 
 	int iq_tx_buffer_size = (1u << 18);
 	int iq_rx_buffer_size = (1u << 18);
@@ -3382,12 +3384,13 @@ void monitor_modem_status(sys_st *sys)
 
 		time(&current_time);
 		move(0,0);
-		printw("CaribouLite Radio    [T]=TX ON/OFF  [R]=RX ON/OFF  [Q]=QUIT  [X]=RESET");	
+		printw("Radio [T] TX [R] RX [2/4] MS/s [Q] QUIT [X] stats");
 		move(0, screen_max_x - 12);
 		printw("%12ld",current_time);
 		move(1,0);
         printw("    TX Frequency: %.0f Hz", round(txpar.freq_hz/1000)*1000);
         printw("    TX Power: %d dBm", txpar.tx_power_dbm);
+        printw("  TX/RX %.0f MS/s", rxpar.fs_rf / 1000000);
         move(1, screen_max_x - 12);
 		printw("%12.5f",elapsed_time);
 		move(2,0);
@@ -3650,7 +3653,7 @@ void monitor_modem_status(sys_st *sys)
         }
         tx_last_ts = now; tx_last_s = stx;
         
-        printw("Linux TX FIFO:\n");
+        printw("Linux TX FIFO: %zu samples/frame (10 ms)\n", txp.tx_ctrl.frame_samples);
         printw("    depth: %zu/%zu (%.0f%%), min:%zu max:%zu\n",
             stx.count, stx.cap, tx_fill_pct, stx.min_depth, stx.max_depth);
         printw("    puts:%zu gets:%zu drops:%zu tO_put:%zu tO_get:%zu\n",
@@ -3683,7 +3686,8 @@ void monitor_modem_status(sys_st *sys)
         }
         rx_last_ts = now; rx_last_s = srx;
         
-        printw("Linux RX FIFO:\n");
+        printw("Linux RX FIFO: %zu samples/frame (10 ms)\n",
+               (size_t)(rxp.demod.fs_rf / 100));
         printw("    depth: %zu/%zu (%.0f%%), min:%zu max:%zu\n",
             srx.count, srx.cap, rx_fill_pct, srx.min_depth, srx.max_depth);
         printw("    puts:%zu gets:%zu drops:%zu tO_put:%zu tO_get:%zu\n",
@@ -3697,8 +3701,23 @@ void monitor_modem_status(sys_st *sys)
         if (srx.timeouts_put > 0)        printw("    NOTE: Reader timed out waiting to enqueue\n");
         if (srx.timeouts_get > 0)        printw("    NOTE: Demod timed out waiting for frames\n");
 
-		char key = 0;
-		key = getch();
+        printw("\n%s\n", rate_notice);
+        refresh();
+        int key = getch();
+        if (key == '2' || key == '4') {
+            if (txp.running || rxp.running) {
+                rate_notice = "Stop TX and RX before changing sample rate.";
+                continue;
+            }
+            tx_pipeline_destroy(&txp);
+            rx_pipeline_destroy(&rxp);
+            txpar.rf_fs = (key - '0') * 1000000;
+            rxpar.fs_rf = txpar.rf_fs;
+            if (!monitor_init_pipelines(&txp, &rxp, sys, &txpar, &rxpar)) break;
+            cariboulite_radio_set_rx_sample_rate_flt(radio, rxpar.fs_rf);
+            rate_notice = "TX/RX rate selected. [T] starts TX; [R] starts RX.";
+            continue;
+        }
 		
 		if(key == 'q') // Press 'q' to exit
 		{
@@ -3720,7 +3739,13 @@ void monitor_modem_status(sys_st *sys)
         if (key == 't') {
             if (!tx_pipeline_running(&txp)) {
                 rx_pipeline_stop(&rxp);
-                tx_pipeline_start(&txp);
+                // Join both pipelines before resetting shared FPGA state.
+                tx_pipeline_destroy(&txp);
+                rx_pipeline_destroy(&rxp);
+                if (caribou_fpga_soft_reset(fpga) != 0 ||
+                    !monitor_init_pipelines(&txp, &rxp, sys, &txpar, &rxpar)) break;
+                if (tx_pipeline_start(&txp) != 0)
+                    rate_notice = "TX start failed; see debug log.";
             } else {
                 tx_pipeline_stop(&txp);
             }
@@ -3756,6 +3781,8 @@ void monitor_modem_status(sys_st *sys)
     tx_pipeline_destroy(&txp);
     rx_pipeline_destroy(&rxp);
 
+    cariboulite_radio_set_tx_samp_cutoff_flt(radio, 4000000);
+    cariboulite_radio_set_rx_sample_rate_flt(radio, 4000000);
     printw("Monitoring stopped.\n");
 	//refresh();
 	endwin(); // End ncurses mode

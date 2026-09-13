@@ -550,3 +550,31 @@ This completes user functional validation of additional step 1. The changes
 remain uncommitted; option 14 is the next requested step.
 The user additionally confirmed correct audio pitch and quality and authorized
 committing the option-12 changes before proceeding to option 14.
+
+## Additional step 2: option-14 TX/RX rate selection
+
+Monitor keys `2` and `4` select a shared 2 or 4 MS/s rate for both pipelines.
+Selection is rejected while either chain runs; stopped changes recreate
+both pipelines. The header displays the selected rate and the status area
+explains blocked changes. TX starts join both old pipelines, soft-reset the
+FPGA and recreate them before activating TX, following the validated option-11
+clean-start sequence. Exit restores both modem rates to 4 MS/s and gap zero.
+The existing ALSA input/output devices remain unchanged.
+
+The shared RX start routine also now chooses the SMI stream for the bound
+radio; previously it unconditionally selected S1G even in the HiF monitor.
+Lifecycle regression checks cover both radio selections and pass. Build
+and whitespace checks pass. A live monitor UI check exercised RX/TX at both
+rates and active-chain rate blocking. RX frame counts advanced and no TX
+start/tail aborts were logged (`option14-rate-test.log`); RX timing warnings
+still occurred. The app exited with TX/RX stopped. Audio quality and repeated
+user-driven switching await user confirmation. No changes are committed yet.
+
+The user confirmed all option-14 tests passed, including repeated TX/RX
+start/stop and rate changes. At their request, each FIFO heading now shows
+samples per 10 ms frame (20,000 at 2 MS/s, 40,000 at 4 MS/s), using its
+pipeline configuration. Existing puts/gets counters still count frames.
+
+The user also tested option 14 with actual microphone input and reported
+that it works correctly, adding live audio-input validation to the previous
+TX/RX start/stop and sample-rate switching tests.

@@ -42,7 +42,8 @@ int __wrap_cariboulite_radio_set_frequency(cariboulite_radio_state_st* r, bool b
 int __wrap_cariboulite_radio_activate_channel(cariboulite_radio_state_st* r, cariboulite_channel_dir_en d, bool a) {
     hardware_active = a; return 0;
 }
-int __wrap_caribou_smi_set_driver_streaming_state(caribou_smi_st* s, smi_stream_state_en e) { return 0; }
+static smi_stream_state_en last_stream;
+int __wrap_caribou_smi_set_driver_streaming_state(caribou_smi_st* s, smi_stream_state_en e) { last_stream=e; return 0; }
 int __wrap_caribou_fpga_set_io_ctrl_mode(caribou_fpga_st* f, uint8_t d, caribou_fpga_io_ctrl_rfm_en m) { return 0; }
 int __wrap_cariboulite_radio_read_samples(cariboulite_radio_state_st* r,
         cariboulite_sample_complex_int16* b, cariboulite_sample_meta* m, size_t n) {
@@ -111,6 +112,14 @@ int main(void) {
         rx_pipeline_destroy(&p);check_clean(&p);
     }
     par.fs_rf=4000000;
+    assert(rx_pipeline_init(&p,&sys,&sys.radio_high,&par)==0);
+    assert(rx_pipeline_start(&p)==0);
+    assert(last_stream==smi_stream_rx_channel_1);
+    rx_pipeline_destroy(&p);check_clean(&p);
+    assert(rx_pipeline_init(&p,&sys,&sys.radio_low,&par)==0);
+    assert(rx_pipeline_start(&p)==0);
+    assert(last_stream==smi_stream_rx_channel_0);
+    rx_pipeline_destroy(&p);check_clean(&p);
     par.pcm_dev = "cariboulite_test_missing_device";
     assert(rx_pipeline_init(&p,&sys,&radio,&par) < 0); check_clean(&p);
 
