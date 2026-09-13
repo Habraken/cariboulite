@@ -98,11 +98,9 @@ static int caribou_fpga_spi_transfer (caribou_fpga_st* dev, uint8_t *opcode, uin
         ZF_LOGE("spi transfer failed (%d)", ret);
         return -1;
     }
-    // on success return 0 (the number of transmitted bytes are same as needed),
-    // otherwise '1' (warning / error)
-
+    // io_utils_spi_transmit returns zero on success, not a byte count.
     *data = rx_buf[1];
-    return !(ret == sizeof(rx_buf));
+    return 0;
 }
 
 //--------------------------------------------------------------
