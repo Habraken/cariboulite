@@ -962,33 +962,47 @@ static void aud10_fifo_stop(aud10_fifo_t* f){
     pthread_cond_broadcast(&f->can_get);
     pthread_mutex_unlock(&f->m);
 }
+/* pthread_cond_wait reacquires the mutex before running cancellation cleanup. */
+static void fifo_unlock_cleanup(void* mutex)
+{
+    pthread_mutex_unlock((pthread_mutex_t*)mutex);
+}
+
 static bool aud10_fifo_put(aud10_fifo_t* f, const aud10_frame_t* frm, int timeout_ms){
     struct timespec ts; clock_gettime(CLOCK_MONOTONIC,&ts);
     ts.tv_nsec += (long)timeout_ms*1000000L; while(ts.tv_nsec>=1000000000L){ts.tv_nsec-=1000000000L; ts.tv_sec++;}
+    volatile bool result = false;
     pthread_mutex_lock(&f->m);
+    pthread_cleanup_push(fifo_unlock_cleanup, &f->m);
     while(!f->stop && f->count==f->cap){
         if(timeout_ms<0){ pthread_cond_wait(&f->can_put,&f->m); }
-        else if(pthread_cond_timedwait(&f->can_put,&f->m,&ts)==ETIMEDOUT){ pthread_mutex_unlock(&f->m); return false; }
+        else if(pthread_cond_timedwait(&f->can_put,&f->m,&ts)==ETIMEDOUT){ goto out; }
     }
-    if(f->stop){ pthread_mutex_unlock(&f->m); return false; }
+    if(f->stop){ goto out; }
     f->q[f->w] = *frm; f->w=(f->w+1)%f->cap; f->count++;
     pthread_cond_signal(&f->can_get);
-    pthread_mutex_unlock(&f->m);
-    return true;
+    result = true;
+out:
+    pthread_cleanup_pop(1);
+    return result;
 }
 static bool aud10_fifo_get(aud10_fifo_t* f, aud10_frame_t* out, int timeout_ms){
     struct timespec ts; clock_gettime(CLOCK_MONOTONIC,&ts);
     ts.tv_nsec += (long)timeout_ms*1000000L; while(ts.tv_nsec>=1000000000L){ts.tv_nsec-=1000000000L; ts.tv_sec++;}
+    volatile bool result = false;
     pthread_mutex_lock(&f->m);
+    pthread_cleanup_push(fifo_unlock_cleanup, &f->m);
     while(!f->stop && f->count==0){
         if(timeout_ms<0){ pthread_cond_wait(&f->can_get,&f->m); }
-        else if(pthread_cond_timedwait(&f->can_get,&f->m,&ts)==ETIMEDOUT){ pthread_mutex_unlock(&f->m); return false; }
+        else if(pthread_cond_timedwait(&f->can_get,&f->m,&ts)==ETIMEDOUT){ goto out; }
     }
-    if(f->stop){ pthread_mutex_unlock(&f->m); return false; }
+    if(f->stop){ goto out; }
     *out = f->q[f->r]; f->r=(f->r+1)%f->cap; f->count--;
     pthread_cond_signal(&f->can_put);
-    pthread_mutex_unlock(&f->m);
-    return true;
+    result = true;
+out:
+    pthread_cleanup_pop(1);
+    return result;
 }
 
 // Peek audio FIFO depth without disturbing it
@@ -1195,6 +1209,9 @@ typedef struct {
     pthread_t            rx_thread;
     pthread_t            demod_thread;
     pthread_t            aw_thread;
+    bool rx_thread_created;
+    bool demod_thread_created;
+    bool aw_thread_created;
 
     // State
     bool inited;
@@ -1296,19 +1313,20 @@ static bool rf10_fifo_put(rf10_fifo_t* f, const rf10_frame_t* frm, int timeout_m
     ts.tv_nsec += (long)timeout_ms * 1000000L;
     while (ts.tv_nsec >= 1000000000L) { ts.tv_nsec -= 1000000000L; ts.tv_sec++; }
 
+    volatile bool result = false;
     pthread_mutex_lock(&f->m);
+    pthread_cleanup_push(fifo_unlock_cleanup, &f->m);
     while (!f->stop && f->count == f->cap && !f->drop_oldest_on_full) {
         if (timeout_ms < 0) {
             pthread_cond_wait(&f->can_put, &f->m);
         } else {
             if (pthread_cond_timedwait(&f->can_put, &f->m, &ts) == ETIMEDOUT) {
                 f->timeouts_put++;                  // <-- count the timeout
-                pthread_mutex_unlock(&f->m);
-                return false;
+                goto out;
             }
         }
     }
-    if (f->stop) { pthread_mutex_unlock(&f->m); return false; }
+    if (f->stop) { goto out; }
 
     if (f->count == f->cap && f->drop_oldest_on_full) {
         // overwrite oldest
@@ -1324,8 +1342,10 @@ static bool rf10_fifo_put(rf10_fifo_t* f, const rf10_frame_t* frm, int timeout_m
     if (f->count > f->max_depth) f->max_depth = f->count;
 
     pthread_cond_signal(&f->can_get);
-    pthread_mutex_unlock(&f->m);
-    return true;
+    result = true;
+out:
+    pthread_cleanup_pop(1);
+    return result;
 }
 
 static bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* out, int timeout_ms)
@@ -1335,19 +1355,20 @@ static bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* out, int timeout_ms)
     ts.tv_nsec += (long)timeout_ms * 1000000L;
     while (ts.tv_nsec >= 1000000000L) { ts.tv_nsec -= 1000000000L; ts.tv_sec++; }
 
+    volatile bool result = false;
     pthread_mutex_lock(&f->m);
+    pthread_cleanup_push(fifo_unlock_cleanup, &f->m);
     while (!f->stop && f->count == 0) {
         if (timeout_ms < 0) {
             pthread_cond_wait(&f->can_get, &f->m);
         } else {
             if (pthread_cond_timedwait(&f->can_get, &f->m, &ts) == ETIMEDOUT) {
                 f->timeouts_get++;                 // <-- count the timeout
-                pthread_mutex_unlock(&f->m);
-                return false;
+                goto out;
             }
         }
     }
-    if (f->stop) { pthread_mutex_unlock(&f->m); return false; }
+    if (f->stop) { goto out; }
 
     *out = f->q[f->r];
     f->r = (f->r + 1) % f->cap;
@@ -1356,8 +1377,10 @@ static bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* out, int timeout_ms)
     if (f->count < f->min_depth) f->min_depth = f->count;
 
     pthread_cond_signal(&f->can_put);
-    pthread_mutex_unlock(&f->m);
-    return true;
+    result = true;
+out:
+    pthread_cleanup_pop(1);
+    return result;
 }
 
 static void rf10_fifo_stop(rf10_fifo_t* f)
@@ -1552,6 +1575,11 @@ static void* rx_reader_thread_func(void* arg)
     const size_t want = 40000; // 10 ms @ 4 MS/s
     cariboulite_sample_complex_int16* buf = ctrl->rx_buffer;
     cariboulite_sample_meta* meta = malloc(sizeof(*meta) * want);
+    if (!meta) {
+        fprintf(stderr, "RX reader metadata allocation failed\n");
+        return NULL;
+    }
+    pthread_cleanup_push(free, meta);
 
     size_t have = 0;
     while (ctrl->active) {
@@ -1578,7 +1606,7 @@ static void* rx_reader_thread_func(void* arg)
             have = 0;
         }
     }
-    free(meta);
+    pthread_cleanup_pop(1);
     return NULL;
 }
 
@@ -1904,12 +1932,15 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     rf10_fifo_init(&p->rxq,  /*cap=*/128, /*drop_oldest_on_full=*/true);
     aud10_fifo_init(&p->afifo, /*cap=*/24);
 
+    p->inited = true; // FIFO synchronization objects are ready for cleanup.
+    int error = -1;
+    if (!p->rxq.q || !p->afifo.q) goto fail;
+
     // Open ALSA playback
     unsigned rate=0, channels=0;
     if (alsa_open_playback(&p->demod.pcm, par->pcm_dev, &rate, &channels) != 0) {
-        aud10_fifo_destroy(&p->afifo);
-        rf10_fifo_destroy(&p->rxq);
-        return -2;
+        error = -2;
+        goto fail;
     }
     alsa_tune_sw(p->demod.pcm);
 
@@ -1918,8 +1949,11 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->aw.pcm      = p->demod.pcm;
     p->aw.channels = channels ? channels : 1;
     p->aw.fifo     = &p->afifo;
-    if (pthread_create(&p->aw_thread, NULL, audio_writer_thread, &p->aw) != 0)
-        return -3;
+    if (pthread_create(&p->aw_thread, NULL, audio_writer_thread, &p->aw) != 0) {
+        error = -3;
+        goto fail;
+    }
+    p->aw_thread_created = true;
 
     // Demod setup
     p->demod.reset             = true;
@@ -1936,8 +1970,11 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->demod.pcm_channels      = p->aw.channels;
     p->demod.pcm_rate          = rate;
 
-    if (pthread_create(&p->demod_thread, NULL, nbfm_demod_thread, &p->demod) != 0)
-        return -4;
+    if (pthread_create(&p->demod_thread, NULL, nbfm_demod_thread, &p->demod) != 0) {
+        error = -4;
+        goto fail;
+    }
+    p->demod_thread_created = true;
 
     //if (pthread_create(&p->demod_thread, NULL, wbfm_demod_thread, &p->demod) != 0)
     //    return -4;
@@ -1957,11 +1994,21 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->inited = true;
     p->running = false;
     return 0;
+
+fail:
+    rx_pipeline_destroy(p);
+    return error;
 }
 
 int rx_pipeline_start(rx_pipeline_t* p)
 {
     if (!p || !p->inited || p->running) return -1;
+
+    if (!p->rx_ctrl.rx_buffer) {
+        p->rx_ctrl.rx_buffer = malloc(sizeof(cariboulite_sample_complex_int16) * 40000);
+        if (!p->rx_ctrl.rx_buffer) return -2;
+        p->rx_ctrl.rx_buffer_size = 40000;
+    }
 
     // Stop TX if needed
     if (nbfm_tx_active) {
@@ -1983,12 +2030,12 @@ int rx_pipeline_start(rx_pipeline_t* p)
     // start reader now (only when RX is active)
     p->rx_ctrl.active        = true;
     p->rx_ctrl.radio         = p->radio;
-    if (!p->rx_ctrl.rx_buffer) {
-        p->rx_ctrl.rx_buffer      = malloc(sizeof(cariboulite_sample_complex_int16) * 40000);
-        p->rx_ctrl.rx_buffer_size = 40000;
-        p->rx_ctrl.rx_fifo        = &p->rxq;
+    p->running = true; // stop() must unwind hardware if thread creation fails.
+    if (pthread_create(&p->rx_thread, NULL, rx_reader_thread_func, &p->rx_ctrl) != 0) {
+        rx_pipeline_stop(p);
+        return -3;
     }
-    pthread_create(&p->rx_thread, NULL, rx_reader_thread_func, &p->rx_ctrl);
+    p->rx_thread_created = true;
 
     __sync_synchronize();
 
@@ -2016,8 +2063,11 @@ void rx_pipeline_stop(rx_pipeline_t* p)
 
     // join reader here
     p->rx_ctrl.active = false;
-    pthread_cancel(p->rx_thread);
-    pthread_join(p->rx_thread, NULL);
+    if (p->rx_thread_created) {
+        pthread_cancel(p->rx_thread);
+        pthread_join(p->rx_thread, NULL);
+        p->rx_thread_created = false;
+    }
 
 
     p->running = false;
@@ -2036,12 +2086,16 @@ void rx_pipeline_destroy(rx_pipeline_t* p)
     rf10_fifo_stop(&p->rxq);
     aud10_fifo_stop(&p->afifo);
 
-    pthread_cancel(p->rx_thread);
-    pthread_cancel(p->demod_thread);
-    pthread_cancel(p->aw_thread);
-    pthread_join(p->rx_thread, NULL);
-    pthread_join(p->demod_thread, NULL);
-    pthread_join(p->aw_thread, NULL);
+    if (p->demod_thread_created) {
+        pthread_cancel(p->demod_thread);
+        pthread_join(p->demod_thread, NULL);
+        p->demod_thread_created = false;
+    }
+    if (p->aw_thread_created) {
+        pthread_cancel(p->aw_thread);
+        pthread_join(p->aw_thread, NULL);
+        p->aw_thread_created = false;
+    }
 
     if (p->rx_ctrl.rx_buffer) {
         free(p->rx_ctrl.rx_buffer);
@@ -2049,6 +2103,7 @@ void rx_pipeline_destroy(rx_pipeline_t* p)
     }
 
     if (p->demod.pcm) snd_pcm_close(p->demod.pcm);
+    p->demod.pcm = NULL;
     aud10_fifo_destroy(&p->afifo);
     rf10_fifo_destroy(&p->rxq);
 
@@ -2888,7 +2943,7 @@ static void nbfm_rx(sys_st *sys)
     rx_pipeline_t rx = {0};
     rx_params_t par = {
         .freq_hz       = 430100000.0,
-        .pcm_dev       = "plughw:3,0",
+        .pcm_dev       = "plughw:Loopback,0,0",
         .deemph_tau_s  = 50e-6f,
         .pcm_gain      = 8000.0f,
         .fs_rf         = 4000000.0f,

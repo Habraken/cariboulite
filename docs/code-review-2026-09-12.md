@@ -133,6 +133,38 @@ Track successful creation for each worker, clear that state after join, and
 make stop/destroy safe after any partial initialization. Thread cancellation
 also needs cleanup handlers for FIFO mutex ownership and reader metadata.
 
+Update 2026-09-13: RX tracks successful creation of the reader, demodulator,
+and audio writer, and clears each flag after joining. Stop/destroy no longer
+cancel or join an uncreated or previously joined reader. RX initialization
+unwinds partially created workers and allocated resources; reader sample-buffer
+allocation and thread-creation failures are checked, with hardware shutdown
+after a failed thread start. FIFO waits now install mutex-unlock cancellation
+handlers, and the reader frees its metadata through a cancellation handler.
+These FIFO helpers are shared with TX; their timeout-clock behavior (issue 8)
+is unchanged. RX partial-initialization cleanup overlaps the RX portion of
+issue 9; TX and combined-monitor initialization issues remain outstanding.
+
+Validation: full local build passed. Run
+`python3 software/libcariboulite/tests/test_rx_lifecycle.py` for tests using
+the actual app implementation, mocked radio/thread-lifecycle calls and ALSA
+null playback. Cases cover never-started destruction, 20 start/stop cycles,
+destroy while running, allocation and worker-creation failures, retry after
+failed start, missing ALSA device, real cancellation of all four FIFO wait
+paths, and reader metadata cleanup on cancellation.
+
+Live Pi validation passed: option 12 then return before first RX; RX on/off/on;
+return while RX is active; application quit with exit code 0. No TX option was
+selected and received-audio quality was not assessed. Log preserved locally
+at `installations/issue2-validation/rx-lifecycle.log`. The rebuilt local app
+contains this change; no driver change or reload was needed for issue 2.
+
+Owner audio validation: option 14 RX played through the USB speaker, while
+option 12 initially did not. Option 12 still targeted `plughw:3,0` (the Pi
+headphone output), a pre-existing setting. Changed only its playback destination
+to `plughw:Loopback,0,0` and rebuilt. The owner confirmed option 12 RX audio now
+works with the existing `arecord` loopback-to-USB-speaker routing command in
+`ADDITIONAL-README.md`. The radio-path selection was unchanged.
+
 ### 3. P1 — C++ synchronous reads can overflow internal buffers
 
 `software/libcariboulite/src/CaribouLiteRadioCpp.cpp:108–126, 178–194`
