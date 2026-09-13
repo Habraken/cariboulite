@@ -73,7 +73,7 @@ module lvds_tx (
             r_phase_count     <= 4'd15;
             r_sync_count      <= sync_duration_frames;
             r_fifo_data       <= zero_frame;
-            r_state           <= INIT;
+            r_state           <= IDLE;
             r_pulled          <= 1'b0;
             r_gap_frame_count <= 4'd0;
             pending_load      <= 1'b0;
@@ -85,7 +85,7 @@ module lvds_tx (
         end else begin
             
             // SHIFT REGISTER
-            o_ddr_data[1:0] <= r_fifo_data[2*r_phase_count+1 : 2*r_phase_count];
+            o_ddr_data[1:0] <= r_fifo_data[2*r_phase_count +: 2];
             // case (r_phase_count)
             //       15: o_ddr_data[1:0] <= r_fifo_data[31:30];
             //       14: o_ddr_data[1:0] <= r_fifo_data[29:28];
@@ -108,10 +108,11 @@ module lvds_tx (
             
             // default: deassert pull unless we decide at boundary
             r_pulled <= 1'b0;
-            r_tx_state_q <= r_tx_state;
+
 
             // --- handle everything at frame boundaries ---
             if (frame_boundary) begin
+                r_tx_state_q <= r_tx_state;
                 // sample config (cheap CDC – OK for slow register writes)
                 r_sample_gap <= i_sample_gap;
 
@@ -141,7 +142,7 @@ module lvds_tx (
 
                 // On TX enable: ensure a quick sync
                 if (tx_rise) begin
-                next_sync <= 4'd1;         // zero frame, then sync
+                next_sync = 4'd1;         // zero frame, then sync
                 end
 
                 r_sync_count <= next_sync;
@@ -162,12 +163,8 @@ module lvds_tx (
                         if (!r_debug_lb && r_tx_state && sent_first_sync && !r_fifo_empty) begin
                             r_pulled     <= 1'b1;   // request next word now
                             pending_load <= 1'b1;   // latch it next boundary
-                            if (r_sample_gap == 4'd0) begin
-                                r_state <= TX_FRAME;
-                            end else begin
-                                r_state <= TX_GAP;
-                                r_gap_frame_count <= r_sample_gap - 1'b1;
-                            end
+                            // Consume the pending word before scheduling its gaps.
+                            r_state <= TX_FRAME;
                         end else if (r_debug_lb) begin
                             r_state <= LOOPBACK;
                         end  
@@ -182,7 +179,8 @@ module lvds_tx (
                                 pending_load <= 1'b1;    // pipeline next data frame
                                 r_state      <= TX_FRAME;
                             end else begin
-                                r_fifo_data  <= zero_frame;   // ensure immediate return-to-idle zeros
+                                // Do not overwrite the final FIFO handoff.
+                                if (!pending_load) r_fifo_data <= zero_frame;
                                 r_state <= IDLE;              // back to idle/sync
                             end
                         end else begin

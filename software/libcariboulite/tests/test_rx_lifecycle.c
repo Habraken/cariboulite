@@ -50,6 +50,10 @@ int __wrap_cariboulite_radio_read_samples(cariboulite_radio_state_st* r,
     for (;;) { pthread_testcancel(); usleep(1000); }
     return 0;
 }
+static float test_tx_rate = 4000000;
+int __wrap_cariboulite_radio_set_tx_samp_cutoff_flt(cariboulite_radio_state_st* r, float fs) { test_tx_rate=fs; return 0; }
+int __wrap_cariboulite_radio_get_tx_samp_cutoff_flt(cariboulite_radio_state_st* r, float* fs) { *fs=test_tx_rate; return 0; }
+int __wrap_caribou_fpga_get_sys_ctrl_tx_sample_gap(caribou_fpga_st* f, uint8_t* gap) { *gap=4000000/test_tx_rate-1; return 0; }
 int __wrap_cariboulite_radio_set_tx_power(cariboulite_radio_state_st* r, int power) { return 0; }
 static void check_clean(rx_pipeline_t* p) {
     assert(!p->inited && !p->running && !hardware_active);
@@ -121,6 +125,18 @@ int main(void) {
     tp.mic_dev=NULL;
     assert(tx_pipeline_init(&tx,&sys,&radio,&tp)==0);
     tx_pipeline_destroy(&tx);
+
+    for(unsigned fs=2000000;fs<=4000000;fs+=2000000) {
+        tp.rf_fs=fs;
+        assert(tx_pipeline_init(&tx,&sys,&radio,&tp)==0);
+        assert(tx.tx_ctrl.frame_samples==fs/100);
+        assert(test_tx_rate==fs);
+        float audio[480]={0};
+        nbfm4m_push_audio(tx.tx_ctrl.fm,audio,480);
+        assert(nbfm4m_pull_iq(tx.tx_ctrl.fm,tx.tx_ctrl.iq4m,fs/100)==fs/100);
+        tx_pipeline_destroy(&tx);
+    }
+    tp.rf_fs=0;
 
     par.pcm_dev="null";
     for(int failure=1;failure<=4;++failure) {

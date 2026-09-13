@@ -94,7 +94,7 @@ module top (
   //=========================================================================
   // INNER SIGNALS
   //=========================================================================
-  reg        r_counter;
+  reg        r_counter = 1'b0;
   wire       w_clock_spi;
   wire       w_clock_sys;
   wire [4:0] w_ioc;
@@ -123,8 +123,8 @@ module top (
   wire w_tx_sync_input_09;
   wire w_tx_sync_input_24;
 
-  assign w_rx_sync_input_09 = (w_rx_sync_type_09) ? io_pmod_in[3] : w_rx_sync_09;
-  assign w_rx_sync_input_24 = (w_rx_sync_type_24) ? io_pmod_in[2] : w_rx_sync_24;
+  assign w_rx_sync_input_09 = w_rx_sync_09;
+  assign w_rx_sync_input_24 = w_rx_sync_24;
   assign w_tx_sync_input_09 = (w_tx_sync_type_09) ? io_pmod_in[1] : w_tx_sync_09;
   assign w_tx_sync_input_24 = (w_tx_sync_type_24) ? io_pmod_in[0] : w_tx_sync_24;
 
@@ -223,10 +223,9 @@ module top (
   // CLOCK AND DATA-FLOW
   //=========================================================================
   always @(posedge i_glob_clock) begin
-    if (i_rst_b == 1'b0) begin
-      r_counter <= 1'b0;
-    end else begin
-      r_counter <= !r_counter;
+    // Keep the clock running so synchronous FIFO resets receive edges.
+    r_counter <= !r_counter;
+    if (i_rst_b == 1'b1) begin
 
       case (w_cs)
         4'b0001: r_tx_data <= w_tx_data_sys;

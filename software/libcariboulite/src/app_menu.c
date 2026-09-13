@@ -1110,6 +1110,7 @@ typedef struct {
     float    tone_hz;          // default 600.0f
     float    tone_amp;         // audio amplitude (0..1), e.g. 0.8f
 	
+    size_t frame_samples;     // Immutable while pipeline threads exist
     rf10_fifo_t* fifo;         // FIFO for 10 ms frames
 	
     // new
@@ -1152,6 +1153,7 @@ typedef struct {
     // Radio
     double freq_hz;             // e.g., 430.1e6
     int    tx_power_dbm;        // e.g., -3
+    unsigned rf_fs;            // 0 defaults to 4 MS/s; also supports 2 MS/s
 
     // Baseband source for NBFM mod
     bool   tone_mode;           // true => synth audio
@@ -1523,24 +1525,24 @@ static void* dsp_producer_thread_func(void* arg)
         nbfm4m_push_audio(ctrl->tx->fm, ctrl->tx->a48k, 480);
 
         size_t pulled = 0;
-        while (pulled < 40000) {
+        while (pulled < ctrl->tx->frame_samples) {
             pulled += nbfm4m_pull_iq(ctrl->tx->fm,
                                      ctrl->tx->iq4m + pulled,
-                                     40000 - pulled);
+                                     ctrl->tx->frame_samples - pulled);
         }
 
         // ============================================================
         // 3) Pack one rf10_frame_t and push to FIFO (tag TX_EN)
         // ============================================================
-        rf10_frame_t frm;
-        for (size_t i = 0; i < 40000; i++) {
+        rf10_frame_t frm = {0};
+        for (size_t i = 0; i < ctrl->tx->frame_samples; i++) {
             frm.data[i].i = ctrl->tx->iq4m[i].i | 0x0001;  // TX_EN in LSB
             frm.data[i].q = ctrl->tx->iq4m[i].q;
         }
 
         // Optional live sample for UI/debug
-        latest_tx_sample.i = frm.data[20000].i;
-		latest_tx_sample.q = frm.data[20000].q;
+        latest_tx_sample.i = frm.data[ctrl->tx->frame_samples / 2].i;
+		latest_tx_sample.q = frm.data[ctrl->tx->frame_samples / 2].q;
 
         // Blocking put; don’t drop frames
         bool ok = rf10_fifo_put(ctrl->fifo, &frm, -1);
@@ -1719,6 +1721,10 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     p->sys   = sys;
     p->radio = radio;
 
+    unsigned rf_fs = par->rf_fs ? par->rf_fs : 4000000;
+    if (rf_fs != 4000000 && rf_fs != 2000000) return -1;
+    p->tx_ctrl.frame_samples = rf_fs / 100;
+
     // FIFOs
     rf10_fifo_init(&p->txq, /*cap=*/64, /*drop_oldest_on_full=*/false);
 
@@ -1743,7 +1749,7 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     // NBFM mod init
     nbfm4m_cfg_t cfg = {
         .audio_fs      = 48000.0,
-        .rf_fs         = 4000000.0,
+        .rf_fs         = rf_fs,
         .f_dev_hz      = par->f_dev_hz,     // 2500.0
         .preemph_tau_s = 0.0,
         .out_scale     = par->out_scale,    // 4000.0
@@ -1751,7 +1757,7 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     };
     p->tx_ctrl.fm   = nbfm4m_create(&cfg);
     p->tx_ctrl.a48k = (float*) calloc(480,    sizeof(float));
-    p->tx_ctrl.iq4m = (iq16_t*)calloc(40000,  sizeof(iq16_t));
+    p->tx_ctrl.iq4m = (iq16_t*)calloc(p->tx_ctrl.frame_samples,  sizeof(iq16_t));
     if (!p->tx_ctrl.fm || !p->tx_ctrl.a48k || !p->tx_ctrl.iq4m) {
         goto fail;
     }
@@ -1775,6 +1781,17 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     cariboulite_radio_set_frequency(radio, true, (double*)&par->freq_hz);
     cariboulite_radio_set_tx_power (radio, par->tx_power_dbm);
     HW_UNLOCK();
+
+    // Configure and verify rate before creating threads or allowing TX.
+    cariboulite_radio_set_tx_samp_cutoff_flt(radio, rf_fs);
+    uint8_t gap = 255;
+    float actual_fs = 0;
+    if (cariboulite_radio_get_tx_samp_cutoff_flt(radio, &actual_fs) < 0 ||
+        caribou_fpga_get_sys_ctrl_tx_sample_gap(&sys->fpga, &gap) != 0 ||
+        actual_fs != rf_fs || gap != 4000000 / rf_fs - 1) {
+        fprintf(stderr, "[tx_pipeline] rate/gap verification failed\n");
+        goto fail;
+    }
 
     // Prepare DSP/Writer threads (running idle until .start)
     p->dsp_ctrl.active = true;
@@ -2851,7 +2868,7 @@ static void* tx_writer_thread_func(void* arg)
 
         // Stream it out in chunks ≈ kernel quarter (keep kfifo topped up)
         size_t off = 0;
-        const size_t total = sizeof(frm.data) / sizeof(frm.data[0]); // 40000 samples
+        const size_t total = ctrl->frame_samples; // Selected rate * 10 ms
         struct pollfd pfd = { .fd = smi->filedesc, .events = POLLOUT, .revents = 0 };
 
         while (off < total && nbfm_tx_active) {
@@ -2978,15 +2995,37 @@ static void nbfm_tx_tone(sys_st *sys)
     for (;;) {
         int choice = -1;
         printf("TX freq: %.0f Hz  power: %d dBm\n", par.freq_hz, par.tx_power_dbm);
-        printf(" [1] Toggle NBFM TX   [99] Return\n");
+        printf("TX rate: %u samples/s; %zu samples/10ms; gap %u (verified at setup)\n",
+               par.rf_fs ? par.rf_fs : 4000000, tx.tx_ctrl.frame_samples,
+               4000000 / (par.rf_fs ? par.rf_fs : 4000000) - 1);
+        printf(" [1] Toggle NBFM TX   [2] Select 2 MS/s   [4] Select 4 MS/s   [99] Return\n");
         printf(" Choice: ");
         if (scanf("%d", &choice) != 1) continue;
         if (choice == 1) {
             if (!tx.running) {
+                // Join idle workers before resetting shared FPGA FIFO state.
+                // Recreate DSP too, discarding audio left by the previous run.
+                tx_pipeline_destroy(&tx);
+                if (caribou_fpga_soft_reset(&sys->fpga) != 0 ||
+                    tx_pipeline_init(&tx, sys, &sys->radio_low, &par) != 0) {
+                    fprintf(stderr, "[tx_tone] clean restart failed\n");
+                    break;
+                }
                 if (tx_pipeline_start(&tx) == 0) printf("TX: ON\n");
             } else {
                 tx_pipeline_stop(&tx);
                 printf("TX: OFF\n");
+            }
+        } else if (choice == 2 || choice == 4) {
+            if (tx.running) {
+                printf("Stop TX before changing sample rate.\n");
+                continue;
+            }
+            tx_pipeline_destroy(&tx);
+            par.rf_fs = choice * 1000000;
+            if (tx_pipeline_init(&tx, sys, &sys->radio_low, &par) != 0) {
+                fprintf(stderr, "[tx_tone] rate change failed\n");
+                break;
             }
         } else if (choice == 99) {
             break;
@@ -2994,6 +3033,7 @@ static void nbfm_tx_tone(sys_st *sys)
     }
 
     tx_pipeline_destroy(&tx);
+    cariboulite_radio_set_tx_samp_cutoff_flt(&sys->radio_low, 4000000);
     printf("NBFM TX tone stopped.\n");
 }
 

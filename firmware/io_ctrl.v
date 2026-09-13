@@ -113,7 +113,7 @@ module io_ctrl
         if (i_rst_b == 1'b0) begin
             debug_mode <= debug_mode_none;
             rf_mode <= rf_mode_low_power;
-            led0_state <= 1'b0; // a marker, to show it is my version of the firmware
+            led0_state <= 1'b1; // Both user LEDs identify the gap-test firmware
             led1_state <= 1'b1;
         end else begin
             if (i_cs == 1'b1) begin

@@ -9,7 +9,7 @@ root = Path(__file__).resolve().parents[3]
 src = root / 'software/libcariboulite/src'
 with tempfile.TemporaryDirectory(prefix='rx-lifecycle-') as directory:
     binary = Path(directory) / 'test'
-    wraps = ['cariboulite_radio_set_tx_power','malloc','calloc','free','cariboulite_radio_read_samples','pthread_create','pthread_cancel','pthread_join',
+    wraps = ['cariboulite_radio_set_tx_samp_cutoff_flt','cariboulite_radio_get_tx_samp_cutoff_flt','caribou_fpga_get_sys_ctrl_tx_sample_gap','cariboulite_radio_set_tx_power','malloc','calloc','free','cariboulite_radio_read_samples','pthread_create','pthread_cancel','pthread_join',
              'cariboulite_radio_set_frequency','cariboulite_radio_activate_channel',
              'caribou_smi_set_driver_streaming_state','caribou_fpga_set_io_ctrl_mode']
     includes = [src, src/'at86rf215', src/'rffc507x']

@@ -21,7 +21,7 @@ struct nbfm4m_mod {
     float* afifo; size_t cap, head, tail, cnt;
     
     //new
-    uint32_t lm_phase;
+    double lm_phase;
     int use_lin;
 };
 
@@ -70,12 +70,12 @@ static int fetch_audio(nbfm4m_mod_t* m) {
 
 size_t nbfm4m_pull_iq(nbfm4m_mod_t* m, iq16_t* dst, size_t N)
 {
-    const uint32_t L = 250;   // up by 250
-    const uint32_t M = 3;     // down by 3
+    const double L = m->fs_rf;
+    const double M = m->fs_a;
     size_t out = 0;
 
     while (out < N) {
-        // Advance resampler phase (exact integer arithmetic)
+        // Advance audio time using the configured input/output rates.
         m->lm_phase += M;
         if (m->lm_phase >= L) {
             m->lm_phase -= L;
