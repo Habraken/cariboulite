@@ -29,8 +29,8 @@ Quotation strategy:
   they isolate J7 electrically in the released configuration.
 - Do not buy a second 26 MHz oscillator for U29: the Full schematic explicitly
   marks that optional oscillator block as not fitted.
-- Keep shield costs/supply scope explicit and separate until the mechanical
-  requirements and population decision are settled.
+- Do not source or quote SH1/SH2 shield cans. They are intentionally not fitted
+  and are outside the reproduction and quotation scope.
 
 Quote component sources, lead times, spares and customer-supply requirements.
 No parts have been ordered or reserved by preparing this package.

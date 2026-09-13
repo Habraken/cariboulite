@@ -13,6 +13,9 @@
   PnP, assembly drawing and physical reference board. Clarified that J7 lies
   outside the schematic DO NOT PLACE boundary while R25, C108 and C122 remain
   DNP and leave the connector electrically isolated.
+- Resolved SH1 and SH2 as not fitted, consistent with the schematic, BOM/PnP
+  and the owner's physical reference board. Removed shield supply/fitting from
+  the reproduction and quotation scope; retained drawings as source evidence.
 
 ## 2026-09-12 — Initial technical quotation package
 

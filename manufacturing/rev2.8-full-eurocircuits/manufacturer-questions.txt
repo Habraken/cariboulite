@@ -37,12 +37,6 @@ written approval.
    use. Please pay particular attention to the Abracon 26 MHz TCXO, Coilcraft
    0402CS-5N6XGLW, TC1-1-13M+, and the two Johanson legacy MPNs.
 
-6. Please review the two shield DXFs and assembly drawings. Shield cans are
-   absent from the BOM and crossed out in the schematic, but we require a
-   defined shielding solution for the reproduction. Please identify what
-   additional mechanical specifications you require and quote shield supply
-   and fitting separately rather than silently omitting them.
-
 Please provide the feasibility findings, DFM/assembly warnings, explicit
 assumptions and quotation before any manufacturing release. No substitutions,
 design changes, procurement or manufacture are authorized by this request.

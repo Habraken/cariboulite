@@ -18,7 +18,8 @@ The ordinary four-layer pooling defaults must not silently replace this build.
 | Support | `cariboulite-rev2.8-full-quotation.zip` | Complete package for the technical reviewer; unpack before using the three upload files |
 
 Set the board quantity to **5**. The BOM contains 205 components per board,
-1,025 total before assembly spares; shield supply is a separate unresolved item.
+1,025 total before assembly spares. SH1 and SH2 are not fitted and are excluded
+from the quotation.
 Do not upload the complete support ZIP as though it were the bare PCB archive:
 it contains drawings and original exports that are intentionally excluded from
 the PCB-only input.
@@ -36,7 +37,6 @@ Read `technical-review.md` and give `manufacturer-questions.txt` to the technica
 reviewer. They cover:
 
 - Blind-via process and stack-up compatibility.
-- Shield cans: absent from BOM, crossed out on the schematic, but described by drawings.
 - J1's corrected placement centre, with its original side/rotation retained for review.
 - Exact-part sourcing, component orientation, PCB finish, and manufacturer DFM warnings.
 
@@ -48,6 +48,11 @@ J7's population is also resolved: fit exact MPN `CONUFL001-SMD-T`. It is
 present in the BOM, PnP, assembly drawing and physical reference board, and is
 outside the schematic's DO NOT PLACE boundary. R25, C108 and C122 remain DNP,
 leaving J7 electrically isolated as released.
+
+SH1 and SH2 are resolved as not fitted. They are crossed out in the schematic,
+absent from the BOM/PnP, and absent from the owner's physical reference board.
+The shield drawings remain under `originals/` only as unmodified source evidence;
+shield supply and fitting are outside the reproduction and quotation scope.
 
 No design changes or automatic component substitutions are authorized. Quotation
 assumptions must be shown explicitly. This package does not authorize an order.

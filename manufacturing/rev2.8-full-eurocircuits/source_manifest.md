@@ -1,6 +1,6 @@
 # Source manifest
 
-Repository commit: `f37da3e0b9a1babcbfa205b394592174056efbdb`
+Repository commit: `d641a30b7f84c747008c77319ed4fb5d5dcd5397`
 
 Hashes describe file contents at package generation; ISM variant files are inventoried but excluded.
 

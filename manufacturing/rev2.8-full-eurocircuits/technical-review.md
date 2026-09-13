@@ -176,12 +176,12 @@ shield MPN, wall height, metal thickness or material/plating specification was
 identified in them. The assembly PDF's dimensions must remain authoritative
 alongside the original DXFs for technical discussion.
 
-SH1 and SH2 are crossed out on Full schematic page 2 and absent from the Full
-BOM/PnP, while the reproduction handover requires a defined shielding solution.
-Do not silently invent shield BOM lines or drop shielding from the project.
-Request separate supply/fitting scope and confirm the physical reference board's
-shield construction. Treat PCB/205-component assembly pricing as incomplete
-until the shield scope is resolved.
+**SH1/SH2 - resolved 2026-09-13:** do not fit shield cans. SH1 and SH2 are
+crossed out on Full schematic page 2, absent from the Full BOM/PnP, and the owner
+confirmed that neither is installed on the physical reference board. Shield
+supply and fitting are therefore excluded from the reproduction and quotation
+scope. Retain the original DXFs and assembly drawing only as source evidence;
+they do not authorize shield manufacture or installation.
 
 ## Local validation versus manufacturing approval
 

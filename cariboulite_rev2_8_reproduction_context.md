@@ -844,7 +844,7 @@ Extract all relevant:
 - variant notes;
 - manufacturing instructions.
 
-### Phase 7 — EMI shielding
+### Phase 7 — EMI shielding — resolved
 
 Inspect:
 
@@ -853,9 +853,11 @@ top_emi_drawing.dxf
 bottom_emi_drawing.dxf
 ```
 
-Determine whether the original shield cans themselves are commercially identifiable or whether the DXFs define custom shield manufacture.
-
-Do not omit shielding merely to simplify the prototype unless explicitly approved.
+SH1 and SH2 are explicitly approved as not fitted for this reproduction. The
+physical reference board has no shield cans installed, consistent with the
+crossed-out schematic references and their absence from the BOM/PnP. Retain the
+shield drawings as source evidence only; do not source, quote, manufacture or
+install shield cans.
 
 ### Phase 8 — Eurocircuits preflight
 
@@ -960,7 +962,7 @@ The project should proceed to manufacturing only if all of the following are tru
 - BOM/DNP interpretation is unambiguous;
 - all critical exact components are obtainable;
 - no unauthorized substitutions are proposed;
-- EMI shielding has a defined solution;
+- the SH1/SH2 not-fitted decision remains documented in the production package;
 - assembly documentation is understood;
 - total quote remains acceptable;
 - first-article test plan is ready.
