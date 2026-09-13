@@ -384,6 +384,23 @@ when opening its hard-coded ALSA devices fails.
 Use staged cleanup and check both initialization results before entering the
 monitor. Exercise missing ALSA devices and injected thread/allocation failures.
 
+Update 2026-09-13: completed the remaining TX/monitor work after issue 2's RX
+cleanup. TX now tracks successful worker creation and uses one staged cleanup
+path for FIFO, modulator, audio buffers, capture device and thread failures.
+Destroy joins only created workers and clears owned pointers. Option 14's
+startup helper checks both initialization results, cleans up TX if RX fails,
+and prevents entering ncurses or reading statistics from failed pipelines.
+
+The expanded `test_rx_lifecycle.py` harness covers TX allocation failures,
+both TX worker-creation failures, missing capture device, repeated cleanup,
+successful retry, and monitor failures at each of its four worker creations.
+Existing RX lifecycle, FIFO timing and cancellation tests also pass. The full
+local build passed. Live normal-operation validation remains pending.
+
+The owner subsequently completed TX and RX checks with no problems reported.
+Issue 9 has passing failure-injection tests and successful live
+normal-operation validation.
+
 ### 10. P2 — FPGA TX configuration outputs are disconnected
 
 `firmware/sys_ctrl.v:18–19, 57–59, 72–85`; `firmware/top.v:168–169, 449–451`

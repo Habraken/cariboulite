@@ -4,6 +4,7 @@
 static bool real_threads, live[1024];
 static int creates, fail_create, joins, hardware_active;
 static bool fail_malloc, fail_calloc;
+static size_t fail_calloc_count;
 static void* metadata_allocation;
 static bool track_metadata;
 static pthread_barrier_t reader_ready;
@@ -22,7 +23,7 @@ void *__wrap_malloc(size_t n) {
     if (track_metadata) metadata_allocation = p;
     return p;
 }
-void *__wrap_calloc(size_t n, size_t s) { return fail_calloc ? NULL : __real_calloc(n,s); }
+void *__wrap_calloc(size_t n, size_t s) { return (fail_calloc || (fail_calloc_count && n==fail_calloc_count)) ? NULL : __real_calloc(n,s); }
 int __wrap_pthread_create(pthread_t* t, const pthread_attr_t* a, void*(*fn)(void*), void* v) {
     if (real_threads) return __real_pthread_create(t,a,fn,v);
     ++creates;
@@ -49,6 +50,7 @@ int __wrap_cariboulite_radio_read_samples(cariboulite_radio_state_st* r,
     for (;;) { pthread_testcancel(); usleep(1000); }
     return 0;
 }
+int __wrap_cariboulite_radio_set_tx_power(cariboulite_radio_state_st* r, int power) { return 0; }
 static void check_clean(rx_pipeline_t* p) {
     assert(!p->inited && !p->running && !hardware_active);
     for (int i=1; i<=creates; ++i) assert(!live[i]);
@@ -99,6 +101,39 @@ int main(void) {
     par.pcm_dev = "cariboulite_test_missing_device";
     assert(rx_pipeline_init(&p,&sys,&radio,&par) < 0); check_clean(&p);
 
+    tx_pipeline_t tx;
+    tx_params_t tp = {.tone_mode=true, .f_dev_hz=2500, .out_scale=4000};
+    for (int test=0;test<7;++test) {
+        if(test==1) fail_create=creates+1;
+        if(test==2) fail_create=creates+2;
+        if(test==3) fail_calloc=true;
+        if(test==4) fail_calloc_count=480;
+        if(test==5) fail_calloc_count=40000;
+        if(test==6) tp.mic_dev="cariboulite_test_missing_device";
+        int ret=tx_pipeline_init(&tx,&sys,&radio,&tp);
+        assert(test==0 ? ret==0 : ret<0);
+        tx_pipeline_destroy(&tx); tx_pipeline_destroy(&tx);
+        assert(!tx.inited && !tx.running);
+        assert(!tx.tx_ctrl.mic && !tx.tx_ctrl.fm && !tx.tx_ctrl.a48k && !tx.tx_ctrl.iq4m);
+        for(int i=1;i<=creates;++i) assert(!live[i]);
+        fail_create=0;fail_calloc=false;fail_calloc_count=0;
+    }
+    tp.mic_dev=NULL;
+    assert(tx_pipeline_init(&tx,&sys,&radio,&tp)==0);
+    tx_pipeline_destroy(&tx);
+
+    par.pcm_dev="null";
+    for(int failure=1;failure<=4;++failure) {
+        rx_pipeline_t rx={0};
+        fail_create=creates+failure;
+        assert(!monitor_init_pipelines(&tx,&rx,&sys,&tp,&par));
+        assert(!tx.inited && !rx.inited);
+        for(int i=1;i<=creates;++i) assert(!live[i]);
+        fail_create=0;
+    }
+    assert(monitor_init_pipelines(&tx,&p,&sys,&tp,&par));
+    rx_pipeline_destroy(&p);tx_pipeline_destroy(&tx);
+
     /* Empty reads/full writes must honor the requested monotonic deadline. */
     for (int which=0; which<4; ++which) {
         aud10_fifo_init(&audio,1); rf10_fifo_init(&rf,1,false);
@@ -146,5 +181,5 @@ int main(void) {
     assert(metadata_allocation == NULL);
     track_metadata = false;
     pthread_barrier_destroy(&reader_ready);
-    puts("PASS: RX lifecycle, partial failures, restart, cancellation unlocks all four FIFO waits");
+    puts("PASS: TX/RX lifecycle, monitor startup failures, FIFO timing and cancellation");
 }

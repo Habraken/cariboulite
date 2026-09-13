@@ -1189,6 +1189,8 @@ typedef struct {
     // Threads
     pthread_t           dsp_thread;
     pthread_t           tx_thread;
+    bool dsp_thread_created;
+    bool tx_thread_created;
 
     // State
     bool inited;
@@ -1720,6 +1722,10 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     // FIFOs
     rf10_fifo_init(&p->txq, /*cap=*/64, /*drop_oldest_on_full=*/false);
 
+    p->inited = true; // FIFO synchronization is ready for staged cleanup.
+    int error = -2;
+    if (!p->txq.q) goto fail;
+
     // tx_ctrl wiring (reuse your structures/threads)
     p->tx_ctrl.active         = true;
     p->tx_ctrl.radio          = radio;
@@ -1747,11 +1753,7 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     p->tx_ctrl.a48k = (float*) calloc(480,    sizeof(float));
     p->tx_ctrl.iq4m = (iq16_t*)calloc(40000,  sizeof(iq16_t));
     if (!p->tx_ctrl.fm || !p->tx_ctrl.a48k || !p->tx_ctrl.iq4m) {
-        if (p->tx_ctrl.fm)   nbfm4m_destroy(p->tx_ctrl.fm);
-        if (p->tx_ctrl.a48k) free(p->tx_ctrl.a48k);
-        if (p->tx_ctrl.iq4m) free(p->tx_ctrl.iq4m);
-        rf10_fifo_destroy(&p->txq);
-        return -2;
+        goto fail;
     }
     
     p->tx_ctrl.inj.frames_left = 0;
@@ -1763,12 +1765,8 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
         if (!p->tx_ctrl.mic) {
             fprintf(stderr, "[tx_pipeline] ALSA capture open failed (%s)\n",
                     par->mic_dev ? par->mic_dev : "(null)");
-            // clean up & return error so caller sees it
-            nbfm4m_destroy(p->tx_ctrl.fm);
-            free(p->tx_ctrl.a48k);
-            free(p->tx_ctrl.iq4m);
-            rf10_fifo_destroy(&p->txq);
-            return -5;
+            error = -5;
+            goto fail;
         }
     }
 
@@ -1782,15 +1780,25 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     p->dsp_ctrl.active = true;
     p->dsp_ctrl.tx     = &p->tx_ctrl;
     p->dsp_ctrl.fifo   = &p->txq;
-    if (pthread_create(&p->dsp_thread, NULL, dsp_producer_thread_func, &p->dsp_ctrl) != 0)
-        return -3;
+    if (pthread_create(&p->dsp_thread, NULL, dsp_producer_thread_func, &p->dsp_ctrl) != 0) {
+        error = -3;
+        goto fail;
+    }
+    p->dsp_thread_created = true;
 
-    if (pthread_create(&p->tx_thread,  NULL, tx_writer_thread_func,    &p->tx_ctrl) != 0)
-        return -4;
+    if (pthread_create(&p->tx_thread,  NULL, tx_writer_thread_func,    &p->tx_ctrl) != 0) {
+        error = -4;
+        goto fail;
+    }
+    p->tx_thread_created = true;
 
     p->inited = true;
     p->running = false;
     return 0;
+
+fail:
+    tx_pipeline_destroy(p);
+    return error;
 }
 
 static inline int ms_to_frames_10ms(int ms) { return (ms + 9) / 10; }
@@ -1944,10 +1952,16 @@ void tx_pipeline_destroy(tx_pipeline_t* p)
     p->dsp_ctrl.active = false;
     rf10_fifo_stop(&p->txq);
 
-    pthread_cancel(p->tx_thread);
-    pthread_cancel(p->dsp_thread);
-    pthread_join(p->tx_thread, NULL);
-    pthread_join(p->dsp_thread, NULL);
+    if (p->tx_thread_created) {
+        pthread_cancel(p->tx_thread);
+        pthread_join(p->tx_thread, NULL);
+        p->tx_thread_created = false;
+    }
+    if (p->dsp_thread_created) {
+        pthread_cancel(p->dsp_thread);
+        pthread_join(p->dsp_thread, NULL);
+        p->dsp_thread_created = false;
+    }
 
     rf10_fifo_destroy(&p->txq);
 
@@ -1956,6 +1970,10 @@ void tx_pipeline_destroy(tx_pipeline_t* p)
     if (p->tx_ctrl.fm)   nbfm4m_destroy(p->tx_ctrl.fm);
     if (p->tx_ctrl.mic)  alsa48k_destroy(p->tx_ctrl.mic);
 
+    p->tx_ctrl.iq4m = NULL;
+    p->tx_ctrl.a48k = NULL;
+    p->tx_ctrl.fm = NULL;
+    p->tx_ctrl.mic = NULL;
     p->inited = false;
 }
 
@@ -3177,6 +3195,22 @@ static void nbfm_modem_selftest(sys_st *sys)
     fprintf(stderr, "[selftest] done — you should have heard a 600 Hz tone.\n");
 }
 
+static bool monitor_init_pipelines(tx_pipeline_t* tx, rx_pipeline_t* rx,
+                                   sys_st* sys, const tx_params_t* txpar,
+                                   const rx_params_t* rxpar)
+{
+    if (tx_pipeline_init(tx, sys, &sys->radio_high, txpar) != 0) {
+        fprintf(stderr, "[monitor] TX initialization failed; returning to menu\n");
+        return false;
+    }
+    if (rx_pipeline_init(rx, sys, &sys->radio_high, rxpar) != 0) {
+        fprintf(stderr, "[monitor] RX initialization failed; returning to menu\n");
+        tx_pipeline_destroy(tx);
+        return false;
+    }
+    return true;
+}
+
 void monitor_modem_status(sys_st *sys)
 {
 	//mlockall(MCL_CURRENT | MCL_FUTURE);
@@ -3206,8 +3240,7 @@ void monitor_modem_status(sys_st *sys)
     };
 
     // init once (threads idle until start)
-    tx_pipeline_init(&txp, sys, &sys->radio_high, &txpar);
-    rx_pipeline_init(&rxp, sys, &sys->radio_high, &rxpar);
+    if (!monitor_init_pipelines(&txp, &rxp, sys, &txpar, &rxpar)) return;
 
 	nbfm_tx_active = false;
     nbfm_rx_active = false;
