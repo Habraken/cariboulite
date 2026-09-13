@@ -73,6 +73,7 @@ int caribou_smi_set_driver_streaming_state(caribou_smi_st* dev, smi_stream_state
     int r = ioctl(dev->filedesc, SMI_STREAM_IOC_SET_STREAM_STATUS, state);
     if (r == 0) {
         last = state;        // update only on success
+        dev->write_partial_bytes = 0; // a new stream cannot resume an old sample
     }
     pthread_mutex_unlock(&mtx);
     return r;
@@ -1064,82 +1065,43 @@ int caribou_smi_write_samples(caribou_smi_st *dev,
                               int n_samples)
 {
     (void)ch;
-
-    if (!dev || dev->filedesc < 0 || !samples || n_samples <= 0)
+    const size_t bps = CARIBOU_SMI_BYTES_PER_SAMPLE;
+    if (!dev || dev->filedesc < 0 || !samples || n_samples <= 0 ||
+        !dev->write_temp_buffer || dev->native_batch_len < bps)
         return -EINVAL;
 
-    const size_t bps         = (size_t)CARIBOU_SMI_BYTES_PER_SAMPLE;
-    const size_t total_bytes = (size_t)n_samples * bps;
+    size_t consumed = 0;
+    int error = 0;
+    while (consumed < (size_t)n_samples) {
+        size_t chunk_samples = dev->native_batch_len / bps;
+        if (chunk_samples > (size_t)n_samples - consumed)
+            chunk_samples = (size_t)n_samples - consumed;
+        size_t chunk_bytes = chunk_samples * bps;
+        caribou_smi_generate_data(dev, (uint8_t*)dev->write_temp_buffer,
+                                  chunk_bytes, samples + consumed);
 
-    size_t bytes_left        = total_bytes;
-    size_t consumed_samples  = 0;
-
-    // Give the kernel/DMA a bit more breathing room per attempt.
-    const uint32_t per_try_timeout_ms = 25;
-
-    while (bytes_left) {
-        // Choose a modest chunk to smooth out scheduling jitter.
-        size_t cur = bytes_left;
-        if (cur > dev->native_batch_len) cur = dev->native_batch_len;
-
-        // round down to whole sample
-        cur &= ~(bps - 1);
-        if (!cur) break;
-
-        // Generate payload for this chunk
-        size_t cur_samp = cur / bps;
-        caribou_smi_generate_data(dev,
-                                  (uint8_t*)dev->write_temp_buffer,
-                                  cur,
-                                  (const caribou_smi_sample_complex_int16*)(samples + consumed_samples));
-
-        // Try to push the entire chunk, tolerate partial/timeouts inside this loop
-        size_t off = 0;
+        // The caller retries the first unreported sample, including its prefix.
+        size_t off = dev->write_partial_bytes;
         int attempts = 0;
-
-        while (off < cur) {
+        while (off < chunk_bytes) {
             int w = caribou_smi_timeout_write(dev,
-                                              (uint8_t*)dev->write_temp_buffer + off,
-                                              (int)(cur - off),
-                                              per_try_timeout_ms);
-            if (w < 0) {
-                // hard error: return what we did manage to consume so far (in samples) or the error if nothing
-                return (consumed_samples > 0) ? (int)consumed_samples : w;
-            }
+                        (uint8_t*)dev->write_temp_buffer + off,
+                        chunk_bytes - off, 25);
+            if (w < 0) { error = w; break; }
             if (w == 0) {
-                // just a timeout; allow a few retries before giving up this call
-                if (++attempts >= 4) {
-                    // return what we've advanced so far; caller can call us again immediately
-                    goto done;
-                }
-                continue; // retry same offset
+                if (++attempts >= 4) break;
+                continue;
             }
-
-            // advance by whole samples only
-            size_t w_whole = (size_t)w & ~(bps - 1);
-            off += w_whole;
-
-            // reset attempts after forward progress
+            off += (size_t)w;
             attempts = 0;
-
-            // If the driver ever gave us a non-sample-aligned write (shouldn't happen),
-            // discard the tail bytes from this chunk to preserve alignment.
-            if ((size_t)w != w_whole) {
-                break; // finish this chunk; we'll regenerate cleanly next call
-            }
         }
 
-        // We successfully pushed 'off' bytes (sample-aligned)
-        size_t pushed_samp = off / bps;
-        consumed_samples  += pushed_samp;
-        bytes_left        -= off;
-
-        // If we didn't finish the chunk (e.g., non-aligned w), fall out to return early.
-        if (off < cur) break;
+        // Account for progress on every exit, including timeout and hard error.
+        consumed += off / bps;
+        dev->write_partial_bytes = off % bps;
+        if (off < chunk_bytes) break;
     }
-
-done:
-    return (int)consumed_samples;
+    return consumed ? (int)consumed : error;
 }
 
 // Optionally keep the older name as a thin wrapper:

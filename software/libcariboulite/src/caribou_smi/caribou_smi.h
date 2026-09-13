@@ -68,6 +68,7 @@ typedef struct
 {
     int initialized;
     int filedesc;
+    size_t write_partial_bytes; // prefix of the next unreported sample already sent
 	size_t native_batch_len;
     uint32_t sample_rate;
     smi_stream_state_en state;
@@ -105,7 +106,9 @@ int caribou_smi_write(caribou_smi_st* dev, caribou_smi_channel_en channel,
 
 // Write N *samples* (each sizeof(caribou_smi_sample_complex_int16)).
 // Returns number of *samples* actually accepted, 0 if back-pressured,
-// or -errno on error.
+// or -errno on error. Retry from samples + returned_count after a short write.
+// A partially sent sample is not counted until completed; its byte offset is
+// retained across calls. Serialize writes and stream transitions for this device.
 int caribou_smi_write_samples(caribou_smi_st *smi,
                       caribou_smi_channel_en ch,
                       const caribou_smi_sample_complex_int16 *samples,

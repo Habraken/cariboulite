@@ -295,6 +295,23 @@ A mock-I/O test using the actual function accepted two samples and then
 returned four timeouts: the function reported zero samples consumed. Include
 current-chunk progress in every return path and retain any partial-byte state.
 
+Update 2026-09-13: streaming TX now accounts for completed samples in the
+current chunk before returning on timeout or error. Byte offsets advance by
+the actual accepted byte count. An incomplete sample's sent prefix is retained
+in the device context; the caller retries from the first unreported sample,
+and the writer skips that prefix. Successful stream transitions clear the
+saved offset. The header documents retry behavior and serialization of writes
+with stream transitions. The older public TX function in issue 7 is unchanged.
+
+`python3 software/libcariboulite/tests/test_tx_write_progress.py` passes using
+the actual function with scripted I/O. It checks timeout/error exits at every
+partial-sample offset, exact bytes across retries, and accounting across
+multiple chunks. Live TX validation remains pending.
+
+The complete local build passed, and the owner subsequently reported successful
+live TX tests. Issue 6 is validated by both the scripted partial-I/O tests and
+the owner's normal-operation TX checks.
+
 ### 7. P2 — Public TX API inserts samples and reports more than requested
 
 `software/libcariboulite/src/caribou_smi/caribou_smi.c:903–981`
