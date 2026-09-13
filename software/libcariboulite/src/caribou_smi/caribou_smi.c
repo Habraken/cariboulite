@@ -1,3 +1,4 @@
+#include <limits.h>
 #ifndef ZF_LOG_LEVEL
     #define ZF_LOG_LEVEL ZF_LOG_VERBOSE
 #endif
@@ -919,82 +920,10 @@ static void caribou_smi_generate_data(caribou_smi_st* dev, uint8_t* data, size_t
 int caribou_smi_write(caribou_smi_st* dev, caribou_smi_channel_en channel,
                       caribou_smi_sample_complex_int16* samples, size_t length_samples)
 {
-    const size_t q_bytes = smi_quarter_bytes(dev);                  // exact DMA period (bytes)
-    const size_t bytes_total = length_samples * CARIBOU_SMI_BYTES_PER_SAMPLE;
-
-    // We only transmit whole quarters; keep a static “last” IQ for padding tails
-    static caribou_smi_sample_complex_int16 last = {0, 0};
-
-    size_t bytes_left  = bytes_total;
-    size_t wrote_samps = 0;
-
-    // 1) Send as many *full* quarters as we can
-    while (bytes_left >= q_bytes) {
-        // Pack exactly one quarter into write_temp_buffer
-        const size_t this_samp = q_bytes / CARIBOU_SMI_BYTES_PER_SAMPLE;
-        caribou_smi_generate_data(dev, dev->write_temp_buffer, q_bytes, samples + wrote_samps);
-
-        // Blocking write of the whole quarter
-        if (write_all(dev->filedesc, (uint8_t*)dev->write_temp_buffer, q_bytes) != 0)
-            return (int)wrote_samps; // short on error (never return a partial quarter)
-
-        // Track the last IQ we sent (for tail padding later)
-        last = samples[wrote_samps + this_samp - 1];
-
-        wrote_samps += this_samp;
-        bytes_left  -= q_bytes;
-    }
-
-    // 2) Handle tail < one quarter: pad with the last sample to complete a clean quarter
-    if (bytes_left > 0) {
-        const size_t this_samp = q_bytes / CARIBOU_SMI_BYTES_PER_SAMPLE;
-
-        // Build a temporary quarter of IQ: the real tail first, then pad with 'last'
-        // We reuse write_temp_buffer as a staging area.
-        // Step A: copy real tail
-        const size_t tail_samp = bytes_left / CARIBOU_SMI_BYTES_PER_SAMPLE;
-        if (tail_samp) {
-            caribou_smi_generate_data(dev, dev->write_temp_buffer,
-                                      tail_samp * CARIBOU_SMI_BYTES_PER_SAMPLE,
-                                      samples + wrote_samps);
-            last = samples[wrote_samps + tail_samp - 1];
-        }
-
-        // Step B: synthesize padding samples = 'last'
-        if (tail_samp < this_samp) {
-            // Create a tiny view of identical samples for padding
-            caribou_smi_sample_complex_int16 pad = last;
-            // We can re-use the same last sample repeatedly:
-            size_t pad_samp = this_samp - tail_samp;
-            // Lay the pad samples into a small local stack array in chunks
-            // to avoid big allocations; 64 is enough since we only need to
-            // generate data into the *remaining* bytes of the quarter.
-            caribou_smi_sample_complex_int16 chunk[64];
-            size_t produced = 0;
-            size_t dst_off_bytes = tail_samp * CARIBOU_SMI_BYTES_PER_SAMPLE;
-
-            while (produced < pad_samp) {
-                size_t n = (pad_samp - produced) < 64 ? (pad_samp - produced) : 64;
-                for (size_t i = 0; i < n; i++) chunk[i] = pad;
-
-                caribou_smi_generate_data(dev,
-                                          ((uint8_t*)dev->write_temp_buffer) + dst_off_bytes,
-                                          n * CARIBOU_SMI_BYTES_PER_SAMPLE,
-                                          chunk);
-                produced += n;
-                dst_off_bytes += n * CARIBOU_SMI_BYTES_PER_SAMPLE;
-            }
-        }
-
-        // Write the completed quarter
-        if (write_all(dev->filedesc, (uint8_t*)dev->write_temp_buffer, q_bytes) != 0)
-            return (int)wrote_samps;
-
-        wrote_samps += this_samp;   // we advanced one full quarter worth of samples
-        bytes_left   = 0;
-    }
-
-    return (int)wrote_samps;
+    if (length_samples == 0) return 0;
+    // The return type can represent at most INT_MAX accepted samples per call.
+    if (length_samples > INT_MAX) length_samples = INT_MAX;
+    return caribou_smi_write_samples(dev, channel, samples, (int)length_samples);
 }
 
 // int caribou_smi_write_samples(caribou_smi_st *dev,

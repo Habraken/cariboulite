@@ -4,8 +4,11 @@ from pathlib import Path
 import subprocess,tempfile
 s=(Path(__file__).resolve().parents[1]/'src/caribou_smi/caribou_smi.c').read_text()
 a=s.index('\nint caribou_smi_write_samples(caribou_smi_st *dev,')+1;b=s.index('// Optionally keep',a)
+wa=s.index("\nint caribou_smi_write(caribou_smi_st* dev,")+1
+wb=s.index("// int caribou_smi_write_samples",wa)
 pre=r'''
 #include <assert.h>
+#include <limits.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -45,6 +48,27 @@ static void run(int prefix,int terminal) {
     assert(d.write_partial_bytes==0);
 }
 int main(void) {
+    unsigned char packed[64];
+    caribou_smi_st public_dev={.filedesc=1,.native_batch_len=64,.write_temp_buffer=packed};
+    caribou_smi_sample_complex_int16 waveform[20];
+    for(int i=0;i<20;++i) waveform[i]=(caribou_smi_sample_complex_int16){i+1,100-i};
+    for(int n=1;n<=20;++n) {
+        output_len=script_pos=script_len=0;
+        assert(caribou_smi_write(&public_dev,0,waveform,n)==n);
+        assert(output_len==(size_t)n*4 && memcmp(output,waveform,output_len)==0);
+    }
+    output_len=script_pos=script_len=0;
+    assert(caribou_smi_write(&public_dev,0,waveform,0)==0 && output_len==0);
+    assert(caribou_smi_write(&public_dev,0,waveform,1)==1);
+    assert(caribou_smi_write(&public_dev,0,waveform+1,3)==3);
+    assert(output_len==16 && memcmp(output,waveform,16)==0);
+
+    output_len=script_pos=0;script_len=5;
+    script[0]=2;for(int i=1;i<5;++i)script[i]=0;
+    assert(caribou_smi_write(&public_dev,0,waveform,1)==0);
+    script_len=script_pos=0;
+    assert(caribou_smi_write(&public_dev,0,waveform,1)==1);
+    assert(output_len==4 && memcmp(output,waveform,4)==0);
     for(int n=0;n<16;++n) { run(n,0);run(n,-EIO); }
     unsigned char temp[8];caribou_smi_sample_complex_int16 input[8]={0};
     caribou_smi_st d={.filedesc=1,.native_batch_len=8,.write_temp_buffer=temp};
@@ -52,10 +76,10 @@ int main(void) {
     script[0]=8;script[1]=4;for(int i=2;i<6;++i)script[i]=0;
     assert(caribou_smi_write_samples(&d,0,input,8)==3);
     assert(output_len==12);
-    puts("PASS: partial progress before timeouts/errors, all byte offsets, exact retry stream, multiple chunks");
+    puts("PASS: public writes without padding; partial progress, all byte offsets, exact retries, multiple chunks");
 }
 '''
 with tempfile.TemporaryDirectory(prefix='tx-progress-') as directory:
- c=Path(directory)/'test.c';exe=Path(directory)/'test';c.write_text(pre+s[a:b]+post)
+ c=Path(directory)/'test.c';exe=Path(directory)/'test';c.write_text(pre+s[a:b]+s[wa:wb]+post)
  subprocess.run(['cc','-Wall','-Wextra','-Werror','-Wno-unused-parameter',str(c),'-o',str(exe)],check=True)
  subprocess.run([str(exe)],check=True,timeout=5)

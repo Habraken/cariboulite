@@ -99,8 +99,8 @@ smi_stream_state_en caribou_smi_get_driver_streaming_state(caribou_smi_st* dev);
 int caribou_smi_read(caribou_smi_st* dev, caribou_smi_channel_en channel, 
                         caribou_smi_sample_complex_int16* buffer, caribou_smi_sample_meta* metadata, size_t length_samples);
 
-// This version of caribou_smi_writes(...) expects smaples but retruns bytes.						
-// Deprecated: use caribou_smi_write_samples() instead.
+// Compatibility entry point: returns accepted samples, without padding.
+// Short writes use the same retry contract as caribou_smi_write_samples.
 int caribou_smi_write(caribou_smi_st* dev, caribou_smi_channel_en channel, 
                          caribou_smi_sample_complex_int16* buffer, size_t length_samples);
 

@@ -326,6 +326,23 @@ With a mocked 64-byte native batch, requesting one sample emits four and
 returns four. Preserve tails between calls, or support arbitrary aligned
 writes, and return only the caller's samples actually accepted.
 
+Update 2026-09-13: the public `caribou_smi_write` entry point now delegates
+to `caribou_smi_write_samples`, reusing issue 6's partial-write accounting
+instead of padding to a DMA quarter. Empty writes return zero; requests larger
+than `INT_MAX` are capped to match the signed return type. Short-write retry
+semantics are documented in the header.
+
+Extended `software/libcariboulite/tests/test_tx_write_progress.py` to cover
+public writes of 1–20 samples with a 64-byte native batch, exact output bytes,
+consecutive short calls, empty requests, and partial-byte retry through the
+public entry point. These and the existing progress tests passed, as did the
+complete local build. No live public-API TX test was performed; menu options
+11/14 already use the newer streaming writer directly.
+
+The owner subsequently reported a successful TX check. The specific API path
+was not identified; public-API byte/count behavior is covered by the automated
+tests above.
+
 ### 8. P2 — FIFO timeout deadlines use the wrong clock
 
 `software/libcariboulite/src/app_menu.c:943–984, 1232–1234, 1291–1346`
