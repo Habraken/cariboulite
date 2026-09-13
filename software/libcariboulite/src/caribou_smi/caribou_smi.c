@@ -633,8 +633,13 @@ void caribou_smi_setup_ios(caribou_smi_st* dev)
 }
 
 //=========================================================================
-int caribou_smi_init(caribou_smi_st* dev,
-                    void* context)
+int caribou_smi_init(caribou_smi_st* dev, void* context)
+{
+    return caribou_smi_init_with_fd(dev, context, -1);
+}
+
+// A duplicate retains the early ownership claim's open file description.
+int caribou_smi_init_with_fd(caribou_smi_st* dev, void* context, int owned_fd)
 {
     char smi_file[] = "/dev/smi";
     struct smi_settings settings = {0};
@@ -645,6 +650,7 @@ int caribou_smi_init(caribou_smi_st* dev,
 
     // start from a defined state
     memset(dev, 0, sizeof(caribou_smi_st));
+    dev->filedesc = -1;
 
     // checking the loaded modules
     // --------------------------------------------
@@ -656,7 +662,8 @@ int caribou_smi_init(caribou_smi_st* dev,
 
     // open the smi device file
     // --------------------------------------------
-    int fd = open(smi_file, O_RDWR);
+    int fd = owned_fd >= 0 ? fcntl(owned_fd, F_DUPFD_CLOEXEC, 0)
+                           : open(smi_file, O_RDWR | O_CLOEXEC);
     if (fd < 0)
     {
         ZF_LOGE("couldn't open smi driver file '%s' (%s)", smi_file, strerror(errno));
@@ -707,12 +714,20 @@ int caribou_smi_init(caribou_smi_st* dev,
 //=========================================================================
 int caribou_smi_close (caribou_smi_st* dev)
 {
+    /* Another descriptor may retain ownership: stop DMA explicitly. */
+    if (dev->initialized)
+        caribou_smi_set_driver_streaming_state(dev, smi_stream_idle);
     // release temporary buffers
     if (dev->read_temp_buffer) free(dev->read_temp_buffer);
     if (dev->write_temp_buffer) free(dev->write_temp_buffer);
 
     // close smi device file
-    return close (dev->filedesc);
+    dev->read_temp_buffer = NULL;
+    dev->write_temp_buffer = NULL;
+    int ret = dev->filedesc >= 0 ? close(dev->filedesc) : 0;
+    dev->filedesc = -1;
+    dev->initialized = 0;
+    return ret;
 }
 
 //=========================================================================

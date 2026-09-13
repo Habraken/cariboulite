@@ -39,6 +39,84 @@ Reject concurrent opens with `-EBUSY`, or implement explicit shared ownership
 and serialize buffer lifetime with stream shutdown. Source-confirmed; a
 multi-client test was deliberately not run against the live driver.
 
+Update 2026-09-13: implemented exclusive open using a mutex and ownership flag.
+The mutex covers buffer allocation and final release; another open returns
+`-EBUSY` before touching shared state. Allocation failures release the mutex
+and free any partial allocation. Final release stops streaming and frees the
+buffers before allowing a new owner. Duplicated/inherited descriptors share
+the same open file description and retain ownership until its final release.
+
+Validation: `python3 driver/tests/test_exclusive_open.py` passed. It compiles
+the actual open/release function bodies with mocked kernel services and checks
+second-open rejection without changing the owner's buffers or stream,
+both allocation failure paths and recovery, exclusion during allocation and
+cleanup, and 100 rounds of 16 concurrent opens with exactly one winner.
+A fresh module build in `/tmp/cariboulite-issue1-driver` passed for
+`6.18.39+rpt-rpi-v8`. The new module has not been installed or loaded;
+live exclusive-open and post-change radio validation remain pending.
+
+Live follow-up 2026-09-13: the owner loaded the new module (sysfs source version
+`12F9D2980B1137B92139E7F`) and started a second test application while the first
+was transmitting through option 11. The second application's log confirms
+`/dev/smi` open failed with `Device or resource busy`. However, the owner
+reported TX stopped and the first application appeared hung. Startup reaches
+`cariboulite_setup_io()` before attempting SMI open; that function drives the
+modem and mixer reset pins low. Thus the kernel guard rejects the second
+client too late to prevent application-level hardware interference. An early
+ownership claim before any hardware setup, retained through hardware cleanup,
+is needed in the library as well. The exact hang mechanism is not established.
+Captured logs are local under `installations/issue1-validation/`.
+
+Follow-up implementation: library initialization now claims `/dev/smi` before
+signal registration, board detection, GPIO setup, or FPGA communication.
+SMI initialization duplicates this descriptor with close-on-exec semantics;
+it does not perform a second open. The ownership descriptor stays open until
+hardware cleanup finishes, including initialization failure paths. SMI close
+explicitly stops streaming because closing its duplicate alone no longer
+invokes the kernel's final release. Production/minimal initialization paths
+also require the SMI device to be available for this ownership claim.
+
+Validation of the library follow-up:
+
+- Complete local application/library/Soapy build passed.
+- `python3 software/libcariboulite/tests/test_early_ownership.py` passed against
+  the rebuilt application with interposed device/GPIO calls: busy rejection
+  makes no GPIO setup call; injected GPIO setup failure releases ownership.
+- The kernel open/release regression tests still pass.
+- Live test with `/dev/smi` held open: the rebuilt application exited before
+  GPIO setup with "hardware setup skipped". A duplicated descriptor retained
+  ownership after closing the original; reopen succeeded after final close.
+- The rebuilt single application reached the menu and quit with exit code 0.
+  No transmit option was selected during these follow-up checks.
+
+Use the rebuilt `build/cariboulite_test_app` for both sessions in the next
+TX regression check, with separate stderr log files. Installed libraries under
+`/usr/local` have not been replaced; older applications/libraries can still
+touch hardware before their SMI open is rejected. The original two-application
+TX scenario and reported hang had not yet been revalidated at that point.
+
+Owner validation 2026-09-13, 16:14 local time: the repeated two-session TX
+test passed. The first application logged TX activation at 16:14:27.954.
+At 16:14:42.110 the second application was rejected with `Device or resource
+busy; hardware setup skipped`, with no subsequent hardware initialization.
+The first application logged TX deactivation at 16:14:52.392, then a normal
+menu quit and completed driver release at 16:14:57.399. The owner confirmed
+the test worked; the first log contains no error or warning entries.
+Preserved logs: `installations/issue1-validation/passed-first.log` and
+`passed-second.log`. Issue 1 is implemented and validated for this scenario;
+permanent installation and committing the changes remain separate steps.
+
+Permanent driver installation completed 2026-09-13 for the running kernel
+`6.18.39+rpt-rpi-v8` only. Installed the tested compressed module at
+`/lib/modules/6.18.39+rpt-rpi-v8/kernel/drivers/char/broadcom/smi_stream_dev.ko.xz`
+and successfully ran `depmod -a 6.18.39+rpt-rpi-v8`. Verified the installed
+bytes against the tested module and source version against the already loaded
+module (`12F9D2980B1137B92139E7F`). `modprobe --show-depends` resolves the base
+SMI dependency and existing parameters `6, 2, 3`. Boot module loading was
+already configured. No reload or reboot was performed.
+Rollback copy and installation hashes are under `installations/issue1-driver/`.
+Installed userspace libraries remain unchanged; use the rebuilt local app.
+
 ### 2. P1 — RX destruction uses an uncreated or already joined thread
 
 `software/libcariboulite/src/app_menu.c:1987–2044`

@@ -84,6 +84,8 @@ typedef struct
 
 int caribou_smi_init(caribou_smi_st* dev, 
 					void* context);
+/* owned_fd remains owned by the caller; initialization duplicates it. */
+int caribou_smi_init_with_fd(caribou_smi_st* dev, void* context, int owned_fd);
 int caribou_smi_close (caribou_smi_st* dev);
 int caribou_smi_check_modules(bool reload);
 

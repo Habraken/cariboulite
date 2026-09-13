@@ -154,6 +154,12 @@ static enum hrtimer_restart tx_hr_keepalive(struct hrtimer *t);
 
 static struct bcm2835_smi_dev_instance *inst = NULL;
 
+/* The global FIFOs belong to one open file description at a time.
+ * Serialize allocation and final release as well as the ownership flag.
+ */
+static DEFINE_MUTEX(open_lock);
+static bool device_open;
+
 static const char *const ioctl_names[] = 
 {
 	"READ_SETTINGS",
@@ -1261,6 +1267,7 @@ void transfer_thread_stop(struct bcm2835_smi_dev_instance *inst)
 static int smi_stream_open(struct inode *inode, struct file *file)
 {
     int dev = iminor(inode);
+    int ret = -ENOMEM;
 
     dev_dbg(inst->dev, "SMI device opened.");
 
@@ -1268,6 +1275,14 @@ static int smi_stream_open(struct inode *inode, struct file *file)
     {
         dev_err(inst->dev, "smi_stream_open: Unknown minor device: %d", dev);		// error here
         return -ENXIO;
+    }
+
+    /* Do not wait for another open/close to finish or touch its buffers. */
+    if (!mutex_trylock(&open_lock))
+        return -EBUSY;
+    if (device_open) {
+        mutex_unlock(&open_lock);
+        return -EBUSY;
     }
     
     // create the data fifo ( N x dma_bounce size )
@@ -1277,15 +1292,14 @@ static int smi_stream_open(struct inode *inode, struct file *file)
     if (!inst->rx_fifo_buffer)
     {
         printk(KERN_ERR DRIVER_NAME": error rx_fifo_buffer vmallok failed\n");
-        return -ENOMEM;
+        goto out_unlock;
     }
     
     inst->tx_fifo_buffer = vmalloc(fifo_mtu_multiplier * DMA_BOUNCE_BUFFER_SIZE);
     if (!inst->tx_fifo_buffer)
     {
         printk(KERN_ERR DRIVER_NAME": error tx_fifo_buffer vmallok failed\n");
-        vfree(inst->rx_fifo_buffer);
-        return -ENOMEM;
+        goto out_free_rx;
     }
 
     kfifo_init(&inst->rx_fifo, inst->rx_fifo_buffer, fifo_mtu_multiplier * DMA_BOUNCE_BUFFER_SIZE);
@@ -1294,7 +1308,16 @@ static int smi_stream_open(struct inode *inode, struct file *file)
     set_state(smi_stream_idle);
     
     inst->address_changed = 0;
+    device_open = true;
+    mutex_unlock(&open_lock);
     return 0;
+
+out_free_rx:
+    vfree(inst->rx_fifo_buffer);
+    inst->rx_fifo_buffer = NULL;
+out_unlock:
+    mutex_unlock(&open_lock);
+    return ret;
 }
 
 /***************************************************************************/
@@ -1310,6 +1333,8 @@ static int smi_stream_release(struct inode *inode, struct file *file)
         return -ENXIO;
     }
 
+    mutex_lock(&open_lock);
+
     // make sure stream is idle
     set_state(smi_stream_idle);
     
@@ -1319,6 +1344,8 @@ static int smi_stream_release(struct inode *inode, struct file *file)
     inst->rx_fifo_buffer = NULL;
     inst->tx_fifo_buffer = NULL;
     inst->address_changed = 0;
+    device_open = false;
+    mutex_unlock(&open_lock);
 
 	return 0;
 }
