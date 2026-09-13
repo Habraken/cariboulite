@@ -261,6 +261,26 @@ can cause the same problem. Hardware shutdown occurs only after that wait.
 Give tone injection a bounded wait and a failure/cancellation path; always
 complete hardware shutdown even when the tail tone cannot be delivered.
 
+Update 2026-09-13: tone injection now has one monotonic one-second budget
+across silence/tone/silence stages, and aborts when TX or either worker is
+inactive. Failed tail injection skips the FIFO drain wait and proceeds to
+hardware shutdown. Successful injection retains the 600 ms drain deadline,
+which now also exits on worker failure. Failed start-tone injection stops TX
+and returns an error. An injection mutex serializes publication, consumption,
+and cancellation of pending frames. The bound applies to tone/drain waiting,
+not to the execution time of hardware shutdown calls themselves.
+
+`python3 software/libcariboulite/tests/test_tx_stop_deadline.py` passes using
+the actual tone/stop code with simulated time and hardware: normal completion,
+stalled consumption, mid-wait TX failure, inactive workers, full-FIFO drain
+timeout and repeated stop. The local application build passes. Live tone and
+RX/TX switching validation of this update remains pending.
+
+Owner validation: tested option 11 (TX tone), option 12 (S1G RX), and option
+14's TX and RX controls with no problems reported. This confirms normal live
+operation with the update; stalled-worker and timeout behavior were exercised
+by the simulated failure-path tests above.
+
 ### 6. P1 — Partial streaming writes are omitted from the returned count
 
 `software/libcariboulite/src/caribou_smi/caribou_smi.c:1086–1128`

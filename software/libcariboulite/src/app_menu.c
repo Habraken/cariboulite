@@ -50,6 +50,7 @@ _Static_assert(CARIBOU_SMI_BYTES_PER_SAMPLE == sizeof(caribou_smi_sample_complex
 
 #include <pthread.h>
 static pthread_mutex_t g_hw_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t g_tx_injection_lock = PTHREAD_MUTEX_INITIALIZER;
 #define HW_LOCK()   pthread_mutex_lock(&g_hw_lock)
 #define HW_UNLOCK() pthread_mutex_unlock(&g_hw_lock)
 #include <sched.h>
@@ -1478,12 +1479,14 @@ static void* dsp_producer_thread_func(void* arg)
         
         // 1) Generate 10 ms of audio @ 48 kHz (480 samples)
         // Injector overrides: hz==0 => silence, else tone(hz)
+        pthread_mutex_lock(&g_tx_injection_lock);
         int inj_left = ctrl->tx->inj.frames_left;
         float inj_hz = ctrl->tx->inj.hz;
 
+        if (inj_left > 0) ctrl->tx->inj.frames_left = inj_left - 1;
+        pthread_mutex_unlock(&g_tx_injection_lock);
+
         if (inj_left > 0) {
-            // consume exactly one 10ms frame
-            ctrl->tx->inj.frames_left = inj_left - 1;
 
             if (inj_hz == 0.0f) {
                 memset(ctrl->tx->a48k, 0, 480 * sizeof(float));
@@ -1787,22 +1790,46 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
 
 static inline int ms_to_frames_10ms(int ms) { return (ms + 9) / 10; }
 
-static void tx_inject_frames(tx_pipeline_t* p, float hz, int frames)
+static void tx_clear_injection(tx_pipeline_t* p)
 {
-    if (!p || frames <= 0) return;
+    pthread_mutex_lock(&g_tx_injection_lock);
+    p->tx_ctrl.inj.frames_left = 0;
+    pthread_mutex_unlock(&g_tx_injection_lock);
+}
 
+static bool tx_injection_can_run(const tx_pipeline_t* p)
+{
+    return p && p->running && nbfm_tx_active &&
+           p->tx_ctrl.active && p->dsp_ctrl.active;
+}
+
+static bool tx_inject_frames(tx_pipeline_t* p, float hz, int frames,
+                             uint64_t deadline)
+{
+    if (!tx_injection_can_run(p) || frames <= 0 || mono_ns() >= deadline)
+        return false;
+
+    pthread_mutex_lock(&g_tx_injection_lock);
     p->tx_ctrl.inj.hz = hz;
     p->tx_ctrl.inj.frames_left = frames;
-    __sync_synchronize();
+    pthread_mutex_unlock(&g_tx_injection_lock);
 
-    // wait until consumed
-    while (p->tx_ctrl.inj.frames_left > 0) {
+    while (true) {
+        pthread_mutex_lock(&g_tx_injection_lock);
+        int left = p->tx_ctrl.inj.frames_left;
+        pthread_mutex_unlock(&g_tx_injection_lock);
+        if (left <= 0) break;
+        if (!tx_injection_can_run(p) || mono_ns() >= deadline) {
+            tx_clear_injection(p);
+            return false;
+        }
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 2*1000*1000 };
         nanosleep(&ts, NULL);
     }
+    return tx_injection_can_run(p);
 }
 
-static void tx_inject_tone_with_zeros(tx_pipeline_t* p,
+static bool tx_inject_tone_with_zeros(tx_pipeline_t* p,
                                       float hz, int tone_ms,
                                       int pre_zero_frames,
                                       int post_zero_frames)
@@ -1810,9 +1837,11 @@ static void tx_inject_tone_with_zeros(tx_pipeline_t* p,
     if (pre_zero_frames  < 1) pre_zero_frames  = 1;
     if (post_zero_frames < 1) post_zero_frames = 1;
 
-    tx_inject_frames(p, 0.0f, pre_zero_frames);                 // silence
-    tx_inject_frames(p, hz,   ms_to_frames_10ms(tone_ms));       // tone
-    tx_inject_frames(p, 0.0f, post_zero_frames);                // silence
+    /* One budget for the whole sequence, not a fresh timeout for each stage. */
+    const uint64_t deadline = mono_ns() + 1000000000ULL;
+    return tx_inject_frames(p, 0.0f, pre_zero_frames, deadline) &&
+           tx_inject_frames(p, hz, ms_to_frames_10ms(tone_ms), deadline) &&
+           tx_inject_frames(p, 0.0f, post_zero_frames, deadline);
 }
 
 int tx_pipeline_start(tx_pipeline_t* p)
@@ -1846,7 +1875,12 @@ int tx_pipeline_start(tx_pipeline_t* p)
     p->running = true;
     
     // --- Quindar "start" tone: 2525 Hz for 250 ms with 5 frames of padding ---
-    tx_inject_tone_with_zeros(p, 2525.0f, 250, 10, 5);
+    if (!tx_inject_tone_with_zeros(p, 2525.0f, 250, 10, 5)) {
+        fprintf(stderr, "TX start tone aborted; stopping TX\n");
+        nbfm_tx_active = false; // stop must skip another tone attempt
+        tx_pipeline_stop(p);
+        return -2;
+    }
     
     return 0;
 }
@@ -1855,7 +1889,7 @@ static void tx_wait_fifo_drain(tx_pipeline_t* p, int timeout_ms)
 {
     if (!p) return;
     const uint64_t t0 = mono_ns();
-    while (1) {
+    while (tx_injection_can_run(p)) {
         rf10_stats_t s;
         rf10_fifo_get_stats(&p->txq, &s);
         if (s.count == 0) return;
@@ -1875,10 +1909,12 @@ void tx_pipeline_stop(tx_pipeline_t* p)
     
     // --- Quindar "stop" tone: 2475 Hz for the last 250 ms with 5 frames of padding ---
     // Keep TX running while we send the tail tone
-    tx_inject_tone_with_zeros(p, 2475.0f, 250, 5, 25);
-
-    // Wait for those frames to actually be consumed by the writer
-    tx_wait_fifo_drain(p, 600);   // 0.5s is plenty for 250ms of frames
+    if (tx_inject_tone_with_zeros(p, 2475.0f, 250, 5, 25)) {
+        tx_wait_fifo_drain(p, 600);
+    } else {
+        fprintf(stderr, "TX tail tone aborted; continuing hardware shutdown\n");
+    }
+    tx_clear_injection(p);
 
     nbfm_tx_active = false;
     __sync_synchronize();
