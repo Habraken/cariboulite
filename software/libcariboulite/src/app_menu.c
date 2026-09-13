@@ -5,9 +5,6 @@
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
 #endif
-#ifndef CLOCK_MONOTONIC
-#  define CLOCK_MONOTONIC CLOCK_REALTIME
-#endif
 
 #include <stdio.h>
 #include "cariboulite.h"
@@ -946,8 +943,12 @@ static void aud10_fifo_init(aud10_fifo_t* f, size_t cap){
     f->q = (aud10_frame_t*)calloc(cap,sizeof(aud10_frame_t));
     f->cap = cap;
     pthread_mutex_init(&f->m,NULL);
-    pthread_cond_init(&f->can_put,NULL);
-    pthread_cond_init(&f->can_get,NULL);
+    pthread_condattr_t attr;
+    pthread_condattr_init(&attr);
+    pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+    pthread_cond_init(&f->can_put, &attr);
+    pthread_cond_init(&f->can_get, &attr);
+    pthread_condattr_destroy(&attr);
 }
 static void aud10_fifo_destroy(aud10_fifo_t* f){
     if(!f) return;
@@ -1248,8 +1249,12 @@ static void rf10_fifo_init(rf10_fifo_t* f, size_t cap, bool drop_oldest)
 	f->min_depth = cap;
 	f->drop_oldest_on_full = drop_oldest;
     pthread_mutex_init(&f->m, NULL);
-    pthread_cond_init(&f->can_put, NULL);
-    pthread_cond_init(&f->can_get, NULL);
+    pthread_condattr_t attr;
+    pthread_condattr_init(&attr);
+    pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+    pthread_cond_init(&f->can_put, &attr);
+    pthread_cond_init(&f->can_get, &attr);
+    pthread_condattr_destroy(&attr);
 }
 
 static void rf10_fifo_reset_stats(rf10_fifo_t* f)

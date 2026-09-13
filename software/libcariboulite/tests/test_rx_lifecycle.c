@@ -99,6 +99,26 @@ int main(void) {
     par.pcm_dev = "cariboulite_test_missing_device";
     assert(rx_pipeline_init(&p,&sys,&radio,&par) < 0); check_clean(&p);
 
+    /* Empty reads/full writes must honor the requested monotonic deadline. */
+    for (int which=0; which<4; ++which) {
+        aud10_fifo_init(&audio,1); rf10_fifo_init(&rf,1,false);
+        aud10_frame_t af = {0}; rf10_frame_t frame = {0};
+        if (which==1) audio.count=1;
+        if (which==3) rf.count=1;
+        struct timespec begin,end;
+        clock_gettime(CLOCK_MONOTONIC,&begin);
+        bool ok = which==0 ? aud10_fifo_get(&audio,&af,100) :
+                  which==1 ? aud10_fifo_put(&audio,&af,100) :
+                  which==2 ? rf10_fifo_get(&rf,&frame,100) :
+                             rf10_fifo_put(&rf,&frame,100);
+        clock_gettime(CLOCK_MONOTONIC,&end);
+        double elapsed = (end.tv_sec-begin.tv_sec)*1000.0 +
+                         (end.tv_nsec-begin.tv_nsec)/1000000.0;
+        assert(!ok && elapsed>=90 && elapsed<2000);
+        printf("FIFO timed wait %d: %.1f ms\n",which,elapsed);
+        aud10_fifo_destroy(&audio); rf10_fifo_destroy(&rf);
+    }
+
     real_threads = true;
     for (int which=0; which<4; ++which) {
         aud10_fifo_init(&audio,1); rf10_fifo_init(&rf,1,false);

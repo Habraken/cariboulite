@@ -357,6 +357,18 @@ An extracted audio-FIFO test requested 100 ms and returned in approximately
 0.060 ms. Set the condition-variable clock to monotonic or calculate deadlines
 using its actual configured clock.
 
+Update 2026-09-13: both audio and RF FIFO condition variables now explicitly
+use `CLOCK_MONOTONIC`, matching their timed-wait deadlines. Removed the
+premature clock fallback macro before the time header. Extended the existing
+RX lifecycle harness with real 100 ms waits for empty reads and full writes
+on both FIFOs: all four measured approximately 100.1 ms. Lifecycle and
+cancellation checks still passed, and the local application build passed.
+Live RX/TX validation remains pending; no driver change is required.
+
+The owner subsequently confirmed that all TX and RX tests passed with this
+update. Issue 8 has automated timeout/lifecycle coverage and successful live
+normal-operation validation.
+
 ### 9. P2 — Partial pipeline initialization is not unwound
 
 `software/libcariboulite/src/app_menu.c:1749–1755, 1921–1943, 3113–3114`
