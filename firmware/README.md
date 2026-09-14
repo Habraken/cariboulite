@@ -208,3 +208,34 @@ TBD
 
 # License
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
+## Building firmware reliably
+
+Run `make -C firmware build` with GNU Make 4.3 or newer, Yosys,
+nextpnr-ice40, icepack, and `software/utils/generate_bin_blob` available.
+The default target is also `build`. The flow is:
+
+1. All top-level Verilog files → `top.json` and `top.blif`.
+2. JSON and `io.pcf` → `top.asc` and `nextpnr_timing.json`.
+3. Routed ASC → `top.bin`.
+4. Binary → the firmware header and library's copy of that header.
+
+Routing uses the validated LP1K/QN84 seed-16 settings and must meet timing;
+there is no `--timing-allow-fail`. Synthesis and routing logs are saved as
+`synthesis.log` and `nextpnr.log`, and printed if the corresponding tool fails.
+Each stage writes temporary files and publishes them only on success. A
+failure stops downstream stages while retaining earlier successful artifacts;
+an old bitstream remaining on disk is not evidence that the new build passed.
+The Makefile itself is a prerequisite, so changing it triggers rebuilding.
+
+A normal build never programs hardware. `prog` builds first and then invokes
+`PROG`; `prog_only` explicitly programs the existing image without rebuilding.
+Set `PROG` to an appropriate board programmer when using these targets.
+Tool locations can be overridden with `YOSYS`, `NEXTPNR`, `ICEPACK` and
+`BLOBGEN`; `LIB_HEADER` can redirect the library header for isolated builds.
+Use a clean isolated copy when changing tool versions or command-line tool
+variables: Make does not track those external changes.
+
+`make clean` removes local generated synthesis/routing/bitstream/header files;
+it does not remove the copied library header. Preserve a validated image or
+use an isolated checkout before cleaning. See `tests/README.md` for checks.

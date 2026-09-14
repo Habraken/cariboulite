@@ -438,6 +438,24 @@ and header generation with proper dependencies. Routing is additionally piped
 through `tee` without preserving its failure status, and uses
 `--timing-allow-fail`; a nominally successful build is not timing acceptance.
 
+Update 2026-09-14: the Makefile now declares separate dependency stages for
+HDL synthesis, constrained routing, packing and both firmware headers. GNU
+Make grouped targets track multi-output stages. Routing no longer allows
+timing failure; tool failures propagate directly and temporary outputs are
+published only after successful completion. The Makefile itself invalidates
+build outputs when its recipe changes. Default `build` never programs hardware.
+
+Validation: `python3 firmware/tests/test_build.py` passes dependency, no-op,
+parallel-build, missing-report and injected failure tests at every tool stage.
+A full isolated real-tool build under `/tmp/cariboulite-issue12` passed, with
+final LVDS Fmax 69.57 MHz against 64 MHz and system Fmax 80.90 MHz against
+62.5 MHz. A second invocation performed no work. Both generated header
+payloads match the isolated binary. The rebuilt binary differs from the
+previous hardware-tested image; it was not promoted or programmed. Hashes
+confirm the repository's validated binary and headers were untouched.
+No HDL logic, driver, or running FPGA changes were made. Issue 12's build
+workflow is corrected; the owner authorized committing the fix after review.
+
 ### 13. P2 — SPI close misinterprets timed locking and destroys a locked mutex
 
 `software/libcariboulite/src/io_utils/io_utils_spi.c:346–361`

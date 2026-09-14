@@ -18,3 +18,9 @@ physical LVDS timing or complete asynchronous-interface behavior.
 
 See `docs/fpga-gap-study-2026-09-13.md` for build settings, hardware results,
 limitations, and the previous firmware hash for rollback.
+
+Build dependency/failure checks (no FPGA tools or hardware required):
+
+```sh
+python3 firmware/tests/test_build.py
+```
