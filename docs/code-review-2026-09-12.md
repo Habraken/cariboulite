@@ -469,6 +469,33 @@ the mutex is destroyed while still locked.
 Coordinate shutdown with users, use a valid absolute deadline and correct error
 checks, then release ownership before destroying the mutex.
 
+Update 2026-09-14: SPI API entry points now protect device-mutex lifetime
+with a process-wide read/write lifecycle lock, without changing the public
+struct layout. Ordinary operations share lifecycle access; init, suspend and
+close exclude it. Close uses CLOCK_REALTIME plus one second for its absolute
+deadline and treats every nonzero pthread result as failure. Timeout leaves
+the SPI device unchanged. Successful close frees chips under the device mutex,
+unlocks, then destroys that mutex while API entry remains excluded. Calls
+arriving after close safely observe the uninitialized device. Cancellation
+is deferred until API locks are released. Lock order is lifecycle then device.
+
+Repeated initialization now returns without reinitializing a live mutex;
+the invalid post-init unlock was removed. Cleanup visits all initialized chip
+slots, including holes left by removal. Transmit validates chip state under
+the same device lock as removal. Owners must still preserve device storage
+for all callers and stop users/retry if close times out; the lifecycle writer
+lock can also wait for calls on another SPI device in this process.
+
+Validation: `test_spi_close.py` compiles the actual SPI implementation with
+mocked GPIO/SPI I/O and real pthread locks. It checks a one-second timeout
+with resources preserved, successful retry after an in-flight transaction,
+sparse chip cleanup, post-close rejection and 20 init/close cycles. The local
+build, early-ownership regression and diff checks pass. The rebuilt app
+initialized on the Pi and quit normally (exit zero), with no RF transmission.
+Logs are in `/tmp/issue13-*.log`. The user subsequently confirmed all
+requested TX/RX and exit tests passed and authorized committing the fix.
+No FPGA or driver changes were made.
+
 ### 14. P2 — Soapy synchronous streaming ignores timeout and inactive state
 
 `software/libcariboulite/src/soapy_api/CaribouliteStream.cpp:192–209, 290–309`
