@@ -506,9 +506,35 @@ converted to zero. This does not implement the timeout/error behavior documented
 in the adjacent Soapy stream interface and can make callers spin or wait beyond
 their requested deadline.
 
-Implement deadlines and inactive-stream handling and translate transport failures
-into the appropriate Soapy errors. Add mock transport tests for zero/short
-timeouts and inactive streams.
+**Fixed in the working tree (2026-09-14).** The synchronous Soapy stream now
+starts inactive, waits out inactive calls without touching the transport, and
+becomes active only after successful hardware activation. Setup, close, and
+deactivation clear its active state. Unsupported timed/burst flags are rejected;
+RX output flags/timestamps are cleared because timestamps are not supplied.
+
+New timed C/SMI entry points carry a monotonic deadline down to FIFO waiting,
+including interrupted waits. They return up to one native batch and preserve
+partial TX sample prefixes across retries. Existing C entry points retain their
+behaviour. Soapy maps zero progress to TIMEOUT, transport failures to STREAM_ERROR,
+and RX synchronization failures to CORRUPTION. The unused asynchronous reader
+implementation was removed so there is one supported streaming path.
+
+Validation: `python3 software/libcariboulite/tests/test_soapy_stream.py` compiles
+actual Soapy and SMI sources with simulated radio/syscalls. Covers inactive
+waits, failed activation/deactivation, restart/close, direction and flag checks,
+format conversion, short counts, errors, zero/short deadlines, interrupted waits,
+and byte-prefix retries. No radio is opened. Full library/app/Soapy rebuild and
+legacy TX progress regression pass.
+
+Physical RX follow-up (2026-09-14): the user reports repeated stream start/stop
+and client disconnect/reconnect succeeded through SDR++ server over LAN from
+macOS. `/tmp/sdrpp-soapy-test.log` shows HiF/CF32 RX setup and repeated starts and
+stops; the updated "Creating stream MTU" message confirms the new stream code
+was used. No stream errors were logged. The server had already stopped when
+reviewed, so its loaded module path and shutdown status could not be inspected.
+Startup includes ALSA device-probing warnings and a rounded-rate warning for
+1333000 despite SDR++ displaying 2000000; this test does not establish the actual
+sample rate or audio quality. Physical Soapy TX validation remains deferred.
 
 ### 15. P2 — Optional Soapy dependency removes the main application targets
 

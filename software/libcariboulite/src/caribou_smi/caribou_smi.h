@@ -114,6 +114,15 @@ int caribou_smi_write_samples(caribou_smi_st *smi,
                       const caribou_smi_sample_complex_int16 *samples,
                       int n_samples);
 
+// Timed variants: at most one native batch; timeout_us <= 0 means try once.
+// Return partial sample counts, zero on timeout, negative on failure.
+// Writes retain the same partial-sample retry contract described above.
+int caribou_smi_read_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
+    caribou_smi_sample_complex_int16 *samples, caribou_smi_sample_meta *metadata,
+    size_t count, long timeout_us);
+int caribou_smi_write_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
+    const caribou_smi_sample_complex_int16 *samples, size_t count, long timeout_us);
+
 size_t caribou_smi_get_native_batch_samples(caribou_smi_st* dev);
 
 void caribou_smi_setup_ios(caribou_smi_st* dev);

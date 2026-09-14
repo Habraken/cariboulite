@@ -609,6 +609,15 @@ int cariboulite_radio_write_samples(cariboulite_radio_state_st* radio,
                             cariboulite_sample_complex_int16* buffer,
                             size_t length);  
 
+// Explicit timeout in microseconds; returns up to one native batch.
+// Zero means timeout, negatives are errors; legacy entry points are unchanged.
+int cariboulite_radio_read_samples_timed(cariboulite_radio_state_st *radio,
+    cariboulite_sample_complex_int16 *buffer, cariboulite_sample_meta *metadata,
+    size_t length, long timeout_us);
+
+int cariboulite_radio_write_samples_timed(cariboulite_radio_state_st *radio,
+    cariboulite_sample_complex_int16 *buffer, size_t length, long timeout_us);
+
 /**
  * @brief Get Native Chunk (MTU)
  *

@@ -1348,6 +1348,25 @@ int cariboulite_radio_write_samples(cariboulite_radio_state_st* radio,
 }
 
 //=========================================================================
+// Explicit timeout in microseconds; returns up to one native batch.
+// Zero means timeout, negatives are errors; legacy entry points are unchanged.
+int cariboulite_radio_read_samples_timed(cariboulite_radio_state_st *radio,
+    cariboulite_sample_complex_int16 *buffer, cariboulite_sample_meta *metadata,
+    size_t length, long timeout_us)
+{
+    if (!radio || !radio->sys) return -1;
+    return caribou_smi_read_timed(&radio->sys->smi, radio->smi_channel_id,
+        (caribou_smi_sample_complex_int16*)buffer, (caribou_smi_sample_meta*)metadata, length, timeout_us);
+}
+
+int cariboulite_radio_write_samples_timed(cariboulite_radio_state_st *radio,
+    cariboulite_sample_complex_int16 *buffer, size_t length, long timeout_us)
+{
+    if (!radio || !radio->sys) return -1;
+    return caribou_smi_write_timed(&radio->sys->smi, radio->smi_channel_id,
+        (caribou_smi_sample_complex_int16*)buffer, length, timeout_us);
+}
+
 size_t cariboulite_radio_get_native_mtu_size_samples(cariboulite_radio_state_st* radio)
 {
     size_t num_samples = caribou_smi_get_native_batch_samples(&radio->sys->smi);

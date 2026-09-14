@@ -1033,6 +1033,97 @@ int caribou_smi_write_samples(caribou_smi_st *dev,
     return consumed ? (int)consumed : error;
 }
 
+
+// Deadline-based entry points for callers with an explicit latency budget.
+// The SMI driver returns immediately when its FIFO is empty/full. Stream I/O
+// and transitions must be serialized by the caller, as with the legacy API.
+static int64_t smi_now_us(void)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (int64_t)ts.tv_sec * 1000000 + ts.tv_nsec / 1000;
+}
+
+static int64_t smi_deadline_us(long timeout_us)
+{
+    int64_t now = smi_now_us();
+    if (timeout_us <= 0) return now;
+    return timeout_us > INT64_MAX - now ? INT64_MAX : now + timeout_us;
+}
+
+static int smi_transfer_until(caribou_smi_st *dev, void *buffer, size_t bytes,
+                              bool tx, int64_t deadline)
+{
+    bool first = true;
+    for (;;) {
+        if (!first && smi_now_us() >= deadline) return 0;
+        first = false;
+        ssize_t n = tx ? write(dev->filedesc, buffer, bytes)
+                       : read(dev->filedesc, buffer, bytes);
+        if (n > 0) return (int)n;
+        if (n < 0 && errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK)
+            return -1;
+        if (n < 0 && errno == EINTR) continue;
+        int64_t remaining = deadline - smi_now_us();
+        if (remaining <= 0) return 0;
+        struct timespec wait = { remaining / 1000000, (remaining % 1000000) * 1000 };
+        struct pollfd fd = { .fd = dev->filedesc, .events = tx ? POLLOUT : POLLIN };
+        int ready = ppoll(&fd, 1, &wait, NULL);
+        if (ready < 0) {
+            if (errno == EINTR) continue;
+            return -1;
+        }
+        if (ready == 0) return 0;
+        if (fd.revents & (POLLERR | POLLHUP | POLLNVAL)) return -1;
+    }
+}
+
+int caribou_smi_read_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
+    caribou_smi_sample_complex_int16 *samples, caribou_smi_sample_meta *metadata,
+    size_t count, long timeout_us)
+{
+    if (!count) return 0;
+    if (!dev || dev->filedesc < 0 || !samples || !dev->read_temp_buffer ||
+        dev->native_batch_len < CARIBOU_SMI_BYTES_PER_SAMPLE) return -1;
+    int64_t deadline = smi_deadline_us(timeout_us);
+    size_t max_count = dev->native_batch_len / CARIBOU_SMI_BYTES_PER_SAMPLE;
+    if (count > max_count) count = max_count;
+    int n = smi_transfer_until(dev, dev->read_temp_buffer,
+                               count * CARIBOU_SMI_BYTES_PER_SAMPLE, false, deadline);
+    if (n <= 0) return n;
+    if (n % CARIBOU_SMI_BYTES_PER_SAMPLE) return -3;
+    if (caribou_smi_rx_data_analyze(dev, channel, dev->read_temp_buffer, n,
+                                   samples, metadata) < 0) return -3;
+    if (dev->debug_mode != caribou_smi_none) return -2;
+    return n / CARIBOU_SMI_BYTES_PER_SAMPLE;
+}
+
+int caribou_smi_write_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
+    const caribou_smi_sample_complex_int16 *samples, size_t count, long timeout_us)
+{
+    (void)channel;
+    if (!count) return 0;
+    const size_t bps = CARIBOU_SMI_BYTES_PER_SAMPLE;
+    if (!dev || dev->filedesc < 0 || !samples || !dev->write_temp_buffer ||
+        dev->native_batch_len < bps) return -1;
+    int64_t deadline = smi_deadline_us(timeout_us);
+    if (count > dev->native_batch_len / bps) count = dev->native_batch_len / bps;
+    size_t bytes = count * bps;
+    caribou_smi_generate_data(dev, dev->write_temp_buffer, bytes, samples);
+    size_t off = dev->write_partial_bytes;
+    int result;
+    do {
+        result = smi_transfer_until(dev, (uint8_t*)dev->write_temp_buffer + off,
+                                     bytes - off, true, deadline);
+        if (result <= 0) break;
+        off += result;
+        // Return available whole samples promptly; preserve the next prefix.
+        if (off >= bps || smi_now_us() >= deadline) break;
+    } while (off < bytes);
+    dev->write_partial_bytes = off % bps;
+    return off >= bps ? (int)(off / bps) : (result < 0 ? -1 : 0);
+}
+
 // Optionally keep the older name as a thin wrapper:
 // int caribou_smi_write(caribou_smi_st* dev, caribou_smi_channel_en ch,
 //                       caribou_smi_sample_complex_int16* samples, size_t length_samples)

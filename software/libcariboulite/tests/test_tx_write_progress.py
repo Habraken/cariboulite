@@ -3,7 +3,7 @@
 from pathlib import Path
 import subprocess,tempfile
 s=(Path(__file__).resolve().parents[1]/'src/caribou_smi/caribou_smi.c').read_text()
-a=s.index('\nint caribou_smi_write_samples(caribou_smi_st *dev,')+1;b=s.index('// Optionally keep',a)
+a=s.index('\nint caribou_smi_write_samples(caribou_smi_st *dev,')+1;b=s.index('// Deadline-based entry points',a)
 wa=s.index("\nint caribou_smi_write(caribou_smi_st* dev,")+1
 wb=s.index("// int caribou_smi_write_samples",wa)
 pre=r'''
