@@ -576,6 +576,33 @@ Resolve the destination strictly within the kernel version used for compilation.
 Also stop immediately on compilation/packaging failures before changing module
 blacklists and boot-loading configuration. Installation was reviewed, not run.
 
+Update 2026-09-15: the installer captures the running kernel release once,
+passes that release and its `/lib/modules/<release>/build` headers to CMake,
+and verifies the compiled module's vermagic release before installation.
+CMake accepts the explicit release while retaining running-kernel discovery
+for ordinary builds. Destination discovery searches only that kernel's tree,
+requires one unique base-module directory, and runs `depmod -a <release>`.
+Script paths are anchored to the installer location and quoted.
+
+The installer now stops on command and pipeline failures. Compilation,
+module verification and compression complete before copying the installed
+module or changing blacklist/boot configuration. Compression writes a temporary
+file before publishing its result. Failed copy or depmod also prevents later
+configuration updates; installation is not transactional if a later step fails.
+
+Validation: `python3 driver/tests/test_install.py` passed 13 mocked installer
+scenarios, including successful installation, dependency/configure/build errors,
+module metadata errors and kernel mismatch, failed/missing/ambiguous destination
+lookup, compression/blob generation failures, copy failure and depmod failure.
+The harness executes the actual script from outside its directory, with spaces
+in its checkout path, and intercepts all privileged commands. It verifies the
+single-kernel destination, explicit build parameters and depmod target, and
+that early failures cannot write boot configuration or report success.
+A fresh real module build in `/tmp/cariboulite-issue16-driver` passed for
+`6.18.39+rpt-rpi-v8`; `modinfo` confirms matching vermagic. Shell syntax and
+`git diff --check` passed. No system installation, driver reload, reboot or
+RF operation was performed.
+
 ## Verification performed
 
 - Fresh C/C++ configure and complete default build in

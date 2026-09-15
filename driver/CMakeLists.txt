@@ -7,11 +7,13 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 add_definitions(-D__KERNEL__ -DMODULE)
 
 # Find the kernel release
-execute_process(
+if(NOT DEFINED KERNEL_RELEASE)
+    execute_process(
         COMMAND uname -r
         OUTPUT_VARIABLE KERNEL_RELEASE
         OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+    )
+endif()
 
 # Find the headers
 find_path(
