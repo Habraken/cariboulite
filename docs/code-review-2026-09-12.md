@@ -548,6 +548,21 @@ fresh machine intended to run the standalone app.
 Make only the Soapy module conditional. Keep the app, utilities, and library
 installation independent of that optional dependency.
 
+Update 2026-09-15: only Soapy module discovery-dependent setup and creation
+are conditional now. Standalone application, utilities, libraries and their
+installation rules remain available when SoapySDR is absent. Library/utility
+installation and pkg-config metadata use `CMAKE_INSTALL_PREFIX` (default
+`/usr/local`) independently of the Soapy module's search path.
+
+Validation: fresh full builds passed with SoapySDR available and with
+`-DCMAKE_DISABLE_FIND_PACKAGE_SoapySDR=TRUE`. The latter produced the app,
+utilities and both libraries without a Soapy module. Installation to
+`/tmp/cariboulite-issue15-install` passed; all manifest destinations stayed
+within that prefix, including headers and pkg-config metadata. The enabled
+build produced the Soapy module. `git diff --check` passed. Build directories
+and logs are under `/tmp/cariboulite-issue15-*`. No system installation or
+hardware test was performed.
+
 ### 16. P2 — Driver installer copies one kernel's module into other kernels
 
 `driver/install.sh:50–72`

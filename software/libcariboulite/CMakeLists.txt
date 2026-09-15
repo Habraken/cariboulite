@@ -94,11 +94,8 @@ include_directories(${CURSES_INCLUDE_DIR})
 #--------------------------------------
 # create the Soapy shared object
 #--------------------------------------
+set(BIN_DEST "${CMAKE_INSTALL_PREFIX}")
 find_package(SoapySDR CONFIG)
-if (NOT SoapySDR_FOUND)
-    message(WARNING "SoapySDR development files not found - skipping support")
-    return()
-endif ()
 
 
 
@@ -115,32 +112,31 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-Wno-unused-parameter -Wno-missing-field-initializers -Wno-parentheses -Wno-psabi)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-execute_process (
-    COMMAND bash -c "SoapySDRUtil --info | grep 'Search path' | cut -d':' -f2 | xargs | cut -d' ' -f1 | xargs"
-    OUTPUT_VARIABLE SOAPY_DEST
-)
-string(STRIP ${SOAPY_DEST} SOAPY_DEST)
+if(SoapySDR_FOUND)
+    execute_process (
+        COMMAND bash -c "SoapySDRUtil --info | grep 'Search path' | cut -d':' -f2 | xargs | cut -d' ' -f1 | xargs"
+        OUTPUT_VARIABLE SOAPY_DEST
+    )
+    string(STRIP ${SOAPY_DEST} SOAPY_DEST)
 
-execute_process (
-    COMMAND bash -c "SoapySDRUtil --info | grep 'Search path' | cut -d':' -f2 | xargs | cut -d' ' -f1 | awk -F '/lib/' '{print $1}' | xargs"
-    OUTPUT_VARIABLE BIN_DEST
-)
-string(STRIP ${BIN_DEST} BIN_DEST)
+    SOAPY_SDR_MODULE_UTIL(
+        TARGET SoapyCariboulite
+        SOURCES
+            src/soapy_api/SoapyCariboulite.cpp
+            src/soapy_api/Cariboulite.cpp
+            src/soapy_api/Cariboulite.hpp
+            src/soapy_api/CaribouliteStreamFunctions.cpp
+            src/soapy_api/CaribouliteStream.cpp
+            src/soapy_api/CaribouliteSession.cpp
+            src/soapy_api/CaribouliteSensors.cpp
+        LIBRARIES cariboulite iir
+        DESTINATION ${SOAPY_DEST}
+        PREFIX ""
+    )
 
-SOAPY_SDR_MODULE_UTIL(
-    TARGET SoapyCariboulite
-    SOURCES
-        src/soapy_api/SoapyCariboulite.cpp
-        src/soapy_api/Cariboulite.cpp
-        src/soapy_api/Cariboulite.hpp
-        src/soapy_api/CaribouliteStreamFunctions.cpp
-        src/soapy_api/CaribouliteStream.cpp
-        src/soapy_api/CaribouliteSession.cpp
-        src/soapy_api/CaribouliteSensors.cpp
-    LIBRARIES cariboulite iir
-    DESTINATION ${SOAPY_DEST}
-    PREFIX ""
-)
+else()
+    message(WARNING "SoapySDR development files not found - skipping support")
+endif()
 
 # ----------------------------------
 # TESTS - source files for the tests
