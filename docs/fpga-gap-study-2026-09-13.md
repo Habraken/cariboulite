@@ -582,7 +582,7 @@ TX/RX start/stop and sample-rate switching tests.
 
 ## Single loopback-connection build attempt — 2026-09-15
 
-The owner authorized one isolated attempt, with no retries if it failed.
+Jan authorized one isolated attempt, with no retries if it failed.
 Copied the current committed Verilog, constraints and Makefile to a temporary
 directory and added only this assignment in `sys_ctrl.v`:
 
@@ -728,7 +728,7 @@ source changes are uncommitted and system-wide userspace is unchanged.
 
 ### First menu-loopback run: decoder correction — 2026-09-15
 
-The owner reported an error after pressing `L`. Preserved their log at
+Jan reported an error after pressing `L`. Preserved their log at
 `installations/loopback-one-try/validation/user-test-20260915-2210.log`.
 It records repeated successful setup/cleanup and later normal-RX synchronization
 errors, but the original loopback reader did not log its failure code. Thus
@@ -759,13 +759,13 @@ Actual hardware return mapping still needs confirmation in the next run.
 
 Restart the rebuilt app, select 14 and press L again with the candidate still
 loaded. No FPGA rebuild or reprogramming is required for this software fix.
-The owner's previous message confirms testing reached L, not a programming
+Jan's previous message confirms testing reached L, not a programming
 failure; successful pattern capture remains unverified.
 
 
 ### Confirmed hardware pattern capture — 2026-09-15
 
-The owner supplied menu 14 output showing loopback ON, 1,412,895 captured
+Jan supplied menu 14 output showing loopback ON, 1,412,895 captured
 samples, zero read timeouts, and all 16 preview entries equal to I=`F824`,
 Q=`0201`. These exactly match the expected decoded HiF values for the FPGA
 frame `0x84037048`. This validates the fixed pattern through the FPGA-to-modem
@@ -790,7 +790,7 @@ commit remain outstanding; this report did not change or program firmware.
 
 ### Loopback validation and promotion — 2026-09-16
 
-The owner confirmed that the debug-loopback tests were successful and authorized
+Jan confirmed that the debug-loopback tests were successful and authorized
 promotion and commit. This adds user functional confirmation to the matching
 hardware pattern capture above; it does not add a new signal-termination test
 or a loss-free-streaming measurement.

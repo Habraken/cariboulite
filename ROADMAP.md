@@ -1,6 +1,6 @@
 # CaribouLite development roadmap
 
-Recorded 2026-09-16 from the owner's backlog. This is a proposed implementation
+Recorded 2026-09-16 from Jan's backlog. This is a proposed implementation
 order, not a claim that the features below are complete. Original item numbers
 are retained for tracking. Update this document as work is verified.
 

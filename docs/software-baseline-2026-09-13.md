@@ -52,22 +52,22 @@ To check the snapshot container files, run `sha256sum -c SHA256SUMS` from
 the snapshot directory. Extract into a separate directory for inspection;
 restoring installed files is a separate operation.
 
-## Development FPGA setup (owner-reported)
+## Development FPGA setup (reported by Jan)
 
 On first boot, the FPGA is loaded with the original bitstream. To use the
-`dev` branch, the owner selects option 3 in `cariboulite_test_app` to load
+`dev` branch, Jan selects option 3 in `cariboulite_test_app` to load
 the latest development FPGA bitstream. One of the user LEDs illuminates as
 a recognizable indication of that image.
 
 For subsequent hardware validation, perform this setup and confirm the LED
 indication before judging development RX/TX behavior. This procedure and
-indicator are owner-reported; they were not exercised during baseline capture.
+indicator are reported by Jan; they were not exercised during baseline capture.
 The FPGA image active at capture remains unverified. The on-disk firmware
 hash above does not identify the original boot image or prove the active image.
 
-## Manual application checks (owner-reported)
+## Manual application checks (reported by Jan)
 
-The owner tests from an SSH terminal, launching from the repository root:
+Jan tests from an SSH terminal, launching from the repository root:
 
 ```sh
 build/cariboulite_test_app 2> debug.log
@@ -81,7 +81,7 @@ the usual checks are:
 - Option 11: check NBFM TX operation.
 - Option 14: inspect modem registers and additional instrumentation.
 
-These are the owner's established manual checks, not tests performed during
+These are Jan's established manual checks, not tests performed during
 this baseline capture. Use this workflow when planning validation of fixes,
 with additional checks specific to each issue.
 

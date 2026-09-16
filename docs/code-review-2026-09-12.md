@@ -6,7 +6,7 @@ Linux `6.18.39+rpt-rpi-v8`, GCC 14.2.0.
 The application and kernel module build successfully, but several error paths,
 streaming APIs, and firmware build dependencies need correction before treating
 this revision as a reproducible reference for five new boards. These findings
-do not contradict the owner's working RX/TX setup: many involve alternative
+do not contradict Jan's working RX/TX setup: many involve alternative
 APIs, partial failures, or rebuilding firmware.
 
 This is a broad source and build review, not an exhaustive line-by-line audit or
@@ -39,7 +39,7 @@ against commits through `a311b17`, current FPGA source and the
 | 15 | Fixed in `9b4d977`; builds with/without Soapy and temporary installation passed. |
 | 16 | Fixed in `a311b17`; installer failure-path checks and real module build passed; system installation not performed. |
 
-All numbered defects now have fixes. The owner confirmed successful debug-loopback
+All numbered defects now have fixes. Jan confirmed successful debug-loopback
 tests, and the exact tested candidate has been promoted with both embedded
 headers and the loopback RTL bench. General implicit-net checking remains a
 follow-up from issue 11. Historical status entries below describe each stage;
@@ -78,10 +78,10 @@ A fresh module build in `/tmp/cariboulite-issue1-driver` passed for
 `6.18.39+rpt-rpi-v8`. The new module has not been installed or loaded;
 live exclusive-open and post-change radio validation remain pending.
 
-Live follow-up 2026-09-13: the owner loaded the new module (sysfs source version
+Live follow-up 2026-09-13: Jan loaded the new module (sysfs source version
 `12F9D2980B1137B92139E7F`) and started a second test application while the first
 was transmitting through option 11. The second application's log confirms
-`/dev/smi` open failed with `Device or resource busy`. However, the owner
+`/dev/smi` open failed with `Device or resource busy`. However, Jan
 reported TX stopped and the first application appeared hung. Startup reaches
 `cariboulite_setup_io()` before attempting SMI open; that function drives the
 modem and mixer reset pins low. Thus the kernel guard rejects the second
@@ -93,7 +93,7 @@ Captured logs are local under `installations/issue1-validation/`.
 Follow-up implementation: library initialization now claims `/dev/smi` before
 signal registration, board detection, GPIO setup, or FPGA communication.
 SMI initialization duplicates this descriptor with close-on-exec semantics;
-it does not perform a second open. The ownership descriptor stays open until
+it does not perform a second open. Janship descriptor stays open until
 hardware cleanup finishes, including initialization failure paths. SMI close
 explicitly stops streaming because closing its duplicate alone no longer
 invokes the kernel's final release. Production/minimal initialization paths
@@ -118,12 +118,12 @@ TX regression check, with separate stderr log files. Installed libraries under
 touch hardware before their SMI open is rejected. The original two-application
 TX scenario and reported hang had not yet been revalidated at that point.
 
-Owner validation 2026-09-13, 16:14 local time: the repeated two-session TX
+Validation by Jan 2026-09-13, 16:14 local time: the repeated two-session TX
 test passed. The first application logged TX activation at 16:14:27.954.
 At 16:14:42.110 the second application was rejected with `Device or resource
 busy; hardware setup skipped`, with no subsequent hardware initialization.
 The first application logged TX deactivation at 16:14:52.392, then a normal
-menu quit and completed driver release at 16:14:57.399. The owner confirmed
+menu quit and completed driver release at 16:14:57.399. Jan confirmed
 the test worked; the first log contains no error or warning entries.
 Preserved logs: `installations/issue1-validation/passed-first.log` and
 `passed-second.log`. Issue 1 is implemented and validated for this scenario;
@@ -181,10 +181,10 @@ selected and received-audio quality was not assessed. Log preserved locally
 at `installations/issue2-validation/rx-lifecycle.log`. The rebuilt local app
 contains this change; no driver change or reload was needed for issue 2.
 
-Owner audio validation: option 14 RX played through the USB speaker, while
+Audio validation by Jan: option 14 RX played through the USB speaker, while
 option 12 initially did not. Option 12 still targeted `plughw:3,0` (the Pi
 headphone output), a pre-existing setting. Changed only its playback destination
-to `plughw:Loopback,0,0` and rebuilt. The owner confirmed option 12 RX audio now
+to `plughw:Loopback,0,0` and rebuilt. Jan confirmed option 12 RX audio now
 works with the existing `arecord` loopback-to-USB-speaker routing command in
 `ADDITIONAL-README.md`. The radio-path selection was unchanged.
 
@@ -262,7 +262,7 @@ contention was tested with the simulated-hardware regression harness above.
 Logs are preserved under `installations/issue4-validation/`. The new module
 remains temporarily loaded; the installed module is still the issue 1 version.
 
-The owner subsequently confirmed hearing both the TX tone and RX chain
+Jan subsequently confirmed hearing both the TX tone and RX chain
 activation. Permanent installation completed for `6.18.39+rpt-rpi-v8` on
 2026-09-13: installed the tested issue 4 module, ran `depmod` successfully,
 and verified installed bytes and source version against the tested artifact.
@@ -299,7 +299,7 @@ stalled consumption, mid-wait TX failure, inactive workers, full-FIFO drain
 timeout and repeated stop. The local application build passes. Live tone and
 RX/TX switching validation of this update remains pending.
 
-Owner validation: tested option 11 (TX tone), option 12 (S1G RX), and option
+Validation by Jan: tested option 11 (TX tone), option 12 (S1G RX), and option
 14's TX and RX controls with no problems reported. This confirms normal live
 operation with the update; stalled-worker and timeout behavior were exercised
 by the simulated failure-path tests above.
@@ -331,9 +331,9 @@ the actual function with scripted I/O. It checks timeout/error exits at every
 partial-sample offset, exact bytes across retries, and accounting across
 multiple chunks. Live TX validation remains pending.
 
-The complete local build passed, and the owner subsequently reported successful
+The complete local build passed, and Jan subsequently reported successful
 live TX tests. Issue 6 is validated by both the scripted partial-I/O tests and
-the owner's normal-operation TX checks.
+Jan's normal-operation TX checks.
 
 ### 7. P2 — Public TX API inserts samples and reports more than requested
 
@@ -362,7 +362,7 @@ public entry point. These and the existing progress tests passed, as did the
 complete local build. No live public-API TX test was performed; menu options
 11/14 already use the newer streaming writer directly.
 
-The owner subsequently reported a successful TX check. The specific API path
+Jan subsequently reported a successful TX check. The specific API path
 was not identified; public-API byte/count behavior is covered by the automated
 tests above.
 
@@ -388,7 +388,7 @@ on both FIFOs: all four measured approximately 100.1 ms. Lifecycle and
 cancellation checks still passed, and the local application build passed.
 Live RX/TX validation remains pending; no driver change is required.
 
-The owner subsequently confirmed that all TX and RX tests passed with this
+Jan subsequently confirmed that all TX and RX tests passed with this
 update. Issue 8 has automated timeout/lifecycle coverage and successful live
 normal-operation validation.
 
@@ -420,7 +420,7 @@ successful retry, and monitor failures at each of its four worker creations.
 Existing RX lifecycle, FIFO timing and cancellation tests also pass. The full
 local build passed. Live normal-operation validation remains pending.
 
-The owner subsequently completed TX and RX checks with no problems reported.
+Jan subsequently completed TX and RX checks with no problems reported.
 Issue 9 has passing failure-injection tests and successful live
 normal-operation validation.
 
@@ -476,7 +476,7 @@ controller and FPGA SPI tests, lifecycle regression and full build pass.
 See the study's manual procedure and limits. No candidate was loaded or
 hardware test performed; the production FPGA connection remains unchanged.
 
-Owner hardware confirmation 2026-09-15: menu 14 displayed 1,412,895 captured
+Hardware confirmation by Jan 2026-09-15: menu 14 displayed 1,412,895 captured
 samples, zero read timeouts, and 16/16 preview pairs matching expected HiF
 I=`F824`, Q=`0201`. This confirms the candidate's fixed-pattern interface
 loopback through the receive decoder. The log records several successful
@@ -541,7 +541,7 @@ payloads match the isolated binary. The rebuilt binary differs from the
 previous hardware-tested image; it was not promoted or programmed. Hashes
 confirm the repository's validated binary and headers were untouched.
 No HDL logic, driver, or running FPGA changes were made. Issue 12's build
-workflow is corrected; the owner authorized committing the fix after review.
+workflow is corrected; Jan authorized committing the fix after review.
 
 ### 13. P2 — SPI close misinterprets timed locking and destroys a locked mutex
 
@@ -712,7 +712,7 @@ RF operation was performed.
   and a mock radio read; it terminated with SIGSEGV as expected.
 - Build-time `SoapySDRUtil --info` loaded the installed plugin and printed a
   missing `/dev/gpiomem` message in this tool environment. That is not evidence
-  that the owner's board/setup is broken. No RF application was intentionally
+  that Jan's board/setup is broken. No RF application was intentionally
   launched, no transmission was requested, and no firmware was programmed.
 
 ## Original next-work recommendations (2026-09-12)

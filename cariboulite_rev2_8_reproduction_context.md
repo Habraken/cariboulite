@@ -51,7 +51,7 @@ Any unavoidable deviation must be documented and explicitly approved before it e
 
 The CaribouLite repository is already cloned locally.
 
-Typical local location used by the owner:
+Typical local location used by Jan:
 
 ```text
 ~/src/cariboulite
@@ -63,7 +63,7 @@ The public upstream hardware repository is:
 https://github.com/cariboulabs/cariboulite_hw
 ```
 
-The owner's software/development repository is:
+Jan's software/development repository is:
 
 ```text
 https://github.com/Habraken/cariboulite
@@ -550,7 +550,7 @@ In particular, do not allow automatic BOM-tool substitution based solely on nomi
 
 ## 12. Known-good hardware reference
 
-The owner has one surviving **known-good CaribouLite Full Rev 2.8**.
+Jan has one surviving **known-good CaribouLite Full Rev 2.8**.
 
 This is extremely valuable.
 
@@ -603,7 +603,7 @@ This experience is one reason the exact clock implementation must be reproduced 
 
 ## 14. Existing software / FPGA validation capability
 
-The owner has substantial CaribouLite software and FPGA development experience.
+Jan has substantial CaribouLite software and FPGA development experience.
 
 Known working pipeline includes approximately:
 
@@ -914,7 +914,7 @@ Keep manufacturing-package preparation separate from functional software changes
 
 ## 21. Things Codex must not infer
 
-If information is missing, stop and inspect the source or ask the owner.
+If information is missing, stop and inspect the source or ask Jan.
 
 Do not infer:
 

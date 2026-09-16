@@ -50,7 +50,7 @@ outside the schematic's DO NOT PLACE boundary. R25, C108 and C122 remain DNP,
 leaving J7 electrically isolated as released.
 
 SH1 and SH2 are resolved as not fitted. They are crossed out in the schematic,
-absent from the BOM/PnP, and absent from the owner's physical reference board.
+absent from the BOM/PnP, and absent from Jan's physical reference board.
 The shield drawings remain under `originals/` only as unmodified source evidence;
 shield supply and fitting are outside the reproduction and quotation scope.
 

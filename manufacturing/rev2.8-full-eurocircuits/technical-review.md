@@ -113,7 +113,7 @@ in the schematic. Do not auto-populate other pads absent from the Full BOM.
   datasheet, Product Number / Ordering Code section:
   <https://download.epsondevice.com/td/pdf/app/SG-8018CA_en.pdf>.
 - **J7 - resolved 2026-09-13:** populate J7 with exact MPN
-  `CONUFL001-SMD-T`. The BOM, PnP and assembly drawing include it, and the owner
+  `CONUFL001-SMD-T`. The BOM, PnP and assembly drawing include it, and Jan
   confirmed it is fitted on the physical reference board. Enlarged inspection
   of Full schematic page 6 shows J7 outside the dashed DO NOT PLACE boundary;
   that boundary encloses R25, C108 and C122. Leave those three parts DNP so J7
@@ -177,7 +177,7 @@ identified in them. The assembly PDF's dimensions must remain authoritative
 alongside the original DXFs for technical discussion.
 
 **SH1/SH2 - resolved 2026-09-13:** do not fit shield cans. SH1 and SH2 are
-crossed out on Full schematic page 2, absent from the Full BOM/PnP, and the owner
+crossed out on Full schematic page 2, absent from the Full BOM/PnP, and Jan
 confirmed that neither is installed on the physical reference board. Shield
 supply and fitting are therefore excluded from the reproduction and quotation
 scope. Retain the original DXFs and assembly drawing only as source evidence;

@@ -365,7 +365,7 @@ Menu option 3 programs `firmware/top.bin` relative to the working directory.
 Run the app from the repository root, and distinguish this file from firmware
 embedded in a built library. Startup behavior and the image actually running
 must be checked rather than inferred from the branch name. The historical
-[baseline](docs/software-baseline-2026-09-13.md) records the owner's startup and
+[baseline](docs/software-baseline-2026-09-13.md) records Jan's startup and
 programming procedure, with its validation limits.
 
 Options 12 and 14 need configured ALSA playback. In the current option 14
