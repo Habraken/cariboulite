@@ -6,3 +6,9 @@ This directory contains the device-tree overlays to be embedded within the HAT I
 
 Upon compilation the `dts` file is converted into its binary representation (`dtbo`). Then an h-file is created to embed this binary file into our EEPROM utility (see `cariboulite_dtbo.h` in the h_files sub-dir).
 
+
+Run `compile.sh` from this directory with `dtc` and the built
+`../utils/generate_bin_blob` available. It writes generated files here and copies
+the header into `../libcariboulite/src/`; it does not program the EEPROM.
+A validated EEPROM programming procedure remains
+[DOC-05](../../roadmap.md#documentation-validation-backlog).

@@ -1,81 +1,83 @@
-#Install CaribouLite with Raspberry pi OS Trixie (64bit) [WIP]
-All of the steps for Bookworm still apply, however there was a policy change with Debian 13 that tightend defaults for
-- mlock
-- RT scheduling
-- unprivileged DMA-style workloads
+# Additional CaribouLite notes
 
-Therefore some addtional steps on Trixie are required so that the cariboulite_test_app will run without the sudo -E option.
+Development priorities and acceptance criteria are tracked in the
+[development roadmap](roadmap.md). The [documentation audit](docs/documentation-audit-2026-09-16.md) records what
+was checked and what remains open. These installation notes
+combine historical recipes and work in progress; they are not a freshly verified
+installation guide. Before applying manual source patches, check whether the
+current checkout already contains them. For recorded development state, see the
+[software baseline](docs/software-baseline-2026-09-13.md) and
+[FPGA study](docs/fpga-gap-study-2026-09-13.md); neither certifies the current setup.
 
-##Step 1
-```
-bash
+# Install CaribouLite with Raspberry pi OS Trixie (64bit) [WIP]
+These Trixie notes are a historical workaround and need revalidation against the
+current kernel, login/session limits and driver permissions. A Debian-wide policy
+change has not been established here. The settings below change system-wide
+locked-memory limits; they do not by themselves establish device access or
+real-time scheduling permissions.
 
+## Step 1
+```bash
 sudo mkdir -p /etc/systemd/system.conf.d
 ```
-```
-bash
-
+```bash
 sudo tee /etc/systemd/system.conf.d/99-memlock.conf >/dev/null <<'EOF'
 [Manager]
 DefaultLimitMEMLOCK=infinity
 EOF
 ```
-##Step 2
-```
-bash
-
+## Step 2
+```bash
 sudo mkdir -p /etc/systemd/user.conf.d
 ```
-```
-bash
-
+```bash
 sudo tee /etc/systemd/user.conf.d/99-memlock.conf >/dev/null <<'EOF'
 [Manager]
 DefaultLimitMEMLOCK=infinity
 EOF
 ```
-##Step 3
-```
-bash
-
+## Step 3
+```bash
 sudo reboot
 ```
-##Step 4
-```
-bash
-
+## Step 4
+```bash
 ulimit -l
 cat /proc/self/limits | grep -i "Max locked memory"
 ```
 
-#Install CaribouLite with Raspberry Pi OS Bookworm (Lite) (64bit)
+# Install CaribouLite with Raspberry Pi OS Bookworm (Lite) (64bit)
 
-My goal is to install the cariboulite on a Raspberry Pi0_2W and/or a Pi4. Requirements:  
-- Connecetd to the Pi over etehernet and ultimately provide power to the Pi with POE  
-- Use SDR++ server and SDR++  
+My goal is to install the cariboulite on a Raspberry Pi0_2W and/or a Pi4. Requirements:
+- Connected to the Pi over ethernet and ultimately provide power to the Pi with POE
+- Use SDR++ server and SDR++
 - Use gnu-radio
 
-All of the software fits on a sdcard of 16GByte. The CarubouLite uses SoapySDR as an hardware abstraction layer and needs to be installed as well. This can be done manually or automatically with the CaribouLite install script.
+The recorded setup fit on a 16 GB SD card; current disk requirements need
+remeasuring. SoapySDR is required for Soapy-based applications, while the core
+library can build without it. The installer can build SoapySDR when missing.
 
-This 'recipe' was create and tested on a Pi0 and a Pi4 on May 1st 2025.  
- 
-###Initial steps
-Download & install the latest version of PiOS using the Raspberry Pi Imager. Ensure that you have enabled ssh under services and that you have provided basic information to the general settings of the OS Customisation.  
+This recipe was recorded as tested on a 'Pi0' and Pi4 on May 1st 2025.
+The exact Zero model needs clarification: a 64-bit recipe does not establish
+compatibility with the original Zero/Zero W. Platform validation is DOC-01.
+
+### Initial steps
+Download & install the latest version of PiOS using the Raspberry Pi Imager. Ensure that you have enabled ssh under services and that you have provided basic information to the general settings of the OS Customisation.
 
 I make the assumption that all of this is familiar to you and you know how to ssh over the local network to your Pi and know how to work with nano the text editor.
 
 After you have logged on, update the Pi OS:
 
 ```
-sudo apt upate
+sudo apt update
 sudo apt upgrade
 ```
-###Modifying the boot config.txt file
-Modify the `/boot/firmware/config.txt` file to ensure the parameters are set so that the cariboulite can communicate with the CPU. The last two lines disable Bluetooth and WiFi, to minimise RF interference. So the Pi needs to be connected to the local network through an ethernet cable, else you can no longer communicate with the Pi after the next reboot. 
+### Modifying the boot config.txt file
+Modify the `/boot/firmware/config.txt` file to ensure the parameters are set so that the cariboulite can communicate with the CPU. The last two lines disable Bluetooth and WiFi, to minimise RF interference. So the Pi needs to be connected to the local network through an ethernet cable, else you can no longer communicate with the Pi after the next reboot.
 
 `sudo nano /boot/firmware/config.txt`
 
-Add the lines below just above the line that reads:   
+Add the lines below just above the line that reads:
 `# Enable audio (loads snd_bcm2835)`
 
 ```
@@ -93,39 +95,49 @@ dtoverlay=disable-bt
 
 Save the file and reboot
 
-###Install linux kernel header files:
+### Install linux kernel header files:
 
-```sudo apt install linux-headers-rpi-v8```
->Note: I think this step is required when you have to rebuild the smi driver and if you want build SDR++.
+The SMI kernel driver needs headers matching the running kernel. Check:
 
-###Monitoring the Pi's activity
+```sh
+uname -r
+ls -ld "/lib/modules/$(uname -r)/build"
+```
+
+Use the package for your installed kernel and architecture; `linux-headers-rpi-v8`
+was the package used for the recorded 64-bit Pi setup. This is a driver-build
+requirement, not an SDR++ requirement. See the
+[Raspberry Pi kernel documentation](https://www.raspberrypi.com/documentation/computers/linux_kernel.html).
+
+### Monitoring the Pi's activity
 The next steps will often take a while, during which you might want to periodically check that everything is still moving along.
-In separate terminals watch what is going on during any of the following steps with `htop` and/or `dmesg`. This is how I discovered that `make` ran out of memory. 
+In separate terminals watch what is going on during any of the following steps with `htop` and/or `dmesg`. This is how I discovered that `make` ran out of memory.
 
 ```
 htop
 sudo dmesg -wH
 ```
-###Install `git` & `cmake`
+### Install `git` & `cmake`
 
 ```
 sudo apt install git cmake
 ```
 
-#SoapySDR (optional)
+# SoapySDR (optional)
 If you want to have more control over where SoapySDR en SoapyRemote are installed, execute these steps first. If you use these steps, you should say `No` to the `install SoapySDR` question from the CaribouLite install script.
 
-Create a directory where you want to keep your source code. I call mine: `src`. 
+Create a directory where you want to keep your source code. I call mine: `src`.
 
 ```
-mkdir src && cd src
-``` 
+mkdir -p ~/src
+cd ~/src
+```
 
 Get the source code:
 
 ```
 git clone https://github.com/pothosware/SoapySDR.git
-git clone https://github.com/pothosware/Soapyremote.git
+git clone https://github.com/pothosware/SoapyRemote.git
 
 ```
 Or:
@@ -134,7 +146,7 @@ Or:
 git clone https://github.com/Habraken/SoapySDR.git
 git clone https://github.com/Habraken/SoapyRemote.git
 ```
-The following library not available by default and SoapyRemakemote will complain but not fail:
+The following library not available by default and SoapyRemote will complain but not fail:
 
 ```
 sudo apt install libavahi-client-dev
@@ -151,12 +163,13 @@ sudo ldconfig #needed on debian systems
 SoapySDRUtil --info
 ```
 
-#CaribouLite
-Create a directory where you want to keep your source code. I call mine: `src`. 
+# CaribouLite
+Create a directory where you want to keep your source code. I call mine: `src`.
 
 ```
-mkdir src && cd src
-``` 
+mkdir -p ~/src
+cd ~/src
+```
 
 Get the source code:
 
@@ -176,72 +189,33 @@ To make the nbfm_tx and nbfm_rx examples work you also need to install the dev t
 sudo apt install -y libasound2-dev pkg-config
 ```
 
-Before you can install anything make the following three changes to `~/src/cariboulite/driver/smi_stream_dev.c`.
+### Current checkout versus historical patches
 
-```
-cd ~/src/cariboulite/driver
-sudo nano smi_stream_dev.c
-```
+The current `driver/smi_stream_dev.c` already includes `<linux/vmalloc.h>`,
+uses `class_create(DEVICE_NAME)`, and declares `smi_stream_dev_remove` as `void`.
+Do not apply the old three-step kernel patch again. NBFM and modem-monitor code
+are already in this checkout; switching to `feature/nbfm_rx` is not an
+installation prerequisite.
 
-Add this include statement near the other include statements: `#include <linux/vmalloc.h>`
-
-Then Hit Ctl+W and type `‘create sysfs’` and change the line with the `-` in front to the line with the `+` in front.
-
-```
-// Create sysfs entries with "smi-stream-dev"
--smi_stream_class = class_create(THIS_MODULE, DEVICE_NAME);
-+smi_stream_class = class_create(DEVICE_NAME);
-```
-
-Then Hit Ctl+W and type ‘smi_stream_dev_remove’ and change the line with the - in front to the line with the + in front and remove the return statement with the - in front.
-
-```
-*   smi_stream_remove - called when the driver is unloaded.
-*
-***************************************************************************/
- 
--static int smi_stream_dev_remove(struct platform_device *pdev)
-+static void smi_stream_dev_remove(struct platform_device *pdev)
- {
-     //if (inst->reader_thread != NULL) kthread_stop(inst->reader_thread);
-     //inst->reader_thread = NULL;	
-     
-     device_destroy(smi_stream_class, smi_stream_devid);
-     class_destroy(smi_stream_class);
-     cdev_del(&smi_stream_cdev);
-     unregister_chrdev_region(smi_stream_devid, 1);
- 
-     dev_info(inst->dev, DRIVER_NAME": smi-stream dev removed");
--    return 0;
- }
-```
-
-Instead of making the changes above yourself, you could also 'checkout' one of my recent feature branches, that has these chnages applied already. In addtion you get my 'Monitor Modem Status and NBFM TX and RX options:
-
-```
-cd ~/src/cariboulite
-git checkout feature/nbfm_rx
-```
-
-In the `cariboulite/driver` directory:
-
-```
-./install.sh install
-```
+The top-level installer builds the blob generator before the driver and invokes
+the driver installer itself; a driver-first installation is unnecessary. It also
+runs `git pull`, installs packages and writes system configuration. Its legacy
+header/Python package choices still require fresh Bookworm/Trixie validation;
+see [DOC-01](roadmap.md#documentation-validation-backlog).
 
 Then in the cariboulite directory:
 
 ```
 ./install.sh
 ```
-This takes ‘a while’ on a Pi0. At a certain point the script will ask if you want to `install SoapySDR`, if you did not install it before. Say `Yes`. 
+This takes ‘a while’ on a Pi0. At a certain point the script will ask if you want to `install SoapySDR`, if you did not install it before. Say `Yes`.
 
-After the script has completed, reboot the Pi. 
+After the script has completed, reboot the Pi.
 ```
 sudo reboot
 ```
 
-Now we need to check with SMI driver is working correctly.
+Now we need to check whether the SMI driver is working correctly.
 
 ```
 lsmod | grep smi
@@ -252,7 +226,7 @@ The ouput should look like this:
 pi@pi0b-bookworm:~ $ lsmod | grep smi
 smi_stream_dev         16384  0
 bcm2835_smi            20480  1 smi_stream_dev
-pi@pi0b-bookworm:~ $ 
+pi@pi0b-bookworm:~ $
 ```
 Also check if the permissions are set correclty:
 
@@ -264,16 +238,16 @@ the ouput shoudl look like this:
 ```
 pi@pi0b-bookworm:~ $ ls -l /dev/smi
 crw-rw-rw- 1 root root 239, 0 May  1 13:40 /dev/smi
-pi@pi0b-bookworm:~ $ 
+pi@pi0b-bookworm:~ $
 ```
 
-###Testing SoapySDR
+### Testing SoapySDR
 
 As SoapySDR was install by the install script of cariboulite it should be possible to communicate with the CaribouLite.
 
 ```
 SoapySDRUtil --find
-``` 
+```
 The ouput should look like this:
 
 ```
@@ -312,17 +286,18 @@ Found device 1
 Now it is also possible to interact with the CaribouLite board with the provided `cariboulite_test_app` in the `~/src/cariboulite/build` directory.
 
 ```
-./cariboulite_test_app
+cd ~/src/cariboulite
+./build/cariboulite_test_app
 ```
 At the end of a lot of ouput there should be something like this:
 
 ```
 
-	   ____           _ _                 _     _ _         
-	  / ___|__ _ _ __(_) |__   ___  _   _| |   (_) |_ ___   
-	 | |   / _` | '__| | '_ \ / _ \| | | | |   | | __/ _ \  
-	 | |__| (_| | |  | | |_) | (_) | |_| | |___| | ||  __/  
-	  \____\__,_|_|  |_|_.__/ \___/ \__,_|_____|_|\__\___|  
+	   ____           _ _                 _     _ _
+	  / ___|__ _ _ __(_) |__   ___  _   _| |   (_) |_ ___
+	 | |   / _` | '__| | '_ \ / _ \| | | | |   | | __/ _ \
+	 | |__| (_| | |  | | |_) | (_) | |_| | |___| | ||  __/
+	  \____\__,_|_|  |_|_.__/ \___/ \__,_|_____|_|\__\___|
 
 
  Select a function:
@@ -343,23 +318,27 @@ At the end of a lot of ouput there should be something like this:
 >Note: If you try option `9` and then select option `2` there will errors that look like this:
 >
 ```
-FF D0 FF F4 FF 02 C0 D8  FF C0 FF FC FF C2 FF E6  |  ................ 
+FF D0 FF F4 FF 02 C0 D8  FF C0 FF FC FF C2 FF E6  |  ................
 05-01 14:00:45.038   644   648 E CARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1276 SMI data synchronization failed
-FF E0 FF D2 C0 12 C0 1A  C0 DA FF 02 C0 00 C0 EE  |  ................ 
+FF E0 FF D2 C0 12 C0 1A  C0 DA FF 02 C0 00 C0 EE  |  ................
 05-01 14:00:45.046   644   648 E CARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1276 SMI data synchronization failed
-C0 C0 C0 C4 C0 FA C0 E6  C0 30 C0 22 C0 C0 C0 CC  |  .........0.".... 
+C0 C0 C0 C4 C0 FA C0 E6  C0 30 C0 22 C0 C0 C0 CC  |  .........0."....
 05-01 14:00:45.055   644   648 E CARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1276 SMI data synchronization failed
 ```
->I have just discovered that this behaviour is in fact due to a defective cariboulite board. It appears to function normally until you try to start the smi stream. Wait on feedback fromCaribouLabs. (May 1st 2025)
+> Historical observation (May 1, 2025): a defective board was suspected. SMI synchronization errors alone do not establish that diagnosis. Board/modem identity, active firmware, driver and stream settings need checking; the hardware investigation remains DOC-08 in the roadmap.
 
-#feature/nbfm_rx
-If you decide to checkout the feature/nbfm_rx the menu after running cariboulite_test_app (I usualy run the app like this: ``` build/cariboulite_test_app 2> debug.log``` from the ```cariboulite``` directory, so that all debug logging goes to ```debug.log```) should look like this:
+# NBFM and modem monitor
+The current menu is defined in `software/libcariboulite/src/app_menu.c`.
+Run from the repository root with `./build/cariboulite_test_app 2>debug.log`.
+The menu below includes the NBFM and monitor entries; diagnostic screen output
+later in this section is a historical capture, not an exact current UI snapshot.
+
 ```
-	   ____           _ _                 _     _ _         
-	  / ___|__ _ _ __(_) |__   ___  _   _| |   (_) |_ ___   
-	 | |   / _` | '__| | '_ \ / _ \| | | | |   | | __/ _ \  
-	 | |__| (_| | |  | | |_) | (_) | |_| | |___| | ||  __/  
-	  \____\__,_|_|  |_|_.__/ \___/ \__,_|_____|_|\__\___|  
+	   ____           _ _                 _     _ _
+	  / ___|__ _ _ __(_) |__   ___  _   _| |   (_) |_ ___
+	 | |   / _` | '__| | '_ \ / _ \| | | | |   | | __/ _ \
+	 | |__| (_| | |  | | |_) | (_) | |_| | |___| | ||  __/
+	  \____\__,_|_|  |_|_.__/ \___/ \__,_|_____|_|\__\___|
 
 
  Select a function:
@@ -379,12 +358,22 @@ If you decide to checkout the feature/nbfm_rx the menu after running cariboulite
  [13]  NBFM modem Self-Test
  [14]  Monitor Modem Status
  [99]  Quit
-    Choice:   
+    Choice:
 
 ```
->note: when the ```cariboulite_test_app```is started, it loads the fpga with the original firmware. This firmware has no TX path! To use the TX options you need to upload the updated firmware first, that is part of the feature/nbfm_tx_tone and/or feature/nbfm_rx branches. You can do this by executing option ```[ 0] Hard reset FPGA``` and option ```[ 3] Program FPGA```.
+Menu option 3 programs `firmware/top.bin` relative to the working directory.
+Run the app from the repository root, and distinguish this file from firmware
+embedded in a built library. Startup behavior and the image actually running
+must be checked rather than inferred from the branch name. The historical
+[baseline](docs/software-baseline-2026-09-13.md) records the owner's startup and
+programming procedure, with its validation limits.
 
->note: for the options 12 and 14 (R) to work correctly you need to have an audio device attached and configured correctly. It uses ALSA and some of these settings are hard-coded. This is WIP. 14 (T) TX tone should work though, transmitting a 650Hz tone, FM modulated on 430.100 MHz.
+Options 12 and 14 need configured ALSA playback. In the current option 14
+configuration, TX captures `plughw:Loopback,1,1`, RX plays to
+`plughw:Loopback,0,0`, and both default to 430.100 MHz. `tone_mode` defaults to
+false; the internal tone parameter is 600 Hz. Therefore pressing T does not
+by itself select the historical 650 Hz tone. Audio/device and RF parameters
+remain hardcoded (roadmap items 2 and 5).
 
 This is how the monitor modem status output should look like:
 ```
@@ -420,117 +409,50 @@ Linux RX FIFO:
     puts:0 gets:0 drops:0 tO_put:0 tO_get:0
     rate: puts 0.0/s, gets 0.0/s  (expect ~100 fps @ 10ms)
 ```
-with ```T``` you enable TX (650 Hz tone) with ```R``` you enable RX. 
+With `T` you toggle TX and with `R` you toggle RX. Supply audio to the TX loopback endpoint as described in the ALSA section.
 
->Caution! There is no squelch yet, so when no carrier is present, loud noise is emitted from the speaker or headphones! Reduce your volume before you try this!   
+>Caution! There is no squelch yet, so when no carrier is present, loud noise is emitted from the speaker or headphones! Reduce your volume before you try this!
 
-#Modifying the firmware (FPGA)
+# Modifying the firmware (FPGA)
 
-You need some addtional tools such as icestorm, nextpnr and yosys to convert verilog (verilog-2005) in to a file that can be programmed to the Lattice ICE40 FPGA. 
+The current build uses Yosys, nextpnr-ice40 and IceStorm's `icepack`;
+Arachne-PNR is not used by `firmware/Makefile`. Follow the
+[firmware build instructions](firmware/README.md#building-firmware-reliably)
+for tool requirements, generated headers, timing checks and failure handling.
+The older Ubuntu 14.04/Fedora 24 dependency lists have been retired because they
+do not establish a reproducible Bookworm/Trixie toolchain.
 
-Please install the pre-requisites, icestorm, nextpnr and yosys.
-You can follow the instructions here:https://prjicestorm.readthedocs.io/en/latest/overview.html#where-are-the-tools-how-to-install
+For building nextpnr itself, follow its
+[upstream instructions](https://github.com/YosysHQ/nextpnr/blob/main/README.md).
+Keep the configure and build directories consistent (`cmake -S . -B build ...`
+followed by `cmake --build build`). Record tool versions with hardware results.
 
-```
-@MISC{IceStorm,
-    author = {Claire Wolf and Mathias Lasser},
-    title = {Project IceStorm},
-    howpublished = "\url{https://prjicestorm.readthedocs.io/}"
-}
-```
-Installing prerequisites (this command is for Ubuntu 14.04):
+From the repository root, after the required tools and blob generator exist:
 
-```
-sudo apt-get install build-essential clang bison flex libreadline-dev \
-                     gawk tcl-dev libffi-dev git mercurial graphviz   \
-                     xdot pkg-config python python3 libftdi-dev \
-                     qt5-default python3-dev libboost-all-dev cmake libeigen3-dev
+```sh
+make -C firmware build
 ```
 
-Installing prerequisites (this command is for Debian 13):
+This builds the bitstream and generated headers, without programming the board.
+Rebuild the userspace library if you need it to embed the new image. To program
+the file through menu option 3, run `./build/cariboulite_test_app` from the
+repository root. Avoid `make clean` as a routine prerequisite: it removes local
+artifacts, including a potentially useful previously validated image.
 
-```
-sudo apt install build-essential clang bison flex libreadline-dev \
-                     gawk tcl-dev libffi-dev git mercurial graphviz   \
-                     xdot pkg-config python python3 libftdi-dev \
-                     qtbase5-dev qt5-qmake python3-dev libboost-all-dev \
-                     cmake libeigen3-dev
-```
+# SDR++
 
-On Fedora 24 the following command installs all prerequisites:
-
-```
-sudo dnf install make automake gcc gcc-c++ kernel-devel clang bison \
-                 flex readline-devel gawk tcl-devel libffi-devel git mercurial \
-                 graphviz python-xdot pkgconfig python python3 libftdi-devel \
-                 qt5-devel python3-devel boost-devel boost-python3-devel eigen3-devel
-```
-
-Note: All tools will be installed relative to ```/usr/local```
-
-Installing the IceStorm Tools (icepack, icebox, iceprog, icetime, chip databases):
-
-```
-git clone https://github.com/YosysHQ/icestorm.git icestorm
-cd icestorm
-make -j$(nproc)
-sudo make install
-```
-
-Installing Arachne-PNR (place&route tool, predecessor to NextPNR):
-
-```
-git clone https://github.com/YosysHQ/arachne-pnr.git arachne-pnr
-cd arachne-pnr
-make -j$(nproc)
-sudo make install
-```
-
-Installing NextPNR (place&route tool, Arachne-PNR replacement):
-
-```
-git clone --recursive https://github.com/YosysHQ/nextpnr nextpnr
-cd nextpnr
-cmake . -B build -DARCH=ice40 -DCMAKE_INSTALL_PREFIX=/usr/local && cmake --build build
-make -j$(nproc)
-cd build
-sudo make install
-```
-
-Installing Yosys (Verilog synthesis):
-
-```
-git clone https://github.com/YosysHQ/yosys.git yosys
-cd yosys
-make -j$(nproc)
-sudo make install
-```
-
-Both place and route tools (Arachne-PNR & NextPNR) convert the IceStorm text chip databases into the respective PNR binary chip databases during build. Always rebuild the PNR tools after updating your IceStorm installation.
-
-Once the tools have been installed, you can modify the firmware and load the program to the FPGA. I typically use these two commands:
-
-```
-make clean
-make build
-```
-and then I use the ```cariboulite_test_app``` to program the FPGA with new firmware through optinions  ```[ 0] Hard reset FPGA``` and ```[ 3] Program FPGA```.
-
-
-#SDR++
-
-###Increase the swapfile size (Pi Zero only?)
+### Increase the swapfile size (Pi Zero only?)
 During the SDR++ build `make` ran out of memory (on the Pi Zero?). Hence I increased the swap file from 512 to 1024.
 
 ```
-sudo dphys-swapfile swapoff  
-sudo nano /etc/dphys-swapfile 
+sudo dphys-swapfile swapoff
+sudo nano /etc/dphys-swapfile
 ```
 Change the line `CONF_SWAPSIZE=512` to `CONF_SWAPSIZE=1024`. Save the file.
 
 ```
 sudo dphys-swapfile setup
-sudo dphys-swapfile swapon  
+sudo dphys-swapfile swapon
 ```
 
 Or:
@@ -542,10 +464,10 @@ sudo reboot
 Install dependencies for SDR++:
 
 ```
-sudo apt install libglfw3 // maybe  not needed.
+sudo apt install libglfw3 # runtime library
 sudo apt install libglfw3-dev
 sudo apt install libfftw3-dev
-sudo apt install libvolk-dev // libvolk2-dev for bookworm?
+sudo apt install libvolk-dev # confirm package name for your OS
 sudo apt install libvolk-bin
 sudo apt install libzstd-dev
 sudo apt install librtaudio-dev
@@ -559,21 +481,19 @@ sudo apt install libglfw3-dev libfftw3-dev libvolk-dev libvolk-bin libzstd-dev l
 ```
 ### Install via the nightly build package
 
-The easiest method is to download and install the nightly builds of SDR++. First download the package:
+Use the [upstream SDR++ installation instructions](https://github.com/AlexandreRouma/SDRPlusPlus#installing)
+to select an artifact matching the OS and CPU architecture. The previous
+hardcoded nightly URL has not been revalidated. Install the downloaded `.deb`
+with `sudo apt install ./actual-package-name.deb` from its download directory.
+The old recipe used `.db` by mistake and did not save the `curl` output to a file.
 
-```
-curl https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/sdrpp_debian_bookworm_aarch64.deb
-```
+### Build from source
 
-Then run the following:
-
-```
-sudo apt install ~/Downloads/sdrpp_debian_bookworm_aarch64.db
-```
-
-### Build from source (only option if you want Soapy and/or SDRplay)
-Prior to building from source, I believe it is nessecary to atleast once run ```SoapySDRUtil --find``` else the build process for SDR++ doesn't find the required libraries and will skill the inclusion of Soapy_Source.
-If you are interested in using the SDRplay devices, you need to ensure the prorietary API library is installed, before proceding with the build
+Install the development dependencies for the modules you enable. SoapySDR device
+discovery (`SoapySDRUtil --find`) is a runtime check, not a prerequisite for
+CMake to discover its development libraries. Confirm module availability in the
+configure output. The commands below are the recorded source-build recipe;
+a fresh build and server configuration check remain DOC-07.
 
 Get the source code:
 
@@ -584,7 +504,7 @@ git clone https://github.com/AlexandreRouma/SDRPlusPlus.git
 ```
 git clone https://github.com/Habraken/SDRPlusPlus.git
 ```
-In the `~/src/SDRPlusPLus` directory:
+In the `~/src/SDRPlusPlus` directory:
 
 ```
 mkdir build && cd build
@@ -615,14 +535,14 @@ sudo ldconfig
 ```
 
 
->Note: There is no need to start the SoapySDR service! Instead we will use the SDR++ Server. For gnu-radio the Soapy server is needed though...
+> SDR++ Server and SoapyRemote are separate network interfaces. Local GNU Radio access through the native source or local SoapySDR does not require a SoapyRemote server. A remote Soapy connection requires the corresponding server on the radio host.
 
-###Desktop version SDR++
+### Desktop version SDR++
 Before the `soapy_source` is available it needs to be added, in the ‘Module Manager’ of SDR++ if you are running the desktop app on the Pi4. In the 'module manager' select ‘soapy_source’, add a name to the left e.g. ‘Soapy Source’ and click on the tiny plus sign on the right…
 
 Or...
 
-###Headless version SDR++
+### Headless version SDR++
 If you are working from the cli you need to first run SDR++ so that the default config files are created.
 
 ```
@@ -652,12 +572,12 @@ When the server starts watch the cli output and confirm that the 'Soapy Source' 
 On your remote computer you should now start SDR++ and select SDR++ Server as Source. Provide the correct IP address of the Pi running the SDR++ server. Press `Connect`. At the `Source [REMOTE]` use the drop down menu to select `SoapySDR`. You ay have to press the `Refresh` button first. In the dropdown menu below that make sure you select the device appropriate for your selected frequency.
 
 >Observations: The Pi4 can easily handle 4 MSPS but somehow when the `bandwidth` setting is set to `auto` there is no data coming from the radio. When the bandwidth setting is changed to 2 MHz data is streaming again. However the display bandwidth is 4 MHz!
->The analog bandwidth is only 2.5 MHz according to the datasheet. With `SoapySDRUtil --probe` you'll find a max. sample rate = 4 MSPS and the max. filter bandwidth = 2 MHz. 
+>The analog bandwidth is only 2.5 MHz according to the datasheet. With `SoapySDRUtil --probe` you'll find a max. sample rate = 4 MSPS and the max. filter bandwidth = 2 MHz.
 
 
-#Trouble shooting faulty board
+# Trouble shooting faulty board
 
-###System
+### System
 
 ```
 uname -a
@@ -666,7 +586,7 @@ uname -a
 Linux pi0c-bookworm 6.12.20+rpt-rpi-v8 #1 SMP PREEMPT Debian 1:6.12.20-1+rpt1~bpo12+1 (2025-03-19) aarch64 GNU/Linux
 ```
 
-###SoapySDRUtil
+### SoapySDRUtil
 
 ```
 SoapySDRUtil --find
@@ -702,7 +622,7 @@ Found device 1
   vendor = CaribouLabs LTD
   version = 0x0001
 ```
-      
+
 ```
 SoapySDRUtil --probe
 ```
@@ -712,7 +632,7 @@ SoapySDRUtil --probe
 ##     Soapy SDR -- the SDR abstraction library     ##
 ######################################################
 
-Probe device 
+Probe device
 [INFO] SoapyCaribouliteSession, sessionCount: 0
 05-02 08:03:21.048   712   712 I FPGA caribou_fpga_program_to_fpga@caribou_fpga.c:210 FPGA already operational - not programming (use 'force_prog=true' to force update)
 Printing 'findCariboulite' Request:
@@ -778,7 +698,7 @@ Printing 'findCariboulite' Request:
         Modem PLL locking indication
 ```
 
-###Self test
+### Self test
 
 Error messages during the selftest using the `cariboulite_test_app`:
 
@@ -797,33 +717,33 @@ cariboulite_self_test@cariboulite_setup.c:513 Self-test process finished with er
 
 I have also tried all the other options such as hard reset of the fpga, soft reset of the fpga, reprogramming of the fpga. During the receive test there are always smi sync errors.
 
-#ALSA
+# ALSA
 
 ALSA is complicated. To have some flexibility for testing the nbfm modulator and demodulator it can be helpfull to not have to depend on a physical audio device, such as a sound card.This can be done with a ALSA utility: snd_aloop. What I describe here is based on this article:
 
 based on: https://linuxvox.com/blog/linux-without-hardware-soundcard-capture-audio-playback-and-record-it-to-file/
 
-###Prerequisits:
+### Prerequisites:
 
-Ensure 
-```alsa-utils```  ```ffmpeg``` ```sox``` 
+Ensure
+```alsa-utils```  ```ffmpeg``` ```sox```
 are installed.
 
 note :both alsa-utils and ffmpeg, are already part of the Raspberry OS usualy.
 
-###Making the Loopback Module Persistent
+### Making the Loopback Module Persistent
 
 The modprobe command loads the module temporarily (it will unload on reboot). To make it persistent:
 
 Create a configuration file in /etc/modules-load.d/ to load the module at boot:
 
-sudo nano /etc/modules-load.d/alsa-loopback.conf  
+sudo nano /etc/modules-load.d/alsa-loopback.conf
 Add the following line and save the file:
 
-```snd-aloop```  
+```snd-aloop```
 Reboot to test persistence (optional, but recommended):
 
-sudo reboot  
+sudo reboot
 After reboot, re-run lsmod | grep snd_aloop to confirm the module is loaded.
 
 ### Testing TX
@@ -840,9 +760,9 @@ Similary you can test rx with the following command to 'route' the audio signal 
 
 If faced with ```overruns!!!``` one could also use:
 
-```alsaloop -C plughw:Loopback,1,0 -P plughw:4,0 -r 48000 -c 1 -f S16_LE -t 50000``` 
+```alsaloop -C plughw:Loopback,1,0 -P plughw:4,0 -r 48000 -c 1 -f S16_LE -t 50000```
 
-or 
+or
 
 ```arecord -D plughw:Loopback,1,0 -f S16_LE -c 1 -r 48000 --buffer-time=100000 --period-time=25000 | aplay  -D plughw:4,0 -f S16_LE -c 1 -r 48000 --buffer-time=100000 --period-time=25000```
 
@@ -850,5 +770,13 @@ or
 
 # GNU-RADIO (WIP)
 ```
-sudp apt install gnuradio
+sudo apt install gnuradio
 ```
+
+
+Installing GNU Radio alone does not install this repository's native block.
+`software/gr-caribouLite/CMakeLists.txt` requests GNU Radio 3.10 and its `lib/`
+subdirectory looks up installed `cariboulite` through pkg-config. The tree has
+`caribouLiteSource_impl.cc` and a source GRC definition, but no native TX sink.
+SoapySDR has a separate TX/RX adapter. Working flowgraphs, current dependency
+validation and TX/RX hardware checks remain under roadmap item 9 and DOC-07.
