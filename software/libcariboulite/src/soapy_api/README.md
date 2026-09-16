@@ -12,4 +12,4 @@ session ownership, configuration/sensors and RX/TX streaming implementations.
 Regression harnesses are in [tests](../../tests/), including
 `test_soapy_stream.py`. An implemented TX API is not proof of successful
 end-to-end GNU Radio transmission. Verified flowgraphs and application recipes
-remain [DOC-07](../../../../roadmap.md#documentation-validation-backlog).
+remain [DOC-07](../../../../ROADMAP.md#documentation-validation-backlog).

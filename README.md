@@ -21,13 +21,13 @@ CaribouLite is an affordable, educational, open-source SDR evaluation platform a
 Due to the architectural changes in RPI5 - the new I/O controller called "RP1" chip, CaribouLite is not supported on RPI5. We assume that the reason is the removal of the SMI interface altogether from the external interfaces by Broadcomm's team.
 So, if you intend to use CaribouLite on RPI5 please don't - it won't work. Why was the SMI interface deprecated by Broadcomm (either from its hardware or kernel SW support)? Most probably due to the same reason this interface was not documented in the first place - no interest in supporting a high-speed external interface within the 40-pin connector.
 
-A Pi 5 transport redesign was proposed historically, but no working implementation is established here. Display/camera connectors are separate from the 40-pin GPIO header. Feasibility and scope are tracked as [DOC-10](roadmap.md#documentation-validation-backlog).
+A Pi 5 transport redesign was proposed historically, but no working implementation is established here. Display/camera connectors are separate from the 40-pin GPIO header. Feasibility and scope are tracked as [DOC-10](ROADMAP.md#documentation-validation-backlog).
 
 # Getting Started & Installation
 
 For this development checkout, also read [additional notes](ADDITIONAL-README.md),
 the [documentation audit](docs/documentation-audit-2026-09-16.md), and the
-[roadmap](roadmap.md). The historical installation recipe has not been freshly
+[roadmap](ROADMAP.md). The historical installation recipe has not been freshly
 validated on every listed Pi/OS combination.
 Use the following steps to install the CaribouLite on your choice of RPI board
 1. Mount the CaribouLite on a **un-powered** RPI device using the 40-pin header.
@@ -178,7 +178,7 @@ Max Transmit power         | 14 dBm                       | >10 dBm @ 30-2400 MH
 Receive noise figure       | <5 dB                      | <6 dB @ 30-3500 MHz, <8 dB @ 3500-6000 MHz
 
 <B>Note</B>:
-(1) A dated, evidence-based comparison with other SDR devices remains [DOC-09](roadmap.md#documentation-validation-backlog).
+(1) A dated, evidence-based comparison with other SDR devices remains [DOC-09](ROADMAP.md#documentation-validation-backlog).
 (2) Some of the above specifications are simulated rather than tested
 (3) Analog bandwidth controlled by the modem
 (4) The ISM version of the board doesn't contain the wide-range of frequencies (30-6000 MHz) and contains the native capabilities of the Modem IC.

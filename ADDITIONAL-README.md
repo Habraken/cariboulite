@@ -1,7 +1,7 @@
 # Additional CaribouLite notes
 
 Development priorities and acceptance criteria are tracked in the
-[development roadmap](roadmap.md). The [documentation audit](docs/documentation-audit-2026-09-16.md) records what
+[development roadmap](ROADMAP.md). The [documentation audit](docs/documentation-audit-2026-09-16.md) records what
 was checked and what remains open. These installation notes
 combine historical recipes and work in progress; they are not a freshly verified
 installation guide. Before applying manual source patches, check whether the
@@ -201,7 +201,7 @@ The top-level installer builds the blob generator before the driver and invokes
 the driver installer itself; a driver-first installation is unnecessary. It also
 runs `git pull`, installs packages and writes system configuration. Its legacy
 header/Python package choices still require fresh Bookworm/Trixie validation;
-see [DOC-01](roadmap.md#documentation-validation-backlog).
+see [DOC-01](ROADMAP.md#documentation-validation-backlog).
 
 Then in the cariboulite directory:
 

@@ -3,7 +3,7 @@
 This is inherited packaging guidance, not a validated cross-platform CaribouLite
 installation. The native library and Raspberry Pi hardware dependencies still
 apply. Recipe/build validation is tracked as
-[DOC-07](../../../roadmap.md#documentation-validation-backlog).
+[DOC-07](../../../ROADMAP.md#documentation-validation-backlog).
 
 This recipe is for creating a package that can be installed into a [conda](https://docs.conda.io/en/latest/) environment. See the [Conda GNU Radio Guide](https://wiki.gnuradio.org/index.php/CondaInstall) for more information on using GNU Radio with conda.
 

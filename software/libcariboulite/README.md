@@ -16,7 +16,7 @@ cmake --build build --parallel 2
 On Debian-family systems the dependency package names include `build-essential`,
 `cmake`, `pkg-config`, `libncurses-dev`, `libasound2-dev`, and optionally
 `libsoapysdr-dev`. A fresh OS installation has not been exercised by the
-September 2026 documentation audit; see [DOC-01](../../roadmap.md#documentation-validation-backlog).
+September 2026 documentation audit; see [DOC-01](../../ROADMAP.md#documentation-validation-backlog).
 
 The build creates `libcariboulite.so`, `libcariboulite_static.a`, the test
 application, utilities, and (when detected) the Soapy module. It does not build

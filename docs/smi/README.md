@@ -20,7 +20,7 @@ but portability is the bigger issue. Users update their machine's kernel and eac
 kernel headers. Additionally, users with different kernel versions may need to recompile and link the kernel module locally to ensure compatibility.
 
 Kernel mainline integration is a historical proposal, not an available installation path.
-Maintenance/packaging options remain [DOC-02](../../roadmap.md#documentation-validation-backlog).
+Maintenance/packaging options remain [DOC-02](../../ROADMAP.md#documentation-validation-backlog).
 This also is the main issue while switching between the mainline Raspbian to DragonOS or other RPI distributions.
 
 Currently the "smi-stream-dev" is stable but is still has certain issues to solve:
@@ -54,7 +54,7 @@ are in [driver/README.md](../../driver/README.md); the old userspace `kernel/`
 directory holds generated artifacts and is not the build source.
 
 The original requests for easier updates, generic streaming support and timing
-improvements are tracked in [DOC-02](../../roadmap.md#documentation-validation-backlog).
+improvements are tracked in [DOC-02](../../ROADMAP.md#documentation-validation-backlog).
 
 # API
 Our implemented API (user-mode) driver is located in: [Caribou-SMI API Driver](../../software/libcariboulite/src/caribou_smi/README.md)

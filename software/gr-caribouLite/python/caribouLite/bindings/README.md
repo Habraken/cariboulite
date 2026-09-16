@@ -6,4 +6,4 @@ templates. The parent module conditionally includes Python/GRC support through
 
 The presence of bindings does not establish that a particular GNU Radio/Python
 combination builds or installs correctly. Packaging and an import/GRC smoke test
-remain [DOC-07](../../../../../roadmap.md#documentation-validation-backlog).
+remain [DOC-07](../../../../../ROADMAP.md#documentation-validation-backlog).

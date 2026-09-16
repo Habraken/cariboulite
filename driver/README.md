@@ -56,4 +56,4 @@ They currently set mode `0666` for SMI, I2C, SPI, GPIO memory and raw memory
 matches, with groups on some rules. This is broader than SMI-only access.
 The helper [udev/install.sh](udev/install.sh) copies/removes the rules and reloads
 udev. A narrower permission policy and unprivileged operation tests are tracked
-as [DOC-01](../roadmap.md#documentation-validation-backlog).
+as [DOC-01](../ROADMAP.md#documentation-validation-backlog).

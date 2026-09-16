@@ -44,7 +44,7 @@ The implementation is under [hat](../../software/libcariboulite/src/hat/) and
 [cariboulite_production.c](../../software/libcariboulite/src/cariboulite_production.c).
 This README does not yet provide a validated programming command. Backup/restore,
 board identity fields, write protection and readback verification are tracked as
-[DOC-05](../../roadmap.md#documentation-validation-backlog). Do not substitute
+[DOC-05](../../ROADMAP.md#documentation-validation-backlog). Do not substitute
 FPGA programming for EEPROM programming; they target different devices.
 
 # License

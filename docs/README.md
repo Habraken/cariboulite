@@ -1,7 +1,7 @@
 # Documentation
 
 - [Additional installation and usage notes](../ADDITIONAL-README.md)
-- [Development roadmap and unresolved documentation tasks](../roadmap.md)
+- [Development roadmap and unresolved documentation tasks](../ROADMAP.md)
 - [README validation report](documentation-audit-2026-09-16.md)
 - [SMI interface](smi/README.md)
 - [EEPROM notes](flashing/README.md)

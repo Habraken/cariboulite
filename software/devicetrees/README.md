@@ -11,4 +11,4 @@ Run `compile.sh` from this directory with `dtc` and the built
 `../utils/generate_bin_blob` available. It writes generated files here and copies
 the header into `../libcariboulite/src/`; it does not program the EEPROM.
 A validated EEPROM programming procedure remains
-[DOC-05](../../roadmap.md#documentation-validation-backlog).
+[DOC-05](../../ROADMAP.md#documentation-validation-backlog).

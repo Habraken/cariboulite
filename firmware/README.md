@@ -3,7 +3,7 @@
 Register notes below were checked against the current RTL on 2026-09-16.
 Historical diagrams may describe intended features; implementation differences
 are called out explicitly. Physical timing/electrical validation remains in
-[DOC-03 and DOC-04](../roadmap.md#documentation-validation-backlog).
+[DOC-03 and DOC-04](../ROADMAP.md#documentation-validation-backlog).
 CaribouLite contains an FPGA device (ICE40 family) with 1280 LE. It has two designated roles:
 1. Step #1: Controlling and managing the RF front-end path, and other digital device control.
 2. Step #2: Streaming SMI I/Q data from the RPI to the modem, and from the modem LVDS back to the SMI interface.

@@ -13,7 +13,7 @@ instructions against CMake files, installers, headers, menu code and RTL.
 The vendored IIR documentation and generated GNU Radio packaging material were
 inventoried; their upstream/platform claims were not exhaustively revalidated.
 
-The policy is now in [roadmap.md](../roadmap.md#documentation-validation-backlog):
+The policy is now in [ROADMAP.md](../ROADMAP.md#documentation-validation-backlog):
 fill gaps from evidence, or leave a source-linked, actionable task.
 
 ## Resolved or clarified

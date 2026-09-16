@@ -45,7 +45,7 @@ EEPROM and production-test code exists under `software/libcariboulite/src/hat/`
 and `cariboulite_production.c`. The main CMake file defines the production source
 variable but does not create a production executable target. A supported backup,
 programming and verification procedure remains
-[DOC-05](../roadmap.md#documentation-validation-backlog); see also
+[DOC-05](../ROADMAP.md#documentation-validation-backlog); see also
 [EEPROM notes](../docs/flashing/README.md).
 
 ### Clocking
@@ -74,7 +74,7 @@ IO controller's generic PMOD output is disconnected. TX sync selection uses
 capture, a general peripheral API or a TX/RX/PA sequencer.
 
 Pin numbering, voltage/current limits, PPS behavior and peripheral examples
-remain [DOC-04](../roadmap.md#documentation-validation-backlog). Do not infer
+remain [DOC-04](../ROADMAP.md#documentation-validation-backlog). Do not infer
 physical connector numbering from these RTL array indices.
 
 ### FPGA and LVDS
@@ -86,7 +86,7 @@ limitations. Board-level LVDS timing/electrical calculations remain DOC-04.
 ### Calibrations & Testing
 
 Calibration procedures and measured RF acceptance limits remain
-[DOC-06](../roadmap.md#documentation-validation-backlog). Production-test source
+[DOC-06](../ROADMAP.md#documentation-validation-backlog). Production-test source
 exists, but is not evidence that calibration procedures are complete.
 
 ## License
