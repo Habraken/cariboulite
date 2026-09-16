@@ -1098,6 +1098,51 @@ int caribou_smi_read_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
     return n / CARIBOU_SMI_BYTES_PER_SAMPLE;
 }
 
+// EXTLB echoes TX frames, including I_DATA[0] (embedded TX control).
+// Normal RX requires that bit to be zero; only this diagnostic reader permits it.
+int caribou_smi_read_loopback_timed(caribou_smi_st *dev,
+    caribou_smi_channel_en channel, caribou_smi_sample_complex_int16 *samples,
+    size_t count, long timeout_us)
+{
+    if (!count) return 0;
+    if (!dev || dev->filedesc < 0 || !samples || !dev->read_temp_buffer ||
+        dev->native_batch_len < CARIBOU_SMI_BYTES_PER_SAMPLE) return -1;
+    if (dev->debug_mode != caribou_smi_none) return -2;
+    size_t capacity = dev->native_batch_len / CARIBOU_SMI_BYTES_PER_SAMPLE;
+    if (count > capacity) count = capacity;
+    int n = smi_transfer_until(dev, dev->read_temp_buffer, count * 4,
+                              false, smi_deadline_us(timeout_us));
+    if (n <= 0) return n;
+    if (n < 4) return -3;
+    const uint8_t *bytes = (const uint8_t *)dev->read_temp_buffer;
+    int probe = n / 4 < 4 ? n / 4 : 4;
+    int offset;
+    for (offset = 0; offset + probe * 4 <= n; ++offset) {
+        int valid = 0;
+        for (; valid < probe; ++valid) {
+            uint32_t word;
+            memcpy(&word, bytes + offset + valid * 4, 4);
+            if ((word & 0xC000C000u) != 0x80004000u) break;
+        }
+        if (valid == probe) break;
+    }
+    if (offset + probe * 4 > n) return -3;
+    int decoded = 0;
+    for (; offset + 4 <= n && (size_t)decoded < count; offset += 4) {
+        uint32_t word;
+        memcpy(&word, bytes + offset, 4);
+        if ((word & 0xC000C000u) != 0x80004000u) break;
+        int16_t i = (word >> 17) & 0x1fff;
+        int16_t q = (word >> 1) & 0x1fff;
+        if (i >= 0x1000) i -= 0x2000;
+        if (q >= 0x1000) q -= 0x2000;
+        samples[decoded].i = channel == caribou_smi_channel_2400 ? q : i;
+        samples[decoded].q = channel == caribou_smi_channel_2400 ? i : q;
+        ++decoded;
+    }
+    return decoded ? decoded : -3;
+}
+
 int caribou_smi_write_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
     const caribou_smi_sample_complex_int16 *samples, size_t count, long timeout_us)
 {

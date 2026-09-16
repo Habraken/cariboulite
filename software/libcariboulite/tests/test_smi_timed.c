@@ -9,7 +9,7 @@
 #include <time.h>
 #include <unistd.h>
 static int64_t now;
-static int calls, polls, mode, prefix, interrupts;
+static int calls, polls, mode, prefix, interrupts, rx_offset;
 static unsigned char output[128];
 static size_t output_len;
 int __wrap_clock_gettime(clockid_t id, struct timespec *ts) {
@@ -36,10 +36,11 @@ ssize_t __wrap_write(int fd, const void *buf, size_t n) {
 ssize_t __wrap_read(int fd, void *buf, size_t n) {
     (void)fd; ++calls;
     if (mode==1) { errno=EIO; return -1; }
-    if (mode==2 || mode==3) {
+    if (mode==2 || mode==3 || mode==5) {
         if(n>24)n=24;
-        uint32_t word=mode==2?0x80004000:0;
-        for(size_t i=0;i<n/4;i++)memcpy((char*)buf+i*4,&word,4);
+        uint32_t word=mode==5?0x84037048:(mode==2?0x80004000:0);
+        memset(buf,0xff,n);
+        for(size_t i=rx_offset;i+4<=n;i+=4)memcpy((char*)buf+i,&word,4);
         return n;
     }
     return 0;
@@ -66,6 +67,29 @@ int main(void) {
             if(mode==3 && !tx) assert(r==-3);
         }
     }
+    // Modem EXTLB returns the TX control bit at bit 16 unchanged.
+    mode=5; interrupts=0;
+    assert(caribou_smi_read_timed(&d,0,samples,NULL,32,1000)==-3);
+    assert(caribou_smi_read_loopback_timed(&d,caribou_smi_channel_900,
+                                         samples,32,1000)==6);
+    for(int k=0;k<6;++k) assert(samples[k].i==513 && samples[k].q==-2012);
+    assert(caribou_smi_read_loopback_timed(&d,caribou_smi_channel_2400,
+                                         samples,32,1000)==6);
+    for(int k=0;k<6;++k) assert(samples[k].i==-2012 && samples[k].q==513);
+    for(rx_offset=1;rx_offset<=3;++rx_offset) {
+        samples[5].i=1234;
+        assert(caribou_smi_read_loopback_timed(&d,caribou_smi_channel_2400,
+                                             samples,32,1000)==5);
+        for(int k=0;k<5;++k) assert(samples[k].i==-2012 && samples[k].q==513);
+        assert(samples[5].i==1234); // No invented/interpolated tail sample.
+    }
+    rx_offset=0;
+    assert(caribou_smi_read_loopback_timed(&d,0,samples,1,1000)==1);
+    assert(caribou_smi_read_loopback_timed(&d,0,samples,0,1000)==0);
+    mode=3;assert(caribou_smi_read_loopback_timed(&d,0,samples,32,1000)==-3);
+    mode=1;assert(caribou_smi_read_loopback_timed(&d,0,samples,32,1000)==-1);
+    mode=0;now=0;interrupts=3;
+    assert(caribou_smi_read_loopback_timed(&d,0,samples,32,1000)==0 && now==1000);
     // Every possible partial byte prefix: retry must reproduce the exact wire data.
     for(int bytes=1;bytes<8;bytes++) {
         unsigned char expected[16];

@@ -22,6 +22,29 @@ P1 means fix before depending on the affected path; P2 means a concrete
 correctness/reproducibility issue to address next. Findings below are ordered
 by priority, with source locations referring to the reviewed revision.
 
+## Current status — reconciled 2026-09-16
+
+This section supersedes historical pending-work statements below. Reconciled
+against commits through `a311b17`, current FPGA source and the
+[FPGA study and promotion record](fpga-gap-study-2026-09-13.md).
+“Fixed” describes the reported defect, not exhaustive hardware validation.
+
+| Issues | Current status |
+| --- | --- |
+| 1–9 | Fixes committed; validation and API-specific limits are recorded below. |
+| 10 | Fixed: sample-gap and debug-loopback outputs are connected, validated and promoted. |
+| 11 | Fixed in `4b36a25`: TX reset now selects the declared `IDLE` state. |
+| 12–13 | Fixes committed, with build/failure-path and recorded live checks as applicable. |
+| 14 | Fixed in `cac73f2`; physical Soapy RX checks recorded, physical Soapy TX validation deferred. |
+| 15 | Fixed in `9b4d977`; builds with/without Soapy and temporary installation passed. |
+| 16 | Fixed in `a311b17`; installer failure-path checks and real module build passed; system installation not performed. |
+
+All numbered defects now have fixes. The owner confirmed successful debug-loopback
+tests, and the exact tested candidate has been promoted with both embedded
+headers and the loopback RTL bench. General implicit-net checking remains a
+follow-up from issue 11. Historical status entries below describe each stage;
+see the study's 2026-09-16 promotion entry for the current firmware.
+
 ## Findings
 
 ### 1. P1 — Multiple opens can leave the kernel using freed FIFO memory
@@ -414,6 +437,54 @@ Yosys confirms undriven `i_sample_gap` and `i_debug_lb` in the flattened design.
 Connect the registers to the outputs and verify gap/loopback behavior in HDL
 tests before programming hardware.
 
+Update 2026-09-15 (reconciliation): **partially fixed** in `4b36a25`.
+`sys_ctrl.v` now assigns `o_tx_sample_gap = tx_sample_gap`; `top.v` routes
+that output to the LVDS transmitter. The promoted FPGA and app support
+selectable 2/4 MS/s TX. The study records sequence/stop simulations across
+all gap values, synthesis/routing acceptance and user-confirmed TX/RX and
+rate-switching tests. See the linked study's promotion section for the exact
+image and limitations.
+
+`o_debug_loopback_tx` still has no driver, although `top.v` connects it to
+`lvds_tx.i_debug_lb`. That portion remains open. Existing TX benches tie
+debug input low; successful gap tests do not establish loopback behavior.
+
+Single-attempt follow-up 2026-09-15: an isolated copy with the loopback
+assignment added passed synthesis, seed-16 placement/routing, timing and
+packing on its first and only build. Final LVDS Fmax was 70.19 MHz (required
+64 MHz); system Fmax was 83.50 MHz (required 62.5 MHz). The candidate and
+logs are preserved in `installations/loopback-one-try/`; see the FPGA study's
+single-attempt section. No production HDL/image was changed or programmed.
+At that stage, loopback functional validation and promotion remained
+outstanding; the subsequent functional check is recorded below.
+
+Functional follow-up 2026-09-15: the isolated candidate passed a combined
+sys_ctrl/LVDS TX bench covering register decoding and 1,024 gap/phase/TX/FIFO
+combinations, exact serialized debug frames, no settled-loopback FIFO pulls,
+exit/resumption and reset. Existing sequence/stop/FIFO-reset benches also
+passed against candidate modules. Debug mode persists independently of TX
+enable until its register bit is cleared or reset. See the FPGA study for
+logs and limits. Candidate RTL behavior is now checked; hardware validation
+and promotion remain outstanding. The production loopback output is still
+unconnected, so issue 10 remains open.
+
+Menu follow-up 2026-09-15: menu 14 now has an `L` interface-loopback toggle
+and fresh decoded I/Q preview for testing the candidate. Setup disables EEC,
+verifies RF09 off/RF24 RX, and enables modem EXTLB plus the FPGA pattern;
+normal TX/RX/rate controls are blocked until successful cleanup. New mocked
+controller and FPGA SPI tests, lifecycle regression and full build pass.
+See the study's manual procedure and limits. No candidate was loaded or
+hardware test performed; the production FPGA connection remains unchanged.
+
+Owner hardware confirmation 2026-09-15: menu 14 displayed 1,412,895 captured
+samples, zero read timeouts, and 16/16 preview pairs matching expected HiF
+I=`F824`, Q=`0201`. This confirms the candidate's fixed-pattern interface
+loopback through the receive decoder. The log records several successful
+loopback cleanup cycles; final signal termination did not record monitor
+cleanup. See the study for evidence and limits. Candidate hardware pattern
+validation is now successful; production-image promotion and commit remain
+outstanding, so the committed FPGA output is still unconnected.
+
 ### 11. P2 — LVDS TX reset refers to an undefined state
 
 `firmware/lvds_tx.v:76`
@@ -423,6 +494,22 @@ Reset assigns `r_state <= INIT`, but the defined states are `IDLE`, `TX_FRAME`,
 Yosys reports both the implicit wire and a nonconstant asynchronous reset.
 The default case may eventually recover, but the reset state is not defined
 as intended. Use a declared reset state and enable checks for implicit nets.
+
+Update 2026-09-15 (reconciliation): **fixed** in `4b36a25`.
+`firmware/lvds_tx.v` resets `r_state` to the declared `IDLE` constant.
+The same commit corrected the variable part-select to legal indexed syntax
+and promoted the tested FPGA image. The original undefined-`INIT` finding
+no longer applies to the current source.
+
+The current sequence and active-stop simulations exercise TX after reset;
+both passed again during reconciliation. The separate `tb_reset.v` also
+passed, but tests the FIFO reset-clock behavior, not the LVDS TX state
+register directly. Historical synthesis/routing and hardware validation are
+recorded in the FPGA study. The earlier gap/reset promotion used SHA-256:
+`a90a908f0e4e57a7a2f5e26e97303a3f43cadcaeb5b1be39eca4a604e0e00bfe`.
+No general implicit-net rejection policy was added by that commit; broader
+lint coverage remains a follow-up rather than an unfixed reset assignment.
+No FPGA was programmed during this reconciliation.
 
 ### 12. P2 — Editing HDL does not trigger rebuilding the bitstream
 
@@ -506,7 +593,7 @@ converted to zero. This does not implement the timeout/error behavior documented
 in the adjacent Soapy stream interface and can make callers spin or wait beyond
 their requested deadline.
 
-**Fixed in the working tree (2026-09-14).** The synchronous Soapy stream now
+**Fixed and committed in `cac73f2` (2026-09-14).** The synchronous Soapy stream now
 starts inactive, waits out inactive calls without touching the transport, and
 becomes active only after successful hardware activation. Setup, close, and
 deactivation clear its active state. Unsupported timed/burst flags are rejected;
@@ -628,7 +715,11 @@ RF operation was performed.
   that the owner's board/setup is broken. No RF application was intentionally
   launched, no transmission was requested, and no firmware was programmed.
 
-## Next work
+## Original next-work recommendations (2026-09-12)
+
+Historical review guidance; use the current-status section above for the
+remaining numbered work. The baseline capture and subsequent fixes described
+below have already addressed much of this original plan.
 
 First preserve the exact working bitstream and installed software/module hashes.
 Then fix lifecycle and transport accounting in small changes, verifying each
@@ -643,6 +734,6 @@ historical code and control/register assumptions that need comparison against
 the actual working bitstream; this review does not certify RF register values,
 clock-domain timing, or spectral performance.
 
-Only this review document was added to the repository. Functional source,
+At the original review date, only this review document was added to the repository. Functional source,
 existing build outputs, branch history, and hardware configuration were not
 changed.

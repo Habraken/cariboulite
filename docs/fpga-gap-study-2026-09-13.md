@@ -578,3 +578,243 @@ pipeline configuration. Existing puts/gets counters still count frames.
 The user also tested option 14 with actual microphone input and reported
 that it works correctly, adding live audio-input validation to the previous
 TX/RX start/stop and sample-rate switching tests.
+
+
+## Single loopback-connection build attempt — 2026-09-15
+
+The owner authorized one isolated attempt, with no retries if it failed.
+Copied the current committed Verilog, constraints and Makefile to a temporary
+directory and added only this assignment in `sys_ctrl.v`:
+
+```verilog
+assign o_debug_loopback_tx = debug_loopback_tx;
+```
+
+One `make top.bin` invocation passed synthesis, placement/routing, timing and
+packing (exit zero, approximately 28 seconds). The existing seed 16 and all
+Makefile constraints/options were retained; timing failure was not allowed.
+Final reported LVDS Fmax was 70.19 MHz against 64 MHz and system-clock Fmax
+was 83.50 MHz against 62.5 MHz. All reported clock targets passed. Packed
+logic usage was 1,022/1,280 cells (79%); RAM usage remains 16 blocks.
+
+The candidate synthesis JSON contains 634 LUT4 cells versus 639 in the
+committed promoted JSON, and three additional flip-flops. This is an artifact
+comparison, not a fresh paired baseline build; no second build was attempted.
+Connecting loopback did not prevent this candidate from fitting or meeting
+its analyzed timing constraints.
+
+Candidate binary SHA-256:
+`dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6`.
+Sources, Makefile, constraints, synthesis/routing logs, timing report, binary,
+exit status and original-file hashes are preserved locally under
+`installations/loopback-one-try/cariboulite-loopback-one-try-_30zy23j/`.
+
+This establishes build feasibility only. No loopback functional simulation,
+new hardware validation or FPGA programming was performed. Repository HDL,
+validated binary and both firmware headers were verified unchanged by hash.
+Issue 10 remains open pending behavior tests and promotion; a successful
+build alone does not close it.
+
+
+### Loopback functional check — 2026-09-15
+
+The isolated candidate passed a new RTL bench connecting its actual
+`sys_ctrl.v` and `lvds_tx.v`, with independent register/serializer clocks and
+a registered-output FIFO model. Register commands are applied at the sys_ctrl
+interface; the SPI pin decoder and physical DDR cells are not instantiated.
+The test checks chip-select/address gating and all eight debug-register bits,
+then 1,024 combinations of 16 sample gaps, 16 serializer phases for launching
+register writes, TX enabled/disabled and FIFO empty/nonempty.
+
+All cases passed: debug bit 3 reaches the output, other writes preserve it as
+appropriate, settled loopback serializes exactly `0x84037048`, and no FIFO
+samples are consumed while settled in loopback. Clearing debug resumes normal
+TX when enabled with data, or returns to idle zero/sync frames otherwise.
+Reset during loopback clears the register and transmitter. Entry/exit checks
+allow 512 serializer clocks to settle; each frame-content check decodes 24
+complete words. The original disconnected sys_ctrl fails this same bench at
+the reset-output assertion, confirming sensitivity to the missing connection.
+
+The test also confirms existing semantics: debug selection overrides normal
+TX enable and remains active across TX-enable toggles. Clear the debug bit
+(or reset) to leave this FPGA test-pattern mode. This is not a demonstration
+of analog/RF loopback through the modem.
+
+Existing TX sequence, TX stop/restart and FIFO-reset simulations also passed
+against candidate modules. Bench, reproduction instructions and logs are in
+the preserved candidate directory as `tb_loopback.v`, `FUNCTIONAL-README.md`,
+`functional-check.log` and `disconnected-control.log`.
+
+No additional synthesis/routing build was attempted. Candidate HDL was checked
+against the one-line experiment, its binary hash still matches the successful
+build, and original repository HDL/image/header hashes remain unchanged.
+No hardware was accessed or image promoted. Physical timing and modem behavior,
+full SPI/top-level integration, metastability and lossless preservation of
+in-flight user samples during debug switching remain outside these checks.
+
+
+### Menu 14 interface-loopback control — 2026-09-15
+
+Menu 14 now accepts `L`/`l` to toggle the combined FPGA test-pattern and
+AT86RF215 external-interface loopback. This is intended for the isolated
+candidate above; the validated repository FPGA binary remains unchanged.
+A new FPGA API writes debug register bit 3, clearing the other debug bits.
+The modem's EXTLB bit and the FPGA pattern enable are separate controls.
+
+Entry stops the normal TX/RX pipelines, idles SMI, clears modem EEC and EXTLB,
+commands both radios to TRXOFF and checks their states. It enables both I/Q
+interfaces, keeps the RF front end in low-power mode, selects FPGA/SMI RX24,
+and commands only RF24 RX for the interface clock. After checking RF09 is
+TRXOFF and RF24 is RX, it enables EXTLB with EEC disabled, enables the FPGA
+pattern and starts SMI RX24. It never issues TX or TX_PREP commands.
+This follows the datasheet section 4.5.7 restriction against normal RF
+transmission with EXTLB enabled.
+
+The monitor takes bounded 10 ms reads of up to 4,096 decoded samples and
+shows up to 16 fresh I/Q pairs, total captured samples and timeout count.
+Normal audio processing stays stopped. This is a sample preview, not a
+continuous loss-free capture or automatic pattern-verification result.
+A timeout clears the preview rather than showing old data as fresh. Read
+errors initiate cleanup. The displayed `0x84037048` is the generated FPGA
+frame; the preview is decoded HiF I/Q, not raw serialized words.
+
+While loopback is enabled or cleanup is incomplete, TX, normal RX and
+sample-rate changes are blocked. `L` disables it; `Q` cleans up before exit.
+Cleanup clears the FPGA pattern, EXTLB and EEC, stops both radios, and restores
+saved interface settings after successful shutdown (never restoring EXTLB).
+If cleanup fails, the monitor stays open with controls locked; `L` retries.
+Normal TX starts also check EXTLB and reject failed register reads. An already
+running normal TX can still be stopped without that register read succeeding.
+
+Validation: the complete local application/library/Soapy build passed.
+`test_monitor_loopback.py` checks actual controller sequencing, control-key
+interlocks, no TX/TX_PREP commands, register restoration, fresh/short/timeout/
+failed captures, every start/stop I/O failure, register mismatch, failure to
+reach RX and cleanup retries. `test_fpga_spi_status.py` now also verifies the
+actual FPGA loopback command's opcode, enable/disable values and error paths.
+The TX/RX lifecycle/monitor-startup/FIFO cancellation regression passed.
+`git diff --check` passed. No app was launched against hardware and no FPGA
+was programmed during this implementation.
+
+#### Manual check with the candidate loaded
+
+1. Release all radio applications. Temporarily program the isolated candidate
+   using the existing `gap-program` helper, with the candidate binary path:
+
+   ```sh
+   installations/fpga-gap-study/20260913T165728Z/candidate-leds-on/gap-program \
+     installations/loopback-one-try/cariboulite-loopback-one-try-_30zy23j/top.bin
+   ```
+
+2. Launch `build/cariboulite_test_app 2> debug.log` and select menu `14`.
+   Do not select option 3 for this experiment: the repository's validated
+   image still has the loopback output disconnected.
+3. Press `L`. Expect loopback ON, RF09 STATE `0x02`, RF24 STATE `0x05`, and
+   IQIFC0 bit 7 set with bit 0 clear. Look for fresh, repeating I/Q values in
+   the loopback preview. Capture the actual observed values for comparison;
+   ON confirms setup commands succeeded, not that the FPGA pattern arrived.
+4. Press `T`, `R`, `2` or `4` while loopback is active and check that each is
+   rejected. Press `L` to stop; both radios should return to `0x02` and EXTLB
+   should clear. Repeat loopback start/stop, then quit directly with `Q` while
+   enabled and confirm cleanup completes in `debug.log`.
+5. Only after successful loopback cleanup, perform ordinary RX/TX regression
+   checks separately. To restore the validated image, quit the app and use
+   the same programming helper with `firmware/top.bin`, or use option 3.
+
+These are operator instructions, not completed hardware-validation results.
+The candidate and both local APIs are available for the next hardware test;
+source changes are uncommitted and system-wide userspace is unchanged.
+
+
+### First menu-loopback run: decoder correction — 2026-09-15
+
+The owner reported an error after pressing `L`. Preserved their log at
+`installations/loopback-one-try/validation/user-test-20260915-2210.log`.
+It records repeated successful setup/cleanup and later normal-RX synchronization
+errors, but the original loopback reader did not log its failure code. Thus
+this log alone does not identify the precise returned loopback read error.
+
+A deterministic software defect was found: the fixed TX frame `0x84037048`
+has I_DATA[0] (bit 16) set. The normal SMI RX framing check uses mask
+`0xC001C000` and requires `0x80004000`, rejecting that frame at every byte
+alignment. EXTLB can return this TX control bit unchanged. The RTL loopback
+bench did not exercise the userspace RX decoder, and the controller test had
+mocked already-decoded samples, so neither caught this integration mismatch.
+
+Menu 14 now calls a separate `caribou_smi_read_loopback_timed` diagnostic API.
+It accepts the echoed TX control bit while checking I/Q framing, decodes only
+complete frames, and does not interpolate missing tail samples. Normal RX
+retains its stricter validation. Loopback read failures now log the error code.
+This software correction does not change the candidate FPGA image or its
+single-build result.
+
+Tests against the actual SMI implementation reproduce normal-reader rejection
+of the exact pattern and verify diagnostic decoding on both channels, all
+three nonzero byte offsets, exact returned counts, short/empty requests,
+corrupt data, I/O failures and timeout budgets. Controller tests and the full
+Soapy/SMI regression pass; the local app/library/Soapy build passes.
+Expected decoded HiF values for an unchanged echoed frame are I=`0xF824`
+(-2012), Q=`0x0201` (513), shown as signed 16-bit hexadecimal in the preview.
+Actual hardware return mapping still needs confirmation in the next run.
+
+Restart the rebuilt app, select 14 and press L again with the candidate still
+loaded. No FPGA rebuild or reprogramming is required for this software fix.
+The owner's previous message confirms testing reached L, not a programming
+failure; successful pattern capture remains unverified.
+
+
+### Confirmed hardware pattern capture — 2026-09-15
+
+The owner supplied menu 14 output showing loopback ON, 1,412,895 captured
+samples, zero read timeouts, and all 16 preview entries equal to I=`F824`,
+Q=`0201`. These exactly match the expected decoded HiF values for the FPGA
+frame `0x84037048`. This validates the fixed pattern through the FPGA-to-modem
+interface, modem external loopback, FPGA receive path and userspace decoder
+for the displayed capture. The cumulative sample count is not a full-pattern
+comparison: only the shown preview values were supplied, and this snapshot
+view does not establish loss-free streaming.
+
+The accompanying log is preserved at
+`installations/loopback-one-try/validation/user-pattern-match-20260915-2221.log`.
+It includes four completed loopback enable/cleanup pairs, then a final enable
+followed by signal-2 termination and general driver teardown. The last session
+has no monitor-loopback cleanup-complete entry; signal-path restoration is not
+validated by this run. Use L to clear loopback or Q to run monitor cleanup.
+Normal RX timeout messages elsewhere in the log are separate from the zero
+loopback-read-timeout counter in the supplied capture.
+
+The isolated candidate now has a successful build, RTL tests and a matching
+physical loopback capture. Promotion into the repository firmware and final
+commit remain outstanding; this report did not change or program firmware.
+
+
+### Loopback validation and promotion — 2026-09-16
+
+The owner confirmed that the debug-loopback tests were successful and authorized
+promotion and commit. This adds user functional confirmation to the matching
+hardware pattern capture above; it does not add a new signal-termination test
+or a loss-free-streaming measurement.
+
+The exact single-build candidate was promoted to `firmware/`: the one-line
+`sys_ctrl.v` connection plus its binary, ASC, JSON and BLIF. Both embedded
+firmware headers were regenerated from that binary. SHA-256:
+`dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6`.
+All other repository HDL and pin constraints match the candidate. No new
+synthesis/routing run or hardware programming was performed during promotion.
+The combined loopback RTL bench is now preserved in `firmware/tests/`.
+
+Option 3 and the rebuilt local library now use the loopback-capable image;
+earlier instructions warning that option 3 loads a disconnected image are
+historical. Menu 14's loopback controller, diagnostic decoder and regression
+tests are included in this promotion. Issue 10 is resolved. System-wide
+userspace libraries and the installed kernel driver are unchanged.
+
+The previous committed firmware is available from the parent of this promotion
+commit. Its SHA-256 is
+`a90a908f0e4e57a7a2f5e26e97303a3f43cadcaeb5b1be39eca4a604e0e00bfe`.
+
+Promotion checks passed: byte-for-byte header payload verification, TX sequence,
+active-stop, FIFO-reset and 1,024-case loopback RTL simulations, firmware build
+failure/dependency checks, monitor-loopback failure/cleanup tests, FPGA SPI,
+TX/RX lifecycle, NBFM rate and Soapy/SMI regressions. The local full CMake build
+passed. Whitespace checks pass with CRLF recognized in the existing SMI files.

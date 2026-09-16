@@ -120,6 +120,11 @@ int caribou_smi_write_samples(caribou_smi_st *smi,
 int caribou_smi_read_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
     caribou_smi_sample_complex_int16 *samples, caribou_smi_sample_meta *metadata,
     size_t count, long timeout_us);
+// Interface-loopback diagnostics only: accepts echoed TX control bits.
+// Returns complete decoded samples without interpolation; normal RX stays strict.
+int caribou_smi_read_loopback_timed(caribou_smi_st *dev,
+    caribou_smi_channel_en channel, caribou_smi_sample_complex_int16 *samples,
+    size_t count, long timeout_us);
 int caribou_smi_write_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
     const caribou_smi_sample_complex_int16 *samples, size_t count, long timeout_us);
 

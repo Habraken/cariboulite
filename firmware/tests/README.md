@@ -9,6 +9,8 @@ iverilog -g2012 -s tb -o /tmp/tx-stop firmware/tests/tb_stop.v firmware/lvds_tx.
 vvp /tmp/tx-stop
 iverilog -g2012 -s tb -o /tmp/fifo-reset firmware/tests/tb_reset.v firmware/complex_fifo.v
 vvp /tmp/fifo-reset
+iverilog -g2012 -s tb -o /tmp/fpga-loopback firmware/tests/tb_loopback.v firmware/sys_ctrl.v firmware/lvds_tx.v
+vvp /tmp/fpga-loopback
 ```
 
 Sequence and stop tests use a registered-output FIFO model. The reset test
@@ -24,3 +26,8 @@ Build dependency/failure checks (no FPGA tools or hardware required):
 ```sh
 python3 firmware/tests/test_build.py
 ```
+
+The loopback bench connects the actual register controller and LVDS transmitter.
+It checks register decoding, 1,024 gap/phase/TX/FIFO combinations, exact debug
+frames, no settled-loopback FIFO consumption, exit/resumption and reset.
+It does not instantiate SPI pins, physical DDR cells or the modem.

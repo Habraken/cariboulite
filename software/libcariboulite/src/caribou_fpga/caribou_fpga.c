@@ -368,6 +368,18 @@ int caribou_fpga_set_debug_modes (caribou_fpga_st* dev, bool dbg_fifo_push, bool
     return caribou_fpga_spi_transfer (dev, (uint8_t*)(&oc), &mode);
 }
 //--------------------------------------------------------------
+int caribou_fpga_set_debug_loopback(caribou_fpga_st* dev, bool enabled)
+{
+    CARIBOU_FPGA_CHECK_DEV(dev,"caribou_fpga_set_debug_loopback");
+    caribou_fpga_opcode_st oc = {
+        .rw = caribou_fpga_rw_write,
+        .mid = caribou_fpga_mid_sys_ctrl,
+        .ioc = IOC_SYS_CTRL_DEBUG_MODES
+    };
+    uint8_t mode = enabled ? 0x08 : 0;
+    return caribou_fpga_spi_transfer(dev, (uint8_t*)&oc, &mode);
+}
+
 int caribou_fpga_get_errors (caribou_fpga_st* dev, uint8_t *err_map)
 {
     CARIBOU_FPGA_CHECK_DEV(dev,"caribou_fpga_get_errors");

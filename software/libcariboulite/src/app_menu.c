@@ -3252,6 +3252,8 @@ static void nbfm_modem_selftest(sys_st *sys)
     fprintf(stderr, "[selftest] done — you should have heard a 600 Hz tone.\n");
 }
 
+#include "monitor_loopback.h"
+
 static bool monitor_init_pipelines(tx_pipeline_t* tx, rx_pipeline_t* rx,
                                    sys_st* sys, const tx_params_t* txpar,
                                    const rx_params_t* rxpar)
@@ -3275,6 +3277,7 @@ void monitor_modem_status(sys_st *sys)
     // --- NEW: pipelines ---
     tx_pipeline_t txp = {0};
     rx_pipeline_t rxp = {0};
+    monitor_loopback_t loopback = {0};
 
     tx_params_t txpar = {
         .freq_hz      = 430100000.0,
@@ -3384,7 +3387,7 @@ void monitor_modem_status(sys_st *sys)
 
 		time(&current_time);
 		move(0,0);
-		printw("Radio [T] TX [R] RX [2/4] MS/s [Q] QUIT [X] stats");
+		printw("Radio [T] TX [R] RX [L] loopback [2/4] MS/s [Q] quit [X] stats");
 		move(0, screen_max_x - 12);
 		printw("%12ld",current_time);
 		move(1,0);
@@ -3613,9 +3616,29 @@ void monitor_modem_status(sys_st *sys)
         HW_UNLOCK();
         printw("    DEBUG = %d, MODE: '%s'\n", debug, caribou_fpga_get_mode_name(mode));
         //refresh();
-        printw("IQ Data Stream:\n");
-        printw("    TX_I:0x%08X  TX_Q:0x%08X\n", latest_tx_sample.i, latest_tx_sample.q);
-        printw("    RX_I:0x%08X  RX_Q:0x%08X\n", latest_rx_sample.i, latest_rx_sample.q);
+        if (loopback.active && monitor_loopback_read(sys, &loopback) != 0) {
+            monitor_loopback_stop(sys, &loopback);
+            rate_notice = "Loopback read failed. [L] retries cleanup if locked; see debug log.";
+        }
+        printw("Interface loopback: %s | RF TX blocked while enabled\n",
+               loopback.active ? "ON" : loopback.armed ? "CLEANUP REQUIRED" : "OFF");
+        if (loopback.armed) {
+            printw("    FPGA test frame: 0x84037048; capture: HiF RX (decoded I/Q)\n");
+            printw("    Samples: %llu  timeouts: %lu  latest batch preview: %d\n",
+                   loopback.total, loopback.timeouts, loopback.count);
+            if (!loopback.count) printw("    No fresh samples. Requires the loopback-capable FPGA image.\n");
+            for (int j = 0; j < loopback.count; ++j) {
+                printw(" %2d:I=%04X Q=%04X", j,
+                       (unsigned)(uint16_t)loopback.samples[j].i,
+                       (unsigned)(uint16_t)loopback.samples[j].q);
+                if (j % 4 == 3 || j == loopback.count - 1) printw("\n");
+            }
+        }
+        if (!loopback.armed) {
+            printw("IQ Data Stream:\n");
+            printw("    TX_I:0x%08X  TX_Q:0x%08X\n", latest_tx_sample.i, latest_tx_sample.q);
+            printw("    RX_I:0x%08X  RX_Q:0x%08X\n", latest_rx_sample.i, latest_rx_sample.q);
+        }
         //refresh();
         //smi_state = caribou_smi_get_driver_streaming_state(smi);
         //printw("SMI driver state: 0x%02X    // 0=idle 1=RX09 2=RX24 3=TX\n",(uint8_t) smi->state);
@@ -3704,6 +3727,29 @@ void monitor_modem_status(sys_st *sys)
         printw("\n%s\n", rate_notice);
         refresh();
         int key = getch();
+        if (key == 'l' || key == 'L') {
+            if (loopback.armed) {
+                if (monitor_loopback_stop(sys, &loopback) != 0)
+                    rate_notice = "Loopback cleanup failed; TX/RX locked. [L] retries cleanup.";
+                else rate_notice = "Loopback OFF; radios stopped. [T]/[R] available.";
+            } else {
+                tx_pipeline_stop(&txp);
+                rx_pipeline_stop(&rxp);
+                if (monitor_loopback_start(sys, &loopback) != 0)
+                    rate_notice = "Loopback start failed. [L] retries cleanup if locked.";
+                else rate_notice = "Loopback ON: RF TX disabled. [L] stops; [Q] cleans up and exits.";
+            }
+            continue;
+        }
+        if (monitor_loopback_blocks_control(&loopback, key)) {
+            rate_notice = "Stop interface loopback with [L] before TX, RX or rate changes.";
+            continue;
+        }
+        if ((key == 'q' || key == 'Q') && loopback.armed &&
+            monitor_loopback_stop(sys, &loopback) != 0) {
+            rate_notice = "Cleanup failed; staying in monitor with TX blocked. [L] retries.";
+            continue;
+        }
         if (key == '2' || key == '4') {
             if (txp.running || rxp.running) {
                 rate_notice = "Stop TX and RX before changing sample rate.";
@@ -3719,7 +3765,7 @@ void monitor_modem_status(sys_st *sys)
             continue;
         }
 		
-		if(key == 'q') // Press 'q' to exit
+		if(key == 'q' || key == 'Q') // Press 'q' to exit
 		{
 			if (rx_pipeline_running(&rxp)) {
                 rx_pipeline_stop(&rxp);
@@ -3736,8 +3782,14 @@ void monitor_modem_status(sys_st *sys)
 		}
 
         // --- T: toggle TX ---
-        if (key == 't') {
+        if (key == 't' || key == 'T') {
             if (!tx_pipeline_running(&txp)) {
+                uint8_t iq_control = 0;
+                if (at86rf215_read_buffer(modem, REG_RF_IQIFC0, &iq_control, 1) != 0 ||
+                    (iq_control & 0x80)) {
+                    rate_notice = "TX blocked: modem loopback enabled or register read failed.";
+                    continue;
+                }
                 rx_pipeline_stop(&rxp);
                 // Join both pipelines before resetting shared FPGA state.
                 tx_pipeline_destroy(&txp);
@@ -3752,7 +3804,7 @@ void monitor_modem_status(sys_st *sys)
         }
 
         // --- R: toggle RX ---
-        if (key == 'r') {
+        if (key == 'r' || key == 'R') {
             if (!rx_pipeline_running(&rxp)) {
                 tx_pipeline_stop(&txp);
                 rx_pipeline_start(&rxp);

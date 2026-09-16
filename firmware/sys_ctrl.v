@@ -67,6 +67,7 @@ module sys_ctrl
 	//assign o_debug_fifo_push = debug_fifo_push;
 	//assign o_debug_fifo_pull = debug_fifo_pull;
 	//assign o_debug_smi_test = debug_smi_test;
+    assign o_debug_loopback_tx = debug_loopback_tx;
     assign o_tx_sample_gap = tx_sample_gap;
     assign o_rx_sync_type09 = rx_sync_type09;
     assign o_tx_sync_type09 = tx_sync_type09;

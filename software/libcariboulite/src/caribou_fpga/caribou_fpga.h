@@ -174,6 +174,8 @@ void caribou_fpga_print_versions (caribou_fpga_st* dev);
 int caribou_fpga_get_errors (caribou_fpga_st* dev, uint8_t *err_map);
 char* caribou_fpga_get_mode_name (caribou_fpga_io_ctrl_rfm_en mode);
 int caribou_fpga_set_debug_modes (caribou_fpga_st* dev, bool dbg_fifo_push, bool dbg_fifo_pull, bool dbg_smi);
+// Select the fixed interface-test pattern; clears other debug-mode bits.
+int caribou_fpga_set_debug_loopback(caribou_fpga_st* dev, bool enabled);
 
 int caribou_fpga_set_sys_ctrl_tx_sample_gap (caribou_fpga_st* dev, uint8_t gap);
 int caribou_fpga_get_sys_ctrl_tx_sample_gap (caribou_fpga_st* dev, uint8_t *gap);
