@@ -369,11 +369,12 @@ must be checked rather than inferred from the branch name. The historical
 programming procedure, with its validation limits.
 
 Options 12 and 14 need configured ALSA playback. In the current option 14
-configuration, TX captures `plughw:Loopback,1,1`, RX plays to
+configuration, both TX and RX use RF09 (Sub-1 GHz). TX captures `plughw:Loopback,1,1`, RX plays to
 `plughw:Loopback,0,0`, and both default to 430.100 MHz. `tone_mode` defaults to
 false; the internal tone parameter is 600 Hz. Therefore pressing T does not
 by itself select the historical 650 Hz tone. Audio/device and RF parameters
-remain hardcoded (roadmap items 2 and 5).
+remain hardcoded (roadmap items 2 and 5). The separate L interface-loopback
+diagnostic still uses RF24 reception; T/R normal operation uses RF09.
 
 This is how the monitor modem status output should look like:
 ```

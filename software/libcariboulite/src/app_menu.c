@@ -3324,7 +3324,7 @@ void monitor_modem_status(sys_st *sys)
     cariboulite_sample_complex_int16 iq_rx_buffer[iq_rx_buffer_size]; // complex CS16 samples (I, Q interleaved)
 
 
-	cariboulite_radio_state_st *radio = &sys->radio_high; // radio_high (HiF) || radio_low (S1G)
+	cariboulite_radio_state_st *radio = &sys->radio_high; // RF24 / HiF mixer path
     at86rf215_st *modem = &sys->modem;
 	caribou_fpga_st *fpga = &sys->fpga;
 	caribou_smi_st *smi = &sys->smi;
@@ -3387,7 +3387,7 @@ void monitor_modem_status(sys_st *sys)
 
 		time(&current_time);
 		move(0,0);
-		printw("Radio [T] TX [R] RX [L] loopback [2/4] MS/s [Q] quit [X] stats");
+		printw("RF24 [T] TX [R] RX [L] loopback [2/4] MS/s [Q] quit [X] stats");
 		move(0, screen_max_x - 12);
 		printw("%12ld",current_time);
 		move(1,0);

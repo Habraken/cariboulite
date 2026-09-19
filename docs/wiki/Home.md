@@ -39,11 +39,13 @@ setup, including audio checks. The current diagnostic menu includes:
 - **13 — NBFM modem Self-Test**
 - **14 — Monitor Modem Status**, with TX/RX and interface-loopback controls
 
-Menu 14 currently defaults to ALSA loopback audio for TX and RX. Pressing T
+Menu 14 uses the RF09 (Sub-1 GHz) modem path for TX and RX, with a default
+frequency of 430.100 MHz and ALSA loopback audio. Pressing T
 starts/toggles TX; it does not automatically select an internal test tone.
 Some audio devices, rates and RF settings remain hardcoded, so these are
 working development tools rather than a finished configurable transceiver UI.
 
+The separate L interface-loopback diagnostic still uses its RF24 receive path.
 FPGA interface loopback has simulation coverage and recorded hardware results.
 It checks part of the digital sample path; it does not demonstrate an RF QSO.
 Physical Soapy RX checks are recorded, while physical Soapy TX and complete
