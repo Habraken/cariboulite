@@ -1491,7 +1491,7 @@ void monitor_modem_status(sys_st *sys)
         if (srx.timeouts_put > 0)        printw("    NOTE: Reader timed out waiting to enqueue\n");
         if (srx.timeouts_get > 0)        printw("    NOTE: Demod timed out waiting for frames\n");
 
-        printw("RX mode: %s  [M] cycle (TX/RX/loopback stopped); TX: NBFM\n",
+        printw("RX mode: %s  [M] cycle (TX/RX/loopback stopped); TX mode: NBFM\n",
             rxpar.mode == FM_MODE_WBFM ? "WBFM mono" : "NBFM");
         printw("Squelch: [N] noise %s  [C] carrier %s  audio %s\n",
             rxpar.mode == FM_MODE_WBFM ? "N/A (WBFM)" : rxpar.noise_squelch_disabled ? "OFF" : "ON",
