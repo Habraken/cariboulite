@@ -19,6 +19,9 @@ are retained for tracking. Update this document as work is verified.
   The Soapy adapter is in `software/libcariboulite/src/soapy_api/`.
   GNU Radio TX and RX end-to-end validation remains a backlog item.
 
+The audio/DSP work has an [incremental plan with physical checkpoints](docs/audio-dsp-refactor-plan.md)
+and a dedicated [interface reference](docs/audio-dsp-interfaces.md).
+
 ## Intended module boundaries (items 1 and 2)
 
 Keep the existing public API usable while extracting one responsibility at a
