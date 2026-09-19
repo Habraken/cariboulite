@@ -9,9 +9,10 @@ are retained for tracking. Update this document as work is verified.
 - Hardware modules already live under `software/libcariboulite/src/`:
   `at86rf215`, `rffc507x`, `caribou_fpga`, `caribou_smi`, `io_utils`, and `hat`.
   Kernel code lives in `driver/`; FPGA RTL and simulations live in `firmware/`.
-- `software/libcariboulite/src/app_menu.c` combines menu handling with NBFM
-  streaming and audio logic. `nbfm_mod.c` and `alsa_source.c` provide
-  starting points for separating DSP and audio adapters.
+- The eight-step audio/DSP extraction is complete: `app_menu.c` selects
+  configuration and displays status; TX/RX pipelines own workers and transport.
+  Standalone NBFM DSP uses explicit sample contracts with ALSA, tone and memory
+  adapters. This does not complete the broader shared-radio-core milestone.
 - Software regression tests exist in `software/libcariboulite/tests/`.
   FPGA checks and their coverage limits are documented in
   [firmware/tests/README.md](firmware/tests/README.md).
@@ -20,7 +21,9 @@ are retained for tracking. Update this document as work is verified.
   GNU Radio TX and RX end-to-end validation remains a backlog item.
 
 The audio/DSP work has an [incremental plan with physical checkpoints](docs/audio-dsp-refactor-plan.md)
-and a dedicated [interface reference](docs/audio-dsp-interfaces.md).
+and a dedicated [interface reference](docs/audio-dsp-interfaces.md). The
+[extension guide](docs/audio-dsp-extension-guide.md) includes a hardware-free
+round-trip example and the procedure for adding adapters or another modem.
 
 ## Intended module boundaries (items 1 and 2)
 

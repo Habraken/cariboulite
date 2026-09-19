@@ -1,16 +1,20 @@
 # Audio and DSP module interfaces
 
 Living reference for the [incremental refactoring plan](audio-dsp-refactor-plan.md).
-Status: current inventory plus proposed contracts; proposed APIs are not implemented.
+Status: steps 1–8 implemented. Implemented sections below are authoritative;
+the original proposed contracts remain design history. See the
+[extension guide](audio-dsp-extension-guide.md) for composition and future modems.
 Update this file with every interface-changing increment.
 
 ## Current implementation
 
 | Module | Inputs / outputs | Current coupling |
 | --- | --- | --- |
-| `audio_source.h` | Format + read-result + destroy operations | Common source boundary; currently used by ALSA TX capture |
+| `audio_source.h` | Format + read-result + destroy operations | Common source boundary; used by ALSA, tone and memory sources |
 | `alsa_source.c/.h` | ALSA capture -> mono float audio at 48 kHz | Owns capture handle, conversion and buffering; used by TX |
 | `tone_source.c/.h` | Frequency/amplitude -> 48 kHz mono float audio | Common source implementation for TX, injection and self-test tones |
+| `memory_audio.c/.h` | Borrowed float input / S16 output arrays | Finite nonblocking adapters; no devices or workers |
+| `nbfm_memory_demo.c` | Source -> NBFM IQ -> PCM -> sink | Standalone composition; C and math only |
 | `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Explicit progress/reset/error contract; 48 kHz mono and 2 or 4 MS/s IQ |
 | `audio_sink.h`, `alsa_sink.c/.h` | Mono S16 PCM at 48 kHz -> ALSA playback | Sink owns PCM configuration, stereo fallback, recovery and close |
 | `nbfm_demod.c/.h` | IQ16 -> mono S16 PCM | Standalone stateful DSP; caller supplies fractional rate correction |
@@ -29,6 +33,97 @@ Both DSP modules expose creation, processing progress, reset and destruction.
 The modulator also retains its legacy push/pull APIs. Their reset and buffering
 semantics remain explicit and module-specific, preserving existing signal behavior.
 
+## Current radio architecture
+
+Solid arrows carry samples; dotted arrows show control or feedback. The TX and
+RX groups show pipeline ownership. Each worker box is one thread; its DSP calls
+run in that same thread. The diagram shows the NBFM streaming paths, not every
+legacy diagnostic menu option.
+
+```mermaid
+flowchart TB
+    menu["app_menu / baseline runner<br/>Configuration, lifecycle and status"]
+    runtime["pipeline_runtime<br/>Shared hardware lock and stream state"]
+
+    subgraph tx["tx_pipeline — transmit"]
+        txctl["TX lifecycle / configuration"]
+        mic["alsa_source<br/>Microphone capture"]
+        tone["tone_source<br/>Continuous test tone"]
+        cue["Tone / silence injection<br/>Opening and closing cues"]
+        mod["mod_worker thread<br/>Source selection and injection priority<br/>nbfm_mod DSP"]
+        txq[("TX RF FIFO<br/>64 × 10 ms blocks<br/>Block when full")]
+        writer["SMI writer thread<br/>Hardware sample packing / TX control bits"]
+        mic -->|"audio_source: float mono 48 kHz"| mod
+        tone -->|"audio_source: float mono 48 kHz"| mod
+        cue --> mod
+        mod -->|"IQ16: 2 or 4 MS/s"| txq
+        txq --> writer
+        txctl -.-> mod
+        txctl -.-> writer
+    end
+
+    radio["CaribouLite radio / SMI API<br/>Kernel SMI driver ↔ FPGA ↔ RF modem<br/>Selected RF path and connector"]
+
+    subgraph rx["rx_pipeline — receive"]
+        rxctl["RX lifecycle / configuration"]
+        reader["SMI reader thread"]
+        rxq[("RX RF FIFO<br/>128 × 10 ms blocks<br/>Drop oldest when full")]
+        demod["demod_worker thread<br/>nbfm_demod DSP and PCM block packing<br/>Queue-depth clock correction"]
+        aq[("Audio FIFO<br/>24 × 480-sample blocks<br/>48 kHz mono S16 PCM")]
+        playback["Audio writer thread"]
+        sink["alsa_sink<br/>audio_sink interface<br/>Playback and recovery"]
+        reader -->|"IQ16: 2 or 4 MS/s"| rxq
+        rxq --> demod
+        demod --> aq
+        aq --> playback
+        playback --> sink
+        aq -.->|"Fill-level feedback"| demod
+        rxctl -.-> reader
+        rxctl -.-> demod
+        rxctl -.-> playback
+    end
+
+    menu -.-> txctl
+    menu -.-> rxctl
+    txctl -.-> runtime
+    rxctl -.-> runtime
+    txctl -.->|"Radio configuration / activation"| radio
+    rxctl -.->|"Radio configuration / activation"| radio
+    writer --> radio
+    radio --> reader
+    sink --> speakers["ALSA playback device"]
+```
+
+`pipeline_transport` implements the three application FIFOs shown above. Each
+RF block holds 20,000 IQ pairs at 2 MS/s or 40,000 at 4 MS/s. TX source reads use
+480 audio samples per block; there is no separate application audio FIFO before
+the modulator. ALSA buffering and kernel/FPGA transport buffers are internal to
+their respective layers and are not expanded here. The TX/RX paths share one
+device and runtime; this diagram does not imply simultaneous duplex operation.
+
+### Hardware-free adapter composition
+
+Memory adapters currently connect through the standalone demo, not through the
+production pipeline constructors. This path uses the same source/sink contracts
+and DSP modules, with synchronous calls and no worker threads or FIFOs. The tests
+also substitute a live `tone_source` for the memory source.
+
+```mermaid
+flowchart LR
+    memory["memory_source<br/>Borrowed float array"] --> source["audio_source<br/>48 kHz mono float"]
+    tone["tone_source<br/>Generated samples"] --> source
+    source --> mod["nbfm_mod"]
+    mod -->|"IQ16 at 2 or 4 MS/s"| demod["nbfm_demod"]
+    demod --> sink["audio_sink<br/>48 kHz mono S16"]
+    sink --> output["memory_sink<br/>Borrowed PCM array"]
+```
+
+Option 13 is a separate composition in `modem_selftest`: generated audio passes
+through NBFM modulation and the demodulation worker, then a 64-block self-test
+audio FIFO feeds the playback worker and ALSA sink. It exercises DSP and playback
+without traversing the RF hardware path. See the
+[extension guide](audio-dsp-extension-guide.md) for runnable offline examples.
+
 ## Target data paths
 
 ```text
@@ -37,7 +132,8 @@ RX pipeline: radio read -> nbfm_demod.process -> audio_sink.write
 ```
 
 `alsa_source` and `tone_source` implement the source contract. `alsa_sink`
-implements the sink contract. Memory, file or network adapters can follow later.
+implements the sink contract. `memory_audio` implements both for offline use.
+File and network adapters remain future extensions.
 Pipeline workers own pacing, queues, hardware-specific sample conversion and
 coordination; DSP owns signal-processing state only.
 
@@ -98,16 +194,16 @@ configuration/defaults, sample format and units, buffer/state ownership, thread
 rules, partial-transfer/error semantics, reset/stop behavior, dependencies and a
 short caller example. Link its software checks and physical checkpoint evidence.
 
-## Open decisions to settle incrementally
+## Decisions and remaining scope
 
-- Exact transfer-result types and how stop interrupts blocking adapters (step 2).
-- Tone phase behavior when switching sources or injecting a temporary tone (step 3).
-- Sink normalization that preserves current demodulator PCM gain (steps 4–5).
-- DSP output capacity, buffering and correction API (steps 5–6).
-- Common modem operations required by a second actual implementation (step 8).
-
-Choose each based on the existing behavior and tests at that step; avoid bundling
-new audio features or DSP algorithm changes into the extraction.
+Transfer counts/status and cancellation are documented in the implemented source
+and sink sections. Tone phase and injection behavior were preserved. Sources
+remain float and sinks remain S16 to retain existing PCM samples; implicit float
+normalization was not introduced. Both DSP modules now specify progress,
+buffering, reset and errors. A common modem operations interface is deferred
+until a second actual modem establishes its requirements. Production adapter
+selection remains in the pipeline constructors; the offline example demonstrates
+composition without introducing a public live-pipeline injection API.
 
 ## Implemented: ALSA capture adapter (step 1)
 
@@ -664,3 +760,42 @@ accessors. **H6 passed**: Jan reports all requested tests pass.
 [Physical results](baselines/20260919T133517.433185Z/summary.json). Interactive retuning remains
 deferred until a control exists. The subsequent menu label clarification changes
 only the description of the RX-source register, not signal or routing behavior.
+
+## Implemented: memory adapters and offline composition (step 8)
+
+[Header](../software/libcariboulite/src/memory_audio.h),
+[implementation](../software/libcariboulite/src/memory_audio.c) and
+[example](../software/libcariboulite/tools/nbfm_memory_demo.c):
+
+```c
+audio_source_t* memory_source_open(const audio_f32_t* samples, size_t frames,
+                                   audio_format_t format);
+audio_sink_t* memory_sink_open(audio_s16_t* samples, size_t capacity,
+                               audio_format_t format);
+size_t memory_sink_frames(const audio_sink_t* sink);
+```
+
+Both factories accept only 48 kHz mono. They borrow backing arrays until destroy;
+the source array stays unchanged and the sink array stays exclusively writable.
+NULL backing is valid only with zero length/capacity. Transfer buffers must not
+overlap backing storage. Factories allocate adapter state only, returning NULL
+with `errno` EINVAL for invalid input or ENOMEM for allocation failure. Reads and
+writes allocate nothing, copy samples unchanged and never block. One serialized
+owner performs all operations and destroys the adapter after use; destruction
+never frees the backing array.
+
+The source returns EOF with its final valid samples, then EOF with zero frames.
+The sink returns OK when all requested frames fit; otherwise ERROR/-ENOSPC with
+the prefix that fits, including zero if already full. It never returns AGAIN.
+The common zero-length operations return OK/zero even at EOF or capacity.
+`memory_sink_frames` returns the stored count, or zero for NULL/another adapter.
+Its optional state description is READY or FULL. There is no rewind/reset API;
+create a new adapter to start again.
+
+The demo connects generic adapters to both standalone DSP modules without ALSA,
+radio, FIFOs or threads. Contract tests compare memory and tone sources exactly
+at 2 and 4 MS/s, including short reads/writes, terminal progress, storage bounds,
+allocation failures and no-progress errors. The recovered 600 Hz tone measures
+599.99 Hz at both rates. All eleven relevant software suites pass. The
+[extension guide](audio-dsp-extension-guide.md) gives build commands, ownership,
+production integration limitations and the future modem procedure.

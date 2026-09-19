@@ -1,6 +1,6 @@
 # Audio and DSP refactoring plan
 
-Status: H0 accepted by Jan on 2026-09-19; steps 1–7 are implemented; H1–H6 passed. Each numbered step is a small,
+Status: H0 accepted by Jan on 2026-09-19; steps 1–8 are implemented; H1–H6 passed. Each numbered step is a small,
 reviewable change. The demodulator DSP is now independent of application FIFOs, playback and
 threading; its pipeline worker retains those responsibilities.
 
@@ -198,16 +198,26 @@ until that control exists. Step 8 may proceed.
 
 ### 8. Prove interchangeability and finish the documentation
 
-- [ ] Exercise DSP with memory-backed audio source/sink implementations without
+- [x] Exercise DSP with memory-backed audio source/sink implementations without
   ALSA or hardware, reusing the documented sample contracts.
-- [ ] Document module dependencies, error paths, threading, supported formats,
+- [x] Document module dependencies, error paths, threading, supported formats,
   ownership and an example showing how a new source/sink is connected.
-- [ ] Document how a future modem plugs into the pipelines. Introduce a shared
+- [x] Document how a future modem plugs into the pipelines. Introduce a shared
   modem operations interface with the second actual modem, unless an earlier
   increment demonstrates a concrete need for one.
 
 Exit: clear source -> modulator and demodulator -> sink paths; no ALSA, UI or radio
-control dependencies inside DSP; physical evidence tied to the final revision.
+control dependencies inside DSP; traceable physical evidence for the production path.
+
+Completed with `memory_audio`, the standalone `nbfm_memory_demo` target and
+[extension guide](audio-dsp-extension-guide.md). Memory and tone sources produce
+identical PCM at both RF rates, including short reads/writes. The recovered tone
+is 599.99 Hz. All eleven relevant software suites and both application/demo
+builds pass. Step 8 changes no production signal path; the application hash is
+unchanged from `09d89e7`. The guide records the hash and its relationship to H6,
+including the subsequent display-only clarification. No new hardware gate is
+introduced. Historical baseline metadata gaps and unquantified drift/tolerances
+remain documented limitations, not uncompleted refactoring steps.
 
 ## Repeatable test runner
 
@@ -226,7 +236,8 @@ subset, always with the same recorded setup and newly built binary.
 3. Feed a known RF signal into RX and observe/record ALSA output. Check pitch,
    level, intelligibility and continuity. Repeat TX and RX at 2 MS/s.
 4. Stop streaming before changing sample rate. Repeat start/stop five times and
-   retune RX; check for hangs, stuck streaming, missing audio and new errors.
+   check for hangs, stuck streaming, missing audio and new errors. Retuning is
+   deferred until an interactive tuning control exists.
 5. Exercise menu self-test and monitor controls used in the baseline. Digital
    interface loopback is useful additional evidence, but does not verify RF audio.
 6. For full checkpoints and H4, run RX and TX separately for at least five minutes
@@ -245,7 +256,7 @@ case is not a pass. Do not mark an untested combination as verified.
 | H0 | `0af6f2d`; working tree clean when recorded | Raspberry Pi OS; Jan deleted the build folder, rebuilt the app using the install script, and physically tested with a radio | Jan reports everything works as expected; accepted functional baseline, no numerical measurements supplied | Jan, 2026-09-19 |
 | H1 | See step 2 archive | Eight baseline sessions | Passed, including microphone modulation | Jan, 2026-09-19 |
 | H2 | See step 3 archive | Eight baseline sessions plus option 13 | Passed; correct pitch and self-test audio | Jan, 2026-09-19 |
-| H3 | Step 4 working tree based on `76e6b9b` | Physical RX at both rates, restart/retune and self-test | Passed: baseline, option 13, known-signal RX at both rates, repeated RX start/stop; retuning deferred | Jan, 2026-09-19 |
+| H3 | Step 4 working tree based on `76e6b9b` | Physical RX at both rates, start/stop and self-test | Passed: baseline, option 13, known-signal RX at both rates, repeated RX start/stop; retuning deferred | Jan, 2026-09-19 |
 | H4 | Step 5 working tree based on `b3da533` | Physical comparison including sustained RX/FIFO stability | Passed: baseline, option 13, correct pitch/clean modulation and extended RX; explicitly accepted | Jan, 2026-09-19 |
 | H5 | Step 6 working tree based on `185086f` | Tone/ALSA TX at both RF rates and option 13 | Passed: baseline and option 13; clean modulation and correct pitch including tones | Jan, 2026-09-19 |
 | H6 | Step 7 working tree based on `0f1ae5b` | Baseline, self-test, switching, sustained audio and exit/restart | Passed: Jan reports all requested tests pass; RX-source display clarification noted | Jan, 2026-09-19 |

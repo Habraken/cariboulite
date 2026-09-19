@@ -37,5 +37,20 @@ rule; run `./build/cariboulite_test_app` from the repository root so its
 Software regression tests live in [tests](tests/); hardware diagnostics also
 exist under [test](test/). Building successfully does not verify radio operation.
 
+## Hardware-free NBFM example
+
+From the repository root with the build configured:
+
+```sh
+cmake --build build --target nbfm_memory_demo -j2
+./build/nbfm_memory_demo
+python3 software/libcariboulite/tests/test_memory_audio.py
+```
+
+The demo connects memory-backed audio to the standalone modulator and demodulator
+at 2 and 4 MS/s, without opening audio or radio devices. The
+[extension guide](../../docs/audio-dsp-extension-guide.md) also provides a direct
+C11/libm build that does not require the application's ALSA dependencies.
+
 # License
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

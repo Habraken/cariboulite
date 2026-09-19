@@ -166,6 +166,14 @@ add_executable(fpgacomm ${SOURCES_FPGA_COMM})
 add_executable(cariboulite_test_app ${SOURCES_TEST_MAIN})
 add_executable(cariboulite_util ${SOURCES_MAIN})
 
+# Hardware-free DSP example: no ALSA, radio, FIFO or worker dependencies.
+add_executable(nbfm_memory_demo
+    tools/nbfm_memory_demo.c src/memory_audio.c src/tone_source.c
+    src/nbfm_mod.c src/nbfm_demod.c)
+target_include_directories(nbfm_memory_demo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(nbfm_memory_demo PRIVATE m)
+
+
 target_link_libraries(caribou_programmer cariboulite)
 target_link_libraries(fpgacomm cariboulite)
 target_link_libraries(cariboulite_test_app
