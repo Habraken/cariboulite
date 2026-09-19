@@ -1170,7 +1170,7 @@ void monitor_modem_status(sys_st *sys)
         move(5,0);
         printw("    writing setup: %d strobe: %d  hold: %d pace: %d", smi_set.write_setup_time, smi_set.write_strobe_time, smi_set.write_hold_time, smi_set.write_pace_time);
         move(6,0);
-        printw("Modem Status Registers:");
+        printw("AT86RF215 Modem Status Registers:");
         move(7,0);
 		//refresh();
 
@@ -1361,7 +1361,7 @@ void monitor_modem_status(sys_st *sys)
         //HW_LOCK();
         rffc507x_readback_status(mixer, &mix_id, &mix_status);
         //HW_UNLOCK();
-        printw("RFFC507x\n");
+        printw("RFFC5071 Mixer Status Registers\n");
         printw("    ID: 0x%04X REV: 0x%04X\n", mix_id.fields.device_id, mix_id.fields.device_rev);
         printw("    STAT: 0x%04X PLL_LOCK: %d, CT_CAL: %d, KV_CAL: %d, CT_CAL_FAIL: %d\n",
 			mix_status.raw,
