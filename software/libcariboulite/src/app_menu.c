@@ -1425,15 +1425,16 @@ static void* dsp_producer_thread_func(void* arg)
 
 
         // ============================================================
-        // 2) Push into NBFM modulator, pull 10 ms @ 4 MS/s (40 k IQ)
+        // 2) Modulate 10 ms of audio at the selected RF rate
         // ============================================================
-        nbfm_push_audio(ctrl->tx->fm, ctrl->tx->a48k, 480);
-
-        size_t pulled = 0;
-        while (pulled < ctrl->tx->frame_samples) {
-            pulled += nbfm_pull_iq(ctrl->tx->fm,
-                                     ctrl->tx->iq_rf + pulled,
-                                     ctrl->tx->frame_samples - pulled);
+        nbfm_result_t mod = nbfm_process(ctrl->tx->fm, ctrl->tx->a48k, 480,
+                                          ctrl->tx->iq_rf, ctrl->tx->frame_samples);
+        if (mod.error || mod.consumed != 480 ||
+            mod.produced != ctrl->tx->frame_samples || mod.held_audio) {
+            fprintf(stderr, "TX modulator error: %d, audio=%zu, IQ=%zu, held=%zu\n",
+                    mod.error, mod.consumed, mod.produced, mod.held_audio);
+            nbfm_tx_active = false;
+            continue;
         }
 
         // ============================================================
@@ -2690,11 +2691,10 @@ static void nbfm_modem_selftest(sys_st *sys)
     for (size_t k = 0; tone && k < loops; k++) {
         audio_source_read(tone, a48k, 480);
 
-        nbfm_push_audio(fm, a48k, 480);
-
-        size_t pulled = 0;
-        while (pulled < 40000) {
-            pulled += nbfm_pull_iq(fm, iq_rf + pulled, 40000 - pulled);
+        nbfm_result_t mod = nbfm_process(fm, a48k, 480, iq_rf, 40000);
+        if (mod.error || mod.consumed != 480 || mod.produced != 40000 || mod.held_audio) {
+            fprintf(stderr, "[selftest] modulator failed (%d)\n", mod.error);
+            break;
         }
 
         // diagnostics: peak amplitude of the 10 ms IQ frame

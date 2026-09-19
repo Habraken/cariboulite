@@ -1,5 +1,6 @@
 #include "nbfm_mod.h"
 #include <stdlib.h>
+#include <errno.h>
 #include <math.h>
 #include "math_compat.h"
 
@@ -25,25 +26,55 @@ struct nbfm_mod {
     int use_lin;
 };
 
-nbfm_mod_t* nbfm_create(const nbfm_cfg_t* c){
-    nbfm_mod_t* m=(nbfm_mod_t*)calloc(1,sizeof(*m));
-    m->fs_a=c?c->audio_fs:48000.0; m->fs_rf=c?c->rf_fs:4000000.0;
-    m->f_dev=c?c->f_dev_hz:2500.0; m->out_scale=c?c->out_scale:12000.0f;
-    m->lin=c?c->linear_interp:1; m->R=m->fs_rf/m->fs_a; m->a_to_rf=1.0/m->R;
-    m->k=2.0*M_PI*m->f_dev/m->fs_rf; preemph_init(&m->pe,m->fs_a,c?c->preemph_tau_s:0.0);
-    m->interp_acc=1.0; m->cap=4096; m->afifo=(float*)calloc(m->cap,sizeof(float));
-    
-    //new
-    m->lm_phase = 0; m->use_lin = m->lin;
+static int valid_config(const nbfm_cfg_t* c)
+{
+    return c->audio_fs == 48000 && (c->rf_fs == 2000000 || c->rf_fs == 4000000) &&
+        isfinite(c->f_dev_hz) && c->f_dev_hz >= 0 && c->f_dev_hz <= 24000 &&
+        isfinite(c->preemph_tau_s) && c->preemph_tau_s >= 0 &&
+        isfinite(c->out_scale) && c->out_scale >= 0 && c->out_scale <= 32767 &&
+        (c->linear_interp == 0 || c->linear_interp == 1);
+}
+nbfm_mod_t* nbfm_create(const nbfm_cfg_t* config)
+{
+    const nbfm_cfg_t defaults = {48000, 4000000, 2500, 0, 12000, 1};
+    const nbfm_cfg_t* c = config ? config : &defaults;
+    if (!valid_config(c)) { errno = EINVAL; return NULL; }
+    nbfm_mod_t* m = calloc(1, sizeof(*m));
+    if (!m) { errno = ENOMEM; return NULL; }
+    m->fs_a=c->audio_fs; m->fs_rf=c->rf_fs;
+    m->f_dev=c->f_dev_hz; m->out_scale=c->out_scale;
+    m->lin=c->linear_interp; m->R=m->fs_rf/m->fs_a; m->a_to_rf=1.0/m->R;
+    m->k=2.0*M_PI*m->f_dev/m->fs_rf;
+    preemph_init(&m->pe,m->fs_a,c->preemph_tau_s);
+    m->interp_acc=1.0; m->cap=4096;
+    m->afifo=calloc(m->cap,sizeof(float));
+    if (!m->afifo) { free(m); errno = ENOMEM; return NULL; }
+    m->lm_phase=0; m->use_lin=m->lin;
     return m;
 }
+void nbfm_reset(nbfm_mod_t* m)
+{
+    if (!m) return;
+    m->head=m->tail=m->cnt=0;
+    m->phase=m->dphi_cur=m->dphi_next=m->lm_phase=0;
+    m->interp_step=0; m->interp_acc=1;
+    m->pe.x1=0;
+}
+size_t nbfm_buffered_audio(const nbfm_mod_t* m) { return m ? m->cnt : 0; }
+static int valid_audio(const float* audio, size_t frames)
+{
+    if (!audio && frames) return 0;
+    for (size_t n=0; n<frames; ++n) if (!isfinite(audio[n])) return 0;
+    return 1;
+}
+
 void nbfm_destroy(nbfm_mod_t* m) { 
     if(!m)return; 
     free(m->afifo); 
     free(m); 
 }
 
-size_t nbfm_push_audio(nbfm_mod_t* m,const float* a,size_t N) {
+static size_t enqueue_audio(nbfm_mod_t* m,const float* a,size_t N) {
     size_t p=0; 
     for(size_t n=0;n<N;n++) {
         if(m->cnt == m->cap) break;
@@ -52,6 +83,11 @@ size_t nbfm_push_audio(nbfm_mod_t* m,const float* a,size_t N) {
         m->cnt++; p++; 
     } 
     return p;
+}
+size_t nbfm_push_audio(nbfm_mod_t* m, const float* audio, size_t frames)
+{
+    if (!m || !valid_audio(audio, frames)) { errno = EINVAL; return 0; }
+    return enqueue_audio(m, audio, frames);
 }
 static int fetch_audio(nbfm_mod_t* m) {
     if (m->cnt == 0) return 0;
@@ -68,7 +104,7 @@ static int fetch_audio(nbfm_mod_t* m) {
     return 1;
 }
 
-size_t nbfm_pull_iq(nbfm_mod_t* m, iq16_t* dst, size_t N)
+static size_t generate_iq(nbfm_mod_t* m, iq16_t* dst, size_t N, size_t* held)
 {
     const double L = m->fs_rf;
     const double M = m->fs_a;
@@ -83,7 +119,8 @@ size_t nbfm_pull_iq(nbfm_mod_t* m, iq16_t* dst, size_t N)
             // Move current -> next and fetch next audio-derived freq
             m->dphi_cur = m->dphi_next;
             if (!fetch_audio(m)) {
-                // no new audio; hold frequency (rare if producer keeps up)
+                // Preserve frequency hold, but report the underrun to explicit callers.
+                if (held) ++*held;
                 m->dphi_next = m->dphi_cur;
             }
         }
@@ -109,4 +146,21 @@ size_t nbfm_pull_iq(nbfm_mod_t* m, iq16_t* dst, size_t N)
         out++;
     }
     return out;
+}
+size_t nbfm_pull_iq(nbfm_mod_t* m, iq16_t* dst, size_t frames)
+{
+    if (!m || (!dst && frames)) { errno = EINVAL; return 0; }
+    return generate_iq(m, dst, frames, NULL);
+}
+nbfm_result_t nbfm_process(nbfm_mod_t* m, const audio_f32_t* audio, size_t frames,
+                           iq16_t* output, size_t capacity)
+{
+    nbfm_result_t result = {0};
+    if (!m || (!output && capacity) || !valid_audio(audio, frames)) {
+        result.error = -EINVAL;
+        return result;
+    }
+    result.consumed = enqueue_audio(m, audio, frames);
+    result.produced = generate_iq(m, output, capacity, &result.held_audio);
+    return result;
 }

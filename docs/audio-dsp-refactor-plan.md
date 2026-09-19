@@ -1,6 +1,6 @@
 # Audio and DSP refactoring plan
 
-Status: H0 accepted by Jan on 2026-09-19; steps 1–5 are implemented; H1–H4 passed. Each numbered step is a small,
+Status: H0 accepted by Jan on 2026-09-19; steps 1–6 are implemented; H1–H5 passed. Each numbered step is a small,
 reviewable change. The demodulator DSP is now independent of application FIFOs, playback and
 threading; its pipeline worker retains those responsibilities.
 
@@ -143,13 +143,28 @@ Interactive retuning remains deferred until a control exists. Step 6 may proceed
 
 ### 6. Make the modulator boundary explicit
 
-- [ ] Document and normalize configuration, reset, processing progress, errors,
+- [x] Document and normalize configuration, reset, processing progress, errors,
   buffer lifetime and supported rates in `nbfm_mod`.
-- [ ] Establish explicit audio and IQ formats shared with the demodulator.
-- [ ] Preserve IQ scale and hardware-specific TX bit packing at the radio boundary.
-- [ ] Test consumed/produced counts, small buffers and block continuity.
+- [x] Establish explicit audio and IQ formats shared with the demodulator.
+- [x] Preserve IQ scale and hardware-specific TX bit packing at the radio boundary.
+- [x] Test consumed/produced counts, small buffers and block continuity.
 
-**H5:** verify ALSA and tone TX at both RF rates and the modem self-test.
+The modulator now validates configuration/allocation, reports accepted audio,
+produced IQ, held-frequency audio ticks and errors, and supports an explicit cold
+reset. Shared `audio_format.h` names float and S16 audio without changing sample
+representation; `iq16.h` remains common to both DSP modules. TX and self-test use
+the explicit process result; legacy push/pull callers remain supported.
+
+Software checks passed: application build and all eight test suites. The new
+modulator check compares 3,120,000 IQ pairs exactly against frozen step-5 code,
+covering both RF rates, interpolation modes, pre-emphasis, clipping, silence and
+underrun. It also checks varied input/output sizes, queue saturation/retry,
+reset, invalid inputs, allocation cleanup and default/full-scale output.
+
+**H5 passed (2026-09-19):** run `20260919T131156.324241Z` completed all eight
+sessions with exit code 0. Jan confirmed successful automatic testing and option
+13, with clean modulation and correct pitch including test tones.
+[Archived results](baselines/20260919T131156.324241Z/summary.json). Step 7 may proceed.
 
 ### 7. Move pipeline coordination out of the menu
 
@@ -213,7 +228,8 @@ case is not a pass. Do not mark an untested combination as verified.
 | H2 | See step 3 archive | Eight baseline sessions plus option 13 | Passed; correct pitch and self-test audio | Jan, 2026-09-19 |
 | H3 | Step 4 working tree based on `76e6b9b` | Physical RX at both rates, restart/retune and self-test | Passed: baseline, option 13, known-signal RX at both rates, repeated RX start/stop; retuning deferred | Jan, 2026-09-19 |
 | H4 | Step 5 working tree based on `b3da533` | Physical comparison including sustained RX/FIFO stability | Passed: baseline, option 13, correct pitch/clean modulation and extended RX; explicitly accepted | Jan, 2026-09-19 |
-| H5–H6 | Pending | Pending | Not run | — |
+| H5 | Step 6 working tree based on `185086f` | Tone/ALSA TX at both RF rates and option 13 | Passed: baseline and option 13; clean modulation and correct pitch including tones | Jan, 2026-09-19 |
+| H6 | Pending | Pending | Not run | — |
 
 Link longer logs or recordings here. Record software and hardware results
 separately, including any explicitly deferred tests and remaining limitations.

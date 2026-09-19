@@ -232,3 +232,15 @@ this records functional acceptance, not a quantified clock-drift measurement.
 [metadata](baselines/20260919T123837.461278Z/metadata.json) and
 [events/RSSI](baselines/20260919T123837.461278Z/events.csv) are archived outside build.
 The tested checkout includes the uncommitted step 5 changes based on `b3da533`.
+
+## Step 6 / H5 retest — 2026-09-19
+
+Run `20260919T131156.324241Z` completed all eight sessions with exit code 0.
+Jan confirmed successful automatic testing and option 13, with clean modulation
+audio and correct pitch including test tones. Option 13 was confirmed in addition
+to the runner; it is not included in its eight automated sessions. H5 is passed.
+
+[Results and confirmation](baselines/20260919T131156.324241Z/summary.json),
+[metadata](baselines/20260919T131156.324241Z/metadata.json) and
+[events/RSSI](baselines/20260919T131156.324241Z/events.csv) are archived outside build.
+The tested checkout includes uncommitted step 6 changes based on `185086f`.

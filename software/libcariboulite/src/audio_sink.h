@@ -1,6 +1,6 @@
 #pragma once
 #include <stddef.h>
-#include <stdint.h>
+#include "audio_format.h"
 #include <errno.h>
 
 // Transitional RX boundary: signed 16-bit mono PCM, counts in frames.
@@ -13,7 +13,7 @@ typedef struct {
 } audio_sink_result_t;
 typedef struct audio_sink audio_sink_t;
 typedef struct {
-    audio_sink_result_t (*write)(audio_sink_t*, const int16_t*, size_t);
+    audio_sink_result_t (*write)(audio_sink_t*, const audio_s16_t*, size_t);
     void (*destroy)(audio_sink_t*);
     const char* (*state)(audio_sink_t*); // optional diagnostic, static string
 } audio_sink_ops_t;
@@ -23,7 +23,7 @@ struct audio_sink {
 };
 
 // Single writer. Caller owns samples; no pointer retained. May block.
-static inline audio_sink_result_t audio_sink_write(audio_sink_t* s, const int16_t* src, size_t frames)
+static inline audio_sink_result_t audio_sink_write(audio_sink_t* s, const audio_s16_t* src, size_t frames)
 {
     if (!s || !s->ops || !s->ops->write || (!src && frames))
         return (audio_sink_result_t){0, AUDIO_SINK_ERROR, -EINVAL};

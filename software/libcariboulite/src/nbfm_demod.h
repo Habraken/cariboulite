@@ -1,6 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include "iq16.h"
+#include "audio_format.h"
 
 // Standalone DSP. No threads, device handles, queues or retained caller buffers.
 typedef struct nbfm_demod nbfm_demod_t;
@@ -26,6 +27,6 @@ int nbfm_demod_set_audio(nbfm_demod_t* dsp, float deemph_tau, float pcm_gain);
 // No allocations. Stops at input end or output capacity; retry unused input.
 // Zero capacity consumes nothing; no hidden pending output. Single owner.
 nbfm_demod_result_t nbfm_demod_process(nbfm_demod_t* dsp,
-    const iq16_t* input, size_t count, int16_t* output, size_t capacity,
+    const iq16_t* input, size_t count, audio_s16_t* output, size_t capacity,
     double correction);
 void nbfm_demod_destroy(nbfm_demod_t* dsp);

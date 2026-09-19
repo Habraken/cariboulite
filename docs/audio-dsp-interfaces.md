@@ -11,17 +11,18 @@ Update this file with every interface-changing increment.
 | `audio_source.h` | Format + read-result + destroy operations | Common source boundary; currently used by ALSA TX capture |
 | `alsa_source.c/.h` | ALSA capture -> mono float audio at 48 kHz | Owns capture handle, conversion and buffering; used by TX |
 | `tone_source.c/.h` | Frequency/amplitude -> 48 kHz mono float audio | Common source implementation for TX, injection and self-test tones |
-| `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Configurable audio/RF rates; app uses 48 kHz audio and 2 or 4 MS/s IQ |
+| `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Explicit progress/reset/error contract; 48 kHz mono and 2 or 4 MS/s IQ |
 | `audio_sink.h`, `alsa_sink.c/.h` | Mono S16 PCM at 48 kHz -> ALSA playback | Sink owns PCM configuration, stereo fallback, recovery and close |
 | `nbfm_demod.c/.h` | IQ16 -> mono S16 PCM | Standalone stateful DSP; caller supplies fractional rate correction |
 | `demod_worker.c/.h` | Application IQ FIFO -> application audio FIFO | Owns 480-frame packing, FIFO-depth servo, diagnostics and thread entry |
+| `audio_format.h` | Rate/channels, normalized float and S16 PCM sample types | Shared definitions without implicit conversion |
 | `iq16.h` | Packed signed 16-bit I then Q | Shared existing IQ layout; no device dependencies |
 | `app_pipeline_internal.h` | Shared RF/audio frame and FIFO types | Internal app/demodulator transport; not a reusable DSP API |
 | `app_menu.c` | UI, radio control, audio and IQ streams | Owns pipeline coordination, FIFO implementations and source/sink workers |
 
-The modulator exposes create/destroy, push-audio and pull-IQ operations. The
-demodulator exposes create/process/reset/destroy and explicit transfer counts.
-Their APIs are not yet symmetrical; step 6 addresses the modulator contract.
+Both DSP modules expose creation, processing progress, reset and destruction.
+The modulator also retains its legacy push/pull APIs. Their reset and buffering
+semantics remain explicit and module-specific, preserving existing signal behavior.
 
 ## Target data paths
 
@@ -436,3 +437,105 @@ reset during partial decimation, invalid inputs and zero-capacity behavior.
 waiting DSP/playback threads before destruction. **H4 passed**: Jan confirmed option 13, the baseline, correct pitch, clean
 modulation and extended RX without unusual behaviour, and explicitly accepted
 the checkpoint. [Physical results](baselines/20260919T123837.461278Z/summary.json).
+
+## Implemented: explicit modulator boundary (step 6)
+
+[Header](../software/libcariboulite/src/nbfm_mod.h),
+[implementation](../software/libcariboulite/src/nbfm_mod.c) and
+[shared audio types](../software/libcariboulite/src/audio_format.h).
+
+```c
+nbfm_mod_t* nbfm_create(const nbfm_cfg_t* cfg);
+nbfm_result_t nbfm_process(nbfm_mod_t* m, const audio_f32_t* audio,
+    size_t frames, iq16_t* output, size_t capacity);
+size_t nbfm_buffered_audio(const nbfm_mod_t* m);
+void nbfm_reset(nbfm_mod_t* m);
+void nbfm_destroy(nbfm_mod_t* m);
+```
+
+Supported configuration is now checked before allocation: exactly 48 kHz mono
+float audio and 2 or 4 MS/s IQ; finite deviation in [0, 24000] Hz; finite,
+nonnegative pre-emphasis tau in seconds; finite IQ amplitude in [0, 32767];
+and interpolation mode 0 or 1. These are the supported bounds of this contract,
+not a claim that other combinations previously worked. NULL configuration retains
+library defaults `{48000, 4000000, 2500, 0, 12000, 1}`. Application defaults remain
+2500 Hz deviation, no pre-emphasis, IQ amplitude 4000 and linear interpolation.
+Invalid configuration returns NULL/errno EINVAL. Failure of either allocation
+returns NULL/errno ENOMEM, releasing any partial allocation.
+
+`audio_format.h` defines rate/channel metadata plus `audio_f32_t` (float,
+nominally [-1, 1]) and `audio_s16_t` (int16 PCM, [-32768, 32767]). Source/modulator
+signatures use float; demodulator/sink signatures use S16. The aliases preserve
+the exact existing C types and do not introduce conversion or level changes.
+`iq16_t` remains the shared packed signed-16-bit I-then-Q pair from step 5.
+Modulator output magnitude follows `out_scale`, with the existing rounding and
+clipping. It is a sample amplitude, not a dBm setting. TX_EN bit packing remains
+in application transport after modulation; neither DSP module inserts radio bits.
+
+Processing returns `{consumed, produced, held_audio, error}`. **Consumed means
+copied into the internal audio queue**, not necessarily already rendered into
+IQ. The unchanged queue holds 4096 mono audio frames. Each call first accepts as
+many input frames as fit, then produces exactly the requested output capacity
+unless arguments are invalid. This order deliberately preserves push-then-pull
+behavior: space freed during generation is available to the *next* call. Retry
+unaccepted input later; no samples are silently overwritten.
+
+`held_audio` counts audio-rate ticks at which the queue was empty and the previous
+frequency was held. It does not count IQ pairs. Frequency hold is the existing
+underrun behavior, not EOF or a fatal DSP error; a new/reset instance produces an
+unmodulated carrier until audio reaches an audio tick. This makes that behavior
+visible to the caller without changing generated samples. `nbfm_buffered_audio`
+reports only pending queue frames, excluding interpolation history.
+
+Zero output capacity may still enqueue input. Zero input may still generate IQ,
+including held-frequency output. A full queue with zero capacity returns zero
+progress without an error; request output capacity to make room. Positive output
+capacity guarantees output progress on valid calls. The caller owns nonoverlapping
+buffers, may reuse accepted input immediately, and retains unaccepted input for
+retry. No caller pointers are retained. Processing, reset and queue inspection
+allocate nothing and do not block; one owner serializes all operations.
+
+All supplied audio samples are checked for finiteness before either enqueue or
+output, including a suffix that might not fit. Finite values outside [-1, 1] are
+clipped when fetched, as before. Invalid pointers, nonfinite audio or a NULL
+instance return error -EINVAL with zero counts and no state/output changes.
+Success returns error zero. Output capacity counts IQ pairs, input length counts
+mono audio frames. There is no implicit resampling to a different audio rate.
+
+`nbfm_reset` discards queued audio and clears carrier phase, rational audio clock,
+frequency interpolation and pre-emphasis history while preserving configuration
+and allocated storage. Its signal state equals a newly created instance. This
+cold reset differs intentionally from the demodulator's compatibility reset,
+which preserves partial decimator accumulators. Reset/destroy accept NULL;
+queue inspection returns zero for NULL. Destroy releases storage after the owner
+has stopped; the application still recreates modulator instances at its existing
+pipeline lifecycle boundaries.
+
+`nbfm_push_audio` and `nbfm_pull_iq` remain compatibility APIs using the same
+internal state. They return actual counts, or zero/errno EINVAL on invalid input;
+they do not report held ticks. The TX producer and option 13 now use `nbfm_process`
+and check full 480-frame acceptance, expected IQ count and no held ticks. An
+unexpected result logs the counts, clears TX stream-active (or ends the self-test
+loop), and leaves final cleanup to the normal pipeline stop/destroy path.
+
+```c
+nbfm_cfg_t cfg = {48000, 4000000, 2500, 0, 4000, 1};
+nbfm_mod_t* mod = nbfm_create(&cfg);
+if (mod) {
+    audio_f32_t audio[480] = {0};
+    iq16_t iq[40000];
+    nbfm_result_t r = nbfm_process(mod, audio, 480, iq, 40000);
+    /* Use r.produced IQ pairs; handle r.error, r.held_audio and short consumption. */
+    (void)r;
+    nbfm_destroy(mod);
+}
+```
+
+`test_nbfm_mod.py` compares 3,120,000 IQ pairs with unchanged source frozen from
+accepted step-5 commit `185086f`: both RF rates, both interpolation modes,
+pre-emphasis enabled/disabled, composite tones, clipping, silence and underrun.
+It separately verifies arbitrary input partitions and small output capacities,
+queue saturation/retry, allocation failures, invalid configuration, transactional
+input errors, reset equivalence, defaults and full-scale IQ. Application build
+and all eight audio/DSP/lifecycle/stop test suites pass. **H5 passed**: Jan confirmed the automated baseline and option 13, clean modulation
+and correct pitch including test tones. [Physical results](baselines/20260919T131156.324241Z/summary.json).

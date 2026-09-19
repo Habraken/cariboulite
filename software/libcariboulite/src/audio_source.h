@@ -1,9 +1,9 @@
 #pragma once
 #include <stddef.h>
 #include <errno.h>
+#include "audio_format.h"
 
 // Interleaved normalized float samples. Counts are frames, not bytes.
-typedef struct { unsigned sample_rate; unsigned channels; } audio_format_t;
 typedef enum {
     AUDIO_SOURCE_OK, AUDIO_SOURCE_AGAIN, AUDIO_SOURCE_EOF, AUDIO_SOURCE_ERROR
 } audio_source_status_t;
@@ -14,7 +14,7 @@ typedef struct {
 } audio_source_result_t;
 typedef struct audio_source audio_source_t;
 typedef struct {
-    audio_source_result_t (*read)(audio_source_t*, float*, size_t);
+    audio_source_result_t (*read)(audio_source_t*, audio_f32_t*, size_t);
     void (*destroy)(audio_source_t*);
 } audio_source_ops_t;
 struct audio_source {
@@ -23,7 +23,7 @@ struct audio_source {
 };
 
 // One reader; caller owns dst. No pointer retention. May block, depending on adapter.
-static inline audio_source_result_t audio_source_read(audio_source_t* s, float* dst, size_t frames)
+static inline audio_source_result_t audio_source_read(audio_source_t* s, audio_f32_t* dst, size_t frames)
 {
     if (!s || !s->ops || !s->ops->read || (!dst && frames))
         return (audio_source_result_t){0, AUDIO_SOURCE_ERROR, -EINVAL};
