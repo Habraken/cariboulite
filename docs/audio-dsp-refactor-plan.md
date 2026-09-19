@@ -1,6 +1,6 @@
 # Audio and DSP refactoring plan
 
-Status: H0 accepted by Jan on 2026-09-19; steps 1–3 are implemented; H1 and H2 physical checks passed. Each numbered step is a small,
+Status: H0 accepted by Jan on 2026-09-19; steps 1–4 are implemented; H1, H2 and H3 physical checks passed. Each numbered step is a small,
 reviewable change. The existing `nbfm_mod` rename and `nbfm_demod` extraction are
 already complete; the demodulator still depends on application FIFOs and ALSA.
 
@@ -97,12 +97,23 @@ loopback bridge. [Archived results](baselines/20260919T080542.756197Z/summary.js
 
 ### 4. Extract ALSA playback without changing the audio pipeline
 
-- [ ] Move playback open/configure/write/recovery/close into `alsa_sink.c/.h`.
-- [ ] Introduce `audio_sink` and route playback through it.
-- [ ] Keep worker threads, queues and their sizes in their existing owner for now.
-- [ ] Test partial writes, xrun recovery, failure cleanup and stop behavior.
+- [x] Move playback open/configure/write/recovery/close into `alsa_sink.c/.h`.
+- [x] Introduce `audio_sink` and route playback through it.
+- [x] Keep worker threads, queues and their sizes in their existing owner for now.
+- [x] Test partial writes, xrun recovery, failure cleanup and stop behavior.
 
-**H3:** verify physical RX audio at both RF rates, including restart and retune.
+Software validation (2026-09-19): application build, `test_audio_sink.py`,
+source/tone contracts, RX lifecycle, TX stop deadline and NBFM rate checks passed.
+This increment retains signed-16-bit mono PCM at the sink boundary; shared float
+normalization remains deferred to the DSP/interface steps to preserve samples.
+ALSA configuration failures now clean up and report an error, non-48-kHz negotiated
+rates are rejected, and a fatal playback write ends the writer with a diagnostic.
+No FIFO sizes, worker ownership, RF routing or DSP algorithms changed.
+
+**H3 passed:** Jan confirmed the automated baseline, option 13, known-signal RX
+at both RF rates and numerous RX start/stop actions without odd behaviour.
+Interactive retuning is deferred until that control exists and is not required
+for this ALSA playback extraction. Step 5 may proceed.
 
 ### 5. Separate demodulator DSP from its worker thread
 
@@ -186,7 +197,10 @@ case is not a pass. Do not mark an untested combination as verified.
 | Checkpoint | Revision / dirty diff | Setup / procedure | Measurements and result | Confirmed by |
 | --- | --- | --- | --- | --- |
 | H0 | `0af6f2d`; working tree clean when recorded | Raspberry Pi OS; Jan deleted the build folder, rebuilt the app using the install script, and physically tested with a radio | Jan reports everything works as expected; accepted functional baseline, no numerical measurements supplied | Jan, 2026-09-19 |
-| H1–H6 | Pending | Pending | Not run | — |
+| H1 | See step 2 archive | Eight baseline sessions | Passed, including microphone modulation | Jan, 2026-09-19 |
+| H2 | See step 3 archive | Eight baseline sessions plus option 13 | Passed; correct pitch and self-test audio | Jan, 2026-09-19 |
+| H3 | Step 4 working tree based on `76e6b9b` | Physical RX at both rates, restart/retune and self-test | Passed: baseline, option 13, known-signal RX at both rates, repeated RX start/stop; retuning deferred | Jan, 2026-09-19 |
+| H4–H6 | Pending | Pending | Not run | — |
 
 Link longer logs or recordings here. Record software and hardware results
 separately, including any explicitly deferred tests and remaining limitations.
@@ -201,3 +215,35 @@ firmware details, ALSA routes and numerical tolerances were not supplied. The
 remaining baseline checklist items track documentation follow-up, not a request
 to repeat the accepted test before step 1. Record those details when available
 and use Jan's working setup for subsequent physical comparisons.
+
+### H3 investigation: reported TX level difference
+
+Jan reports option 11 does not open the monitoring receiver's squelch, with
+approximately -120 dBm versus -90 dBm for option 14 on the SDRPlay RSP2pro
+(first reading supplied as `~120dBm`, interpreted as negative pending confirmation).
+These are external receiver readings, not calibrated CaribouLite output power.
+The subsequent same-path comparison below resolves the reported TX level concern.
+
+Source inspection finds identical requested TX power (-3 dBm) and IQ scale
+(4000) but different **interactive** routes: option 11 uses `radio_low`; option
+14 uses `radio_high`/HiF. This difference is also present in pre-step-4 HEAD
+`76e6b9b`. The automated baseline runner overrides option 11 to HiF, so this
+route difference cannot explain a comparison made within that runner. Jan confirmed the comparison used the interactive menu options. The two tests
+therefore selected different radio paths; these measurements do not establish a
+TX power regression from step 4. The subsequent baseline runner comparison used the same HiF path. Physical coupling and the exact cause
+of the measured 30 dB difference remain unverified. Interactive routing is unchanged.
+
+### Step 4 automated physical retest — 2026-09-19
+
+Run `20260919T121032.048186Z` completed all eight sessions with exit code 0.
+Jan confirmed all automated TX levels were approximately -90 dBm on the SDRPlay
+RSP2pro, audio quality was good and tone pitch was correct. The same-path test
+shows no reported TX level discrepancy between options 11 and 14; the earlier
+interactive comparison used different radio paths. No TX routing change is needed
+for this refactoring increment.
+
+[Archived results](baselines/20260919T121032.048186Z/summary.json), metadata and
+RX RSSI events preserve the runner evidence. Jan also confirmed option 13 tested correctly and known-signal RX passed at
+both 2 and 4 MS/s. Jan confirmed numerous RX start/stop actions without odd behaviour. H3 is passed.
+Retuning is deferred until an interactive tuning control exists; it is not an
+acceptance requirement for the ALSA extraction.

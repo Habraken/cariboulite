@@ -203,3 +203,19 @@ and [events/RSSI](baselines/20260919T080542.756197Z/events.csv) are archived out
 `build/`. Each RX session recorded ten RSSI samples. This run includes the
 uncommitted step 3 tone-source changes; exact binary/firmware hashes and source
 status are in the metadata.
+
+## Step 4 automated retest — 2026-09-19
+
+Run `20260919T121032.048186Z` completed all eight sessions with exit code 0.
+Jan confirmed equal TX monitoring levels of approximately -90 dBm on the SDRPlay
+RSP2pro, good audio quality and correct tone pitch. Both automated TX cases use
+HiF; the earlier interactive comparison used different radio paths and showed
+unequal receiver levels. These are receiver observations, not calibrated TX power.
+
+[Results](baselines/20260919T121032.048186Z/summary.json),
+[metadata](baselines/20260919T121032.048186Z/metadata.json) and
+[events/RSSI](baselines/20260919T121032.048186Z/events.csv) are archived outside build.
+Jan separately confirmed option 13 tested correctly and known-signal RX passed
+at both 2 and 4 MS/s. Jan also confirmed numerous RX start/stop actions without odd behaviour. H3
+is passed. Interactive retuning is deferred until that control exists; it is
+not required to accept the ALSA playback extraction.

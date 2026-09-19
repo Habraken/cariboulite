@@ -1,7 +1,7 @@
 #pragma once
 #include <stdbool.h>
 #include <stdint.h>
-#include <alsa/asoundlib.h>
+#include "audio_sink.h"
 
 typedef struct rf10_fifo_s rf10_fifo_t;
 typedef struct aud10_fifo_s aud10_fifo_t;
@@ -21,8 +21,8 @@ typedef struct {
     float               deemph_y;
     int16_t             last_i, last_q; // FM discrim previous sample
 
-    // ALSA sink
-    snd_pcm_t*          pcm;
+    // Playback diagnostics (moved to pipeline in step 5)
+    audio_sink_t*       sink;
     unsigned            pcm_rate;
     unsigned            pcm_channels;   
     float               pcm_gain;       

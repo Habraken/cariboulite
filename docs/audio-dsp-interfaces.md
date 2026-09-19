@@ -12,9 +12,10 @@ Update this file with every interface-changing increment.
 | `alsa_source.c/.h` | ALSA capture -> mono float audio at 48 kHz | Owns capture handle, conversion and buffering; used by TX |
 | `tone_source.c/.h` | Frequency/amplitude -> 48 kHz mono float audio | Common source implementation for TX, injection and self-test tones |
 | `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Configurable audio/RF rates; app uses 48 kHz audio and 2 or 4 MS/s IQ |
-| `nbfm_demod.c/.h` | Application IQ FIFO -> application audio FIFO | Owns DSP inside a thread; references ALSA for diagnostics, FIFO depth for clock correction |
+| `audio_sink.h`, `alsa_sink.c/.h` | Mono S16 PCM at 48 kHz -> ALSA playback | Sink owns PCM configuration, stereo fallback, recovery and close |
+| `nbfm_demod.c/.h` | Application IQ FIFO -> application audio FIFO | Owns DSP inside a thread; references audio sink for diagnostics, FIFO depth for clock correction |
 | `app_pipeline_internal.h` | Shared RF/audio frame and FIFO types | Internal app/demodulator transport; not a reusable DSP API |
-| `app_menu.c` | UI, radio control, audio and IQ streams | Owns pipeline coordination, FIFO implementations, ALSA playback and tone generation |
+| `app_menu.c` | UI, radio control, audio and IQ streams | Owns pipeline coordination, FIFO implementations and source/sink workers |
 
 The modulator exposes create/destroy, push-audio and pull-IQ operations. The
 current demodulator exposes a pthread entry point and a mutable control struct;
@@ -258,3 +259,74 @@ The unused `tone48k.c` and `audio48k_source.h` were removed. Tests:
 frequency changes, silence and PCM cues; lifecycle and TX-stop tests protect
 allocation cleanup and injection deadlines. H2 passed on 2026-09-19: Jan confirmed the runner audio pitch and the separate
 option 13 self-test. [Results](baselines/20260919T080542.756197Z/summary.json).
+
+## Implemented: playback sink (step 4)
+
+[Interface](../software/libcariboulite/src/audio_sink.h),
+[ALSA header](../software/libcariboulite/src/alsa_sink.h) and
+[implementation](../software/libcariboulite/src/alsa_sink.c).
+
+```c
+audio_sink_t* alsa_sink_open(const char* device, unsigned sample_rate);
+audio_sink_result_t audio_sink_write(audio_sink_t*, const int16_t*, size_t frames);
+void audio_sink_destroy(audio_sink_t*);
+const char* audio_sink_state(audio_sink_t*);
+unsigned alsa_sink_channels(const audio_sink_t*);
+```
+
+This incremental boundary deliberately retains **signed 16-bit mono PCM**,
+range -32768 through 32767, without scaling, clipping or floating-point conversion.
+The shared normalized-float target above remains proposed. Counts are mono input
+frames, including when ALSA duplicates samples to stereo. The caller owns input
+storage; the sink retains no pointer. `sample_rate` and operations are immutable.
+
+Opening accepts only 48000 Hz, rejects a different negotiated rate, and returns
+NULL with errno on failure. NULL/empty device selects `default`. Configuration
+preserves blocking interleaved S16_LE playback, mono first with stereo fallback,
+480-frame target periods, 2400-frame target buffer, start threshold of buffer
+minus period, and availability threshold of one period. ALSA may adjust buffer
+and period sizes. All configuration errors release the handle and parameter
+storage. The sink owns its handle; no raw ALSA handle crosses the interface.
+
+Writes return `{frames, status, error}`. `OK` reports positive progress, possibly
+partial; the caller retries from that frame offset. Stereo writes consume at most
+480 frames per call using bounded stack storage. `AGAIN` means zero progress:
+ALSA returned zero/EAGAIN, or EPIPE recovery prepared the device successfully.
+`ERROR` reports a negative errno-style code, including a failed prepare; suspend
+errors remain fatal, as before. Zero-length writes return OK without I/O, and
+invalid sink/buffer arguments return ERROR/-EINVAL. There is no EOF or drain API.
+
+The pipeline helper retries partial writes, checks pthread cancellation and sleeps
+1 ms on AGAIN. A fatal error is logged and ends the audio writer; the pipeline
+owner must still perform normal stop/destroy to release remaining workers and
+hardware. This does not introduce pipeline-wide error propagation. Successful
+playback samples and normal queue scheduling remain unchanged.
+
+One worker writes each sink. Writes may block in ALSA; stopping uses the existing
+pthread cancellation/join path, not a new wall-clock timeout guarantee. Destruction
+closes without explicit drain, after the writer and diagnostic reader have joined.
+It accepts NULL. The diagnostic `state` operation is optional and returns a static
+string; ALSA permits it alongside the writer while the sink remains alive. The
+current demodulator thread uses it for its existing heartbeat; step 5 will move
+that diagnostic into pipeline coordination. DSP calculations and FIFO sizes are
+unchanged. Self-test cues use the sink before/after the writer, never concurrently.
+The self-test allocation failure path now joins the writer before closing playback.
+
+```c
+audio_sink_t* sink = alsa_sink_open("null", 48000);
+if (sink) {
+    int16_t samples[480] = {0};
+    audio_sink_result_t r = audio_sink_write(sink, samples, 480);
+    /* Retry unconsumed frames, handle AGAIN and ERROR in the owning worker. */
+    (void)r;
+    audio_sink_destroy(sink); // after all users have stopped
+}
+```
+
+Validation: `test_audio_sink.py` uses ALSA null with scripted writes/configuration
+failures to check unchanged PCM, stereo duplication, partial progress, EPIPE
+recovery and recovery failure, zero/EAGAIN, fatal errors, cleanup and cancellation
+of the production retry helper. Application build and all existing source, tone,
+rate, lifecycle and TX-stop checks passed. **H3 passed**: Jan confirmed the automated baseline, option 13, known-signal RX
+at both RF rates and repeated RX start/stop. Interactive retuning is deferred
+until that control exists. [Physical results](baselines/20260919T121032.048186Z/summary.json).

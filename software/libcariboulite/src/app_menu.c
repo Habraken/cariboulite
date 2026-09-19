@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <stddef.h>   // if you want offsetof
 #include <stdint.h>
-#include <alsa/asoundlib.h>
+#include "alsa_sink.h"
 
 _Static_assert(sizeof(caribou_smi_sample_complex_int16) == 4,
                "caribou_smi_sample_complex_int16 must be 4 bytes (2x int16)");
@@ -880,47 +880,21 @@ void print_binairy8(uint8_t value) {
     putchar('\n');
 }
 
-static void write_exact_alsa_16(snd_pcm_t* pcm,
-                                const int16_t* mono,
-                                size_t frames,
-                                unsigned channels)
+// Keep retry/pacing and cancellation in the pipeline worker.
+static int write_audio_exact(audio_sink_t* sink, const int16_t* mono, size_t frames)
 {
-    if (channels == 1) {
-        // write mono directly
-        size_t left = frames;
-        const int16_t* p = mono;
-        while (left) {
-            snd_pcm_sframes_t w = snd_pcm_writei(pcm, p, left);
-            if (w == -EPIPE) { snd_pcm_prepare(pcm); continue; }
-            if (w == -EAGAIN) continue;
-            if (w < 0) { fprintf(stderr,"ALSA write err: %s\n", snd_strerror((int)w)); break; }
-            p += w; left -= (size_t)w;
-        }
-        return;
-    }
-
-    // duplicate mono → stereo into a small stack buffer (safe for 480 frames)
-    int16_t interleaved[480 * 2];
     while (frames) {
-        size_t chunk = frames > 480 ? 480 : frames;
-        for (size_t i = 0, j = 0; i < chunk; ++i) {
-            int16_t s = mono[i];
-            interleaved[j++] = s;
-            interleaved[j++] = s;
+        pthread_testcancel();
+        audio_sink_result_t r = audio_sink_write(sink, mono, frames);
+        mono += r.frames;
+        frames -= r.frames;
+        if (r.status == AUDIO_SINK_ERROR) {
+            fprintf(stderr, "Audio sink write error: %d\n", r.error);
+            return r.error;
         }
-        size_t left = chunk;
-        const int16_t* p = interleaved;
-        while (left) {
-            snd_pcm_sframes_t w = snd_pcm_writei(pcm, p, left);
-            if (w == -EPIPE) { snd_pcm_prepare(pcm); continue; }
-            if (w == -EAGAIN) continue;
-            if (w < 0) { fprintf(stderr,"ALSA write err: %s\n", snd_strerror((int)w)); break; }
-            p += w * 2;      // 2 samples per frame
-            left -= (size_t)w;
-        }
-        mono   += chunk;
-        frames -= chunk;
+        if (r.status == AUDIO_SINK_AGAIN) usleep(1000);
     }
+    return 0;
 }
 
 //=================================================
@@ -1005,8 +979,7 @@ void aud10_fifo_peek_depth(aud10_fifo_t* f, size_t* count, size_t* cap){
 
 typedef struct {
     bool active;
-    snd_pcm_t* pcm;
-    unsigned channels;
+    audio_sink_t* sink;
     aud10_fifo_t* fifo;     // source of 10 ms audio frames
     size_t xruns;
 } audio_writer_ctrl_t;
@@ -1024,14 +997,10 @@ static void* audio_writer_thread(void* arg){
     while(a->active){
         aud10_frame_t frm;
         if(!aud10_fifo_get(a->fifo,&frm, /*timeout_ms=*/-1)){
-            // starved: write silence to keep clock steady
-            //int16_t zeros[480]={0};
-            //write_exact_alsa_16(a->pcm, zeros, 480, a->channels);
-            //continue;
             break;
         }
-        // write one 10 ms block; handle xrun inside write_exact_alsa_16()
-        write_exact_alsa_16(a->pcm, frm.pcm, 480, a->channels);
+        // Write one 10 ms block; adapter reports recovery and progress.
+        if (write_audio_exact(a->sink, frm.pcm, 480) < 0) break;
     }
     return NULL;
 }
@@ -1548,79 +1517,6 @@ static void* rx_reader_thread_func(void* arg)
 }
 
 
-// after alsa_open_playback() succeeds:
-static void alsa_tune_sw(snd_pcm_t* pcm){
-    snd_pcm_sw_params_t *sw = NULL;
-    snd_pcm_sw_params_malloc(&sw);
-    snd_pcm_sw_params_current(pcm, sw);
-
-    snd_pcm_uframes_t psize=0, bsize=0;
-    snd_pcm_get_params(pcm, &bsize, &psize); // (buffer_size, period_size)
-
-    // Don't start until the buffer is nearly full — prevents initial XRUN/stutter.
-    snd_pcm_sw_params_set_start_threshold(pcm, sw, bsize - psize);
-    // Wake writer when at least one period is free.
-    snd_pcm_sw_params_set_avail_min(pcm, sw, psize);
-
-    snd_pcm_sw_params(pcm, sw);
-    snd_pcm_sw_params_free(sw);
-}
-
-static int alsa_open_playback(snd_pcm_t **ppcm,
-                              const char* dev,
-                              unsigned *out_rate,
-                              unsigned *out_channels)
-{
-    snd_pcm_t* pcm = NULL;
-    snd_pcm_hw_params_t* hw = NULL;
-    int rc;
-
-    const char* card = dev && *dev ? dev : "default";
-    if ((rc = snd_pcm_open(&pcm, card, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
-        fprintf(stderr, "ALSA: open(%s) failed: %s\n", card, snd_strerror(rc));
-        return -1;
-    }
-
-    snd_pcm_hw_params_malloc(&hw);
-    snd_pcm_hw_params_any(pcm, hw);
-    snd_pcm_hw_params_set_access(pcm, hw, SND_PCM_ACCESS_RW_INTERLEAVED);
-    snd_pcm_hw_params_set_format(pcm, hw, SND_PCM_FORMAT_S16_LE);
-
-    unsigned rate = 48000; int dir = 0;
-    snd_pcm_hw_params_set_rate_near(pcm, hw, &rate, &dir);
-
-    // try mono first; if it fails we’ll retry with 2ch
-    unsigned ch = 1;
-    rc = snd_pcm_hw_params_set_channels(pcm, hw, ch);
-    if (rc < 0) {
-        ch = 2;
-        rc = snd_pcm_hw_params_set_channels(pcm, hw, ch);
-        if (rc < 0) { fprintf(stderr,"ALSA: channels failed: %s\n", snd_strerror(rc)); goto fail; }
-    }
-
-    // make buffer a bit deeper to avoid XRUN storms
-    snd_pcm_uframes_t period = 480;    // 10 ms
-    snd_pcm_uframes_t buffer = 2400;   // 50 ms
-    snd_pcm_hw_params_set_period_size_near(pcm, hw, &period, NULL);
-    snd_pcm_hw_params_set_buffer_size_near(pcm, hw, &buffer);
-
-    if ((rc = snd_pcm_hw_params(pcm, hw)) < 0) { fprintf(stderr,"ALSA: hw_params: %s\n", snd_strerror(rc)); goto fail; }
-    snd_pcm_hw_params_free(hw);
-
-    if ((rc = snd_pcm_prepare(pcm)) < 0) { fprintf(stderr,"ALSA: prepare: %s\n", snd_strerror(rc)); snd_pcm_close(pcm); return -1; }
-
-    fprintf(stderr, "ALSA: opened %s, %uch, S16_LE, %u Hz\n", card, ch, rate);
-    *ppcm = pcm;
-    if (out_rate)     *out_rate = rate;
-    if (out_channels) *out_channels = ch;
-    return 0;
-
-fail:
-    snd_pcm_hw_params_free(hw);
-    snd_pcm_close(pcm);
-    return -1;
-}
-
 // ========================= TX PIPELINE =========================
 int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
                      cariboulite_radio_state_st* radio,
@@ -1929,17 +1825,15 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     if (!p->rxq.q || !p->afifo.q) goto fail;
 
     // Open ALSA playback
-    unsigned rate=0, channels=0;
-    if (alsa_open_playback(&p->demod.pcm, par->pcm_dev, &rate, &channels) != 0) {
+    p->demod.sink = alsa_sink_open(par->pcm_dev, 48000);
+    if (!p->demod.sink) {
         error = -2;
         goto fail;
     }
-    alsa_tune_sw(p->demod.pcm);
 
     // Audio writer
     p->aw.active   = true;
-    p->aw.pcm      = p->demod.pcm;
-    p->aw.channels = channels ? channels : 1;
+    p->aw.sink     = p->demod.sink;
     p->aw.fifo     = &p->afifo;
     if (pthread_create(&p->aw_thread, NULL, audio_writer_thread, &p->aw) != 0) {
         error = -3;
@@ -1959,8 +1853,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->demod.deemph_tau        = par->deemph_tau_s;
     p->demod.pcm_gain          = par->pcm_gain;
     p->demod.pcm_total_frames  = 0;
-    p->demod.pcm_channels      = p->aw.channels;
-    p->demod.pcm_rate          = rate;
+    p->demod.pcm_channels      = alsa_sink_channels(p->demod.sink);
+    p->demod.pcm_rate          = p->demod.sink->sample_rate;
 
     if (pthread_create(&p->demod_thread, NULL, nbfm_demod_thread, &p->demod) != 0) {
         error = -4;
@@ -2096,8 +1990,8 @@ void rx_pipeline_destroy(rx_pipeline_t* p)
         p->rx_ctrl.rx_buffer = NULL;
     }
 
-    if (p->demod.pcm) snd_pcm_close(p->demod.pcm);
-    p->demod.pcm = NULL;
+    audio_sink_destroy(p->demod.sink);
+    p->demod.sink = NULL;
     aud10_fifo_destroy(&p->afifo);
     rf10_fifo_destroy(&p->rxq);
 
@@ -2663,7 +2557,7 @@ static void nbfm_rx(sys_st *sys)
 }
 
 // --- Self-test: synthesize audio -> nbfm modulation -> IQ@4M -> nbfm demodulation -> ALSA ---
-static void selftest_audio_cue(snd_pcm_t* pcm, unsigned channels, float frequency)
+static void selftest_audio_cue(audio_sink_t* sink, float frequency)
 {
     audio_source_t* cue = tone_source_open_cue(frequency);
     if (!cue) { fprintf(stderr, "[selftest] cue allocation failed\n"); return; }
@@ -2675,7 +2569,7 @@ static void selftest_audio_cue(snd_pcm_t* pcm, unsigned channels, float frequenc
             ping[offset + i] = (int16_t)lrintf(0.6f * 32767.f * samples[i]);
     }
     audio_source_destroy(cue);
-    write_exact_alsa_16(pcm, ping, 12000, channels);
+    write_audio_exact(sink, ping, 12000);
 }
 
 static void nbfm_modem_selftest(sys_st *sys)
@@ -2695,7 +2589,7 @@ static void nbfm_modem_selftest(sys_st *sys)
         .deemph_y    = 0.0f,
         .last_i      = 0,
         .last_q      = 0,
-        .pcm         = NULL,
+        .sink        = NULL,
     };
 
     // before starting demod_th
@@ -2703,23 +2597,24 @@ static void nbfm_modem_selftest(sys_st *sys)
     aud10_fifo_init(&afifo, 64);
 
     // Use the same playback bridge as the RX menus (Loopback -> Jabra).
-    unsigned rate=0, ch=0;
-    if (alsa_open_playback(&dm.pcm, "plughw:Loopback,0,0", &dm.pcm_rate, &dm.pcm_channels) != 0) {
-        fprintf(stderr, "[selftest] alsa_open_playback failed\n");
+    dm.sink = alsa_sink_open("plughw:Loopback,0,0", 48000);
+    if (!dm.sink) {
+        fprintf(stderr, "[selftest] alsa_sink_open failed\n");
+        aud10_fifo_destroy(&afifo);
         rf10_fifo_destroy(&rxq);
         return;
     }
     
-    alsa_tune_sw(dm.pcm);
+    dm.pcm_rate = dm.sink->sample_rate;
+    dm.pcm_channels = alsa_sink_channels(dm.sink);
 
     // ping: quick ping of 2.525 kHz quindar tone to verify audio path is working
-    selftest_audio_cue(dm.pcm, dm.pcm_channels, 2525.0f);
+    selftest_audio_cue(dm.sink, 2525.0f);
 
 
     audio_writer_ctrl_t aw = {
         .active   = true,
-        .pcm      = dm.pcm,
-        .channels = dm.pcm_channels,
+        .sink     = dm.sink,
         .fifo     = &afifo,
     };
     pthread_t aw_th;
@@ -2727,7 +2622,6 @@ static void nbfm_modem_selftest(sys_st *sys)
 
     dm.afifo_out = &afifo;
     dm.pcm_gain = 12000.0f;
-    dm.pcm_channels = ch ? ch : 1;
     
     pthread_t demod_th;
     pthread_create(&demod_th, NULL, nbfm_demod_thread, &dm);
@@ -2752,7 +2646,12 @@ static void nbfm_modem_selftest(sys_st *sys)
         dm.active = false;
         rf10_fifo_stop(&rxq);
         pthread_join(demod_th, NULL);
-        if (dm.pcm) snd_pcm_close(dm.pcm);
+        aw.active = false;
+        aud10_fifo_stop(&afifo);
+        pthread_cancel(aw_th);
+        pthread_join(aw_th, NULL);
+        aud10_fifo_destroy(&afifo);
+        audio_sink_destroy(dm.sink);
         rf10_fifo_destroy(&rxq);
         return;
     }
@@ -2806,10 +2705,10 @@ static void nbfm_modem_selftest(sys_st *sys)
     pthread_join(aw_th, NULL);
 
     // ping: quick ping of 2.475 kHz tone to signal audio path is closing
-    selftest_audio_cue(dm.pcm, dm.pcm_channels, 2475.0f);
+    selftest_audio_cue(dm.sink, 2475.0f);
     usleep(250 * 1000); // wait a little so the tone doesn't get cut off
 
-    if (dm.pcm) snd_pcm_close(dm.pcm);
+    audio_sink_destroy(dm.sink);
     aud10_fifo_destroy(&afifo);
     rf10_fifo_destroy(&rxq);
     nbfm_destroy(fm);

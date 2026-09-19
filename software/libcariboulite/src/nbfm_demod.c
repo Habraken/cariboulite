@@ -9,21 +9,6 @@
 #include <string.h>
 #include <time.h>
 
-static const char* pcm_state_name(snd_pcm_state_t s){
-    switch (s){
-        case SND_PCM_STATE_OPEN: return "OPEN";
-        case SND_PCM_STATE_SETUP: return "SETUP";
-        case SND_PCM_STATE_PREPARED: return "PREPARED";
-        case SND_PCM_STATE_RUNNING: return "RUNNING";
-        case SND_PCM_STATE_XRUN: return "XRUN";
-        case SND_PCM_STATE_DRAINING: return "DRAINING";
-        case SND_PCM_STATE_PAUSED: return "PAUSED";
-        case SND_PCM_STATE_SUSPENDED: return "SUSPENDED";
-        case SND_PCM_STATE_DISCONNECTED: return "DISCONNECTED";
-        default: return "?";
-    }
-}
-
 // --- helper to reinitialize all demod state (C version) ---
 static void reinit_demod_state(
     float *pi50, float *pq50, int *have_prev50,
@@ -124,7 +109,7 @@ void* nbfm_demod_thread(void* arg)
     set_rt_and_affinity_prio(55,1);
 
     nbfm_demod_ctrl_t* c = (nbfm_demod_ctrl_t*)arg;
-    if (!c || !c->fifo_in || !c->pcm) return NULL;
+    if (!c || !c->fifo_in || !c->sink) return NULL;
 
     // Configured RF rate -> 200 kS/s -> 50 kS/s via integrate & dump
     const int D1 = (int)(c->fs_rf / 200000.0f), D2 = 4;                // 2 or 4 MS/s -> 50 kS/s
@@ -358,7 +343,7 @@ void* nbfm_demod_thread(void* arg)
                             "DEMOD: frames=%llu (%.1fs) ALSA=%s  aud_fifo=%zu/%zu (%.0f%%)  corr=%.5f\n",
                             (unsigned long long)c->pcm_total_frames,
                             (double)c->pcm_total_frames / (double)c->pcm_rate,
-                            pcm_state_name(snd_pcm_state(c->pcm)),
+                            audio_sink_state(c->sink),
                             acnt, acap, 100.0 * (double)acnt / (double)acap,
                             corr48);
                         last_log_ms = ms;
