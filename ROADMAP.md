@@ -81,6 +81,11 @@ exercised without hardware, and regression checks pass after each extraction.
 
 ### C. Squelch and a first VHF/UHF transceiver (items 4 and 5)
 
+Implementation update: independent RX noise and RSSI squelch modules and menu-14
+toggles are implemented and accepted by Jan after adjusting the carrier
+thresholds to -97/-102 dBm. See
+[RX squelch](docs/rx-squelch.md) for current thresholds and validation.
+
 - [ ] Implement configurable NBFM squelch with a defined measurement, threshold,
   hysteresis and hang time. Test weak signals, threshold crossings, silence,
   opening delay and audio muting. Define behavior separately for later modes.

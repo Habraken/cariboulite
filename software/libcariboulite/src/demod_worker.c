@@ -2,6 +2,8 @@
 #define _GNU_SOURCE
 #endif
 #include "demod_worker.h"
+#include "noise_squelch.h"
+#include "carrier_squelch.h"
 #include "pipeline_transport.h"
 #include "pipeline_runtime.h"
 #include <math.h>
@@ -23,12 +25,21 @@ void* nbfm_demod_thread(void* arg)
     int primed = 0;
     size_t nout = 0;
     aud10_frame_t audio;
+    float raw[480];
+    noise_squelch_t noise = {0};
+    carrier_squelch_t carrier = {0};
+    unsigned previous_flags = ~0u;
+    float gate_gain = 0.0f;
     uint64_t last_log_ms = 0;
     if (c->prime_blocks_10ms <= 0) c->prime_blocks_10ms = 8;
     c->reset = true;
     while (c->active) {
         if (c->reset) {
             nbfm_demod_reset(c->dsp);
+            noise_squelch_reset(&noise);
+            carrier_squelch_reset(&carrier);
+            gate_gain = 0.0f;
+            atomic_store(&c->squelch_open, 0);
             corr48 = depth_ema = 0.0;
             primed = 0;
             nout = 0;
@@ -37,6 +48,14 @@ void* nbfm_demod_thread(void* arg)
         }
         rf10_frame_t frm;
         if (!rf10_fifo_get(c->fifo_in, &frm, -1)) continue;
+        unsigned flags = atomic_load(&c->squelch_flags);
+        if (flags != previous_flags) {
+            noise_squelch_reset(&noise);
+            carrier_squelch_reset(&carrier);
+            previous_flags = flags;
+        }
+        bool carrier_open = !(flags & RX_SQUELCH_CARRIER) ||
+            carrier_squelch_process(&carrier, frm.rssi_dbm, frm.rssi_valid);
         size_t offset = 0;
         while (offset < frame_samples) {
             size_t count = frame_samples - 1 - offset;
@@ -90,12 +109,24 @@ void* nbfm_demod_thread(void* arg)
                 fprintf(stderr, "DEMOD: invalid audio configuration\n");
                 return NULL;
             }
-            nbfm_demod_result_t result = nbfm_demod_process(c->dsp,
-                frm.data + offset, count, audio.pcm + nout, 480 - nout, corr48);
+            nbfm_demod_result_t result = nbfm_demod_process_with_raw(c->dsp,
+                frm.data + offset, count, audio.pcm + nout, raw, 480 - nout, corr48);
             if (result.error || !result.consumed) {
                 fprintf(stderr, "DEMOD: processing failed (%d)\n", result.error);
                 return NULL;
             }
+            bool open = false;
+            for (size_t i = 0; i < result.produced; ++i) {
+                bool noise_open = !(flags & RX_SQUELCH_NOISE) ||
+                    noise_squelch_process(&noise, raw[i]);
+                open = noise_open && carrier_open;
+                // Keep clock/queues running while closed; ramp over 5 ms.
+                if (!flags) gate_gain = 1.0f; // exact bypass for diagnostics
+                else if (open) gate_gain = fminf(1.0f, gate_gain + 1.0f/240);
+                else gate_gain = fmaxf(0.0f, gate_gain - 1.0f/240);
+                audio.pcm[nout+i] = (int16_t)lrintf(audio.pcm[nout+i] * gate_gain);
+            }
+            if (result.produced) atomic_store(&c->squelch_open, open);
             offset += result.consumed;
             nout += result.produced;
             if (nout == 480) {

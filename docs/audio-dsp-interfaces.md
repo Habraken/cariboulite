@@ -18,7 +18,9 @@ Update this file with every interface-changing increment.
 | `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Explicit progress/reset/error contract; 48 kHz mono and 2 or 4 MS/s IQ |
 | `audio_sink.h`, `alsa_sink.c/.h` | Mono S16 PCM at 48 kHz -> ALSA playback | Sink owns PCM configuration, stereo fallback, recovery and close |
 | `nbfm_demod.c/.h` | IQ16 -> mono S16 PCM | Standalone stateful DSP; caller supplies fractional rate correction |
-| `demod_worker.c/.h` | Application IQ FIFO -> application audio FIFO | Owns 480-frame packing, FIFO-depth servo, diagnostics and thread entry |
+| `noise_squelch.c/.h` | Unfiltered 48 kHz discriminator audio -> open/closed | High-frequency noise detector; worker-owned, no hardware dependencies |
+| `carrier_squelch.c/.h` | RSSI and validity -> open/closed | Hysteresis and qualification; worker-owned, hardware reads remain in RX reader |
+| `demod_worker.c/.h` | Application IQ FIFO -> application audio FIFO | Owns squelch gating, 480-frame packing, FIFO-depth servo, diagnostics and thread entry |
 | `audio_format.h` | Rate/channels, normalized float and S16 PCM sample types | Shared definitions without implicit conversion |
 | `iq16.h` | Packed signed 16-bit I then Q | Shared existing IQ layout; no device dependencies |
 | `pipeline_transport.c/.h` | RF/audio frames and FIFO operations | Internal synchronized queues, timeouts, statistics and cancellation cleanup |
@@ -66,15 +68,23 @@ flowchart TB
 
     subgraph rx["rx_pipeline — receive"]
         rxctl["RX lifecycle / configuration"]
-        reader["SMI reader thread"]
-        rxq[("RX RF FIFO<br/>128 × 10 ms blocks<br/>Drop oldest when full")]
+        reader["SMI reader thread<br/>Checked RSSI read when carrier squelch is enabled"]
+        rxq[("RX RF FIFO: IQ + RSSI validity/value<br/>128 × 10 ms blocks<br/>Drop oldest when full")]
         demod["demod_worker thread<br/>nbfm_demod DSP and PCM block packing<br/>Queue-depth clock correction"]
+        noise["noise_squelch<br/>Unfiltered audio above 6 kHz<br/>Default ON"]
+        carrier["carrier_squelch<br/>Modem RSSI hysteresis<br/>Default OFF"]
+        gate["Combined PCM gate<br/>5 ms fade; silence keeps clocks running"]
         aq[("Audio FIFO<br/>24 × 480-sample blocks<br/>48 kHz mono S16 PCM")]
         playback["Audio writer thread"]
         sink["alsa_sink<br/>audio_sink interface<br/>Playback and recovery"]
         reader -->|"IQ16: 2 or 4 MS/s"| rxq
         rxq --> demod
-        demod --> aq
+        demod -->|"Unfiltered discriminator audio"| noise
+        rxq -.->|"Captured RSSI"| carrier
+        noise -.-> gate
+        carrier -.-> gate
+        demod -->|"Filtered PCM"| gate
+        gate --> aq
         aq --> playback
         playback --> sink
         aq -.->|"Fill-level feedback"| demod
@@ -93,6 +103,11 @@ flowchart TB
     radio --> reader
     sink --> speakers["ALSA playback device"]
 ```
+
+The noise detector, carrier detector and PCM gate all execute inside the
+existing demod worker thread; they add no threads. Menu 14 uses **N** and **C**
+to toggle them. See [RX squelch](rx-squelch.md) for thresholds, interfaces,
+ownership, physical acceptance and regression checks.
 
 `pipeline_transport` implements the three application FIFOs shown above. Each
 RF block holds 20,000 IQ pairs at 2 MS/s or 40,000 at 4 MS/s. TX source reads use
@@ -799,3 +814,14 @@ allocation failures and no-progress errors. The recovered 600 Hz tone measures
 599.99 Hz at both rates. All eleven relevant software suites pass. The
 [extension guide](audio-dsp-extension-guide.md) gives build commands, ownership,
 production integration limitations and the future modem procedure.
+
+## Added after the refactoring: RX squelch
+
+The production RX path now adds independent noise and RSSI squelch modules.
+Noise is enabled and carrier disabled by default. A new optional
+`nbfm_demod_process_with_raw` output exposes pre-filter discriminator audio;
+`nbfm_demod_process` retains its existing contract and samples. RF FIFO frames
+also carry an RX RSSI value and validity flag, unused by TX. The full contracts,
+control defaults, tests and limitations are in [RX squelch](rx-squelch.md).
+Earlier step-by-step evidence above describes the accepted refactoring revisions;
+it does not establish hardware acceptance of these new squelch features.

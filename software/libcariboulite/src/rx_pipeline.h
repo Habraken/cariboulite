@@ -15,6 +15,7 @@ typedef struct {
 
 typedef struct {
     bool active;
+    const atomic_uint* squelch_flags;
     cariboulite_radio_state_st *radio;
     cariboulite_sample_complex_int16 *rx_buffer;
     size_t rx_buffer_size;
@@ -31,6 +32,9 @@ typedef struct {
     const char* pcm_dev;        // ALSA playback device ("plughw:3,0" etc.)
     float  deemph_tau_s;        // 50e-6 (EU) or 75e-6 (NA)
     float  pcm_gain;            // e.g., 8000.0f
+
+    bool noise_squelch_disabled; // zero/default enables noise squelch
+    bool carrier_squelch_enabled; // zero/default disables carrier squelch
 
     // Fixed rates
     float  fs_rf;               // 4e6
@@ -83,3 +87,7 @@ void* rx_reader_thread_func(void*);
 
 size_t rx_pipeline_frame_samples(const rx_pipeline_t*);
 void rx_pipeline_reset_stats(rx_pipeline_t*);
+
+// Thread-safe controls; configuration survives start/stop, reset on re-init.
+void rx_pipeline_set_squelch(rx_pipeline_t*, bool noise_enabled, bool carrier_enabled);
+bool rx_pipeline_squelch_open(const rx_pipeline_t*);

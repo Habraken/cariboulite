@@ -26,6 +26,8 @@ struct rf10_frame_s {
     // One 10 ms RF frame @ 4 MS/s = 40,000 IQ16 pairs
     // Reuse your iq16_t type: struct { int16_t i, q; };
     iq16_t data[40000];
+    float rssi_dbm;       // RX measurement taken at capture; ignored for TX
+    bool rssi_valid;      // false when disabled, unavailable or read failed
 };
 
 struct rf10_fifo_s {

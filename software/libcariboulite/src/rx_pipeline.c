@@ -77,6 +77,24 @@ void* rx_reader_thread_func(void* arg)
 
         if (have == want) {
             rf10_frame_t frm;
+            frm.rssi_valid = false;
+            frm.rssi_dbm = 127;
+            if (ctrl->squelch_flags &&
+                (atomic_load(ctrl->squelch_flags) & RX_SQUELCH_CARRIER)) {
+                // Check the SPI result directly: the legacy RSSI helper cannot
+                // distinguish a negative SPI error from a signed RSSI value.
+                uint8_t value = 127;
+                int cancel_state;
+                pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cancel_state);
+                HW_LOCK();
+                int rc = at86rf215_read_buffer(&ctrl->radio->sys->modem,
+                    ctrl->radio->type == cariboulite_channel_s1g ? REG_RF09_RSSI : REG_RF24_RSSI,
+                    &value, 1);
+                HW_UNLOCK();
+                pthread_setcancelstate(cancel_state, NULL);
+                frm.rssi_dbm = (float)(int8_t)value;
+                frm.rssi_valid = rc == 0 && frm.rssi_dbm >= -127 && frm.rssi_dbm <= 4;
+            }
             for (size_t i=0;i<want;i++) {
                 frm.data[i].i = buf[i].i;
                 frm.data[i].q = buf[i].q;
@@ -136,6 +154,10 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     }
     p->aw_thread_created = true;
 
+    atomic_init(&p->demod.squelch_flags,
+        (par->noise_squelch_disabled ? 0u : RX_SQUELCH_NOISE) |
+        (par->carrier_squelch_enabled ? RX_SQUELCH_CARRIER : 0u));
+    atomic_init(&p->demod.squelch_open, 0);
     // Demod setup
     p->demod.reset             = true;
     p->demod.prime_blocks_10ms = 20;    // 20 * 10ms = 200 ms
@@ -172,6 +194,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->rx_ctrl.rx_buffer      = NULL;         // allocate on start
     p->rx_ctrl.rx_buffer_size = 0;
     p->rx_ctrl.rx_fifo        = &p->rxq;
+    p->rx_ctrl.squelch_flags  = &p->demod.squelch_flags;
 
     // Set radio frequency
     HW_LOCK();
@@ -346,4 +369,14 @@ size_t rx_pipeline_frame_samples(const rx_pipeline_t* p)
 void rx_pipeline_reset_stats(rx_pipeline_t* p)
 {
     if (p && p->inited) rf10_fifo_reset_stats(&p->rxq);
+}
+
+void rx_pipeline_set_squelch(rx_pipeline_t* p, bool noise, bool carrier)
+{
+    if (p && p->inited) atomic_store(&p->demod.squelch_flags,
+        (noise ? RX_SQUELCH_NOISE : 0u) | (carrier ? RX_SQUELCH_CARRIER : 0u));
+}
+bool rx_pipeline_squelch_open(const rx_pipeline_t* p)
+{
+    return p && p->running && atomic_load(&p->demod.squelch_open);
 }

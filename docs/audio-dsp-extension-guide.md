@@ -119,6 +119,15 @@ block. Supporting finite streams there requires an explicit tail policy; the
 offline example does not change it. A fatal sink error ends its writer and still
 requires owner cleanup.
 
+## RX squelch extension
+
+The production RX worker now composes independent noise and carrier detectors
+with a PCM gate. The noise detector consumes an optional unfiltered audio tap;
+the carrier detector receives a checked RSSI measurement with each RF frame.
+Neither is embedded in standalone NBFM processing. See [RX squelch](rx-squelch.md)
+for controls, defaults and validation. A future modem must define suitable
+squelch inputs rather than inherit NBFM noise thresholds automatically.
+
 ## Introduce a second modem
 
 Start with standalone create/process/reset/destroy operations and deterministic

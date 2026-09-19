@@ -9,5 +9,5 @@ with tempfile.TemporaryDirectory(prefix='nbfm-demod-') as directory:
     binary = Path(directory) / 'test'
     subprocess.run(['cc', '-O2', '-Wall', '-Wextra', '-I'+str(src),
                     str(here/'test_nbfm_demod.c'), str(src/'nbfm_demod.c'),
-                    str(src/'demod_worker.c'), '-Wl,--wrap=clock_gettime', '-lm', '-pthread', '-o', str(binary)], check=True)
+                    str(src/'demod_worker.c'), str(src/'noise_squelch.c'), str(src/'carrier_squelch.c'), '-Wl,--wrap=clock_gettime', '-lm', '-pthread', '-o', str(binary)], check=True)
     subprocess.run([str(binary)], check=True, timeout=60)

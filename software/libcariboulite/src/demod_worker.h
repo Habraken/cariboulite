@@ -1,6 +1,9 @@
 #pragma once
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdatomic.h>
+#define RX_SQUELCH_NOISE 1u
+#define RX_SQUELCH_CARRIER 2u
 #include "audio_sink.h"
 #include "nbfm_demod.h"
 
@@ -9,6 +12,8 @@ typedef struct aud10_fifo_s aud10_fifo_t;
 
 // Thread control owned by the RX pipeline; audio output is mono at 48 kHz.
 typedef struct {
+    atomic_uint squelch_flags; // control writes, worker reads; zero bypasses both
+    atomic_uint squelch_open;  // worker publishes effective gate (0/1)
     nbfm_demod_t*       dsp;         // pipeline-owned; destroy after joining worker
     bool                active;
     rf10_fifo_t*        fifo_in;     // 10 ms IQ frames at fs_rf

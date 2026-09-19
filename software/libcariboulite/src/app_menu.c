@@ -1419,9 +1419,21 @@ void monitor_modem_status(sys_st *sys)
         if (srx.timeouts_put > 0)        printw("    NOTE: Reader timed out waiting to enqueue\n");
         if (srx.timeouts_get > 0)        printw("    NOTE: Demod timed out waiting for frames\n");
 
+        printw("Squelch: [N] noise %s  [C] carrier %s  audio %s\n",
+            rxpar.noise_squelch_disabled ? "OFF" : "ON",
+            rxpar.carrier_squelch_enabled ? "ON" : "OFF",
+            !rx_pipeline_running(&rxp) ? "IDLE" :
+            rx_pipeline_squelch_open(&rxp) ? "OPEN" : "MUTED");
         printw("\n%s\n", rate_notice);
         refresh();
         int key = getch();
+        if (key == 'n' || key == 'N' || key == 'c' || key == 'C') {
+            if (key == 'n' || key == 'N') rxpar.noise_squelch_disabled = !rxpar.noise_squelch_disabled;
+            else rxpar.carrier_squelch_enabled = !rxpar.carrier_squelch_enabled;
+            rx_pipeline_set_squelch(&rxp, !rxpar.noise_squelch_disabled,
+                                    rxpar.carrier_squelch_enabled);
+            continue;
+        }
         if (key == 'l' || key == 'L') {
             if (loopback.armed) {
                 if (monitor_loopback_stop(sys, &loopback) != 0)

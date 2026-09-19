@@ -80,8 +80,8 @@ void nbfm_demod_reset(nbfm_demod_t* s)
 }
 void nbfm_demod_destroy(nbfm_demod_t* s) { free(s); }
 
-nbfm_demod_result_t nbfm_demod_process(nbfm_demod_t* s,
-    const iq16_t* input, size_t count, int16_t* output, size_t capacity,
+nbfm_demod_result_t nbfm_demod_process_with_raw(nbfm_demod_t* s,
+    const iq16_t* input, size_t count, int16_t* output, float* raw_audio, size_t capacity,
     double correction)
 {
     nbfm_demod_result_t result = {0};
@@ -146,6 +146,8 @@ nbfm_demod_result_t nbfm_demod_process(nbfm_demod_t* s,
             const double frac = (s->phase48 - 1.0) / r;    // ∈ [0..1)
             float y_lin = s->y_prev_50k + (float)frac * (s->y_curr_50k - s->y_prev_50k);
 
+            if (raw_audio) raw_audio[result.produced] = y_lin;
+
             // === 48k audio chain ===
             float x = y_lin;
             float y = (x - s->x_prev_audio) + s->dc_a * s->dc_y;
@@ -169,4 +171,11 @@ nbfm_demod_result_t nbfm_demod_process(nbfm_demod_t* s,
         }
     }
     return result;
+}
+
+nbfm_demod_result_t nbfm_demod_process(nbfm_demod_t* s,
+    const iq16_t* input, size_t count, int16_t* output, size_t capacity,
+    double correction)
+{
+    return nbfm_demod_process_with_raw(s, input, count, output, NULL, capacity, correction);
 }

@@ -49,8 +49,24 @@ int __wrap_cariboulite_radio_activate_channel(cariboulite_radio_state_st* r, car
 static smi_stream_state_en last_stream;
 int __wrap_caribou_smi_set_driver_streaming_state(caribou_smi_st* s, smi_stream_state_en e) { last_stream=e; return 0; }
 int __wrap_caribou_fpga_set_io_ctrl_mode(caribou_fpga_st* f, uint8_t d, caribou_fpga_io_ctrl_rfm_en m) { return 0; }
+static rx_reader_ctrl_st* capture_once;
+static unsigned rssi_reads;
+static uint16_t expected_rssi_register;
+static uint8_t measured_rssi;
+static int rssi_read_error;
+int __wrap_at86rf215_read_buffer(at86rf215_st* dev, uint16_t reg, uint8_t* value, uint8_t length) {
+    (void)dev;
+    assert(capture_once && reg == expected_rssi_register && length == 1);
+    ++rssi_reads; *value = measured_rssi;
+    return rssi_read_error;
+}
 int __wrap_cariboulite_radio_read_samples(cariboulite_radio_state_st* r,
         cariboulite_sample_complex_int16* b, cariboulite_sample_meta* m, size_t n) {
+    if (capture_once) {
+        memset(b, 0, n*sizeof(*b));
+        capture_once->active = false;
+        return (int)n;
+    }
     pthread_barrier_wait(&reader_ready);
     for (;;) { pthread_testcancel(); usleep(1000); }
     return 0;
@@ -78,15 +94,56 @@ static void* waiter(void* arg) {
     if (which == 3) rf10_fifo_put(&rf,&frame,-1);
     return NULL;
 }
+static void test_rssi_capture(void) {
+    sys_st sys = {0};
+    sys.radio_low.sys = sys.radio_high.sys = &sys;
+    sys.radio_low.type = cariboulite_channel_s1g;
+    sys.radio_high.type = cariboulite_channel_hif;
+    rf10_fifo_t fifo;
+    rf10_fifo_init(&fifo, 2, true);
+    cariboulite_sample_complex_int16 buffer[20];
+    atomic_uint flags;
+    atomic_init(&flags, RX_SQUELCH_CARRIER);
+    rx_reader_ctrl_st ctrl = {.active=true,.radio=&sys.radio_high,
+        .rx_buffer=buffer,.rx_buffer_size=20,.rx_fifo=&fifo,.squelch_flags=&flags};
+    capture_once=&ctrl;
+    for (unsigned trial=0; trial<5; ++trial) {
+        ctrl.active=true;
+        ctrl.radio=trial==1 ? &sys.radio_low : &sys.radio_high;
+        expected_rssi_register=trial==1 ? REG_RF09_RSSI : REG_RF24_RSSI;
+        measured_rssi=trial==2 ? 127 : (uint8_t)(int8_t)-90;
+        rssi_read_error=trial==3 ? -1 : 0;
+        atomic_store(&flags, trial==4 ? 0 : RX_SQUELCH_CARRIER);
+        unsigned before=rssi_reads;
+        rx_reader_thread_func(&ctrl);
+        rf10_frame_t frame;
+        assert(rf10_fifo_get(&fifo,&frame,0));
+        assert(frame.rssi_valid == (trial<2));
+        if(trial<2) assert(frame.rssi_dbm==-90);
+        assert(rssi_reads==before+(trial!=4));
+        assert(pthread_mutex_trylock(&g_hw_lock)==0);
+        pthread_mutex_unlock(&g_hw_lock);
+    }
+    capture_once=NULL;
+    rf10_fifo_destroy(&fifo);
+}
 int main(void) {
+    test_rssi_capture();
     sys_st sys = {0}; cariboulite_radio_state_st radio = {0}; rx_pipeline_t p;
     rx_params_t par = {.pcm_dev="null", .fs_rf=4000000, .fs_audio=48000};
     assert(rx_pipeline_init(&p,&sys,&radio,&par) == 0);
+    assert(atomic_load(&p.demod.squelch_flags)==RX_SQUELCH_NOISE);
+    rx_pipeline_set_squelch(&p,false,true);
+    assert(atomic_load(&p.demod.squelch_flags)==RX_SQUELCH_CARRIER);
+    rx_pipeline_set_squelch(&p,false,false);
+    assert(atomic_load(&p.demod.squelch_flags)==0);
     rx_pipeline_destroy(&p); check_clean(&p); /* no reader ever created */
     assert(rx_pipeline_init(&p,&sys,&radio,&par) == 0);
+    rx_pipeline_set_squelch(&p,false,true);
     for (int i=0; i<20; ++i) {
         assert(rx_pipeline_start(&p) == 0);
         rx_pipeline_stop(&p); rx_pipeline_stop(&p);
+        assert(atomic_load(&p.demod.squelch_flags)==RX_SQUELCH_CARRIER);
     }
     rx_pipeline_destroy(&p); check_clean(&p);
     assert(rx_pipeline_init(&p,&sys,&radio,&par) == 0);

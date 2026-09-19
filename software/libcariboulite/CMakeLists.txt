@@ -150,6 +150,8 @@ set(SOURCES_TEST_MAIN
     src/nbfm_mod.c
     src/nbfm_demod.c
     src/demod_worker.c
+    src/noise_squelch.c
+    src/carrier_squelch.c
     src/pipeline_transport.c
     src/pipeline_runtime.c
     src/mod_worker.c

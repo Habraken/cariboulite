@@ -30,3 +30,10 @@ nbfm_demod_result_t nbfm_demod_process(nbfm_demod_t* dsp,
     const iq16_t* input, size_t count, audio_s16_t* output, size_t capacity,
     double correction);
 void nbfm_demod_destroy(nbfm_demod_t* dsp);
+
+// Optional parallel 48 kHz discriminator tap, before DC/de-emphasis/low-pass
+// and PCM gain. raw_audio has capacity floats and receives exactly produced
+// samples; NULL skips the tap. Same progress/lifetime rules as process().
+nbfm_demod_result_t nbfm_demod_process_with_raw(nbfm_demod_t* dsp,
+    const iq16_t* input, size_t count, audio_s16_t* output, float* raw_audio,
+    size_t capacity, double correction);
