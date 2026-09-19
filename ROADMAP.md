@@ -85,6 +85,8 @@ Implementation update: independent RX noise and RSSI squelch modules and menu-14
 toggles are implemented and accepted by Jan after adjusting the carrier
 thresholds to -97/-102 dBm. See
 [RX squelch](docs/rx-squelch.md) for current thresholds and validation.
+Menu 14 now also implements [separate TX/RX frequency controls](docs/monitor-frequency.md);
+physical acceptance of this addition is pending.
 
 - [ ] Implement configurable NBFM squelch with a defined measurement, threshold,
   hysteresis and hang time. Test weak signals, threshold crossings, silence,

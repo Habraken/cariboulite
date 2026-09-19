@@ -966,6 +966,62 @@ static bool monitor_init_pipelines(tx_pipeline_t* tx, rx_pipeline_t* rx,
     return true;
 }
 
+// Configuration entry is separate from tuning: shared hardware is tuned only
+// after stopping the opposite direction, immediately before starting a stream.
+static bool monitor_parse_frequency(const char* text, bool full_board, double* hz)
+{
+    char* end;
+    errno = 0;
+    double mhz = strtod(text, &end);
+    if (end == text || errno || !isfinite(mhz)) return false;
+    while (*end == ' ' || *end == '\t') ++end;
+    if (*end) return false;
+    double value = mhz * 1000000.0;
+    bool valid = full_board ? value >= CARIBOULITE_6G_MIN && value < CARIBOULITE_6G_MAX
+                            : value >= CARIBOULITE_2G4_MIN && value <= CARIBOULITE_2G4_MAX;
+    if (!valid) return false;
+    *hz = value;
+    return true;
+}
+
+static bool monitor_frequency_prompt(bool tx, bool full_board, double* hz)
+{
+    char input[32] = {0};
+    size_t used = 0;
+    timeout(-1);
+    for (;;) {
+        move(getmaxy(stdscr)-1, 0); clrtoeol();
+        printw("%s MHz [%0.6f]: %s  (Enter saves; Esc cancels)",
+               tx ? "TX" : "RX", *hz/1e6, input);
+        refresh();
+        int key = getch();
+        if (key == 27 || key == ERR) { timeout(200); return false; }
+        if (key == '\n' || key == '\r' || key == KEY_ENTER) {
+            timeout(200);
+            return used && monitor_parse_frequency(input, full_board, hz);
+        }
+        if (key == KEY_BACKSPACE || key == 127 || key == 8) {
+            if (used) input[--used] = 0;
+        } else if (key >= 32 && key <= 126 && used < sizeof(input)-1) {
+            input[used++] = (char)key; input[used] = 0;
+        }
+    }
+}
+
+static int monitor_start_tx(tx_pipeline_t* tx, rx_pipeline_t* rx, const tx_params_t* par)
+{
+    rx_pipeline_stop(rx);
+    if (tx_pipeline_set_freq_power(tx, par->freq_hz, par->tx_power_dbm) != 0) return -1;
+    return tx_pipeline_start(tx);
+}
+
+static int monitor_start_rx(tx_pipeline_t* tx, rx_pipeline_t* rx, const rx_params_t* par)
+{
+    tx_pipeline_stop(tx);
+    if (rx_pipeline_set_freq(rx, par->freq_hz) != 0) return -1;
+    return rx_pipeline_start(rx);
+}
+
 void monitor_modem_status(sys_st *sys)
 {
 	//mlockall(MCL_CURRENT | MCL_FUTURE);
@@ -1086,11 +1142,9 @@ void monitor_modem_status(sys_st *sys)
 		move(0, screen_max_x - 12);
 		printw("%12ld",current_time);
 		move(1,0);
-        printw("    TX Frequency: %.0f Hz", round(txpar.freq_hz/1000)*1000);
+        printw("[F] TX %.6f MHz  [G] RX %.6f MHz", txpar.freq_hz/1e6, rxpar.freq_hz/1e6);
         printw("    TX Power: %d dBm", txpar.tx_power_dbm);
         printw("  TX/RX %.0f MS/s", rxpar.fs_rf / 1000000);
-        move(1, screen_max_x - 12);
-		printw("%12.5f",elapsed_time);
 		move(2,0);
         printw("SMI timing settings:");
         move(3,0);
@@ -1449,12 +1503,25 @@ void monitor_modem_status(sys_st *sys)
             continue;
         }
         if (monitor_loopback_blocks_control(&loopback, key)) {
-            rate_notice = "Stop interface loopback with [L] before TX, RX or rate changes.";
+            rate_notice = "Stop interface loopback with [L] before TX, RX, frequency or rate changes.";
             continue;
         }
         if ((key == 'q' || key == 'Q') && loopback.armed &&
             monitor_loopback_stop(sys, &loopback) != 0) {
             rate_notice = "Cleanup failed; staying in monitor with TX blocked. [L] retries.";
+            continue;
+        }
+        if (key == 'f' || key == 'F' || key == 'g' || key == 'G') {
+            if (tx_pipeline_running(&txp) || rx_pipeline_running(&rxp)) {
+                rate_notice = "Stop TX and RX before editing frequencies.";
+                continue;
+            }
+            bool tx = key == 'f' || key == 'F';
+            bool full = sys->board_info.numeric_product_id == system_type_cariboulite_full;
+            if (monitor_frequency_prompt(tx, full, tx ? &txpar.freq_hz : &rxpar.freq_hz))
+                rate_notice = "Frequency saved; applied when that direction starts.";
+            else rate_notice = full ? "Unchanged: cancelled or invalid MHz (1 <= MHz < 6000)."
+                                    : "Unchanged: cancelled or invalid MHz (2385 <= MHz <= 2495).";
             continue;
         }
         if (key == '2' || key == '4') {
@@ -1503,8 +1570,9 @@ void monitor_modem_status(sys_st *sys)
                 rx_pipeline_destroy(&rxp);
                 if (caribou_fpga_soft_reset(fpga) != 0 ||
                     !monitor_init_pipelines(&txp, &rxp, sys, &txpar, &rxpar)) break;
-                if (tx_pipeline_start(&txp) != 0)
-                    rate_notice = "TX start failed; see debug log.";
+                if (monitor_start_tx(&txp, &rxp, &txpar) != 0)
+                    rate_notice = "TX tuning/start failed; see debug log.";
+                else rate_notice = "TX running at the saved TX frequency.";
             } else {
                 tx_pipeline_stop(&txp);
             }
@@ -1513,8 +1581,9 @@ void monitor_modem_status(sys_st *sys)
         // --- R: toggle RX ---
         if (key == 'r' || key == 'R') {
             if (!rx_pipeline_running(&rxp)) {
-                tx_pipeline_stop(&txp);
-                rx_pipeline_start(&rxp);
+                if (monitor_start_rx(&txp, &rxp, &rxpar) != 0)
+                    rate_notice = "RX tuning/start failed; see debug log.";
+                else rate_notice = "RX running at the saved RX frequency.";
             } else {
                 rx_pipeline_stop(&rxp);
             }

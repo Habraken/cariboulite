@@ -4,7 +4,8 @@ Living reference for the [incremental refactoring plan](audio-dsp-refactor-plan.
 Status: steps 1–8 implemented. Implemented sections below are authoritative;
 the original proposed contracts remain design history. See the
 [extension guide](audio-dsp-extension-guide.md) for composition and future modems.
-Update this file with every interface-changing increment.
+Update this file with every interface-changing increment. Menu 14 now also
+provides [separate TX/RX frequency controls](monitor-frequency.md).
 
 ## Current implementation
 
@@ -825,3 +826,11 @@ also carry an RX RSSI value and validity flag, unused by TX. The full contracts,
 control defaults, tests and limitations are in [RX squelch](rx-squelch.md).
 Earlier step-by-step evidence above describes the accepted refactoring revisions;
 it does not establish hardware acceptance of these new squelch features.
+
+## Added after squelch: separate monitor frequencies
+
+Menu 14 stores TX/RX frequencies independently and applies the selected value
+before starting that direction on the shared HiF radio. F/G edit MHz while
+stopped. Pipeline tuning setters propagate driver errors; initialization uses
+local frequency copies to preserve const caller configuration. See
+[monitor frequency controls](monitor-frequency.md) for behavior and acceptance.

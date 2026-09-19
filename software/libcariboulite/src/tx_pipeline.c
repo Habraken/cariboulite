@@ -184,7 +184,8 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
 
     // Radio basic set
     HW_LOCK();
-    cariboulite_radio_set_frequency(radio, true, (double*)&par->freq_hz);
+    double init_frequency = par->freq_hz;
+    cariboulite_radio_set_frequency(radio, true, &init_frequency);
     cariboulite_radio_set_tx_power (radio, par->tx_power_dbm);
     HW_UNLOCK();
 
@@ -408,10 +409,10 @@ int tx_pipeline_set_freq_power(tx_pipeline_t* p, double freq_hz, int tx_power_db
 {
     if (!p || !p->sys || !p->radio) return -1;
     HW_LOCK();
-    cariboulite_radio_set_frequency(p->radio, true, &freq_hz);
-    cariboulite_radio_set_tx_power(p->radio, tx_power_dbm);
+    int rc = cariboulite_radio_set_frequency(p->radio, true, &freq_hz);
+    if (rc == 0) rc = cariboulite_radio_set_tx_power(p->radio, tx_power_dbm);
     HW_UNLOCK();
-    return 0;
+    return rc;
 }
 
 void tx_pipeline_get_stats(tx_pipeline_t* p, tx_pipeline_stats_t* out)

@@ -1,5 +1,6 @@
 /* Include the implementation to exercise its private pipeline and FIFO types. */
 #include "app_menu.c"
+#include "mod_worker.h"
 
 static bool real_threads, live[1024];
 static int creates, fail_create, joins, hardware_active;
@@ -42,7 +43,14 @@ int __wrap_pthread_join(pthread_t t, void** out) {
     if (real_threads) return __real_pthread_join(t,out);
     assert(t && t < 1024 && live[t]); live[t] = false; ++joins; return 0;
 }
-int __wrap_cariboulite_radio_set_frequency(cariboulite_radio_state_st* r, bool b, double* f) { return 0; }
+static double tuned_frequency;
+static bool fail_tune;
+int __wrap_cariboulite_radio_set_frequency(cariboulite_radio_state_st* r, bool b, double* f) {
+    if (fail_tune) return -1;
+    tuned_frequency = *f;
+    *f += 1; // driver returns achieved frequency: must not mutate const parameters
+    return 0;
+}
 int __wrap_cariboulite_radio_activate_channel(cariboulite_radio_state_st* r, cariboulite_channel_dir_en d, bool a) {
     hardware_active = a; return 0;
 }
@@ -127,8 +135,32 @@ static void test_rssi_capture(void) {
     capture_once=NULL;
     rf10_fifo_destroy(&fifo);
 }
+// Lifecycle mocks do not run DSP threads; acknowledge cue consumption so a
+// successful TX start exercises real tuning/activation without generating RF.
+static void* consume_injection(void* arg) {
+    tx_pipeline_t* tx=arg;
+    for (;;) {
+        pthread_mutex_lock(&g_tx_injection_lock);
+        tx->tx_ctrl.inj.frames_left=0;
+        pthread_mutex_unlock(&g_tx_injection_lock);
+        usleep(1000);
+    }
+    return NULL;
+}
 int main(void) {
     test_rssi_capture();
+    double parsed=123;
+    assert(monitor_parse_frequency("430.125",true,&parsed) && parsed==430125000);
+    assert(monitor_parse_frequency(" 145.500 ",true,&parsed) && parsed==145500000);
+    const char* invalid[]={"", "nan", "inf", "-1", "0", "6000", "430foo", "1e999", "430 100"};
+    for(unsigned i=0;i<sizeof(invalid)/sizeof(*invalid);++i) {
+        assert(!monitor_parse_frequency(invalid[i],true,&parsed));
+        assert(parsed==145500000);
+    }
+    assert(!monitor_parse_frequency("430",false,&parsed));
+    assert(monitor_parse_frequency("2385",false,&parsed));
+    assert(monitor_parse_frequency("2495",false,&parsed));
+    assert(!monitor_parse_frequency("2495.001",false,&parsed));
     sys_st sys = {0}; cariboulite_radio_state_st radio = {0}; rx_pipeline_t p;
     rx_params_t par = {.pcm_dev="null", .fs_rf=4000000, .fs_audio=48000};
     assert(rx_pipeline_init(&p,&sys,&radio,&par) == 0);
@@ -201,6 +233,34 @@ int main(void) {
         assert(!tx.tx_ctrl.mic && !tx.tx_ctrl.fm && !tx.tx_ctrl.a48k && !tx.tx_ctrl.iq_rf);
         for(int i=1;i<=creates;++i) assert(!live[i]);
         fail_create=0;fail_calloc=false;fail_calloc_count=0;
+    }
+    // Shared tuner must be restored on every direction start, including after
+    // both initializers have tuned it, and tuning failures must block activation.
+    for(unsigned fs=2000000;fs<=4000000;fs+=2000000) {
+        tx_params_t split_tx={.tone_mode=true,.f_dev_hz=2500,.out_scale=4000,
+            .freq_hz=430125000,.rf_fs=fs};
+        rx_params_t split_rx={.pcm_dev="null",.freq_hz=145500000,.fs_rf=fs,.fs_audio=48000};
+        assert(monitor_init_pipelines(&tx,&p,&sys,&split_tx,&split_rx));
+        assert(split_tx.freq_hz==430125000 && split_rx.freq_hz==145500000);
+        assert(tuned_frequency==split_rx.freq_hz);
+        pthread_t consumer;
+        assert(__real_pthread_create(&consumer,NULL,consume_injection,&tx)==0);
+        assert(monitor_start_tx(&tx,&p,&split_tx)==0);
+        assert(tx.running && !p.running && tuned_frequency==split_tx.freq_hz);
+        assert(monitor_start_rx(&tx,&p,&split_rx)==0);
+        assert(p.running && !tx.running && tuned_frequency==split_rx.freq_hz);
+        fail_tune=true;
+        assert(monitor_start_tx(&tx,&p,&split_tx)!=0);
+        assert(!tx.running && !p.running && !hardware_active);
+        assert(monitor_start_rx(&tx,&p,&split_rx)!=0);
+        assert(!p.running && !hardware_active);
+        fail_tune=false;
+        assert(monitor_start_rx(&tx,&p,&split_rx)==0);
+        assert(tuned_frequency==split_rx.freq_hz);
+        assert(__real_pthread_cancel(consumer)==0);
+        assert(__real_pthread_join(consumer,NULL)==0);
+        rx_pipeline_destroy(&p); tx_pipeline_destroy(&tx);
+        check_clean(&p);
     }
     tp.mic_dev=NULL;
     assert(tx_pipeline_init(&tx,&sys,&radio,&tp)==0);

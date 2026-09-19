@@ -198,7 +198,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
 
     // Set radio frequency
     HW_LOCK();
-    cariboulite_radio_set_frequency(radio, true, (double*)&par->freq_hz);
+    double init_frequency = par->freq_hz;
+    cariboulite_radio_set_frequency(radio, true, &init_frequency);
     HW_UNLOCK();
 
     p->inited = true;
@@ -330,8 +331,9 @@ int rx_pipeline_set_freq(rx_pipeline_t* p, double freq_hz)
 {
     if (!p || !p->sys || !p->radio) return -1;
     HW_LOCK();
-    cariboulite_radio_set_frequency(p->radio, true, &freq_hz);
+    int rc = cariboulite_radio_set_frequency(p->radio, true, &freq_hz);
     HW_UNLOCK();
+    if (rc != 0) return rc;
     
     // If running, gently reset demod so clicks/flicker are avoided post-retune
     if (p->running) {

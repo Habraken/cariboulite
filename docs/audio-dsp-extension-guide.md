@@ -144,8 +144,9 @@ conversion. Menu controls should select configuration through the pipeline.
 Introduce common modem operations when that second implementation establishes
 which lifecycle and processing operations are actually shared. There is currently
 no speculative modem vtable. Preserve existing NBFM sample comparisons and scope
-new physical tests to signal, routing or lifecycle changes. Interactive retuning
-remains deferred until a tuning control exists.
+new physical tests to signal, routing or lifecycle changes. Menu 14 now has
+[separate frequency controls](monitor-frequency.md), with stopped editing and
+direction-specific tuning before stream activation.
 
 ## Validation recorded on 2026-09-19
 
