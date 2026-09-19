@@ -3460,3 +3460,6 @@ int app_menu(sys_st* sys)
 	}
 	return 1;
 }
+
+#include "baseline_test.h"
+#include "baseline_test.inc"

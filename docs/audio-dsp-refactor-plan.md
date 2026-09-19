@@ -138,6 +138,12 @@ retuning and sustained audio. Confirm menu exit releases resources.
 Exit: clear source -> modulator and demodulator -> sink paths; no ALSA, UI or radio
 control dependencies inside DSP; physical evidence tied to the final revision.
 
+## Repeatable test runner
+
+See [Physical baseline test](physical-baseline-test.md) for the automated
+HiF/Jabra test sequence and Jan's SDRPlay monitoring setup. Its successful run `20260919T074311.996531Z` on the updated Raspberry Pi OS
+was confirmed by Jan on 2026-09-19, supplementing the earlier accepted H0.
+
 ## Physical checkpoints
 
 H0 and H6 use the full procedure. Intermediate checkpoints use the indicated
