@@ -1,6 +1,6 @@
 # Audio and DSP refactoring plan
 
-Status: proposed; implementation has not started. Each numbered step is a small,
+Status: H0 accepted by Jan on 2026-09-19; implementation has not started. Each numbered step is a small,
 reviewable change. The existing `nbfm_mod` rename and `nbfm_demod` extraction are
 already complete; the demodulator still depends on application FIFOs and ALSA.
 
@@ -43,7 +43,8 @@ checks do not establish physical RF performance.
 
 - [ ] Record revision, Pi model, Raspberry Pi OS/kernel, FPGA image, ALSA device
   names, RF modem/connector route, frequency, gains, and the actual RF test setup.
-- [ ] Run checkpoint H0 using the existing application before code changes.
+- [x] Accept H0 from Jan's clean rebuild and physical radio test (2026-09-19).
+  This is a functional baseline; see the evidence log for its recorded scope.
 - [ ] Resolve documentation/configuration mismatches in the recorded procedure.
   In particular, current monitor initialization selects `radio_high` (RF24),
   while some existing documentation describes RF09. Do not silently change it.
@@ -164,8 +165,19 @@ case is not a pass. Do not mark an untested combination as verified.
 
 | Checkpoint | Revision / dirty diff | Setup / procedure | Measurements and result | Confirmed by |
 | --- | --- | --- | --- | --- |
-| H0 | Pending | Pending | Not run | — |
+| H0 | `0af6f2d`; working tree clean when recorded | Raspberry Pi OS; Jan deleted the build folder, rebuilt the app using the install script, and physically tested with a radio | Jan reports everything works as expected; accepted functional baseline, no numerical measurements supplied | Jan, 2026-09-19 |
 | H1–H6 | Pending | Pending | Not run | — |
 
 Link longer logs or recordings here. Record software and hardware results
 separately, including any explicitly deferred tests and remaining limitations.
+
+### H0 acceptance notes
+
+Jan accepted this as a good baseline after the clean rebuild and physical test.
+This satisfies the user-confirmation gate for beginning step 1. It does not
+establish that every item in the proposed full H0 procedure was exercised.
+Specific tested sample rates, TX/RX cases, duration, restart counts, hardware and
+firmware details, ALSA routes and numerical tolerances were not supplied. The
+remaining baseline checklist items track documentation follow-up, not a request
+to repeat the accepted test before step 1. Record those details when available
+and use Jan's working setup for subsequent physical comparisons.
