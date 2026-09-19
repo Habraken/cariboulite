@@ -131,7 +131,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
         (par->mode != FM_MODE_NBFM && par->mode != FM_MODE_WBFM)) return -1;
 
     // FIFOs
-    rf10_fifo_init(&p->rxq,  /*cap=*/128, /*drop_oldest_on_full=*/true);
+    rf10_fifo_init(&p->rxq,  /*cap=*/64, /*drop_oldest_on_full=*/true);
     aud10_fifo_init(&p->afifo, /*cap=*/24);
 
     p->inited = true; // FIFO synchronization objects are ready for cleanup.
