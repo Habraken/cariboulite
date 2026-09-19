@@ -14,6 +14,7 @@ typedef struct aud10_fifo_s aud10_fifo_t;
 typedef struct {
     atomic_uint squelch_flags; // control writes, worker reads; zero bypasses both
     atomic_uint squelch_open;  // worker publishes effective gate (0/1)
+    fm_demod_mode_t     mode;        // immutable while worker is alive
     nbfm_demod_t*       dsp;         // pipeline-owned; destroy after joining worker
     bool                active;
     rf10_fifo_t*        fifo_in;     // 10 ms IQ frames at fs_rf

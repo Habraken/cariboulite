@@ -1022,6 +1022,22 @@ static int monitor_start_rx(tx_pipeline_t* tx, rx_pipeline_t* rx, const rx_param
     return rx_pipeline_start(rx);
 }
 
+// Recreate only the stopped RX pipeline. TX modulation and saved frequencies
+// are independent of the receive mode. A failed init is cleaned up by the caller.
+static int monitor_cycle_rx_mode(tx_pipeline_t* tx, rx_pipeline_t* rx,
+                                 const monitor_loopback_t* loopback,
+                                 sys_st* sys, rx_params_t* par)
+{
+    if (tx_pipeline_running(tx) || rx_pipeline_running(rx) ||
+        loopback->armed || loopback->active) return -EBUSY;
+    rx_params_t next = *par;
+    next.mode = par->mode == FM_MODE_NBFM ? FM_MODE_WBFM : FM_MODE_NBFM;
+    rx_pipeline_destroy(rx);
+    if (rx_pipeline_init(rx, sys, &sys->radio_high, &next) != 0) return -1;
+    *par = next;
+    return 0;
+}
+
 void monitor_modem_status(sys_st *sys)
 {
 	//mlockall(MCL_CURRENT | MCL_FUTURE);
@@ -1138,7 +1154,7 @@ void monitor_modem_status(sys_st *sys)
 
 		time(&current_time);
 		move(0,0);
-		printw("RF24 [T] TX [R] RX [L] loopback [2/4] MS/s [Q] quit [X] stats");
+		printw("RF24 [T] TX [R] RX [m] RX mode [L] loopback [2/4] MS/s [Q] quit [X] stats");
 		move(0, screen_max_x - 12);
 		printw("%12ld",current_time);
         move(1,0);
@@ -1475,15 +1491,33 @@ void monitor_modem_status(sys_st *sys)
         if (srx.timeouts_put > 0)        printw("    NOTE: Reader timed out waiting to enqueue\n");
         if (srx.timeouts_get > 0)        printw("    NOTE: Demod timed out waiting for frames\n");
 
+        printw("RX mode: %s  [m] cycle (TX/RX/loopback stopped); TX: NBFM\n",
+            rxpar.mode == FM_MODE_WBFM ? "WBFM mono" : "NBFM");
         printw("Squelch: [N] noise %s  [C] carrier %s  audio %s\n",
-            rxpar.noise_squelch_disabled ? "OFF" : "ON",
+            rxpar.mode == FM_MODE_WBFM ? "N/A (WBFM)" : rxpar.noise_squelch_disabled ? "OFF" : "ON",
             rxpar.carrier_squelch_enabled ? "ON" : "OFF",
             !rx_pipeline_running(&rxp) ? "IDLE" :
             rx_pipeline_squelch_open(&rxp) ? "OPEN" : "MUTED");
         printw("\n%s\n", rate_notice);
         refresh();
         int key = getch();
+        if (key == 'm' || key == 'M') {
+            int result = monitor_cycle_rx_mode(&txp, &rxp, &loopback, sys, &rxpar);
+            if (result == -EBUSY) {
+                rate_notice = "Stop TX, RX and interface loopback before changing RX mode.";
+            } else if (result != 0) {
+                fprintf(stderr, "[monitor] RX mode initialization failed; returning to menu\n");
+                break;
+            } else {
+                rate_notice = "RX mode selected. [R] starts RX; TX remains NBFM.";
+            }
+            continue;
+        }
         if (key == 'n' || key == 'N' || key == 'c' || key == 'C') {
+            if ((key == 'n' || key == 'N') && rxpar.mode == FM_MODE_WBFM) {
+                rate_notice = "Noise squelch is available in NBFM only; [C] controls carrier squelch.";
+                continue;
+            }
             if (key == 'n' || key == 'N') rxpar.noise_squelch_disabled = !rxpar.noise_squelch_disabled;
             else rxpar.carrier_squelch_enabled = !rxpar.carrier_squelch_enabled;
             rx_pipeline_set_squelch(&rxp, !rxpar.noise_squelch_disabled,

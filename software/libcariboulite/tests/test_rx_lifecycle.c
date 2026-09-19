@@ -291,6 +291,30 @@ int main(void) {
         fail_create=0;
     }
     assert(monitor_init_pipelines(&tx,&p,&sys,&tp,&par));
+    monitor_loopback_t loopback = {0};
+    nbfm_demod_t* original = p.demod.dsp;
+    int original_creates = creates;
+    for (int busy=0; busy<4; ++busy) {
+        tx.running = busy==0; p.running = busy==1;
+        loopback.armed = busy==2; loopback.active = busy==3;
+        assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)==-EBUSY);
+        assert(par.mode==FM_MODE_NBFM && p.demod.dsp==original && creates==original_creates);
+    }
+    tx.running = p.running = loopback.armed = loopback.active = false;
+    for (int rate=2000000; rate<=4000000; rate*=2) {
+        par.fs_rf = rate;
+        assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)==0);
+        assert(par.mode==FM_MODE_WBFM && p.demod.mode==FM_MODE_WBFM && !p.running);
+        rx_pipeline_set_squelch(&p,true,true);
+        assert(atomic_load(&p.demod.squelch_flags)==RX_SQUELCH_CARRIER);
+        assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)==0);
+        assert(par.mode==FM_MODE_NBFM && p.demod.mode==FM_MODE_NBFM && !p.running);
+        assert(atomic_load(&p.demod.squelch_flags)==RX_SQUELCH_NOISE);
+    }
+    fail_calloc = true;
+    assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)!=0);
+    assert(!p.inited && par.mode==FM_MODE_NBFM);
+    fail_calloc = false;
     rx_pipeline_destroy(&p);tx_pipeline_destroy(&tx);
 
     /* Empty reads/full writes must honor the requested monotonic deadline. */

@@ -36,6 +36,8 @@ typedef struct {
     bool noise_squelch_disabled; // zero/default enables noise squelch
     bool carrier_squelch_enabled; // zero/default disables carrier squelch
 
+    fm_demod_mode_t mode;       // zero/default is NBFM; selected at initialization
+
     // Fixed rates
     float  fs_rf;               // 4e6
     float  fs_audio;            // 48e3

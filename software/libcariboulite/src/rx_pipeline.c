@@ -127,7 +127,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->radio = radio;
 
     if ((par->fs_rf != 2000000 && par->fs_rf != 4000000) ||
-        par->fs_audio != 48000) return -1;
+        par->fs_audio != 48000 ||
+        (par->mode != FM_MODE_NBFM && par->mode != FM_MODE_WBFM)) return -1;
 
     // FIFOs
     rf10_fifo_init(&p->rxq,  /*cap=*/128, /*drop_oldest_on_full=*/true);
@@ -155,10 +156,11 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->aw_thread_created = true;
 
     atomic_init(&p->demod.squelch_flags,
-        (par->noise_squelch_disabled ? 0u : RX_SQUELCH_NOISE) |
+        (par->noise_squelch_disabled || par->mode == FM_MODE_WBFM ? 0u : RX_SQUELCH_NOISE) |
         (par->carrier_squelch_enabled ? RX_SQUELCH_CARRIER : 0u));
     atomic_init(&p->demod.squelch_open, 0);
     // Demod setup
+    p->demod.mode              = par->mode;
     p->demod.reset             = true;
     p->demod.prime_blocks_10ms = 20;    // 20 * 10ms = 200 ms
     p->demod.priming           = true;
@@ -176,7 +178,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     nbfm_demod_config_t dsp_config = {
         (unsigned)par->fs_rf, (unsigned)par->fs_audio, par->deemph_tau_s, par->pcm_gain
     };
-    p->demod.dsp = nbfm_demod_create(&dsp_config);
+    p->demod.dsp = par->mode == FM_MODE_WBFM
+        ? wbfm_demod_create(&dsp_config) : nbfm_demod_create(&dsp_config);
     if (!p->demod.dsp) { error = -4; goto fail; }
 
     if (pthread_create(&p->demod_thread, NULL, nbfm_demod_thread, &p->demod) != 0) {
@@ -184,9 +187,6 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
         goto fail;
     }
     p->demod_thread_created = true;
-
-    //if (pthread_create(&p->demod_thread, NULL, wbfm_demod_thread, &p->demod) != 0)
-    //    return -4;
 
     // Reader (prepare only — start later in rx_pipeline_start)
     p->rx_ctrl.active         = false;
@@ -376,7 +376,7 @@ void rx_pipeline_reset_stats(rx_pipeline_t* p)
 void rx_pipeline_set_squelch(rx_pipeline_t* p, bool noise, bool carrier)
 {
     if (p && p->inited) atomic_store(&p->demod.squelch_flags,
-        (noise ? RX_SQUELCH_NOISE : 0u) | (carrier ? RX_SQUELCH_CARRIER : 0u));
+        (noise && p->demod.mode == FM_MODE_NBFM ? RX_SQUELCH_NOISE : 0u) | (carrier ? RX_SQUELCH_CARRIER : 0u));
 }
 bool rx_pipeline_squelch_open(const rx_pipeline_t* p)
 {

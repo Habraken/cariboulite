@@ -747,17 +747,48 @@ Reboot to test persistence (optional, but recommended):
 sudo reboot
 After reboot, re-run lsmod | grep snd_aloop to confirm the module is loaded.
 
+### Long-running audio bridges
+
+Use `-t raw` on **both** `arecord` and `aplay` when piping audio between
+ALSA devices. Without it, `arecord` defaults to WAV and limits its piped
+output to 2 GiB. At 48 kHz, mono, 16-bit audio, that is about **6 hours
+13 minutes**; the bridge can then exit and return to the shell prompt.
+Raw PCM avoids this WAV size limit. See the
+[ALSA capture implementation](https://github.com/alsa-project/alsa-utils/blob/master/aplay/aplay.c).
+
+The commands below use `plughw:CARD=USB,DEV=0`, the Jabra's card ID on this
+setup. Check `arecord -l` and `aplay -l` and substitute your device's ID if
+needed. Card IDs avoid relying on the numeric card index `4` staying the same.
+Run each bridge in its own terminal; stop it with Ctrl+C. Only the RX bridge
+is needed for listening to NBFM or mono WBFM. The TX bridge supplies microphone
+audio when transmitting.
+
+With these commands, startup should report `Recording raw data` and
+`Playing raw data`. Raw mode removes the container size limit; it does not
+prevent buffer underruns or overruns. The September 19, 2026 bridge exits
+were consistent with the WAV limit; extended testing with raw mode is ongoing.
+
 ### Testing TX
 
 To test if the ALSA Loopback device works you can start the cariboulite_test_app, enable tx and in a separate terminal run the following command: ```speaker-test -D plughw:Loopback,0,1 -c 1 -t sine -f 440 -r 48000```. You should now here a 440 Hz tone on a narrow band fm receiver tuned to the correct frequency.
 
-If you want to route the microphone audio of your USB audio device to the caribloulite instead of a test tone, you can use this command: ```arecord -D plughw:4,0 -f S16_LE -c 1 -r 48000 | aplay  -D plughw:Loopback,0,1 -f S16_LE -c 1 -r 48000```.
+To route the USB microphone to the application's TX capture endpoint:
+
+```bash
+arecord -D plughw:CARD=USB,DEV=0 -t raw -f S16_LE -c 1 -r 48000 |
+  aplay -D plughw:Loopback,0,1 -t raw -f S16_LE -c 1 -r 48000
+```
 
 For some obscure reason the alsaloop command doesn't work for this route.
 
 ### Testing RX
 
-Similary you can test rx with the following command to 'route' the audio signal from the Loopback device to the plugged in sound card: ``` arecord -D plughw:Loopback,1,0 -f S16_LE -c 1 -r 48000 | aplay  -D plughw:4,0 -f S16_LE -c 1 -r 48000```.
+To route the application's received audio from Loopback to the USB speaker:
+
+```bash
+arecord -D plughw:Loopback,1,0 -t raw -f S16_LE -c 1 -r 48000 |
+  aplay -D plughw:CARD=USB,DEV=0 -t raw -f S16_LE -c 1 -r 48000
+```
 
 If faced with ```overruns!!!``` one could also use:
 
@@ -765,7 +796,10 @@ If faced with ```overruns!!!``` one could also use:
 
 or
 
-```arecord -D plughw:Loopback,1,0 -f S16_LE -c 1 -r 48000 --buffer-time=100000 --period-time=25000 | aplay  -D plughw:4,0 -f S16_LE -c 1 -r 48000 --buffer-time=100000 --period-time=25000```
+```bash
+arecord -D plughw:Loopback,1,0 -t raw -f S16_LE -c 1 -r 48000 --buffer-time=100000 --period-time=25000 |
+  aplay -D plughw:CARD=USB,DEV=0 -t raw -f S16_LE -c 1 -r 48000 --buffer-time=100000 --period-time=25000
+```
 
 
 

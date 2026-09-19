@@ -52,5 +52,29 @@ at 2 and 4 MS/s, without opening audio or radio devices. The
 [extension guide](../../docs/audio-dsp-extension-guide.md) also provides a direct
 C11/libm build that does not require the application's ALSA dependencies.
 
+## Mono WBFM in menu 14
+
+Menu 14 defaults to NBFM reception. Stop TX, RX and interface loopback, then
+press `[m]` to cycle between NBFM and mono WBFM. `[R]` starts reception;
+`[G]` edits the saved RX frequency while stopped. Mode changes preserve the
+frequency, sample rate and audio settings. TX remains NBFM. Other menu items
+keep their existing behavior.
+
+WBFM supports 2 and 4 MS/s IQ input and 48 kHz mono output, with nominal
+75 kHz deviation and the monitor's existing 50 microsecond de-emphasis.
+It filters the RF channel before demodulation, removes the stereo multiplex
+components before audio resampling, and shares buffering, clock correction,
+volume and playback with NBFM. Noise squelch is bypassed in WBFM; `[C]` still
+toggles carrier squelch. The saved NBFM noise-squelch setting is retained.
+Stereo decoding and RDS are not implemented.
+
+Hardware-free validation:
+
+```sh
+python3 software/libcariboulite/tests/test_wbfm_demod.py
+python3 software/libcariboulite/tests/test_nbfm_demod.py
+python3 software/libcariboulite/tests/test_rx_lifecycle.py
+```
+
 # License
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
