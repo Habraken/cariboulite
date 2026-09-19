@@ -23,8 +23,21 @@ install() {
 
     printf "${GREEN}Installation started...${NC}\n"
     printf "\n[  1  ] ${GREEN}Updating kernel headers and needed software${NC}\n"
-    sudo apt-get update
-    sudo apt-get -y install raspberrypi-kernel-headers module-assistant pkg-config libncurses5-dev cmake git
+    # Raspberry Pi OS now ships versioned Debian-style header packages.
+    # Reuse installed headers so a kernel rebuild does not depend on apt/network.
+    local packages=() package
+    if [[ ! -f "/lib/modules/${KERNEL_RELEASE}/build/Makefile" ]]; then
+        packages+=("linux-headers-${KERNEL_RELEASE}")
+    fi
+    for package in build-essential pkg-config cmake git kmod xz-utils; do
+        if [[ $(dpkg-query -W -f='${Status}' "$package" 2>/dev/null || true) != 'install ok installed' ]]; then
+            packages+=("$package")
+        fi
+    done
+    if (( ${#packages[@]} )); then
+        sudo apt-get update
+        sudo apt-get -y install "${packages[@]}"
+    fi
 
     printf "\n[  2  ] ${GREEN}Compiling module${NC}\n"
     if [ -d "$BUILD_DIR" ]; then

@@ -26,6 +26,8 @@ if name == 'id':
     print(1000)
 elif name == 'uname':
     print('test-kernel')
+elif name == 'dpkg-query':
+    print('install ok installed')
 elif name == 'cmake' and '--build' in args:
     (pathlib.Path(args[1]) / 'smi_stream_dev.ko').write_bytes(b'module')
 elif name == 'modinfo':
@@ -60,7 +62,7 @@ with tempfile.TemporaryDirectory(prefix='cariboulite installer ') as tmp:
     blob.chmod(0o755)
     bin_dir = root / 'bin'
     bin_dir.mkdir()
-    for name in ('id', 'uname', 'cmake', 'modinfo', 'find', 'xz', 'sudo'):
+    for name in ('id', 'uname', 'dpkg-query', 'cmake', 'modinfo', 'find', 'xz', 'sudo'):
         tool = bin_dir / name
         tool.write_text(STUB)
         tool.chmod(0o755)
@@ -79,6 +81,7 @@ with tempfile.TemporaryDirectory(prefix='cariboulite installer ') as tmp:
         writes = [call for call in privileged if call[0] != 'apt-get']
         if case == 'success':
             assert result.returncode == 0, result.stderr
+            assert ['apt-get', '-y', 'install', 'linux-headers-test-kernel'] in privileged
             copies = [call for call in writes if call[0] == 'cp']
             assert len(copies) == 1, copies
             assert copies[0][-1] == '/lib/modules/test-kernel/kernel/drivers/char/broadcom/'
