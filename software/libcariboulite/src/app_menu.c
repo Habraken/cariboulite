@@ -30,7 +30,7 @@ _Static_assert(CARIBOU_SMI_BYTES_PER_SAMPLE == sizeof(caribou_smi_sample_complex
 
 #include "audio48k_source.h"
 #include "alsa48k_source.h"
-#include "nbfm4m_mod.h"
+#include "nbfm_mod.h"
  
 
 // included here, to use ncurcus for a text-baused UI for my additions
@@ -1100,9 +1100,9 @@ typedef struct {
 	// (live path)
     bool    live_from_mic;     // set true to enable live generation
     alsa48k_source_t* mic;     // ALSA handle
-    nbfm4m_mod_t*     fm;      // 48k->4M NBFM
+    nbfm_mod_t*     fm;      // 48 kHz audio -> configured RF rate NBFM
     float*            a48k;    // 480-float scratch
-    iq16_t*           iq4m;    // 40k-IQ scratch
+    iq16_t*           iq_rf;    // One RF frame of IQ scratch
 	
 	// test tone generator for the FM modulator
     bool     tone_mode;        // true => synthesize 600 Hz audio
@@ -1420,7 +1420,7 @@ static void* dsp_producer_thread_func(void* arg)
 
     dsp_producer_ctrl_t* ctrl = (dsp_producer_ctrl_t*)arg;
     if (!ctrl || !ctrl->tx || !ctrl->tx->fm || !ctrl->fifo ||
-        !ctrl->tx->a48k || !ctrl->tx->iq4m)
+        !ctrl->tx->a48k || !ctrl->tx->iq_rf)
         return NULL;
 
     const uint64_t PERIOD_NS = 10ull * 1000ull * 1000ull; // 10 ms
@@ -1522,12 +1522,12 @@ static void* dsp_producer_thread_func(void* arg)
         // ============================================================
         // 2) Push into NBFM modulator, pull 10 ms @ 4 MS/s (40 k IQ)
         // ============================================================
-        nbfm4m_push_audio(ctrl->tx->fm, ctrl->tx->a48k, 480);
+        nbfm_push_audio(ctrl->tx->fm, ctrl->tx->a48k, 480);
 
         size_t pulled = 0;
         while (pulled < ctrl->tx->frame_samples) {
-            pulled += nbfm4m_pull_iq(ctrl->tx->fm,
-                                     ctrl->tx->iq4m + pulled,
+            pulled += nbfm_pull_iq(ctrl->tx->fm,
+                                     ctrl->tx->iq_rf + pulled,
                                      ctrl->tx->frame_samples - pulled);
         }
 
@@ -1536,8 +1536,8 @@ static void* dsp_producer_thread_func(void* arg)
         // ============================================================
         rf10_frame_t frm = {0};
         for (size_t i = 0; i < ctrl->tx->frame_samples; i++) {
-            frm.data[i].i = ctrl->tx->iq4m[i].i | 0x0001;  // TX_EN in LSB
-            frm.data[i].q = ctrl->tx->iq4m[i].q;
+            frm.data[i].i = ctrl->tx->iq_rf[i].i | 0x0001;  // TX_EN in LSB
+            frm.data[i].q = ctrl->tx->iq_rf[i].q;
         }
 
         // Optional live sample for UI/debug
@@ -1744,10 +1744,10 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     p->tx_ctrl.tone_phase     = 0.0f;
     p->tx_ctrl.fm             = NULL;
     p->tx_ctrl.a48k           = NULL;
-    p->tx_ctrl.iq4m           = NULL;
+    p->tx_ctrl.iq_rf           = NULL;
 
     // NBFM mod init
-    nbfm4m_cfg_t cfg = {
+    nbfm_cfg_t cfg = {
         .audio_fs      = 48000.0,
         .rf_fs         = rf_fs,
         .f_dev_hz      = par->f_dev_hz,     // 2500.0
@@ -1755,10 +1755,10 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
         .out_scale     = par->out_scale,    // 4000.0
         .linear_interp = 1,
     };
-    p->tx_ctrl.fm   = nbfm4m_create(&cfg);
+    p->tx_ctrl.fm   = nbfm_create(&cfg);
     p->tx_ctrl.a48k = (float*) calloc(480,    sizeof(float));
-    p->tx_ctrl.iq4m = (iq16_t*)calloc(p->tx_ctrl.frame_samples,  sizeof(iq16_t));
-    if (!p->tx_ctrl.fm || !p->tx_ctrl.a48k || !p->tx_ctrl.iq4m) {
+    p->tx_ctrl.iq_rf = (iq16_t*)calloc(p->tx_ctrl.frame_samples,  sizeof(iq16_t));
+    if (!p->tx_ctrl.fm || !p->tx_ctrl.a48k || !p->tx_ctrl.iq_rf) {
         goto fail;
     }
     
@@ -1982,12 +1982,12 @@ void tx_pipeline_destroy(tx_pipeline_t* p)
 
     rf10_fifo_destroy(&p->txq);
 
-    if (p->tx_ctrl.iq4m) free(p->tx_ctrl.iq4m);
+    if (p->tx_ctrl.iq_rf) free(p->tx_ctrl.iq_rf);
     if (p->tx_ctrl.a48k) free(p->tx_ctrl.a48k);
-    if (p->tx_ctrl.fm)   nbfm4m_destroy(p->tx_ctrl.fm);
+    if (p->tx_ctrl.fm)   nbfm_destroy(p->tx_ctrl.fm);
     if (p->tx_ctrl.mic)  alsa48k_destroy(p->tx_ctrl.mic);
 
-    p->tx_ctrl.iq4m = NULL;
+    p->tx_ctrl.iq_rf = NULL;
     p->tx_ctrl.a48k = NULL;
     p->tx_ctrl.fm = NULL;
     p->tx_ctrl.mic = NULL;
@@ -3154,7 +3154,7 @@ static void nbfm_modem_selftest(sys_st *sys)
     pthread_create(&demod_th, NULL, nbfm_demod_thread, &dm);
 
     // 2) Build the NBFM modulator you already use in TX
-    nbfm4m_cfg_t cfg = {
+    nbfm_cfg_t cfg = {
         .audio_fs      = 48000.0,
         .rf_fs         = 4000000.0,
         .f_dev_hz      = 2500.0,
@@ -3162,14 +3162,14 @@ static void nbfm_modem_selftest(sys_st *sys)
         .out_scale     = 4000.0f,
         .linear_interp = 1,
     };
-    nbfm4m_mod_t* fm = nbfm4m_create(&cfg);
+    nbfm_mod_t* fm = nbfm_create(&cfg);
     float*  a48k   = (float*)calloc(480,    sizeof(float));  // 10 ms audio
-    iq16_t* iq4m   = (iq16_t*)calloc(40000, sizeof(iq16_t)); // 10 ms RF
+    iq16_t* iq_rf   = (iq16_t*)calloc(40000, sizeof(iq16_t)); // 10 ms RF
 
-    if (!fm || !a48k || !iq4m) {
+    if (!fm || !a48k || !iq_rf) {
         fprintf(stderr, "[selftest] alloc/mod create failed\n");
-        if (fm) nbfm4m_destroy(fm);
-        free(a48k); free(iq4m);
+        if (fm) nbfm_destroy(fm);
+        free(a48k); free(iq_rf);
         dm.active = false;
         rf10_fifo_stop(&rxq);
         pthread_join(demod_th, NULL);
@@ -3193,18 +3193,18 @@ static void nbfm_modem_selftest(sys_st *sys)
             a48k[i] = tone_amp * sinf(tone_phase);
         }
 
-        nbfm4m_push_audio(fm, a48k, 480);
+        nbfm_push_audio(fm, a48k, 480);
 
         size_t pulled = 0;
         while (pulled < 40000) {
-            pulled += nbfm4m_pull_iq(fm, iq4m + pulled, 40000 - pulled);
+            pulled += nbfm_pull_iq(fm, iq_rf + pulled, 40000 - pulled);
         }
 
         // diagnostics: peak amplitude of the 10 ms IQ frame
         int16_t peak = 0;
         for (size_t i = 0; i < 40000; i++) {
-            int16_t ai = (int16_t)abs(iq4m[i].i);
-            int16_t aq = (int16_t)abs(iq4m[i].q);
+            int16_t ai = (int16_t)abs(iq_rf[i].i);
+            int16_t aq = (int16_t)abs(iq_rf[i].q);
             if (ai > peak) peak = ai;
             if (aq > peak) peak = aq;
         }
@@ -3215,8 +3215,8 @@ static void nbfm_modem_selftest(sys_st *sys)
 
         rf10_frame_t frm;
         for (size_t i = 0; i < 40000; i++) {
-            frm.data[i].i = iq4m[i].i;
-            frm.data[i].q = iq4m[i].q;
+            frm.data[i].i = iq_rf[i].i;
+            frm.data[i].q = iq_rf[i].q;
         }
 
         // Block until demod thread consumes (no drops in self-test)
@@ -3244,10 +3244,10 @@ static void nbfm_modem_selftest(sys_st *sys)
     if (dm.pcm) snd_pcm_close(dm.pcm);
     aud10_fifo_destroy(&afifo);
     rf10_fifo_destroy(&rxq);
-    nbfm4m_destroy(fm);
+    nbfm_destroy(fm);
     
     free(a48k);
-    free(iq4m);
+    free(iq_rf);
     
     fprintf(stderr, "[selftest] done — you should have heard a 600 Hz tone.\n");
 }

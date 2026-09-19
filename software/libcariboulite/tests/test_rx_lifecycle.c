@@ -136,7 +136,7 @@ int main(void) {
         assert(test==0 ? ret==0 : ret<0);
         tx_pipeline_destroy(&tx); tx_pipeline_destroy(&tx);
         assert(!tx.inited && !tx.running);
-        assert(!tx.tx_ctrl.mic && !tx.tx_ctrl.fm && !tx.tx_ctrl.a48k && !tx.tx_ctrl.iq4m);
+        assert(!tx.tx_ctrl.mic && !tx.tx_ctrl.fm && !tx.tx_ctrl.a48k && !tx.tx_ctrl.iq_rf);
         for(int i=1;i<=creates;++i) assert(!live[i]);
         fail_create=0;fail_calloc=false;fail_calloc_count=0;
     }
@@ -150,8 +150,8 @@ int main(void) {
         assert(tx.tx_ctrl.frame_samples==fs/100);
         assert(test_tx_rate==fs);
         float audio[480]={0};
-        nbfm4m_push_audio(tx.tx_ctrl.fm,audio,480);
-        assert(nbfm4m_pull_iq(tx.tx_ctrl.fm,tx.tx_ctrl.iq4m,fs/100)==fs/100);
+        nbfm_push_audio(tx.tx_ctrl.fm,audio,480);
+        assert(nbfm_pull_iq(tx.tx_ctrl.fm,tx.tx_ctrl.iq_rf,fs/100)==fs/100);
         tx_pipeline_destroy(&tx);
     }
     tp.rf_fs=0;

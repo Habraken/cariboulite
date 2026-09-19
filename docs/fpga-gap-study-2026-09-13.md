@@ -462,7 +462,7 @@ the older saved image, so do not use it to prepare this experiment.
 ### Pitch correction and remaining startup failure
 
 User testing found correct 4 MS/s audio, approximately 300 Hz at 2 MS/s,
-and a failed subsequent start. `nbfm4m_pull_iq` still hard-coded the 250/3
+and a failed subsequent start. `nbfm_pull_iq` still hard-coded the 250/3
 audio-to-RF ratio for 4 MS/s despite accepting a configurable RF rate.
 It now advances the resampling phase using the configured audio and RF
 rates. `test_nbfm_rate.py` demodulates generated IQ and measures 599.59 Hz

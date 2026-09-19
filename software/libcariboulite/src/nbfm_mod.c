@@ -1,4 +1,4 @@
-#include "nbfm4m_mod.h"
+#include "nbfm_mod.h"
 #include <stdlib.h>
 #include <math.h>
 #include "math_compat.h"
@@ -13,7 +13,7 @@ static inline float preemph_run(preemph_t* p,float x){
     float y=(float)p->a0*x+(float)p->a1*p->x1; p->x1=x; return y;
 }
 
-struct nbfm4m_mod {
+struct nbfm_mod {
     double fs_a, fs_rf, f_dev, R, a_to_rf, k;
     float  out_scale; int lin;
     double phase, dphi_cur, dphi_next, interp_step, interp_acc;
@@ -25,8 +25,8 @@ struct nbfm4m_mod {
     int use_lin;
 };
 
-nbfm4m_mod_t* nbfm4m_create(const nbfm4m_cfg_t* c){
-    nbfm4m_mod_t* m=(nbfm4m_mod_t*)calloc(1,sizeof(*m));
+nbfm_mod_t* nbfm_create(const nbfm_cfg_t* c){
+    nbfm_mod_t* m=(nbfm_mod_t*)calloc(1,sizeof(*m));
     m->fs_a=c?c->audio_fs:48000.0; m->fs_rf=c?c->rf_fs:4000000.0;
     m->f_dev=c?c->f_dev_hz:2500.0; m->out_scale=c?c->out_scale:12000.0f;
     m->lin=c?c->linear_interp:1; m->R=m->fs_rf/m->fs_a; m->a_to_rf=1.0/m->R;
@@ -37,13 +37,13 @@ nbfm4m_mod_t* nbfm4m_create(const nbfm4m_cfg_t* c){
     m->lm_phase = 0; m->use_lin = m->lin;
     return m;
 }
-void nbfm4m_destroy(nbfm4m_mod_t* m) { 
+void nbfm_destroy(nbfm_mod_t* m) { 
     if(!m)return; 
     free(m->afifo); 
     free(m); 
 }
 
-size_t nbfm4m_push_audio(nbfm4m_mod_t* m,const float* a,size_t N) {
+size_t nbfm_push_audio(nbfm_mod_t* m,const float* a,size_t N) {
     size_t p=0; 
     for(size_t n=0;n<N;n++) {
         if(m->cnt == m->cap) break;
@@ -53,7 +53,7 @@ size_t nbfm4m_push_audio(nbfm4m_mod_t* m,const float* a,size_t N) {
     } 
     return p;
 }
-static int fetch_audio(nbfm4m_mod_t* m) {
+static int fetch_audio(nbfm_mod_t* m) {
     if (m->cnt == 0) return 0;
 
     float x = m->afifo[m->head];
@@ -68,7 +68,7 @@ static int fetch_audio(nbfm4m_mod_t* m) {
     return 1;
 }
 
-size_t nbfm4m_pull_iq(nbfm4m_mod_t* m, iq16_t* dst, size_t N)
+size_t nbfm_pull_iq(nbfm_mod_t* m, iq16_t* dst, size_t N)
 {
     const double L = m->fs_rf;
     const double M = m->fs_a;

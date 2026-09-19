@@ -10,7 +10,7 @@ are retained for tracking. Update this document as work is verified.
   `at86rf215`, `rffc507x`, `caribou_fpga`, `caribou_smi`, `io_utils`, and `hat`.
   Kernel code lives in `driver/`; FPGA RTL and simulations live in `firmware/`.
 - `software/libcariboulite/src/app_menu.c` combines menu handling with NBFM
-  streaming and audio logic. `nbfm4m_mod.c` and `alsa48k_source.c` provide
+  streaming and audio logic. `nbfm_mod.c` and `alsa48k_source.c` provide
   starting points for separating DSP and audio adapters.
 - Software regression tests exist in `software/libcariboulite/tests/`.
   FPGA checks and their coverage limits are documented in
