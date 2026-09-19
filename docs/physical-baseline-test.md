@@ -219,3 +219,16 @@ Jan separately confirmed option 13 tested correctly and known-signal RX passed
 at both 2 and 4 MS/s. Jan also confirmed numerous RX start/stop actions without odd behaviour. H3
 is passed. Interactive retuning is deferred until that control exists; it is
 not required to accept the ALSA playback extraction.
+
+## Step 5 / H4 retest — 2026-09-19
+
+Run `20260919T123837.461278Z` completed all eight sessions with exit code 0.
+Jan confirmed correct tone pitch and clean modulation, separately passed option
+13, and reported extended RX without unusual behaviour. Jan explicitly accepted
+H4. Exact extended-test duration and per-rate details were not separately supplied;
+this records functional acceptance, not a quantified clock-drift measurement.
+
+[Results and confirmation](baselines/20260919T123837.461278Z/summary.json),
+[metadata](baselines/20260919T123837.461278Z/metadata.json) and
+[events/RSSI](baselines/20260919T123837.461278Z/events.csv) are archived outside build.
+The tested checkout includes the uncommitted step 5 changes based on `b3da533`.

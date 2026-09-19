@@ -31,7 +31,7 @@ _Static_assert(CARIBOU_SMI_BYTES_PER_SAMPLE == sizeof(caribou_smi_sample_complex
 #include "tone_source.h"
 #include "alsa_source.h"
 #include "nbfm_mod.h"
-#include "nbfm_demod.h"
+#include "demod_worker.h"
 #include "app_pipeline_internal.h"
  
 
@@ -1814,7 +1814,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->sys   = sys;
     p->radio = radio;
 
-    if (par->fs_rf != 2000000 && par->fs_rf != 4000000) return -1;
+    if ((par->fs_rf != 2000000 && par->fs_rf != 4000000) ||
+        par->fs_audio != 48000) return -1;
 
     // FIFOs
     rf10_fifo_init(&p->rxq,  /*cap=*/128, /*drop_oldest_on_full=*/true);
@@ -1855,6 +1856,12 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->demod.pcm_total_frames  = 0;
     p->demod.pcm_channels      = alsa_sink_channels(p->demod.sink);
     p->demod.pcm_rate          = p->demod.sink->sample_rate;
+
+    nbfm_demod_config_t dsp_config = {
+        (unsigned)par->fs_rf, (unsigned)par->fs_audio, par->deemph_tau_s, par->pcm_gain
+    };
+    p->demod.dsp = nbfm_demod_create(&dsp_config);
+    if (!p->demod.dsp) { error = -4; goto fail; }
 
     if (pthread_create(&p->demod_thread, NULL, nbfm_demod_thread, &p->demod) != 0) {
         error = -4;
@@ -1990,6 +1997,8 @@ void rx_pipeline_destroy(rx_pipeline_t* p)
         p->rx_ctrl.rx_buffer = NULL;
     }
 
+    nbfm_demod_destroy(p->demod.dsp);
+    p->demod.dsp = NULL;
     audio_sink_destroy(p->demod.sink);
     p->demod.sink = NULL;
     aud10_fifo_destroy(&p->afifo);
@@ -2617,14 +2626,29 @@ static void nbfm_modem_selftest(sys_st *sys)
         .sink     = dm.sink,
         .fifo     = &afifo,
     };
-    pthread_t aw_th;
-    pthread_create(&aw_th, NULL, audio_writer_thread, &aw);
-
     dm.afifo_out = &afifo;
     dm.pcm_gain = 12000.0f;
-    
-    pthread_t demod_th;
-    pthread_create(&demod_th, NULL, nbfm_demod_thread, &dm);
+    nbfm_demod_config_t dsp_config = {4000000, 48000, dm.deemph_tau, dm.pcm_gain};
+    dm.dsp = nbfm_demod_create(&dsp_config);
+    pthread_t aw_th, demod_th;
+    if (!dm.dsp || pthread_create(&aw_th, NULL, audio_writer_thread, &aw) != 0) {
+        nbfm_demod_destroy(dm.dsp);
+        audio_sink_destroy(dm.sink);
+        aud10_fifo_destroy(&afifo);
+        rf10_fifo_destroy(&rxq);
+        return;
+    }
+    if (pthread_create(&demod_th, NULL, nbfm_demod_thread, &dm) != 0) {
+        aw.active = false;
+        aud10_fifo_stop(&afifo);
+        pthread_cancel(aw_th);
+        pthread_join(aw_th, NULL);
+        nbfm_demod_destroy(dm.dsp);
+        audio_sink_destroy(dm.sink);
+        aud10_fifo_destroy(&afifo);
+        rf10_fifo_destroy(&rxq);
+        return;
+    }
 
     // 2) Build the NBFM modulator you already use in TX
     nbfm_cfg_t cfg = {
@@ -2651,6 +2675,7 @@ static void nbfm_modem_selftest(sys_st *sys)
         pthread_cancel(aw_th);
         pthread_join(aw_th, NULL);
         aud10_fifo_destroy(&afifo);
+        nbfm_demod_destroy(dm.dsp);
         audio_sink_destroy(dm.sink);
         rf10_fifo_destroy(&rxq);
         return;
@@ -2708,6 +2733,7 @@ static void nbfm_modem_selftest(sys_st *sys)
     selftest_audio_cue(dm.sink, 2475.0f);
     usleep(250 * 1000); // wait a little so the tone doesn't get cut off
 
+    nbfm_demod_destroy(dm.dsp);
     audio_sink_destroy(dm.sink);
     aud10_fifo_destroy(&afifo);
     rf10_fifo_destroy(&rxq);

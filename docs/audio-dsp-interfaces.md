@@ -13,13 +13,15 @@ Update this file with every interface-changing increment.
 | `tone_source.c/.h` | Frequency/amplitude -> 48 kHz mono float audio | Common source implementation for TX, injection and self-test tones |
 | `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Configurable audio/RF rates; app uses 48 kHz audio and 2 or 4 MS/s IQ |
 | `audio_sink.h`, `alsa_sink.c/.h` | Mono S16 PCM at 48 kHz -> ALSA playback | Sink owns PCM configuration, stereo fallback, recovery and close |
-| `nbfm_demod.c/.h` | Application IQ FIFO -> application audio FIFO | Owns DSP inside a thread; references audio sink for diagnostics, FIFO depth for clock correction |
+| `nbfm_demod.c/.h` | IQ16 -> mono S16 PCM | Standalone stateful DSP; caller supplies fractional rate correction |
+| `demod_worker.c/.h` | Application IQ FIFO -> application audio FIFO | Owns 480-frame packing, FIFO-depth servo, diagnostics and thread entry |
+| `iq16.h` | Packed signed 16-bit I then Q | Shared existing IQ layout; no device dependencies |
 | `app_pipeline_internal.h` | Shared RF/audio frame and FIFO types | Internal app/demodulator transport; not a reusable DSP API |
 | `app_menu.c` | UI, radio control, audio and IQ streams | Owns pipeline coordination, FIFO implementations and source/sink workers |
 
 The modulator exposes create/destroy, push-audio and pull-IQ operations. The
-current demodulator exposes a pthread entry point and a mutable control struct;
-these are not yet symmetrical standalone DSP interfaces.
+demodulator exposes create/process/reset/destroy and explicit transfer counts.
+Their APIs are not yet symmetrical; step 6 addresses the modulator contract.
 
 ## Target data paths
 
@@ -307,8 +309,8 @@ pthread cancellation/join path, not a new wall-clock timeout guarantee. Destruct
 closes without explicit drain, after the writer and diagnostic reader have joined.
 It accepts NULL. The diagnostic `state` operation is optional and returns a static
 string; ALSA permits it alongside the writer while the sink remains alive. The
-current demodulator thread uses it for its existing heartbeat; step 5 will move
-that diagnostic into pipeline coordination. DSP calculations and FIFO sizes are
+`demod_worker` thread uses it for its existing heartbeat; the standalone DSP
+does not reference the sink. DSP calculations and FIFO sizes are
 unchanged. Self-test cues use the sink before/after the writer, never concurrently.
 The self-test allocation failure path now joins the writer before closing playback.
 
@@ -330,3 +332,107 @@ of the production retry helper. Application build and all existing source, tone,
 rate, lifecycle and TX-stop checks passed. **H3 passed**: Jan confirmed the automated baseline, option 13, known-signal RX
 at both RF rates and repeated RX start/stop. Interactive retuning is deferred
 until that control exists. [Physical results](baselines/20260919T121032.048186Z/summary.json).
+
+## Implemented: standalone demodulator DSP (step 5)
+
+[Header](../software/libcariboulite/src/nbfm_demod.h),
+[DSP](../software/libcariboulite/src/nbfm_demod.c) and
+[worker](../software/libcariboulite/src/demod_worker.c).
+
+```c
+nbfm_demod_t* nbfm_demod_create(const nbfm_demod_config_t* config);
+nbfm_demod_result_t nbfm_demod_process(nbfm_demod_t* dsp,
+    const iq16_t* input, size_t count, int16_t* output, size_t capacity,
+    double correction);
+void nbfm_demod_reset(nbfm_demod_t* dsp);
+int nbfm_demod_set_audio(nbfm_demod_t* dsp, float deemph_tau, float pcm_gain);
+void nbfm_demod_destroy(nbfm_demod_t* dsp);
+```
+
+Configuration explicitly supplies RF rate (2,000,000 or 4,000,000 Hz), audio rate
+(48,000 Hz), finite nonnegative de-emphasis tau in seconds (zero bypasses it),
+and finite nonnegative PCM gain. Creation validates these and returns NULL/errno
+EINVAL for invalid configuration or NULL on allocation failure. No implicit
+configuration defaults are added. Existing application values remain 50 us and
+8000 gain for RX, 12000 gain for self-test. RX initialization now rejects audio
+rates other than 48 kHz before allocation.
+
+`iq16_t` is the existing packed pair of signed 16-bit I then Q samples, moved
+unchanged to `iq16.h` for use by both modems. RF transport still owns hardware
+sample conversion. Output is mono signed-16-bit PCM with the existing gain,
+clipping to [-32768, 32767] and `lrintf` rounding. This step does not introduce
+float audio output or change any filtering or normalization constants.
+
+Processing returns `{consumed, produced, error}`; counts are IQ pairs and mono
+PCM frames respectively. The caller owns both nonoverlapping buffers, and no
+pointer is retained. Processing allocates nothing and never blocks. Input may be
+split arbitrarily; the caller advances by `consumed`, handles the `produced`
+samples, and retries remaining input with more output capacity. Zero capacity
+consumes nothing; zero input produces nothing. A short input block can be fully
+consumed without producing audio because of decimation. The DSP retains filter/
+decimator/resampler history, but no pending output samples. Invalid pointers,
+nonfinite correction or correction outside ±0.0005 return -EINVAL with zero
+progress and unchanged state.
+
+Correction is a unitless fractional adjustment: the resampling increment is
+`(48000.0 / 50000.0) * (1.0 + correction)`. Positive correction produces more
+audio, negative less. The DSP has no FIFO-depth policy. One owner serializes
+process, control updates, reset and destruction. `set_audio` preserves history
+and rejects invalid values with -EINVAL; processing uses the current controls.
+NULL is permitted for reset/destroy. Create allocates zeroed state; destroy frees
+it after the pipeline worker is joined.
+
+Reset preserves the old worker semantics: clear previous discriminator samples,
+DC/de-emphasis/LPF history, interpolation endpoints and fractional phase, but
+retain both integrate-and-dump accumulators/counters. Existing pipeline resets
+occur between complete 10 ms RF blocks, where those accumulators are empty.
+For a completely new stream at an arbitrary partial-decimation boundary, destroy
+and recreate the state. Reset does not alter configuration. The worker separately
+clears its partially packed output, correction, FIFO-depth EMA and servo engagement.
+
+The worker retains the existing 200 kHz then 50 kHz decimation cadence indirectly
+through complete RF frames. It measures FIFO depth immediately before processing
+the last IQ pair of each 10 ms block, so the new correction applies to exactly the
+same 500th intermediate sample as before. It stops processing whenever 480 output
+samples are packed, queues them with the existing 10 ms timeout, and then resumes
+unused input. Queue sizes, timeout/drop behavior, diagnostics and priority/CPU
+placement are unchanged. The legacy priming fields remain bookkeeping; this
+extraction does not add muting or a priming delay.
+
+The FIFO-depth servo remains in the worker: EMA alpha 0.05, engagement at 35%
+fill, 50% target, deadband of 1% of capacity, integral gain 2e-4, slew limit
+10 ppm/update and ordinary clamp ±300 ppm. Existing emergency corrections reach
+±500 ppm below 5% or above 95% fill. These are preserved constants, not a new
+claim of measured clock synchronization. The worker guards zero capacity rather
+than dividing by zero; valid application queues always have positive capacity.
+
+The pipeline creates the DSP before starting its worker and destroys it only
+after join, including failed startup. Self-test follows the same ownership rules.
+The worker still uses the existing mutable application controls; synchronizing
+that control protocol and moving all pipeline coordination are separate work.
+DSP code depends only on the C runtime, math library and IQ definition, with no
+ALSA, FIFO, pthread, UI or radio dependency.
+
+```c
+nbfm_demod_config_t cfg = {4000000, 48000, 50e-6f, 8000};
+nbfm_demod_t* dsp = nbfm_demod_create(&cfg);
+if (dsp) {
+    iq16_t iq[80] = {{0}};
+    int16_t pcm[2];
+    nbfm_demod_result_t r = nbfm_demod_process(dsp, iq, 80, pcm, 2, 0);
+    /* Consume r.produced audio frames; retry input after r.consumed. */
+    (void)r;
+    nbfm_demod_destroy(dsp);
+}
+```
+
+`test_nbfm_demod.py` compares the old worker frozen from `b3da533` against the
+new DSP/worker using deterministic IQ and FIFO depths. It compares output samples,
+counts and ordering of FIFO puts/depth reads at both RF rates, with/without reset,
+changing gain/de-emphasis, clipping and dropped FIFO writes: 345,600 PCM samples
+match exactly. Separate block/capacity tests exercise zero and ±500 ppm correction,
+reset during partial decimation, invalid inputs and zero-capacity behavior.
+`test_rx_lifecycle.py` additionally checks DSP creation failure and joins real
+waiting DSP/playback threads before destruction. **H4 passed**: Jan confirmed option 13, the baseline, correct pitch, clean
+modulation and extended RX without unusual behaviour, and explicitly accepted
+the checkpoint. [Physical results](baselines/20260919T123837.461278Z/summary.json).

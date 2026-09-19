@@ -3,7 +3,11 @@
 
 static bool real_threads, live[1024];
 static int creates, fail_create, joins, hardware_active;
-static bool fail_malloc, fail_calloc;
+static bool fail_malloc, fail_calloc, fail_demod_create;
+nbfm_demod_t* __real_nbfm_demod_create(const nbfm_demod_config_t*);
+nbfm_demod_t* __wrap_nbfm_demod_create(const nbfm_demod_config_t* c) {
+    return fail_demod_create ? NULL : __real_nbfm_demod_create(c);
+}
 static size_t fail_calloc_count;
 static void* metadata_allocation;
 static bool track_metadata;
@@ -59,6 +63,7 @@ int __wrap_caribou_fpga_get_sys_ctrl_tx_sample_gap(caribou_fpga_st* f, uint8_t* 
 int __wrap_cariboulite_radio_set_tx_power(cariboulite_radio_state_st* r, int power) { return 0; }
 static void check_clean(rx_pipeline_t* p) {
     assert(!p->inited && !p->running && !hardware_active);
+    assert(!p->demod.dsp && !p->demod.sink);
     for (int i=1; i<=creates; ++i) assert(!live[i]);
     rx_pipeline_destroy(p); /* repeated cleanup is harmless */
 }
@@ -157,6 +162,9 @@ int main(void) {
     tp.rf_fs=0;
 
     par.pcm_dev="null";
+    fail_demod_create=true;
+    assert(rx_pipeline_init(&p,&sys,&radio,&par)<0); check_clean(&p);
+    fail_demod_create=false;
     for(int failure=1;failure<=4;++failure) {
         rx_pipeline_t rx={0};
         fail_create=creates+failure;
@@ -189,6 +197,11 @@ int main(void) {
     }
 
     real_threads = true;
+    // Actual waiting DSP/writer threads must join before DSP/sink destruction.
+    assert(rx_pipeline_init(&p,&sys,&radio,&par)==0);
+    usleep(10000);
+    rx_pipeline_destroy(&p); check_clean(&p);
+
     for (int which=0; which<4; ++which) {
         aud10_fifo_init(&audio,1); rf10_fifo_init(&rf,1,false);
         if (which==1) audio.count=1;

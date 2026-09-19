@@ -1,8 +1,8 @@
 # Audio and DSP refactoring plan
 
-Status: H0 accepted by Jan on 2026-09-19; steps 1–4 are implemented; H1, H2 and H3 physical checks passed. Each numbered step is a small,
-reviewable change. The existing `nbfm_mod` rename and `nbfm_demod` extraction are
-already complete; the demodulator still depends on application FIFOs and ALSA.
+Status: H0 accepted by Jan on 2026-09-19; steps 1–5 are implemented; H1–H4 passed. Each numbered step is a small,
+reviewable change. The demodulator DSP is now independent of application FIFOs, playback and
+threading; its pipeline worker retains those responsibilities.
 
 Target paths:
 
@@ -117,17 +117,29 @@ for this ALSA playback extraction. Step 5 may proceed.
 
 ### 5. Separate demodulator DSP from its worker thread
 
-- [ ] Create explicit NBFM DSP state with create/process/reset/destroy operations.
-- [ ] Move FIFO access, ALSA diagnostics, scheduling and thread control into a
+- [x] Create explicit NBFM DSP state with create/process/reset/destroy operations.
+- [x] Move FIFO access, ALSA diagnostics, scheduling and thread control into a
   pipeline worker; remove ALSA/FIFO dependencies from the DSP header and source.
-- [ ] Preserve filtering, resampler state, reset semantics and output levels.
-- [ ] Let the worker measure FIFO depth and provide the existing clock correction;
+- [x] Preserve filtering, resampler state, reset semantics and output levels.
+- [x] Let the worker measure FIFO depth and provide the existing clock correction;
   keep the fractional resampler in the DSP for this increment.
-- [ ] Compare deterministic IQ-to-audio output before/after at 2 and 4 MS/s,
+- [x] Compare deterministic IQ-to-audio output before/after at 2 and 4 MS/s,
   including varying input blocks, output capacities, reset and correction values.
 
-**H4:** run the full physical comparison, especially sustained RX audio and FIFO
-stability. Do not claim clock synchronization from a short tone test alone.
+Software checks passed: 345,600 PCM samples from the extracted worker match the
+frozen step-4 implementation exactly across 2 and 4 MS/s, with resets, changing
+FIFO depths, audio controls, clipping and FIFO-put failures. Standalone DSP checks
+cover varied input blocks/output capacities and correction values of 0/±500 ppm.
+Lifecycle checks cover failed DSP creation and cancellation of real waiting
+workers. The app and all existing audio/rate/lifecycle checks pass.
+
+**H4 passed (2026-09-19):** Jan confirmed option 13, normal baseline completion,
+correct tone pitch, clean modulation and extended RX without unusual behaviour.
+Jan explicitly accepted H4. Run `20260919T123837.461278Z` completed all eight
+sessions with exit code 0. [Archived results](baselines/20260919T123837.461278Z/summary.json).
+Exact extended-test duration and per-rate details were not separately supplied;
+acceptance records the reported functional result, not quantified clock stability.
+Interactive retuning remains deferred until a control exists. Step 6 may proceed.
 
 ### 6. Make the modulator boundary explicit
 
@@ -200,7 +212,8 @@ case is not a pass. Do not mark an untested combination as verified.
 | H1 | See step 2 archive | Eight baseline sessions | Passed, including microphone modulation | Jan, 2026-09-19 |
 | H2 | See step 3 archive | Eight baseline sessions plus option 13 | Passed; correct pitch and self-test audio | Jan, 2026-09-19 |
 | H3 | Step 4 working tree based on `76e6b9b` | Physical RX at both rates, restart/retune and self-test | Passed: baseline, option 13, known-signal RX at both rates, repeated RX start/stop; retuning deferred | Jan, 2026-09-19 |
-| H4–H6 | Pending | Pending | Not run | — |
+| H4 | Step 5 working tree based on `b3da533` | Physical comparison including sustained RX/FIFO stability | Passed: baseline, option 13, correct pitch/clean modulation and extended RX; explicitly accepted | Jan, 2026-09-19 |
+| H5–H6 | Pending | Pending | Not run | — |
 
 Link longer logs or recordings here. Record software and hardware results
 separately, including any explicitly deferred tests and remaining limitations.

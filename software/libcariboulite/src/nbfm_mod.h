@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-typedef struct __attribute__((__packed__)) { int16_t i; int16_t q; } iq16_t;
+#include "iq16.h"
 typedef struct nbfm_mod nbfm_mod_t;
 
 typedef struct {
