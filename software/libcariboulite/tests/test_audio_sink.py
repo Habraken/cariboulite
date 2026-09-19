@@ -5,10 +5,10 @@ import subprocess
 import tempfile
 here = Path(__file__).resolve().parent
 src = here.parent / 'src'
-app = (src / 'app_menu.c').read_text()
-a = app.index('static int write_audio_exact(')
-b = app.index('//=================================================', a)
-helper = app[a:b].replace('static int write_audio_exact(', 'int test_write_exact(')
+app = (src / 'rx_pipeline.c').read_text()
+a = app.index('int write_audio_exact(')
+b = app.index('void* audio_writer_thread(', a)
+helper = app[a:b].replace('int write_audio_exact(', 'int test_write_exact(')
 wraps = ['snd_pcm_open', 'snd_pcm_close', 'snd_pcm_hw_params_set_channels',
          'snd_pcm_sw_params', 'snd_pcm_prepare', 'snd_pcm_writei']
 with tempfile.TemporaryDirectory(prefix='audio-sink-') as directory:

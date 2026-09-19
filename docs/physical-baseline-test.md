@@ -244,3 +244,17 @@ to the runner; it is not included in its eight automated sessions. H5 is passed.
 [metadata](baselines/20260919T131156.324241Z/metadata.json) and
 [events/RSSI](baselines/20260919T131156.324241Z/events.csv) are archived outside build.
 The tested checkout includes uncommitted step 6 changes based on `185086f`.
+
+## Step 7 / H6 retest — 2026-09-19
+
+Run `20260919T133517.433185Z` completed normally with exit code 0. Jan reports
+all H6 tests pass. [Results and confirmation](baselines/20260919T133517.433185Z/summary.json),
+[metadata](baselines/20260919T133517.433185Z/metadata.json) and
+[events/RSSI](baselines/20260919T133517.433185Z/events.csv) are archived outside build.
+
+Jan observed the FPGA SMI channel value change when switching RX to TX in menu
+14. `smi_ctrl.v` reports its RX-source register (`r_channel`), which defaults to
+zero on reset. Menu 14 resets the FPGA before TX startup; TX does not program
+this RX-only selector. HiF RX activation writes one. The selector multiplexes
+RX input in `top.v` and does not select TX routing. The display label was changed
+after this test from SMI CHANNEL to RX SOURCE, explicitly marked unused in TX.

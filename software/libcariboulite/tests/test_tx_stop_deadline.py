@@ -3,7 +3,7 @@
 from pathlib import Path
 import subprocess
 import tempfile
-s=(Path(__file__).resolve().parents[1]/'src/app_menu.c').read_text()
+s=(Path(__file__).resolve().parents[1]/'src/tx_pipeline.c').read_text()
 a=s.index('static inline int ms_to_frames_10ms(');b=s.index('\nint tx_pipeline_start(',a)
 c=s.index('static void tx_wait_fifo_drain(',b);d=s.index('\nvoid tx_pipeline_destroy(',c)
 code=s[a:b]+s[c:d]

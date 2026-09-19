@@ -2,7 +2,8 @@
 #define _GNU_SOURCE
 #endif
 #include "demod_worker.h"
-#include "app_pipeline_internal.h"
+#include "pipeline_transport.h"
+#include "pipeline_runtime.h"
 #include <math.h>
 #include <stdio.h>
 #include <time.h>

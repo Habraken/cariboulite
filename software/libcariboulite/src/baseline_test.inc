@@ -63,7 +63,15 @@ int app_baseline_test(sys_st* sys, const char* firmware, const char* capture,
                 if (!*running) goto done;
                 double elapsed = (mono_ns() - started) / 1e9;
                 rf10_stats_t stats;
-                rf10_fifo_get_stats(is_tx ? &tx.txq : &rx.rxq, &stats);
+                if (is_tx) {
+                    tx_pipeline_stats_t snapshot;
+                    tx_pipeline_get_stats(&tx, &snapshot);
+                    stats = snapshot.txq;
+                } else {
+                    rx_pipeline_stats_t snapshot;
+                    rx_pipeline_get_stats(&rx, &snapshot);
+                    stats = snapshot.rxq;
+                }
                 if (stats.gets == previous_gets ||
                     (is_tx && !nbfm_tx_active) || (!is_tx && !nbfm_rx_active)) {
                     printf("BASELINE,stalled,%u,%s,%u,%.3f,,error\n", menu, direction, rate, elapsed);

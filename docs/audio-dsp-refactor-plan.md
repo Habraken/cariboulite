@@ -1,6 +1,6 @@
 # Audio and DSP refactoring plan
 
-Status: H0 accepted by Jan on 2026-09-19; steps 1–6 are implemented; H1–H5 passed. Each numbered step is a small,
+Status: H0 accepted by Jan on 2026-09-19; steps 1–7 are implemented; H1–H6 passed. Each numbered step is a small,
 reviewable change. The demodulator DSP is now independent of application FIFOs, playback and
 threading; its pipeline worker retains those responsibilities.
 
@@ -168,14 +168,33 @@ sessions with exit code 0. Jan confirmed successful automatic testing and option
 
 ### 7. Move pipeline coordination out of the menu
 
-- [ ] Extract shared FIFO implementation into an internal transport module.
-- [ ] Extract TX lifecycle and worker coordination into `tx_pipeline.c/.h`.
-- [ ] Extract RX lifecycle and worker coordination into `rx_pipeline.c/.h`.
-- [ ] Keep each extraction separately reviewable; run lifecycle/stop tests after each.
-- [ ] Leave configuration selection and status display in `app_menu.c`.
+- [x] Extract shared FIFO implementation into an internal transport module.
+- [x] Extract TX lifecycle and worker coordination into `tx_pipeline.c/.h`.
+- [x] Extract RX lifecycle and worker coordination into `rx_pipeline.c/.h`.
+- [x] Keep each extraction separately reviewable; run lifecycle/stop tests after each.
+- [x] Leave configuration selection and status display in `app_menu.c`.
 
-**H6:** full physical comparison, repeated start/stop, rate changes while stopped,
-retuning and sustained audio. Confirm menu exit releases resources.
+The extraction was performed in three reviewable stages: transport, TX, then RX.
+Lifecycle and stop-deadline tests passed after each. The final app build and ten
+software suites passed, including DSP waveform comparisons, playback/capture,
+monitor loopback and baseline-runner reporting. A move review compared 52 function
+bodies with step 6 (ignoring whitespace and the TX worker rename); signal and
+lifecycle behavior were retained. Small status accessors now keep menu/runner
+callers out of worker frame-size fields and FIFO statistics operations.
+
+New modules: `pipeline_transport`, `pipeline_runtime`, `tx_pipeline`,
+`mod_worker`, `rx_pipeline` and `modem_selftest`. The existing `demod_worker`
+continues to handle RX DSP coordination. No additional thread is introduced;
+FIFO capacities, pacing, cancellation, Quindar timing, routes and sample formats
+are unchanged. The obsolete commented-out WBFM worker was removed from the menu.
+
+**H6 passed (2026-09-19):** Jan reports all requested tests pass. Baseline run
+`20260919T133517.433185Z` completed normally with exit code 0.
+[Archived results](baselines/20260919T133517.433185Z/summary.json).
+The observed menu-14 SMI channel flip is the RX-source register returning to its
+reset value during TX startup; it does not select TX routing. The display label
+was clarified after the physical test. Interactive retuning remains deferred
+until that control exists. Step 8 may proceed.
 
 ### 8. Prove interchangeability and finish the documentation
 
@@ -229,7 +248,7 @@ case is not a pass. Do not mark an untested combination as verified.
 | H3 | Step 4 working tree based on `76e6b9b` | Physical RX at both rates, restart/retune and self-test | Passed: baseline, option 13, known-signal RX at both rates, repeated RX start/stop; retuning deferred | Jan, 2026-09-19 |
 | H4 | Step 5 working tree based on `b3da533` | Physical comparison including sustained RX/FIFO stability | Passed: baseline, option 13, correct pitch/clean modulation and extended RX; explicitly accepted | Jan, 2026-09-19 |
 | H5 | Step 6 working tree based on `185086f` | Tone/ALSA TX at both RF rates and option 13 | Passed: baseline and option 13; clean modulation and correct pitch including tones | Jan, 2026-09-19 |
-| H6 | Pending | Pending | Not run | — |
+| H6 | Step 7 working tree based on `0f1ae5b` | Baseline, self-test, switching, sustained audio and exit/restart | Passed: Jan reports all requested tests pass; RX-source display clarification noted | Jan, 2026-09-19 |
 
 Link longer logs or recordings here. Record software and hardware results
 separately, including any explicitly deferred tests and remaining limitations.

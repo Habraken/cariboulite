@@ -150,6 +150,12 @@ set(SOURCES_TEST_MAIN
     src/nbfm_mod.c
     src/nbfm_demod.c
     src/demod_worker.c
+    src/pipeline_transport.c
+    src/pipeline_runtime.c
+    src/mod_worker.c
+    src/tx_pipeline.c
+    src/rx_pipeline.c
+    src/modem_selftest.c
     src/alsa_source.c
     src/alsa_sink.c)
 set(SOURCES_MAIN src/cariboulite_util.c)

@@ -17,8 +17,13 @@ Update this file with every interface-changing increment.
 | `demod_worker.c/.h` | Application IQ FIFO -> application audio FIFO | Owns 480-frame packing, FIFO-depth servo, diagnostics and thread entry |
 | `audio_format.h` | Rate/channels, normalized float and S16 PCM sample types | Shared definitions without implicit conversion |
 | `iq16.h` | Packed signed 16-bit I then Q | Shared existing IQ layout; no device dependencies |
-| `app_pipeline_internal.h` | Shared RF/audio frame and FIFO types | Internal app/demodulator transport; not a reusable DSP API |
-| `app_menu.c` | UI, radio control, audio and IQ streams | Owns pipeline coordination, FIFO implementations and source/sink workers |
+| `pipeline_transport.c/.h` | RF/audio frames and FIFO operations | Internal synchronized queues, timeouts, statistics and cancellation cleanup |
+| `pipeline_runtime.c/.h` | Hardware lock, stream flags, monotonic time and scheduling | Shared process-wide application runtime |
+| `tx_pipeline.c/.h`, `mod_worker.c/.h` | Audio source -> modulator -> RF FIFO -> SMI | TX allocation, workers, injection, hardware lifecycle and status |
+| `rx_pipeline.c/.h` | Radio -> RF FIFO -> demod worker -> audio FIFO -> sink | RX allocation, reader/playback workers, hardware lifecycle and status |
+| `modem_selftest.c/.h` | Generated audio -> modulator -> demod worker -> playback | Option 13 orchestration without menu dependencies |
+| `app_pipeline_internal.h` | Compatibility include | Retained for frozen test fixtures; production uses transport/runtime headers |
+| `app_menu.c` | UI, configuration and radio controls | Selects routes/settings, calls pipeline APIs and renders status |
 
 Both DSP modules expose creation, processing progress, reset and destruction.
 The modulator also retains its legacy push/pull APIs. Their reset and buffering
@@ -539,3 +544,123 @@ queue saturation/retry, allocation failures, invalid configuration, transactiona
 input errors, reset equivalence, defaults and full-scale IQ. Application build
 and all eight audio/DSP/lifecycle/stop test suites pass. **H5 passed**: Jan confirmed the automated baseline and option 13, clean modulation
 and correct pitch including test tones. [Physical results](baselines/20260919T131156.324241Z/summary.json).
+
+## Implemented: pipeline extraction (step 7)
+
+The existing coordination is now in separate modules. These are internal
+application interfaces, not a stable public library ABI. The pipeline handles
+remain concrete structs for stack allocation and existing tests; callers should
+use lifecycle/status operations rather than mutate worker fields.
+
+| Module | Responsibility |
+| --- | --- |
+| [pipeline_transport](../software/libcariboulite/src/pipeline_transport.h) | Audio and RF FIFOs, monotonic waits, stop broadcasts, depth/statistics, drop policy and cancellation cleanup |
+| [pipeline_runtime](../software/libcariboulite/src/pipeline_runtime.h) | The single shared hardware mutex, existing TX/RX stream flags, monotonic clock and thread priority/affinity helper |
+| [tx_pipeline](../software/libcariboulite/src/tx_pipeline.h) | TX resources and lifecycle, injection sequence/deadlines, SMI writer, frequency/power and statistics |
+| [mod_worker](../software/libcariboulite/src/mod_worker.h) | Existing TX DSP producer: select audio/injection, modulate, pack TX_EN and enqueue IQ |
+| [rx_pipeline](../software/libcariboulite/src/rx_pipeline.h) | RX resources and lifecycle, radio reader, playback writer, audio controls and statistics |
+| [demod_worker](../software/libcariboulite/src/demod_worker.h) | Existing RX DSP worker, audio frame packing, FIFO-depth correction and heartbeat |
+| [modem_selftest](../software/libcariboulite/src/modem_selftest.h) | Existing option 13 cue/modem/playback sequence |
+
+The TX worker now has the entry point `nbfm_mod_thread`; the old thread name,
+priority and affinity remain unchanged. This complements `nbfm_demod_thread`
+without creating another thread. No DSP algorithm, input/output level, hardware
+route or sample packing changes accompany the move. Shared runtime state is
+explicitly shared across translation units: the menu and both pipelines still
+use the same hardware lock. The injection mutex remains shared by the TX control
+path and mod worker. The existing one-device/global-stream model remains; this
+step does not introduce multi-instance concurrency or replace volatile controls
+with a new synchronization protocol.
+
+### Pipeline lifecycle and ownership
+
+```c
+int tx_pipeline_init(tx_pipeline_t*, sys_st*, cariboulite_radio_state_st*, const tx_params_t*);
+int tx_pipeline_start(tx_pipeline_t*);
+void tx_pipeline_stop(tx_pipeline_t*);
+void tx_pipeline_destroy(tx_pipeline_t*);
+
+int rx_pipeline_init(rx_pipeline_t*, sys_st*, cariboulite_radio_state_st*, const rx_params_t*);
+int rx_pipeline_start(rx_pipeline_t*);
+void rx_pipeline_stop(rx_pipeline_t*);
+void rx_pipeline_destroy(rx_pipeline_t*);
+```
+
+One control owner serializes lifecycle calls. Parameters are borrowed during init;
+device strings need not survive it. Radio/system objects must outlive the pipeline.
+Call init on a fresh/destroyed handle, not a live one. Unsupported rates fail
+before workers start. Initialization stages queue storage, audio/DSP objects and
+threads; failures use destroy to join created threads and release owned objects.
+Return values remain zero for success and negative on failure. Inspect the existing
+logs for stage-specific errors; this extraction does not add pipeline-wide worker
+error propagation or start checking every hardware return code.
+
+TX retains a 64-frame RF queue, 480-frame source blocks and rate-dependent
+20,000/40,000-IQ blocks. The mod worker gives injection priority over tone or
+microphone audio. The SMI writer keeps the existing nonblocking/poll/chunking
+behavior and radio channel selection. Start sends the existing opening cue;
+stop attempts its closing cue within the existing one-second injection budget
+and at most 600 ms queue-drain wait, then idles the hardware. Destroy stops the
+queue, cancels/joins created workers and releases source, modulator and buffers.
+
+RX retains a 128-frame RF queue that drops oldest on overflow and a 24-frame
+480-sample audio queue. Init creates playback/DSP workers; start allocates/starts
+the reader and activates the selected RF stream. Stop halts reception while the
+pipeline remains initialized for restart. Destroy stops both queues, cancels/joins
+remaining workers and only then frees DSP, sink and storage. Worker priorities,
+audio write retry policy, DSP reset requests and FIFO timeouts are unchanged.
+Repeated stop/destroy remain harmless on an initialized-then-destroyed handle.
+Destroy is also safe on a zero-initialized handle.
+
+Both directions provide `*_pipeline_running`, `*_pipeline_frame_samples`,
+`*_pipeline_get_stats` and `*_pipeline_reset_stats`. The baseline runner now reads
+FIFO statistics through these APIs, and menu display/rate controls no longer
+reach into DSP/worker fields for frame sizes or reset FIFO statistics directly.
+Existing latest-sample diagnostic globals remain available; they are not promised
+as coherent synchronized snapshots. Frequency/power/audio setter functions were
+moved unchanged; their existence does not add an interactive retuning control.
+
+```c
+tx_pipeline_t tx = {0};
+tx_params_t parameters = {
+    .freq_hz = 430100000, .tx_power_dbm = -3, .rf_fs = 4000000,
+    .tone_mode = true, .tone_hz = 600, .tone_amp = 0.4f,
+    .out_scale = 4000, .f_dev_hz = 2500
+};
+/* With a prepared system and selected radio: */
+if (tx_pipeline_init(&tx, sys, radio, &parameters) == 0) {
+    int rc = tx_pipeline_start(&tx);
+    /* Control streaming and inspect status; handle rc before continuing. */
+    (void)rc;
+    tx_pipeline_destroy(&tx);
+}
+```
+
+### Transport and self-test
+
+The transport module is a mechanical move of the audio/RF queues. Counts are
+10 ms frames, not bytes. Put/get copy frame contents; queue storage belongs to
+the initializing pipeline. Waits use CLOCK_MONOTONIC, negative timeout means
+indefinite wait, and cancellation cleanup unlocks the mutex reacquired by
+pthread condition waits. Stop broadcasts to both readers and writers; destroy
+must follow worker join. Audio writes retain their existing timed-wait/drop
+behavior. RF policy is chosen at init (block for TX, drop oldest for RX).
+Allocation failure is still detected by the pipeline checking the queue pointer;
+this increment does not redesign queue construction or error returns.
+
+Option 13 now calls `nbfm_modem_selftest` in its own module. It uses the existing
+RX playback helpers and demod worker, a 64-frame self-test audio queue and the
+same opening/closing cues. `app_menu.c` retains menu choices, selected defaults,
+monitor controls, status rendering and the legacy raw-IQ diagnostic demo. The
+obsolete fully commented WBFM implementation was removed; no live modem was removed.
+
+Validation was performed after transport, TX and RX extraction with lifecycle
+and TX stop checks. The final app builds and ten relevant suites pass: audio
+source/sink/tone, modulator/demodulator/rate, lifecycle/stop, monitor loopback and
+baseline-runner reporting. Lifecycle checks now link the separate production
+modules rather than obtaining pipeline definitions from the included menu file.
+The move review compared 52 function bodies with step 6 before adding status
+accessors. **H6 passed**: Jan reports all requested tests pass.
+[Physical results](baselines/20260919T133517.433185Z/summary.json). Interactive retuning remains
+deferred until a control exists. The subsequent menu label clarification changes
+only the description of the RX-source register, not signal or routing behavior.
