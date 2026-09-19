@@ -1,6 +1,6 @@
 # Audio and DSP refactoring plan
 
-Status: H0 accepted by Jan on 2026-09-19; steps 1 and 2 are implemented; H1 runner and listening checks passed on 2026-09-19. Each numbered step is a small,
+Status: H0 accepted by Jan on 2026-09-19; steps 1–3 are implemented; H1 and H2 physical checks passed. Each numbered step is a small,
 reviewable change. The existing `nbfm_mod` rename and `nbfm_demod` extraction are
 already complete; the demodulator still depends on application FIFOs and ALSA.
 
@@ -80,16 +80,20 @@ repeated toggles were not separately reported.
 
 ### 3. Consolidate tone generation
 
-- [ ] Implement `tone_source` through the same audio-source interface.
-- [ ] Route normal TX tone generation through it, preserving amplitude and phase.
-- [ ] Then migrate self-test tone generation and transient tone/silence injection,
+- [x] Implement `tone_source` through the same audio-source interface.
+- [x] Route normal TX tone generation through it, preserving amplitude and phase.
+- [x] Then migrate self-test tone generation and transient tone/silence injection,
   preserving override priority, duration, phase continuity and shutdown deadlines.
   Split these callers into separate commits if needed.
-- [ ] Remove the unused old tone interface only after all callers are migrated.
-- [ ] Test tone pitch, amplitude, continuity across blocks and source switching.
+- [x] Remove the unused old tone interface only after all callers are migrated.
+- [x] Test tone pitch, amplitude, continuity across blocks and source switching.
 
-**H2:** compare normal tone TX, self-test audio, injected tones/silence and shutdown
-with H0; also confirm ALSA audio still works.
+Software waveform, lifecycle and stop-deadline checks accompany the extraction.
+
+**H2 passed (2026-09-19):** run `20260919T080542.756197Z` completed all eight
+sessions. Jan confirmed correct audio pitch and that everything works, including
+option 13 tested separately after correcting its playback route to the Jabra
+loopback bridge. [Archived results](baselines/20260919T080542.756197Z/summary.json).
 
 ### 4. Extract ALSA playback without changing the audio pipeline
 

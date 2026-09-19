@@ -10,7 +10,7 @@ Update this file with every interface-changing increment.
 | --- | --- | --- |
 | `audio_source.h` | Format + read-result + destroy operations | Common source boundary; currently used by ALSA TX capture |
 | `alsa_source.c/.h` | ALSA capture -> mono float audio at 48 kHz | Owns capture handle, conversion and buffering; used by TX |
-| `audio48k_source.h`, `tone48k.c` | Frequency/amplitude -> 48 kHz sine samples | Standalone generator compiled into app; current app generates tones elsewhere |
+| `tone_source.c/.h` | Frequency/amplitude -> 48 kHz mono float audio | Common source implementation for TX, injection and self-test tones |
 | `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Configurable audio/RF rates; app uses 48 kHz audio and 2 or 4 MS/s IQ |
 | `nbfm_demod.c/.h` | Application IQ FIFO -> application audio FIFO | Owns DSP inside a thread; references ALSA for diagnostics, FIFO depth for clock correction |
 | `app_pipeline_internal.h` | Shared RF/audio frame and FIFO types | Internal app/demodulator transport; not a reusable DSP API |
@@ -180,8 +180,7 @@ Quindar generation and normal sample conversion are unchanged.
 
 The source has immutable format and operations pointers; an adapter embeds it
 and implements read/destroy. No common factory, audio resampler or source-switch
-logic is introduced yet. The old `audio48k_source` tone interface remains for
-step 3. DSP modules do not depend on this I/O interface.
+logic is introduced yet. Step 3 replaces the old `audio48k_source` tone interface with `tone_source`. DSP modules do not depend on this I/O interface.
 
 Blocking behavior is still adapter-specific: ALSA uses the existing blocking
 reads, recovery, and worker cancellation. No new timeout or cross-thread stop API
@@ -205,3 +204,57 @@ application build, lifecycle and TX-stop tests also pass. H1 run `20260919T07580
 tones/pitch and microphone modulation at both RF rates. The runner's start/stop
 cycles passed; additional manual repeated toggles were not separately reported.
 [Physical results](baselines/20260919T075807.545875Z/summary.json).
+
+## Implemented: tone source (step 3)
+
+[Header](../software/libcariboulite/src/tone_source.h) and
+[implementation](../software/libcariboulite/src/tone_source.c).
+
+```c
+audio_source_t* tone_source_open(float frequency, float amplitude,
+                                audio_format_t format);
+int tone_source_set(audio_source_t* source, float frequency, float amplitude);
+audio_source_t* tone_source_open_cue(float frequency);
+```
+
+The regular source accepts 48 kHz mono, finite frequency in [0, 24000) Hz and
+amplitude in [0, 1]. Invalid creation arguments return NULL/errno EINVAL;
+allocation failures return NULL. `tone_source_set` returns 0 or -EINVAL and
+leaves state unchanged on invalid input. It is specific to this adapter;
+read/destroy use the common source API.
+
+Reads produce exactly the requested frames with OK, without blocking or
+allocating. The caller owns output storage; no pointer is retained. A single
+worker owns reading and parameter changes. Creation allocates the oscillator,
+and destroy releases it after the worker stops.
+
+Regular tones preserve the former app float phase accumulator: advance phase
+before each sample, wrap at 2*pi, emit amplitude*sin(phase). Changing frequency
+or amplitude preserves phase. Frequency zero emits silence and freezes phase,
+matching the old injection padding. TX's injector retains priority over normal
+source selection, and normal microphone capture resumes afterward. The tone
+state is allocated with the pipeline and freed after its workers are joined.
+Tone restart/reset occurs by recreating the pipeline as before.
+
+The self-test uses the regular source for its 600 Hz modulation. Its direct PCM
+opening/closing cues use `tone_source_open_cue`, a compatibility mode preserving
+the original indexed sine formula starting at zero phase. Sample index persists
+across blocks; 0.6*32767 scaling and signed-16-bit rounding remain at the PCM
+boundary. This avoids changing cue samples as part of an extraction.
+
+```c
+audio_source_t* tone = tone_source_open(600, 0.4f, (audio_format_t){48000, 1});
+if (tone) {
+    float block[480];
+    audio_source_read(tone, block, 480);
+    tone_source_set(tone, 0, 0.4f); // silence without advancing phase
+    audio_source_read(tone, block, 480);
+    audio_source_destroy(tone);
+}
+```
+
+The unused `tone48k.c` and `audio48k_source.h` were removed. Tests:
+`test_tone_source.py` compares samples with previous formulas across block sizes,
+frequency changes, silence and PCM cues; lifecycle and TX-stop tests protect
+allocation cleanup and injection deadlines. H2 passed on 2026-09-19: Jan confirmed the runner audio pitch and the separate
+option 13 self-test. [Results](baselines/20260919T080542.756197Z/summary.json).

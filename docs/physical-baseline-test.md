@@ -181,3 +181,25 @@ Each RX session recorded ten RSSI samples.
 [events/RSSI](baselines/20260919T075807.545875Z/events.csv) are preserved outside
 `build/`. This tests step 2's common audio-source interface on the existing
 Jabra/ALSA loopback setup; the checkout includes uncommitted step 2 changes.
+
+## Option 13 self-test playback
+
+Option 13 now uses `plughw:Loopback,0,0`, matching the RX menus and existing
+Loopback-to-Jabra playback bridge. It previously used `plughw:3,0` (Pi headphones
+in the recorded setup). Keep the bridge running. This software-only modem path
+should play an opening cue, recovered 600 Hz audio, and a closing cue on the
+Jabra; it does not transmit RF. Jan confirmed this correction on 2026-09-19; option 13 works perfectly.
+
+## Step 3 / H2 retest — 2026-09-19
+
+Run `20260919T080542.756197Z` completed all eight sessions with exit code 0.
+Jan confirmed all tests worked and audio had the correct pitch. Option 13 was
+also tested separately and confirmed working after selecting the correct
+Loopback-to-Jabra playback device. H2 is passed.
+
+[Metadata](baselines/20260919T080542.756197Z/metadata.json),
+[results and manual confirmation](baselines/20260919T080542.756197Z/summary.json),
+and [events/RSSI](baselines/20260919T080542.756197Z/events.csv) are archived outside
+`build/`. Each RX session recorded ten RSSI samples. This run includes the
+uncommitted step 3 tone-source changes; exact binary/firmware hashes and source
+status are in the metadata.

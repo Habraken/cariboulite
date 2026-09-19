@@ -146,7 +146,7 @@ set(SOURCES_FPGA_COMM test/fpga_comm_test.c)
 set(SOURCES_TEST_MAIN 
     src/cariboulite_test_app.c 
     src/app_menu.c 
-    src/tone48k.c
+    src/tone_source.c
     src/nbfm_mod.c
     src/nbfm_demod.c
     src/alsa_source.c)

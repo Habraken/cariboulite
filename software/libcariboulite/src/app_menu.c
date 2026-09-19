@@ -28,7 +28,7 @@ _Static_assert(CARIBOU_SMI_BYTES_PER_SAMPLE == sizeof(caribou_smi_sample_complex
                "CARIBOU_SMI_BYTES_PER_SAMPLE must match complex sample size");
 #endif
 
-#include "audio48k_source.h"
+#include "tone_source.h"
 #include "alsa_source.h"
 #include "nbfm_mod.h"
 #include "nbfm_demod.h"
@@ -1067,7 +1067,7 @@ typedef struct {
 	
 	// test tone generator for the FM modulator
     bool     tone_mode;        // true => synthesize 600 Hz audio
-    float    tone_phase;       // [0..2π)
+    audio_source_t* tone;      // worker-owned oscillator, shared by tone and injection
     float    tone_hz;          // default 600.0f
     float    tone_amp;         // audio amplitude (0..1), e.g. 0.8f
 	
@@ -1435,14 +1435,8 @@ static void* dsp_producer_thread_func(void* arg)
 
         if (inj_left > 0) {
 
-            if (inj_hz == 0.0f) {
-                memset(ctrl->tx->a48k, 0, 480 * sizeof(float));
-            } else {
-                float saved = ctrl->tx->tone_hz;
-                ctrl->tx->tone_hz = inj_hz;
-                fill_tone_48k(ctrl->tx, ctrl->tx->a48k, 480);
-                ctrl->tx->tone_hz = saved;
-            }
+            tone_source_set(ctrl->tx->tone, inj_hz, ctrl->tx->tone_amp);
+            audio_source_read(ctrl->tx->tone, ctrl->tx->a48k, 480);
 
             __sync_synchronize();
         } else {
@@ -1499,19 +1493,8 @@ static size_t tx_sample_index = 0;
 
 static inline void fill_tone_48k(tx_writer_ctrl_st* ctrl, float* buf, size_t n)
 {
-    // audio sample rate is fixed at 48 kHz
-    const float fs   = 48000.0f;
-    const float amp  = ctrl->tone_amp;              // 0..1
-    const float dphi = 2.0f * (float)M_PI * (ctrl->tone_hz / fs);
-    float phase = ctrl->tone_phase;
-
-    for (size_t i = 0; i < n; i++) {
-        phase += dphi;
-        if (phase >= 2.0f * (float)M_PI) phase -= 2.0f * (float)M_PI;
-        buf[i] = amp * sinf(phase);
-    }
-
-    ctrl->tone_phase = phase;
+    tone_source_set(ctrl->tone, ctrl->tone_hz, ctrl->tone_amp);
+    audio_source_read(ctrl->tone, buf, n);
 }
 
 
@@ -1668,7 +1651,9 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     p->tx_ctrl.tone_mode      = par->tone_mode;
     p->tx_ctrl.tone_hz        = par->tone_hz;
     p->tx_ctrl.tone_amp       = par->tone_amp;
-    p->tx_ctrl.tone_phase     = 0.0f;
+    p->tx_ctrl.tone = tone_source_open(par->tone_hz, par->tone_amp,
+                                        (audio_format_t){48000, 1});
+    if (!p->tx_ctrl.tone) goto fail;
     p->tx_ctrl.fm             = NULL;
     p->tx_ctrl.a48k           = NULL;
     p->tx_ctrl.iq_rf           = NULL;
@@ -1913,6 +1898,8 @@ void tx_pipeline_destroy(tx_pipeline_t* p)
     if (p->tx_ctrl.a48k) free(p->tx_ctrl.a48k);
     if (p->tx_ctrl.fm)   nbfm_destroy(p->tx_ctrl.fm);
     if (p->tx_ctrl.mic)  audio_source_destroy(p->tx_ctrl.mic);
+    audio_source_destroy(p->tx_ctrl.tone);
+    p->tx_ctrl.tone = NULL;
 
     p->tx_ctrl.iq_rf = NULL;
     p->tx_ctrl.a48k = NULL;
@@ -2676,6 +2663,21 @@ static void nbfm_rx(sys_st *sys)
 }
 
 // --- Self-test: synthesize audio -> nbfm modulation -> IQ@4M -> nbfm demodulation -> ALSA ---
+static void selftest_audio_cue(snd_pcm_t* pcm, unsigned channels, float frequency)
+{
+    audio_source_t* cue = tone_source_open_cue(frequency);
+    if (!cue) { fprintf(stderr, "[selftest] cue allocation failed\n"); return; }
+    float samples[480];
+    int16_t ping[12000];
+    for (size_t offset = 0; offset < 12000; offset += 480) {
+        audio_source_read(cue, samples, 480);
+        for (size_t i = 0; i < 480; ++i)
+            ping[offset + i] = (int16_t)lrintf(0.6f * 32767.f * samples[i]);
+    }
+    audio_source_destroy(cue);
+    write_exact_alsa_16(pcm, ping, 12000, channels);
+}
+
 static void nbfm_modem_selftest(sys_st *sys)
 {
     (void)sys;
@@ -2700,9 +2702,9 @@ static void nbfm_modem_selftest(sys_st *sys)
     aud10_fifo_t afifo;
     aud10_fifo_init(&afifo, 64);
 
-    // Use your playback opener (change device as needed: "default", "plughw:USB,0", etc.)
+    // Use the same playback bridge as the RX menus (Loopback -> Jabra).
     unsigned rate=0, ch=0;
-    if (alsa_open_playback(&dm.pcm, "plughw:3,0", &dm.pcm_rate, &dm.pcm_channels) != 0) {
+    if (alsa_open_playback(&dm.pcm, "plughw:Loopback,0,0", &dm.pcm_rate, &dm.pcm_channels) != 0) {
         fprintf(stderr, "[selftest] alsa_open_playback failed\n");
         rf10_fifo_destroy(&rxq);
         return;
@@ -2711,12 +2713,7 @@ static void nbfm_modem_selftest(sys_st *sys)
     alsa_tune_sw(dm.pcm);
 
     // ping: quick ping of 2.525 kHz quindar tone to verify audio path is working
-    int16_t ping[12000]; // 0.25s @ 48k
-    for (int i = 0; i < 12000; i++) {
-        float x = sinf(2.f * M_PI * 2525.f * (float)i / 48000.f);
-        ping[i] = (int16_t)lrintf(0.6f * 32767.f * x);
-    }
-    write_exact_alsa_16(dm.pcm, ping, 12000, /*channels*/dm.pcm_channels);  // same as speaker-test
+    selftest_audio_cue(dm.pcm, dm.pcm_channels, 2525.0f);
 
 
     audio_writer_ctrl_t aw = {
@@ -2763,17 +2760,11 @@ static void nbfm_modem_selftest(sys_st *sys)
     // 3) Run for N seconds: generate 600 Hz tone audio -> mod -> pull 40k IQ -> push to demod FIFO
     const double seconds = 15.0;
     const size_t loops   = (size_t)(seconds * 100.0); // 100 * 10ms per second
-    float tone_phase = 0.0f, tone_hz = 600.0f, tone_amp = 0.6f;
-    const float dphi = 2.0f * (float)M_PI * (tone_hz / 48000.0f);
+    audio_source_t* tone = tone_source_open(600.0f, 0.6f, (audio_format_t){48000, 1});
+    if (!tone) fprintf(stderr, "[selftest] tone allocation failed\n");
 
-    for (size_t k = 0; k < loops; k++) {
-        // Fill 10 ms of 48k audio using your existing tone gen helper
-        // (If you want to use the local code: replicate fill_tone_48k logic here.)
-        for (size_t i = 0; i < 480; i++) {
-            tone_phase += dphi;
-            if (tone_phase >= 2.0f * (float)M_PI) tone_phase -= 2.0f * (float)M_PI;
-            a48k[i] = tone_amp * sinf(tone_phase);
-        }
+    for (size_t k = 0; tone && k < loops; k++) {
+        audio_source_read(tone, a48k, 480);
 
         nbfm_push_audio(fm, a48k, 480);
 
@@ -2815,18 +2806,14 @@ static void nbfm_modem_selftest(sys_st *sys)
     pthread_join(aw_th, NULL);
 
     // ping: quick ping of 2.475 kHz tone to signal audio path is closing
-    // int16_t ping[12000]; // 0.25s @ 48k
-    for (int i = 0; i < 12000; i++) {
-        float x = sinf(2.f * M_PI * 2475.f * (float)i / 48000.f);
-        ping[i] = (int16_t)lrintf(0.6f * 32767.f * x);
-    }
-    write_exact_alsa_16(dm.pcm, ping, 12000, /*channels*/dm.pcm_channels);  // same as speaker-test
+    selftest_audio_cue(dm.pcm, dm.pcm_channels, 2475.0f);
     usleep(250 * 1000); // wait a little so the tone doesn't get cut off
 
     if (dm.pcm) snd_pcm_close(dm.pcm);
     aud10_fifo_destroy(&afifo);
     rf10_fifo_destroy(&rxq);
     nbfm_destroy(fm);
+    audio_source_destroy(tone);
     
     free(a48k);
     free(iq_rf);
