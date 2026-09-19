@@ -1,6 +1,6 @@
 # Audio and DSP refactoring plan
 
-Status: H0 accepted by Jan on 2026-09-19; step 1 is implemented. Each numbered step is a small,
+Status: H0 accepted by Jan on 2026-09-19; steps 1 and 2 are implemented; H1 runner and listening checks passed on 2026-09-19. Each numbered step is a small,
 reviewable change. The existing `nbfm_mod` rename and `nbfm_demod` extraction are
 already complete; the demodulator still depends on application FIFOs and ALSA.
 
@@ -64,12 +64,19 @@ pitch on 2026-09-19. [Archived results](baselines/20260919T075122.967948Z/summar
 
 ### 2. Introduce the audio-source boundary
 
-- [ ] Define a small `audio_source` interface with explicit format, read result,
+- [x] Define a small `audio_source` interface with explicit format, read result,
   buffer ownership, and close semantics; adapt ALSA capture to it.
-- [ ] Preserve the existing read/stop behavior; test partial reads and failures.
-- [ ] Keep supported audio at 48 kHz mono initially; reject unsupported formats.
+- [x] Preserve blocking capture and cancellation; test partial reads and failures.
+  Unrecoverable errors now stop TX streaming instead of retrying indefinitely.
+- [x] Keep supported audio at 48 kHz mono initially; reject unsupported formats.
 
-**H1:** verify real ALSA/loopback audio TX at both RF rates and repeated TX stop/start.
+Software build, source-contract, lifecycle and TX-stop checks passed.
+
+**H1:** run `20260919T075807.545875Z` completed all eight sessions with exit
+code 0. Jan confirmed correct tones/pitch and perfect microphone modulation in
+both option 14 TX sessions. Runner start/stop cycles passed; additional manual
+repeated toggles were not separately reported.
+[Archived results](baselines/20260919T075807.545875Z/summary.json).
 
 ### 3. Consolidate tone generation
 

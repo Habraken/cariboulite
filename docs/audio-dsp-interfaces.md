@@ -8,6 +8,7 @@ Update this file with every interface-changing increment.
 
 | Module | Inputs / outputs | Current coupling |
 | --- | --- | --- |
+| `audio_source.h` | Format + read-result + destroy operations | Common source boundary; currently used by ALSA TX capture |
 | `alsa_source.c/.h` | ALSA capture -> mono float audio at 48 kHz | Owns capture handle, conversion and buffering; used by TX |
 | `audio48k_source.h`, `tone48k.c` | Frequency/amplitude -> 48 kHz sine samples | Standalone generator compiled into app; current app generates tones elsewhere |
 | `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Configurable audio/RF rates; app uses 48 kHz audio and 2 or 4 MS/s IQ |
@@ -145,3 +146,62 @@ if (source) {
 Validation: application build and `test_rx_lifecycle.py`; the implementation is
 unchanged apart from names. The [step 1 physical retest](baselines/20260919T075122.967948Z/summary.json)
 also completed successfully; Jan confirmed all tones at the correct pitch.
+
+## Implemented: common audio source (step 2)
+
+[Interface](../software/libcariboulite/src/audio_source.h). TX now holds an
+`audio_source_t*` and calls `audio_source_read` / `audio_source_destroy`.
+ALSA construction remains adapter-specific:
+
+```c
+audio_source_t* alsa_source_open(const char* device, float gain,
+                                audio_format_t format);
+```
+
+The format contains `sample_rate` (Hz) and `channels`. Samples are interleaved
+normalized floats, with counts in frames. `alsa_source_open` accepts only
+`{48000, 1}`; other formats return NULL with `errno = EINVAL` before opening
+hardware. Initialization failures return NULL with `errno = EIO`. The legacy
+step 1 API remains available, but app capture no longer calls it directly.
+
+A read returns `{frames, status, error}`. Only `frames` samples per channel are
+valid; the caller owns storage and the adapter retains no pointer. `OK` can be a
+short read. `AGAIN` means no samples presently available; `EOF` means source end;
+`ERROR` includes a negative errno-style code. A final/error result may include
+valid buffered frames. ALSA never returns EOF; its unrecovered capture failures
+return ERROR with any buffered samples. Zero-length reads succeed without I/O;
+invalid source/buffer arguments return ERROR/-EINVAL.
+
+The TX worker retries AGAIN/short reads to fill its existing 480-frame block.
+On ERROR or EOF it drops the unfinished block, logs failure and clears the TX
+stream-active flag; normal pipeline stop/destroy performs final cleanup.
+This avoids indefinite retries after a permanent capture failure. Existing
+Quindar generation and normal sample conversion are unchanged.
+
+The source has immutable format and operations pointers; an adapter embeds it
+and implements read/destroy. No common factory, audio resampler or source-switch
+logic is introduced yet. The old `audio48k_source` tone interface remains for
+step 3. DSP modules do not depend on this I/O interface.
+
+Blocking behavior is still adapter-specific: ALSA uses the existing blocking
+reads, recovery, and worker cancellation. No new timeout or cross-thread stop API
+is claimed. One reader owns the adapter; stop/join it before destroy. ALSA's
+shared conversion buffer still excludes concurrent reads across instances.
+
+```c
+audio_source_t* source = alsa_source_open("plughw:Loopback,1,1", 1.0f,
+                                         (audio_format_t){48000, 1});
+if (source) {
+    float block[480];
+    audio_source_result_t r = audio_source_read(source, block, 480);
+    /* Consume r.frames; handle r.status before requesting more. */
+    audio_source_destroy(source); // after the reader has stopped
+}
+```
+
+Software checks: `test_audio_source.py` scripts ALSA capture without hardware to
+check format rejection, partial/error results, scaling and buffered reads;
+application build, lifecycle and TX-stop tests also pass. H1 run `20260919T075807.545875Z` completed successfully. Jan confirmed correct
+tones/pitch and microphone modulation at both RF rates. The runner's start/stop
+cycles passed; additional manual repeated toggles were not separately reported.
+[Physical results](baselines/20260919T075807.545875Z/summary.json).

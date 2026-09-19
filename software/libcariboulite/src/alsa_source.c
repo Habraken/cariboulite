@@ -10,6 +10,8 @@
 #endif
 
 struct alsa_source {
+    audio_source_t base;
+    int last_error;
     snd_pcm_t*      pcm;
     float           gain;
 
@@ -253,6 +255,7 @@ static int pcm_capture_once(alsa_source_t* s)
 size_t alsa_source_read(alsa_source_t* s, float* dst, size_t max_frames)
 {
     if (!s || !dst || max_frames == 0) return 0;
+    s->last_error = 0;
 
     // If we already have enough in the ring, just pop and return.
     if (s->rcount >= max_frames) {
@@ -266,7 +269,8 @@ size_t alsa_source_read(alsa_source_t* s, float* dst, size_t max_frames)
     while (s->rcount < max_frames && loops < max_loops) {
         int rc = pcm_capture_once(s);
         if (rc < 0) {
-            // On error, return what we do have (could be 0)
+            s->last_error = rc;
+            // Return buffered frames along with the error through the common API.
             break;
         }
         if (rc == 0) {
@@ -288,4 +292,33 @@ void alsa_source_destroy(alsa_source_t* s)
     free(s->cap_i16);
     free(s->ring);
     free(s);
+}
+
+static audio_source_result_t alsa_audio_read(audio_source_t* source, float* dst, size_t frames)
+{
+    alsa_source_t* s = (alsa_source_t*)source;
+    size_t got = alsa_source_read(s, dst, frames);
+    return (audio_source_result_t){got,
+        s->last_error ? AUDIO_SOURCE_ERROR : got ? AUDIO_SOURCE_OK : AUDIO_SOURCE_AGAIN,
+        s->last_error};
+}
+
+static void alsa_audio_destroy(audio_source_t* source)
+{
+    alsa_source_destroy((alsa_source_t*)source);
+}
+
+static const audio_source_ops_t alsa_audio_ops = {alsa_audio_read, alsa_audio_destroy};
+
+audio_source_t* alsa_source_open(const char* device, float gain, audio_format_t format)
+{
+    if (format.sample_rate != 48000 || format.channels != 1) {
+        errno = EINVAL;
+        return NULL;
+    }
+    alsa_source_t* s = alsa_source_create(device, gain);
+    if (!s) { errno = EIO; return NULL; }
+    s->base.format = format;
+    s->base.ops = &alsa_audio_ops;
+    return &s->base;
 }

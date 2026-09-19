@@ -167,3 +167,17 @@ RSSI samples. Receiver-noise listening was not separately stated in this retest.
 [events/RSSI](baselines/20260919T075122.967948Z/events.csv) are archived outside
 `build/`. The metadata identifies the tested revision plus uncommitted changes
 and the binary/firmware hashes.
+
+## Step 2 / H1 retest — 2026-09-19
+
+Run `20260919T075807.545875Z` completed all eight sessions with exit code 0.
+Jan confirmed correct audio tones and pitch, and perfect audio modulation during
+the second set of TX tests (option 14, 2 and 4 MS/s). The runner's start/stop
+cycles completed; additional manual repeated toggles were not separately reported.
+Each RX session recorded ten RSSI samples.
+
+[Metadata](baselines/20260919T075807.545875Z/metadata.json),
+[results](baselines/20260919T075807.545875Z/summary.json), and
+[events/RSSI](baselines/20260919T075807.545875Z/events.csv) are preserved outside
+`build/`. This tests step 2's common audio-source interface on the existing
+Jabra/ALSA loopback setup; the checkout includes uncommitted step 2 changes.
