@@ -1154,7 +1154,7 @@ void monitor_modem_status(sys_st *sys)
 
 		time(&current_time);
 		move(0,0);
-		printw("RF24 [T] TX [R] RX [m] RX mode [L] loopback [2/4] MS/s [Q] quit [X] stats");
+		printw("RF24 [T] TX [R] RX [M] RX mode [L] loopback [2/4] MS/s [Q] quit [X] stats");
 		move(0, screen_max_x - 12);
 		printw("%12ld",current_time);
         move(1,0);
@@ -1164,7 +1164,7 @@ void monitor_modem_status(sys_st *sys)
         move(2,0);
         printw("[F] TX %.6f MHz  [G] RX %.6f MHz", txpar.freq_hz/1e6, rxpar.freq_hz/1e6);
         move(3,0);
-        printw("SMI timing settings:");
+        printw("SMI timing settings: (n x 62.5ns)");
         move(4,0);
         printw("    reading setup: %d strobe: %d  hold: %d pace: %d", smi_set.read_setup_time, smi_set.read_strobe_time, smi_set.read_hold_time, smi_set.read_pace_time);
         move(5,0);

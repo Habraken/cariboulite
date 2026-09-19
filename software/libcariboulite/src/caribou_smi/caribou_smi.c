@@ -168,6 +168,7 @@ static int caribou_smi_get_smi_settings(caribou_smi_st *dev, struct smi_settings
 //=========================================================================
 static int caribou_smi_setup_settings (caribou_smi_st* dev, struct smi_settings *settings, bool print)
 {
+    //measured in cycles of the SMICLK 1/16MHz = 62.5ns, 1 = 62.5ns
     settings->read_setup_time = 1;   // orginal value: 0, last try 1
     settings->read_strobe_time = 5;  // orginal value: 5, last try 3
     settings->read_hold_time = 1;    // orginal value: 0, last try 1
