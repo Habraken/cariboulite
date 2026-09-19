@@ -154,3 +154,16 @@ instrumented pitch measurement.
 outside the build directory. The tested checkout was `9927d03` plus the
 uncommitted runner changes; binary and firmware hashes are in the metadata.
 This supplements the earlier H0 with the updated OS and repeatable test setup.
+
+## Step 1 retest — 2026-09-19
+
+Run `20260919T075122.967948Z` completed all eight sessions with exit code 0 after
+the ALSA source rename. Jan confirmed: “Test running completed successfully,
+all the tones were noticed at the correct pitch.” Each RX session recorded ten
+RSSI samples. Receiver-noise listening was not separately stated in this retest.
+
+[Metadata](baselines/20260919T075122.967948Z/metadata.json),
+[results](baselines/20260919T075122.967948Z/summary.json), and
+[events/RSSI](baselines/20260919T075122.967948Z/events.csv) are archived outside
+`build/`. The metadata identifies the tested revision plus uncommitted changes
+and the binary/firmware hashes.

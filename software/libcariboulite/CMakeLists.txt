@@ -149,7 +149,7 @@ set(SOURCES_TEST_MAIN
     src/tone48k.c
     src/nbfm_mod.c
     src/nbfm_demod.c
-    src/alsa48k_source.c)
+    src/alsa_source.c)
 set(SOURCES_MAIN src/cariboulite_util.c)
 set(SOURCES_PROD src/cariboulite_production.c)
 

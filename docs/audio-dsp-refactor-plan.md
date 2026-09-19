@@ -1,6 +1,6 @@
 # Audio and DSP refactoring plan
 
-Status: H0 accepted by Jan on 2026-09-19; implementation has not started. Each numbered step is a small,
+Status: H0 accepted by Jan on 2026-09-19; step 1 is implemented. Each numbered step is a small,
 reviewable change. The existing `nbfm_mod` rename and `nbfm_demod` extraction are
 already complete; the demodulator still depends on application FIFOs and ALSA.
 
@@ -53,11 +53,14 @@ Exit: a reproducible baseline with known limitations and measured comparisons.
 
 ### 1. Name the existing ALSA capture adapter clearly
 
-- [ ] Rename `alsa48k_source.c/.h` and its symbols to `alsa_source`.
-- [ ] Keep existing 48 kHz mono capture behavior and configuration unchanged.
-- [ ] Update callers, tests, build inputs and interface reference.
+- [x] Rename `alsa48k_source.c/.h` and its symbols to `alsa_source`.
+- [x] Keep existing 48 kHz mono capture behavior and configuration unchanged.
+- [x] Update callers, tests, build inputs and interface reference.
 
-Checks: build and lifecycle tests; no separate physical checkpoint required.
+Checks: application build and lifecycle tests passed. Although no separate
+physical checkpoint was required, run `20260919T075122.967948Z` completed all eight
+sessions successfully after the rename. Jan confirmed all tones at the correct
+pitch on 2026-09-19. [Archived results](baselines/20260919T075122.967948Z/summary.json).
 
 ### 2. Introduce the audio-source boundary
 

@@ -29,7 +29,7 @@ _Static_assert(CARIBOU_SMI_BYTES_PER_SAMPLE == sizeof(caribou_smi_sample_complex
 #endif
 
 #include "audio48k_source.h"
-#include "alsa48k_source.h"
+#include "alsa_source.h"
 #include "nbfm_mod.h"
 #include "nbfm_demod.h"
 #include "app_pipeline_internal.h"
@@ -1060,7 +1060,7 @@ typedef struct {
 
 	// (live path)
     bool    live_from_mic;     // set true to enable live generation
-    alsa48k_source_t* mic;     // ALSA handle
+    alsa_source_t* mic;     // ALSA handle
     nbfm_mod_t*     fm;      // 48 kHz audio -> configured RF rate NBFM
     float*            a48k;    // 480-float scratch
     iq16_t*           iq_rf;    // One RF frame of IQ scratch
@@ -1346,7 +1346,7 @@ static cariboulite_sample_complex_int16 latest_tx_sample = (cariboulite_sample_c
 
 // prototypes so C knows exact signatures before first use
 static inline void fill_tone_48k(tx_writer_ctrl_st* ctrl, float* buf, size_t n);
-static void read_audio_exact(alsa48k_source_t* mic, float* buf, size_t need);
+static void read_audio_exact(alsa_source_t* mic, float* buf, size_t need);
 
 
 static void* dsp_producer_thread_func(void* arg)
@@ -1690,7 +1690,7 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
 
     // Optional mic
     if (p->tx_ctrl.live_from_mic) {
-        p->tx_ctrl.mic = alsa48k_create(par->mic_dev, 1.0f);
+        p->tx_ctrl.mic = alsa_source_create(par->mic_dev, 1.0f);
         if (!p->tx_ctrl.mic) {
             fprintf(stderr, "[tx_pipeline] ALSA capture open failed (%s)\n",
                     par->mic_dev ? par->mic_dev : "(null)");
@@ -1908,7 +1908,7 @@ void tx_pipeline_destroy(tx_pipeline_t* p)
     if (p->tx_ctrl.iq_rf) free(p->tx_ctrl.iq_rf);
     if (p->tx_ctrl.a48k) free(p->tx_ctrl.a48k);
     if (p->tx_ctrl.fm)   nbfm_destroy(p->tx_ctrl.fm);
-    if (p->tx_ctrl.mic)  alsa48k_destroy(p->tx_ctrl.mic);
+    if (p->tx_ctrl.mic)  alsa_source_destroy(p->tx_ctrl.mic);
 
     p->tx_ctrl.iq_rf = NULL;
     p->tx_ctrl.a48k = NULL;
@@ -2370,11 +2370,11 @@ void rx_pipeline_destroy(rx_pipeline_t* p)
 // }
 
 // helper: fill exactly N audio frames (blocking in small steps)
-static void read_audio_exact(alsa48k_source_t* mic, float* buf, size_t need)
+static void read_audio_exact(alsa_source_t* mic, float* buf, size_t need)
 {
     size_t have = 0;
     while (have < need) {
-        size_t got = alsa48k_read(mic, buf + have, need - have);
+        size_t got = alsa_source_read(mic, buf + have, need - have);
         if (got == 0) {
             // tiny sleep to avoid hot spin if device is momentarily empty
             struct timespec ts = { .tv_sec = 0, .tv_nsec = 2 * 1000 * 1000 }; // 2 ms

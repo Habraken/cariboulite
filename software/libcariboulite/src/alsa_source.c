@@ -1,4 +1,4 @@
-#include "alsa48k_source.h"
+#include "alsa_source.h"
 #include <alsa/asoundlib.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +9,7 @@
 #define CLAMPF(x,lo,hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
 #endif
 
-struct alsa48k_source {
+struct alsa_source {
     snd_pcm_t*      pcm;
     float           gain;
 
@@ -134,9 +134,9 @@ done:
     return rc;
 }
 
-alsa48k_source_t* alsa48k_create(const char* device, float gain)
+alsa_source_t* alsa_source_create(const char* device, float gain)
 {
-    alsa48k_source_t* s = (alsa48k_source_t*)calloc(1, sizeof(*s));
+    alsa_source_t* s = (alsa_source_t*)calloc(1, sizeof(*s));
     if (!s) return NULL;
 
     s->fs  = 48000;
@@ -163,19 +163,19 @@ alsa48k_source_t* alsa48k_create(const char* device, float gain)
     s->rcap    = (size_t)(s->period * 17); // ~170 ms ring at 10 ms period
     s->ring    = (float*)malloc(sizeof(float) * s->rcap);
     if (!s->cap_i16 || !s->ring) {
-        alsa48k_destroy(s);
+        alsa_source_destroy(s);
         return NULL;
     }
 
     // Prime the device
     rc = snd_pcm_prepare(s->pcm);
-    if (rc < 0) { alsa48k_destroy(s); return NULL; }
+    if (rc < 0) { alsa_source_destroy(s); return NULL; }
 
     s->rhead = s->rtail = s->rcount = 0;
     return s;
 }
 
-static void ring_push(alsa48k_source_t* s, const float* src, size_t n)
+static void ring_push(alsa_source_t* s, const float* src, size_t n)
 {
     // Drop oldest if overflow (keep newest)
     if (n > s->rcap) {
@@ -200,7 +200,7 @@ static void ring_push(alsa48k_source_t* s, const float* src, size_t n)
     s->rcount += n;
 }
 
-static size_t ring_pop(alsa48k_source_t* s, float* dst, size_t n)
+static size_t ring_pop(alsa_source_t* s, float* dst, size_t n)
 {
     size_t take = (n < s->rcount) ? n : s->rcount;
     size_t head_to_end = s->rcap - s->rhead;
@@ -216,7 +216,7 @@ static size_t ring_pop(alsa48k_source_t* s, float* dst, size_t n)
     return take;
 }
 
-static int pcm_capture_once(alsa48k_source_t* s)
+static int pcm_capture_once(alsa_source_t* s)
 {
     // read up to one period (blocking read is OK; period is small)
     snd_pcm_sframes_t got = snd_pcm_readi(s->pcm, s->cap_i16, s->period);
@@ -250,7 +250,7 @@ static int pcm_capture_once(alsa48k_source_t* s)
     return (int)got;
 }
 
-size_t alsa48k_read(alsa48k_source_t* s, float* dst, size_t max_frames)
+size_t alsa_source_read(alsa_source_t* s, float* dst, size_t max_frames)
 {
     if (!s || !dst || max_frames == 0) return 0;
 
@@ -281,7 +281,7 @@ size_t alsa48k_read(alsa48k_source_t* s, float* dst, size_t max_frames)
     return ring_pop(s, dst, max_frames);
 }
 
-void alsa48k_destroy(alsa48k_source_t* s)
+void alsa_source_destroy(alsa_source_t* s)
 {
     if (!s) return;
     if (s->pcm) snd_pcm_close(s->pcm);

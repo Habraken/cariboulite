@@ -15,7 +15,7 @@ with tempfile.TemporaryDirectory(prefix='rx-lifecycle-') as directory:
     includes = [src, src/'at86rf215', src/'rffc507x']
     command = ['cc', '-O0', '-g', '-ffunction-sections', '-fdata-sections',
                '-Wno-unused-parameter', *['-I'+str(p) for p in includes],
-               str(Path(__file__).with_suffix('.c')), str(src/'nbfm_mod.c'), str(src/'nbfm_demod.c'), str(src/'alsa48k_source.c'), '-Wl,--gc-sections',
+               str(Path(__file__).with_suffix('.c')), str(src/'nbfm_mod.c'), str(src/'nbfm_demod.c'), str(src/'alsa_source.c'), '-Wl,--gc-sections',
                *['-Wl,--wrap='+s for s in wraps], '-L'+str(root/'build'),
                '-Wl,-rpath,'+str(root/'build'), '-lcariboulite', '-lasound',
                '-lm', '-pthread', '-o', str(binary)]
