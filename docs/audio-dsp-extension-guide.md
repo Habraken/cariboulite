@@ -130,6 +130,12 @@ squelch inputs rather than inherit NBFM noise thresholds automatically.
 
 ## Introduce a second modem
 
+For the current NBFM/WBFM split and future AM, SSB, CW/Morse and PSK receivers, see the
+[demodulator architecture research](demodulator-architecture-research.md). It
+compares implementation boundaries and maps shared DSP components to each mode.
+The companion [modulator research](modulator-architecture-research.md) covers
+audio, PSK and CW transmit paths, shared FM generation and TX lifecycle policies.
+
 Start with standalone create/process/reset/destroy operations and deterministic
 memory-backed checks. Specify rates, sample representations, amplitude scale,
 buffering, consumed/produced counts, no-progress behavior and reset semantics.
