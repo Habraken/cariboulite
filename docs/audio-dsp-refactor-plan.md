@@ -219,6 +219,44 @@ including the subsequent display-only clarification. No new hardware gate is
 introduced. Historical baseline metadata gaps and unquantified drift/tolerances
 remain documented limitations, not uncompleted refactoring steps.
 
+## Follow-up: preserve requested TX power across radio configuration
+
+Status: planned; separate from the completed audio/DSP extraction.
+
+`cariboulite_radio_set_tx_power()` in `software/libcariboulite/src/cariboulite_radio.c`
+(currently line 398) maps requested dBm to the modem power register using a
+channel-specific polynomial. `cariboulite_radio_set_tx_bandwidth()` (currently
+line 481) instead writes `18 + radio->tx_power`; the TX sample-rate/cutoff setter
+does the same. TX activation calls the bandwidth setter, so starting TX can
+overwrite the register value selected by the power setter.
+
+- [x] Unify menu 14's requested power under `txpar.tx_power_dbm`, including
+  startup setup, pipeline configuration and display; remove the duplicate local
+  `tx_power`. Current requested value is -6 dBm; incremental application build
+  passed.
+- [ ] Make the power setter the single authority for converting requested dBm
+  to the modem power code. Bandwidth and sample-rate/cutoff changes must preserve
+  that code and unrelated PA control bits, rather than recomputing power with
+  `18 + radio->tx_power`.
+- [ ] Audit TX initialization, activation, retuning and restart paths for power
+  overwrites. Distinguish requested dBm from register-derived estimates so a
+  readback does not silently replace the requested setting.
+- [ ] Add focused register-level regression checks for both radio channels:
+  setting power followed by bandwidth changes, sample-rate changes and TX
+  activation must preserve the selected power code. Cover range limits and
+  repeated start/stop sequences.
+- [ ] Build `cariboulite_test_app` and update the interface documentation to
+  describe requested power, conversion and readback behavior.
+- [ ] Compare physical RF levels before and after the correction at fixed
+  frequency, route and IQ scale, including -6 and -3 dBm requests. Record modem
+  power codes and measured levels; obtain Jan's hardware acceptance.
+
+This correction may change RF output for the same requested dBm because it
+removes an existing register overwrite. Jan reported that changing menu 14's
+request from -3 to -6 dBm halved the external PA's RF output; this is a useful
+relative observation, not an absolute output calibration. Keep requested power
+distinct from measured CaribouLite or external PA output.
+
 ## Repeatable test runner
 
 See [Physical baseline test](physical-baseline-test.md) for the automated
