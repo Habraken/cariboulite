@@ -1049,7 +1049,7 @@ void monitor_modem_status(sys_st *sys)
 
     tx_params_t txpar = {
         .freq_hz      = 430100000.0,
-        .tx_power_dbm = -3,              // Requested TX power for menu 14 (dBm)
+        .tx_power_dbm = -6,              // Requested TX power for menu 14 (dBm)
         .tone_mode    = false,
         .tone_hz      = 600.0f,
         .tone_amp     = 0.4f,
