@@ -1049,7 +1049,7 @@ void monitor_modem_status(sys_st *sys)
 
     tx_params_t txpar = {
         .freq_hz      = 430100000.0,
-        .tx_power_dbm = -3,
+        .tx_power_dbm = -3,              // Requested TX power for menu 14 (dBm)
         .tone_mode    = false,
         .tone_hz      = 600.0f,
         .tone_amp     = 0.4f,
@@ -1079,7 +1079,6 @@ void monitor_modem_status(sys_st *sys)
 	timeout(200);
         
 	double frequency = 430100000;     // Default frequency in Hz
-	int    tx_power  = -3;	          // Default power in dBm
     float  tx_bw     = 1000000.0f;    // Default TX bandwidth in Hz
     float  tx_sr     = 4000000.0f;    // Default TX sample rate in Hz
     float  rx_bw     = 2000000.0f;    // Default RX bandwidth in Hz
@@ -1130,7 +1129,7 @@ void monitor_modem_status(sys_st *sys)
 	// Set up the radio
 	HW_LOCK(); 
 	cariboulite_radio_set_frequency(radio, true, &frequency);
-	cariboulite_radio_set_tx_power(radio, tx_power);
+	cariboulite_radio_set_tx_power(radio, txpar.tx_power_dbm);
     cariboulite_radio_set_tx_bandwidth_flt(radio,tx_bw);
     cariboulite_radio_set_tx_samp_cutoff_flt(radio, tx_sr);
     cariboulite_radio_set_rx_bandwidth_flt(radio,rx_bw);
