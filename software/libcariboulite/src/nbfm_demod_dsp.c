@@ -1,4 +1,6 @@
 #include "fm_demod_internal.h"
+#include "fm_audio.h"
+#include "fm_discriminator.h"
 #include "math_compat.h"
 #include <errno.h>
 #include <math.h>
@@ -9,26 +11,15 @@ typedef struct nb_state {
     nbfm_demod_t base;
     nbfm_demod_config_t config;
     int D1, D2, use_limiter;
-    float K_norm, dc_a, lpf_a, lpf_b;
+    float K_norm;
     float ai1, aq1, ai2, aq2;
     int cnt1, cnt2;
     float pi50, pq50;
     int have_prev50;
-    float dc_y, x_prev_audio, deemph_state, lpf_y;
+    fm_audio_state_t audio;
     float y_prev_50k, y_curr_50k;
     double phase48;
 } nb_state_t;
-
-// --- audio-rate deemphasis (48 kHz) ---
-static inline float deemph_48k(float x, float *z, float tau_s)
-{
-    if (tau_s <= 0.f) return x;          // bypass if tau==0
-    const float fs = 48000.f;
-    const float a  = expf(-1.0f/(fs * tau_s));
-    const float b  = 1.0f - a;
-    *z = a * (*z) + b * x;
-    return *z;
-}
 
 // Ultra-fast small-angle atan2f approximation
 // Error < 0.005 rad for |y/x| < 0.3 (typical in NBFM discriminator)
@@ -68,9 +59,7 @@ nbfm_demod_t* nb_demod_create(const nbfm_demod_config_t* config)
     s->D2 = 4;
     s->use_limiter = 1;
     s->K_norm = 50000.0f / (2.0f * (float)M_PI * 2500.0f);
-    s->dc_a = expf(-2.0f * (float)M_PI * 5.0f / 48000.0f);
-    s->lpf_a = expf(-2.0f * (float)M_PI * 3200.0f / 48000.0f);
-    s->lpf_b = 1.0f - s->lpf_a;
+    fm_audio_init(&s->audio);
     return &s->base;
 }
 void nb_demod_reset(nbfm_demod_t* dsp)
@@ -79,7 +68,7 @@ void nb_demod_reset(nbfm_demod_t* dsp)
     if (!s) return;
     s->pi50 = s->pq50 = 0.0f;
     s->have_prev50 = 0;
-    s->dc_y = s->x_prev_audio = s->deemph_state = s->lpf_y = 0.0f;
+    fm_audio_reset(&s->audio);
     s->y_prev_50k = s->y_curr_50k = 0.0f;
     s->phase48 = 0.0;
 }
@@ -129,8 +118,8 @@ nbfm_demod_result_t nb_demod_process_with_raw(nbfm_demod_t* dsp,
 
         // --- discriminator at 50 kS/s using previous 50k sample ---
         if (s->have_prev50) {
-            const float re = i50 * s->pi50 + q50 * s->pq50;
-            const float im = q50 * s->pi50 - i50 * s->pq50;
+            float re, im;
+            fm_conjugate_product(i50, q50, s->pi50, s->pq50, &re, &im);
             const float dphi = fast_atan2f_small(im, re);
             y50 = dphi * s->K_norm;                   // normalize to ~±1 @ ±dev
         } else {
@@ -154,23 +143,8 @@ nbfm_demod_result_t nb_demod_process_with_raw(nbfm_demod_t* dsp,
 
             if (raw_audio) raw_audio[result.produced] = y_lin;
 
-            // === 48k audio chain ===
-            float x = y_lin;
-            float y = (x - s->x_prev_audio) + s->dc_a * s->dc_y;
-            s->x_prev_audio = x;
-            s->dc_y = y; if (fabsf(s->dc_y) < 1e-20f) s->dc_y = 0.0f;
-
-            float yd = deemph_48k(y, &s->deemph_state, s->config.deemph_tau);
-            if (fabsf(s->deemph_state) < 1e-20f) s->deemph_state = 0.0f;
-
-            s->lpf_y = s->lpf_a * s->lpf_y + s->lpf_b * yd;
-            float ya = s->lpf_y;
-            if (fabsf(s->lpf_y) < 1e-20f) s->lpf_y = 0.0f;
-
-            float pcm = ya * s->config.pcm_gain;
-            if (pcm >  32767.f) pcm =  32767.f;
-            if (pcm < -32768.f) pcm = -32768.f;
-            output[result.produced++] = (int16_t)lrintf(pcm);
+            output[result.produced++] = fm_audio_process(&s->audio, y_lin,
+                s->config.deemph_tau, s->config.pcm_gain, 1);
 
             // Keep fractional remainder, including across process calls.
             s->phase48 -= 1.0;

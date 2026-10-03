@@ -412,6 +412,32 @@ listening comparison found no evidence of regression. Extended endurance
 testing was not separately reported; this remains a limitation of the evidence,
 not an outstanding step-2 acceptance gate. Step 3 may proceed.
 
+Step 3 implementation (2026-10-03) extracts the shared 48 kHz audio chain into
+`fm_audio.h` and conjugate-product arithmetic into `fm_discriminator.h`.
+Mode-owned discriminator policies, scaling, resamplers and reset semantics are
+retained. WBFM-only FIR kernels stay local until another consumer needs them.
+The helper contracts are recorded in the audio/DSP interface reference.
+Frozen PCM, raw taps and progress match exactly for 460,728 samples per compiler
+policy with both strict `-O3` and the production fast-math/unroll flags; assertions
+remain enabled. These include clean/weak noisy FM, noise-only input, silence,
+clipping, controls, corrections, partial capacities and resets at both rates.
+Allocation/failure checks pass and processing introduces no allocations.
+State allocation sizes remain NBFM 120 and WBFM 50,888 bytes on this Pi.
+All seven relevant software suites and both application/memory-demo builds pass.
+In the instrumented production-flags reference run, clean-signal WBFM CPU totals
+were 0.093/0.159 s versus frozen 0.099/0.173 s at 2/4 MS/s; NBFM totals were
+0.011/0.020 s versus 0.011/0.019 s. Maximum clean-signal process-call CPU times
+were WBFM 0.424/0.626 ms versus 0.449/0.724 ms and NBFM 0.071/0.111 ms versus
+0.080/0.085 ms. These one-run measurements include clock instrumentation and
+are observations, not a latency or endurance guarantee.
+Step 3 physical functional checks passed (Jan, 2026-10-03): WBFM audio
+through the Pi 4 headphone jack was reported absolutely clean, and NBFM TX/RX
+tests were reported okay. This supports the extraction's functional acceptance;
+extended endurance duration and per-rate details were not separately supplied.
+The earlier speech-distortion observation points toward the USB/Jabra playback
+path, rather than the FM extraction, but its specific cause remains unconfirmed.
+Step 4 may proceed.
+
 For CW, generate keyed IQ with known transition times and messages. Test detector
 edge bias from filter delay/ringing separately from parser accuracy on ideal
 mark/space events. Include changing speeds, unequal hand-keyed durations,

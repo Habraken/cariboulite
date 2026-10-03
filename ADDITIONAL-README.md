@@ -801,6 +801,12 @@ arecord -D plughw:Loopback,1,0 -t raw -f S16_LE -c 1 -r 48000 --buffer-time=1000
   aplay -D plughw:CARD=USB,DEV=0 -t raw -f S16_LE -c 1 -r 48000 --buffer-time=100000 --period-time=25000
 ```
 
+To route RX audio to the PI4's headphone jack:
+
+```bash
+arecord -D plughw:Loopback,1,0 -t raw -f S16_LE -c 1 -r 48000 |
+  aplay -D plughw:CARD=Headphones,DEV=0 -t raw -f S16_LE -c 1 -r 48000
+```
 
 
 # GNU-RADIO (WIP)

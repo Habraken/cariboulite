@@ -843,10 +843,34 @@ NBFM state and processing; `wbfm_demod.c` owns WBFM state, FIR coefficients
 and histories. The private declarations are in `fm_demod_internal.h`.
 Each mode allocates one complete state at creation and releases it at destroy;
 processing and reset allocate nothing. Compile all three source files when
-using the compatibility API. Shared audio operations remain duplicated until
-step 3 so their extraction can be reviewed separately.
+using the compatibility API. Shared audio and conjugate-product operations are extracted in step 3,
+with details below.
 
 Public configuration, progress, errors, raw taps, buffer ownership and reset
 semantics are unchanged. NBFM reset retains its integrate-and-dump accumulators;
 WBFM reset clears signal histories while retaining prepared coefficients.
 No ALSA, radio, FIFO or worker dependency is introduced.
+
+## Shared FM/audio primitives (refactoring step 3)
+
+`fm_audio.h` owns the common 48 kHz audio-history structure and inline
+coefficient initialization, history reset, DC rejection, de-emphasis and S16
+conversion. Each mode embeds a separate instance. Initialization sets the
+5 Hz DC and legacy 3.2 kHz low-pass coefficients; the owner must zero/reset
+history. Reset preserves coefficients and clears audio history only. Controls
+are validated by the existing mode API and passed per sample without resetting.
+Input is normalized float discriminator audio; gain is in PCM units. Output
+clips to -32768..32767 and uses the existing `lrintf` rounding. NBFM selects
+the low-pass output; WBFM selects de-emphasized audio after its upstream FIRs.
+The legacy low-pass history evaluation is retained for both modes.
+
+`fm_discriminator.h` computes current IQ times conjugate(previous IQ), using
+the original float operation order. It owns no history or scaling. NBFM keeps
+its limiter/small-angle approximation and 2.5 kHz normalization; WBFM keeps
+full `atan2f` and 75 kHz normalization. Previous-IQ and reset policy remain
+mode-owned, as do resampling and WBFM FIR design/convolution. Those FIRs have
+one current consumer and are not extracted as shared operations in this step.
+
+Both helpers are internal headers, require no additional link inputs, and
+perform no allocation, device I/O or threading. Public formats, raw-tap
+location, correction limits, progress and buffer ownership are unchanged.

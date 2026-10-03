@@ -1,4 +1,6 @@
 #include "fm_demod_internal.h"
+#include "fm_audio.h"
+#include "fm_discriminator.h"
 #include "math_compat.h"
 #include <errno.h>
 #include <math.h>
@@ -28,21 +30,10 @@ typedef struct wb_state {
     wbfm_state_t wide;
     nbfm_demod_config_t config;
     int D1;
-    float K_norm, dc_a, lpf_a, lpf_b;
-    float dc_y, x_prev_audio, deemph_state, lpf_y;
+    float K_norm;
+    fm_audio_state_t audio;
     double phase48;
 } wb_state_t;
-
-// --- audio-rate deemphasis (48 kHz) ---
-static inline float deemph_48k(float x, float *z, float tau_s)
-{
-    if (tau_s <= 0.f) return x;          // bypass if tau==0
-    const float fs = 48000.f;
-    const float a  = expf(-1.0f/(fs * tau_s));
-    const float b  = 1.0f - a;
-    *z = a * (*z) + b * x;
-    return *z;
-}
 
 int wb_demod_set_audio(nbfm_demod_t* dsp, float tau, float gain)
 {
@@ -65,9 +56,7 @@ static nbfm_demod_t* allocate_state(const nbfm_demod_config_t* config)
     if (!s) return NULL;
     s->base.mode = FM_MODE_WBFM;
     s->config = *config;
-    s->dc_a = expf(-2.0f * (float)M_PI * 5.0f / 48000.0f);
-    s->lpf_a = expf(-2.0f * (float)M_PI * 3200.0f / 48000.0f);
-    s->lpf_b = 1.0f - s->lpf_a;
+    fm_audio_init(&s->audio);
     return &s->base;
 }
 static void fir_design(float* h, int n, float cutoff, float fs)
@@ -133,8 +122,11 @@ static int wbfm_sample(wb_state_t* s, iq16_t sample, float* value)
     float i = fir_symmetric(w->rf_coeff, w->ri+w->rf_pos, n);
     float q = fir_symmetric(w->rf_coeff, w->rq+w->rf_pos, n);
     float v = 0;
-    if (w->have_prev)
-        v = atan2f(q*w->pi-i*w->pq, i*w->pi+q*w->pq)*s->K_norm;
+    if (w->have_prev) {
+        float re, im;
+        fm_conjugate_product(i, q, w->pi, w->pq, &re, &im);
+        v = atan2f(im, re)*s->K_norm;
+    }
     w->pi = i; w->pq = q; w->have_prev = 1;
     p = w->audio_pos;
     w->audio[p] = w->audio[p+WBFM_AUDIO_TAPS] = v;
@@ -159,7 +151,7 @@ void wb_demod_reset(nbfm_demod_t* dsp)
         memset(w->resample, 0, sizeof(w->resample));
         w->resample_pos = 0;
     }
-    s->dc_y = s->x_prev_audio = s->deemph_state = s->lpf_y = 0.0f;
+    fm_audio_reset(&s->audio);
     s->phase48 = 0.0;
 }
 
@@ -211,24 +203,8 @@ nbfm_demod_result_t wb_demod_process_with_raw(nbfm_demod_t* dsp,
 
             if (raw_audio) raw_audio[result.produced] = y_lin;
 
-            // === 48k audio chain ===
-            float x = y_lin;
-            float y = (x - s->x_prev_audio) + s->dc_a * s->dc_y;
-            s->x_prev_audio = x;
-            s->dc_y = y; if (fabsf(s->dc_y) < 1e-20f) s->dc_y = 0.0f;
-
-            float yd = deemph_48k(y, &s->deemph_state, s->config.deemph_tau);
-            if (fabsf(s->deemph_state) < 1e-20f) s->deemph_state = 0.0f;
-
-            // Retain legacy audio-chain evaluation order for this extraction.
-            s->lpf_y = s->lpf_a * s->lpf_y + s->lpf_b * yd;
-            float ya = yd;
-            if (fabsf(s->lpf_y) < 1e-20f) s->lpf_y = 0.0f;
-
-            float pcm = ya * s->config.pcm_gain;
-            if (pcm >  32767.f) pcm =  32767.f;
-            if (pcm < -32768.f) pcm = -32768.f;
-            output[result.produced++] = (int16_t)lrintf(pcm);
+            output[result.produced++] = fm_audio_process(&s->audio, y_lin,
+                s->config.deemph_tau, s->config.pcm_gain, 0);
 
             // Keep fractional remainder, including across process calls.
             s->phase48 -= 1.0;
