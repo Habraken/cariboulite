@@ -357,6 +357,20 @@ the offline demo/tests while updating the production worker to neutral names.
 | 6. Optional Morse decoding | Add selected-channel detection, duration estimation and separate text/event output | Known messages across supported speeds, spacing styles, noise, fading, drift and block sizes; loss/overflow handling; unchanged audio with decoding on/off |
 | 7. First PSK receiver | Select symbol rate, pulse shape, mapping and protocol scope; introduce typed data output | Timing/carrier acquisition, phase ambiguity, BER versus noise, frequency/clock offset and gap recovery tests |
 
+Step 1 is implemented (2026-10-03): the unchanged combined FM DSP source and
+header from `e246267f93d249902d3153ff69576bf3936436c8` are frozen in
+`tests/fixtures/legacy_wbfm_demod`. Run
+`python3 software/libcariboulite/tests/test_fm_reference.py` for exact PCM,
+raw-tap and per-call consumed/produced/error comparisons at 2 and 4 MS/s.
+The deterministic IQ includes full-deviation audio, carrier offset and pilot;
+checks vary chunks, capacities (including zero), reset points, de-emphasis,
+clipping gain, raw-tap presence and 0/±500 ppm correction. Both modes are
+compared, alongside the existing pre-extraction NBFM worker fixture. This step
+changes no production DSP or public interfaces and needs no physical retest.
+Validation passed: 115,182 exact reference PCM samples; existing NBFM, WBFM,
+squelch, memory-audio and RX lifecycle suites; application and memory-demo
+builds. The frozen source/header were also checked byte-for-byte against HEAD.
+
 For CW, generate keyed IQ with known transition times and messages. Test detector
 edge bias from filter delay/ringing separately from parser accuracy on ideal
 mark/space events. Include changing speeds, unequal hand-keyed durations,
