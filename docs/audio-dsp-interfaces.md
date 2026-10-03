@@ -834,3 +834,19 @@ before starting that direction on the shared HiF radio. F/G edit MHz while
 stopped. Pipeline tuning setters propagate driver errors; initialization uses
 local frequency copies to preserve const caller configuration. See
 [monitor frequency controls](monitor-frequency.md) for behavior and acceptance.
+
+## FM mode ownership (refactoring step 2)
+
+`nbfm_demod.c` retains the public compatibility API and dispatches once per
+processing block through a tagged opaque handle. `nbfm_demod_dsp.c` owns
+NBFM state and processing; `wbfm_demod.c` owns WBFM state, FIR coefficients
+and histories. The private declarations are in `fm_demod_internal.h`.
+Each mode allocates one complete state at creation and releases it at destroy;
+processing and reset allocate nothing. Compile all three source files when
+using the compatibility API. Shared audio operations remain duplicated until
+step 3 so their extraction can be reviewed separately.
+
+Public configuration, progress, errors, raw taps, buffer ownership and reset
+semantics are unchanged. NBFM reset retains its integrate-and-dump accumulators;
+WBFM reset clears signal histories while retaining prepared coefficients.
+No ALSA, radio, FIFO or worker dependency is introduced.

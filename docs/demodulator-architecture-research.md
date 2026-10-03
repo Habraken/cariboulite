@@ -371,6 +371,47 @@ Validation passed: 115,182 exact reference PCM samples; existing NBFM, WBFM,
 squelch, memory-audio and RX lifecycle suites; application and memory-demo
 builds. The frozen source/header were also checked byte-for-byte against HEAD.
 
+Step 2 implementation and software validation passed (2026-10-03):
+`nbfm_demod.c` is the compatibility facade, with independent private state in
+`nbfm_demod_dsp.c` and `wbfm_demod.c`. The public header/API is retained.
+Build inputs and standalone compile examples include both mode implementations.
+The frozen comparison still matches 115,182 PCM samples, raw taps and progress;
+allocation-failure checks and repeated create/reset/destroy pass, and processing
+allocates nothing. Existing NBFM, WBFM, squelch, memory-audio, RX lifecycle and
+TX-stop checks pass; both application/demo targets build.
+
+On this Pi, the same `-O3` reference binary measured NBFM CPU totals of
+0.012/0.021 s versus 0.011/0.019 s and WBFM 0.158/0.282 s versus 0.159/0.289 s
+at 2/4 MS/s (three 0.2 s streams per mode/rate). Maximum measured process-call
+CPU times were NBFM 0.053/0.094 ms versus 0.048/0.081 ms and WBFM
+0.696/1.130 ms versus 0.698/1.162 ms. These are one-run CPU observations with
+clock instrumentation, not wall-clock latency or endurance guarantees.
+Peak simultaneously allocated DSP-state bytes per instance are NBFM 120 versus
+120 and WBFM 50,888 versus 50,940; WBFM now uses one allocation instead of two.
+Physical follow-up (2026-10-03): Jan completed NBFM TX/RX and WBFM RX tests.
+For WBFM, Jan initially reported hiss/crackle at 96.2 MHz from a nearby local
+station, with an indicated RX level around -45 dBm. Jan then compared the
+step-1 frozen-DSP executable and step-2 executable and heard no discernible
+difference. This comparison found no audible step-2 regression; it does not
+establish that the receive/playback chain is distortion-free. Exact RF rate,
+gain settings and endurance duration were not supplied.
+
+Jan describes the remaining artifact as distortion audible during DJ speech,
+but not music, and suspects the Jabra 510 speaker may contribute. That cause
+is unconfirmed; do not attribute it to speaker bass handling without further
+comparison. Track it as a pre-existing or shared-chain observation rather than
+an established extraction regression. A different playback device or recording
+of the loopback PCM would help distinguish playback from upstream distortion.
+
+The reference comparison was also extended to weak FM with deterministic noise
+and zero-IQ intervals, noise-only IQ and silence: 460,728 PCM samples plus raw
+taps/progress match exactly at both rates. WBFM CPU measurements showed no
+slowdown against the frozen implementation. `/dev/smi` remains unavailable in
+this agent session. Jan explicitly accepted step 2 as completed on 2026-10-03 after the A/B
+listening comparison found no evidence of regression. Extended endurance
+testing was not separately reported; this remains a limitation of the evidence,
+not an outstanding step-2 acceptance gate. Step 3 may proceed.
+
 For CW, generate keyed IQ with known transition times and messages. Test detector
 edge bias from filter delay/ringing separately from parser accuracy on ideal
 mark/space events. Include changing speeds, unequal hand-keyed durations,
@@ -421,3 +462,9 @@ Related repository notes: [modulator research](modulator-architecture-research.m
 External references were consulted on 2026-09-20; their block designs establish
 useful distinctions, while the proposed module boundaries and migration plan
 are recommendations for this repository.
+
+The four physical A/B logs are archived with findings in
+[FM comparison evidence](baselines/20261003-fm-comparison/README.md).
+Both builds show similar SMI read-timeout rates and low audio-queue levels;
+no application-side ALSA xruns or DSP errors were logged. The external playback
+bridge was not captured, and the cause of the reported distortion remains open.

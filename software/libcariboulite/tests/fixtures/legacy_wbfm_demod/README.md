@@ -8,5 +8,6 @@ WBFM and its shared NBFM operations before the mode/file extraction.
 
 `test_fm_reference.py` compares exact PCM, raw taps and per-call progress at
 both RF rates, with varied chunks/capacities, resets, clock corrections and
-audio-control changes. Existing NBFM worker and signal-quality tests remain
+audio-control changes, clean/weak noisy FM, noise-only IQ, zero-IQ intervals
+and silence. Existing NBFM worker and signal-quality tests remain
 independent acceptance checks. No hardware or ALSA is required.

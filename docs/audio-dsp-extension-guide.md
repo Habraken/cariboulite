@@ -25,7 +25,9 @@ cc -std=c11 -O2 -Wall -Wextra -Isoftware/libcariboulite/src \
   software/libcariboulite/src/memory_audio.c \
   software/libcariboulite/src/tone_source.c \
   software/libcariboulite/src/nbfm_mod.c \
-  software/libcariboulite/src/nbfm_demod.c -lm -o /tmp/nbfm_memory_demo
+  software/libcariboulite/src/nbfm_demod.c \
+  software/libcariboulite/src/nbfm_demod_dsp.c \
+  software/libcariboulite/src/wbfm_demod.c -lm -o /tmp/nbfm_memory_demo
 /tmp/nbfm_memory_demo
 ```
 
