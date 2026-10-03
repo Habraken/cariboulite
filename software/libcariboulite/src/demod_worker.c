@@ -10,11 +10,11 @@
 #include <stdio.h>
 #include <time.h>
 
-void* nbfm_demod_thread(void* arg)
+void* audio_demod_thread(void* arg)
 {
-    pthread_setname_np(pthread_self(), "nbfm_demod_thread");
+    pthread_setname_np(pthread_self(), "audio_demod_thread");
     set_rt_and_affinity_prio(55, 1);
-    nbfm_demod_ctrl_t* c = arg;
+    audio_demod_ctrl_t* c = arg;
     if (!c || !c->fifo_in || !c->sink || !c->dsp) return NULL;
 
     // The FIFO carries complete 10 ms RF blocks. Sample depth immediately before
@@ -35,7 +35,7 @@ void* nbfm_demod_thread(void* arg)
     c->reset = true;
     while (c->active) {
         if (c->reset) {
-            nbfm_demod_reset(c->dsp);
+            audio_demod_reset(c->dsp);
             noise_squelch_reset(&noise);
             carrier_squelch_reset(&carrier);
             gate_gain = 0.0f;
@@ -105,11 +105,11 @@ void* nbfm_demod_thread(void* arg)
                 if (fill < 0.05) corr48 = fmax(corr48,  5e-4);
                 count = 1;
             }
-            if (nbfm_demod_set_audio(c->dsp, c->deemph_tau, c->pcm_gain) != 0) {
+            if (audio_demod_set_audio(c->dsp, c->deemph_tau, c->pcm_gain) != 0) {
                 fprintf(stderr, "DEMOD: invalid audio configuration\n");
                 return NULL;
             }
-            nbfm_demod_result_t result = nbfm_demod_process_with_raw(c->dsp,
+            audio_demod_result_t result = audio_demod_process_with_raw(c->dsp,
                 frm.data + offset, count, audio.pcm + nout, raw, 480 - nout, corr48);
             if (result.error || !result.consumed) {
                 fprintf(stderr, "DEMOD: processing failed (%d)\n", result.error);
@@ -152,3 +152,5 @@ void* nbfm_demod_thread(void* arg)
     }
     return NULL;
 }
+
+void* nbfm_demod_thread(void* arg) { return audio_demod_thread(arg); }

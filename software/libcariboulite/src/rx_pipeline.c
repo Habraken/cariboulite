@@ -128,7 +128,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
 
     if ((par->fs_rf != 2000000 && par->fs_rf != 4000000) ||
         par->fs_audio != 48000 ||
-        (par->mode != FM_MODE_NBFM && par->mode != FM_MODE_WBFM)) return -1;
+        (par->mode != AUDIO_DEMOD_NBFM && par->mode != AUDIO_DEMOD_WBFM)) return -1;
 
     // FIFOs
     rf10_fifo_init(&p->rxq,  /*cap=*/64, /*drop_oldest_on_full=*/true);
@@ -156,7 +156,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->aw_thread_created = true;
 
     atomic_init(&p->demod.squelch_flags,
-        (par->noise_squelch_disabled || par->mode == FM_MODE_WBFM ? 0u : RX_SQUELCH_NOISE) |
+        (par->noise_squelch_disabled || !(audio_demod_mode_capabilities(par->mode) & AUDIO_DEMOD_CAP_NOISE_SQUELCH) ? 0u : RX_SQUELCH_NOISE) |
         (par->carrier_squelch_enabled ? RX_SQUELCH_CARRIER : 0u));
     atomic_init(&p->demod.squelch_open, 0);
     // Demod setup
@@ -175,14 +175,13 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->demod.pcm_channels      = alsa_sink_channels(p->demod.sink);
     p->demod.pcm_rate          = p->demod.sink->sample_rate;
 
-    nbfm_demod_config_t dsp_config = {
+    audio_demod_config_t dsp_config = {
         (unsigned)par->fs_rf, (unsigned)par->fs_audio, par->deemph_tau_s, par->pcm_gain
     };
-    p->demod.dsp = par->mode == FM_MODE_WBFM
-        ? wbfm_demod_create(&dsp_config) : nbfm_demod_create(&dsp_config);
+    p->demod.dsp = audio_demod_create(par->mode, &dsp_config);
     if (!p->demod.dsp) { error = -4; goto fail; }
 
-    if (pthread_create(&p->demod_thread, NULL, nbfm_demod_thread, &p->demod) != 0) {
+    if (pthread_create(&p->demod_thread, NULL, audio_demod_thread, &p->demod) != 0) {
         error = -4;
         goto fail;
     }
@@ -315,7 +314,7 @@ void rx_pipeline_destroy(rx_pipeline_t* p)
         p->rx_ctrl.rx_buffer = NULL;
     }
 
-    nbfm_demod_destroy(p->demod.dsp);
+    audio_demod_destroy(p->demod.dsp);
     p->demod.dsp = NULL;
     audio_sink_destroy(p->demod.sink);
     p->demod.sink = NULL;
@@ -376,7 +375,7 @@ void rx_pipeline_reset_stats(rx_pipeline_t* p)
 void rx_pipeline_set_squelch(rx_pipeline_t* p, bool noise, bool carrier)
 {
     if (p && p->inited) atomic_store(&p->demod.squelch_flags,
-        (noise && p->demod.mode == FM_MODE_NBFM ? RX_SQUELCH_NOISE : 0u) | (carrier ? RX_SQUELCH_CARRIER : 0u));
+        (noise && (audio_demod_capabilities(p->demod.dsp) & AUDIO_DEMOD_CAP_NOISE_SQUELCH) ? RX_SQUELCH_NOISE : 0u) | (carrier ? RX_SQUELCH_CARRIER : 0u));
 }
 bool rx_pipeline_squelch_open(const rx_pipeline_t* p)
 {

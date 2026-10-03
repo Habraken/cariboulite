@@ -27,3 +27,33 @@ nbfm_demod_result_t nbfm_demod_process(nbfm_demod_t* s,
 {
     return nbfm_demod_process_with_raw(s,input,count,output,NULL,capacity,correction);
 }
+
+// Neutral audio-mode API. Legacy entry points retain their existing behavior.
+#include <errno.h>
+audio_demod_t* audio_demod_create(audio_demod_mode_t mode, const audio_demod_config_t* config)
+{
+    switch(mode) {
+        case AUDIO_DEMOD_NBFM: return nbfm_demod_create(config);
+        case AUDIO_DEMOD_WBFM: return wbfm_demod_create(config);
+        default: errno=EINVAL; return NULL;
+    }
+}
+unsigned audio_demod_mode_capabilities(audio_demod_mode_t mode)
+{
+    return mode == AUDIO_DEMOD_NBFM ? AUDIO_DEMOD_CAP_NOISE_SQUELCH : 0u;
+}
+unsigned audio_demod_capabilities(const audio_demod_t* s)
+{
+    return s ? audio_demod_mode_capabilities(s->mode) : 0u;
+}
+void audio_demod_destroy(audio_demod_t* s) { nbfm_demod_destroy(s); }
+void audio_demod_reset(audio_demod_t* s) { nbfm_demod_reset(s); }
+int audio_demod_set_audio(audio_demod_t* s, float tau, float gain)
+{ return nbfm_demod_set_audio(s,tau,gain); }
+audio_demod_result_t audio_demod_process_with_raw(audio_demod_t* s,
+    const iq16_t* input, size_t count, int16_t* output, float* raw,
+    size_t capacity, double correction)
+{ return nbfm_demod_process_with_raw(s,input,count,output,raw,capacity,correction); }
+audio_demod_result_t audio_demod_process(audio_demod_t* s,
+    const iq16_t* input, size_t count, int16_t* output, size_t capacity, double correction)
+{ return audio_demod_process_with_raw(s,input,count,output,NULL,capacity,correction); }

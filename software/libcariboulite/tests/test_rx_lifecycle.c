@@ -1,13 +1,14 @@
 /* Include the implementation to exercise its private pipeline and FIFO types. */
 #include "app_menu.c"
+#include "nbfm_demod.h"
 #include "mod_worker.h"
 
 static bool real_threads, live[1024];
 static int creates, fail_create, joins, hardware_active;
 static bool fail_malloc, fail_calloc, fail_demod_create;
-nbfm_demod_t* __real_nbfm_demod_create(const nbfm_demod_config_t*);
-nbfm_demod_t* __wrap_nbfm_demod_create(const nbfm_demod_config_t* c) {
-    return fail_demod_create ? NULL : __real_nbfm_demod_create(c);
+audio_demod_t* __real_audio_demod_create(audio_demod_mode_t, const audio_demod_config_t*);
+audio_demod_t* __wrap_audio_demod_create(audio_demod_mode_t mode, const audio_demod_config_t* c) {
+    return fail_demod_create ? NULL : __real_audio_demod_create(mode,c);
 }
 static size_t fail_calloc_count;
 static void* metadata_allocation;
@@ -303,13 +304,24 @@ int main(void) {
     tx.running = p.running = loopback.armed = loopback.active = false;
     for (int rate=2000000; rate<=4000000; rate*=2) {
         par.fs_rf = rate;
+        rx_params_t saved=par;
         assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)==0);
         assert(par.mode==FM_MODE_WBFM && p.demod.mode==FM_MODE_WBFM && !p.running);
+        assert(par.freq_hz==saved.freq_hz && par.pcm_dev==saved.pcm_dev &&
+               par.pcm_gain==saved.pcm_gain && par.deemph_tau_s==saved.deemph_tau_s &&
+               par.fs_rf==saved.fs_rf && par.fs_audio==saved.fs_audio &&
+               par.noise_squelch_disabled==saved.noise_squelch_disabled &&
+               par.carrier_squelch_enabled==saved.carrier_squelch_enabled);
+        assert(p.demod.pcm_gain==saved.pcm_gain && p.demod.deemph_tau==saved.deemph_tau_s);
+        assert(!audio_demod_capabilities(p.demod.dsp));
         rx_pipeline_set_squelch(&p,true,true);
         assert(atomic_load(&p.demod.squelch_flags)==RX_SQUELCH_CARRIER);
         assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)==0);
         assert(par.mode==FM_MODE_NBFM && p.demod.mode==FM_MODE_NBFM && !p.running);
         assert(atomic_load(&p.demod.squelch_flags)==RX_SQUELCH_NOISE);
+        assert(audio_demod_capabilities(p.demod.dsp)==AUDIO_DEMOD_CAP_NOISE_SQUELCH);
+        assert(par.freq_hz==saved.freq_hz && par.pcm_gain==saved.pcm_gain &&
+               par.deemph_tau_s==saved.deemph_tau_s && par.fs_rf==saved.fs_rf);
     }
     fail_calloc = true;
     assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)!=0);

@@ -36,7 +36,7 @@ typedef struct {
     bool noise_squelch_disabled; // zero/default enables noise squelch
     bool carrier_squelch_enabled; // zero/default disables carrier squelch
 
-    fm_demod_mode_t mode;       // zero/default is NBFM; selected at initialization
+    audio_demod_mode_t mode;       // zero/default is NBFM; selected at initialization
 
     // Fixed rates
     float  fs_rf;               // 4e6
@@ -48,7 +48,7 @@ typedef struct {
     rf10_fifo_t          rxq;       // IQ@4M → 10ms frames
     aud10_fifo_t         afifo;     // 10ms PCM for ALSA
     rx_reader_ctrl_st    rx_ctrl;
-    nbfm_demod_ctrl_t    demod;
+    audio_demod_ctrl_t    demod;
     audio_writer_ctrl_t  aw;
 
     // Threads

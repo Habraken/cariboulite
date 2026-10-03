@@ -1,22 +1,13 @@
 #pragma once
-#include <stddef.h>
-#include "iq16.h"
-#include "audio_format.h"
+#include "audio_demod.h"
 
-// Standalone DSP. No threads, device handles, queues or retained caller buffers.
-typedef struct nbfm_demod nbfm_demod_t;
-typedef enum { FM_MODE_NBFM = 0, FM_MODE_WBFM = 1 } fm_demod_mode_t;
-typedef struct {
-    unsigned rf_rate;       // exactly 2000000 or 4000000 Hz
-    unsigned audio_rate;    // exactly 48000 Hz
-    float deemph_tau;       // seconds; zero bypasses de-emphasis
-    float pcm_gain;         // scale filtered audio to signed-16-bit PCM
-} nbfm_demod_config_t;
-typedef struct {
-    size_t consumed;        // IQ pairs consumed
-    size_t produced;        // mono PCM samples written
-    int error;             // 0 or negative errno-style code
-} nbfm_demod_result_t;
+// Legacy FM names retained for existing callers.
+typedef audio_demod_t nbfm_demod_t;
+typedef audio_demod_mode_t fm_demod_mode_t;
+typedef audio_demod_config_t nbfm_demod_config_t;
+typedef audio_demod_result_t nbfm_demod_result_t;
+#define FM_MODE_NBFM AUDIO_DEMOD_NBFM
+#define FM_MODE_WBFM AUDIO_DEMOD_WBFM
 
 nbfm_demod_t* nbfm_demod_create(const nbfm_demod_config_t* config);
 // Mono broadcast FM, +/-75 kHz deviation. Shares the streaming/audio API.

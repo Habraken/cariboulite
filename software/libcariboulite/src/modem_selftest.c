@@ -37,7 +37,7 @@ void nbfm_modem_selftest(sys_st *sys)
     rf10_fifo_t rxq;
     rf10_fifo_init(&rxq, /*cap=*/128, /*drop_oldest_on_full=*/false);
 
-    nbfm_demod_ctrl_t dm = {
+    audio_demod_ctrl_t dm = {
         .active      = true,
         .fifo_in     = &rxq,
         .deemph_tau  = 50e-6f,      // or 75e-6f
@@ -76,22 +76,22 @@ void nbfm_modem_selftest(sys_st *sys)
     };
     dm.afifo_out = &afifo;
     dm.pcm_gain = 12000.0f;
-    nbfm_demod_config_t dsp_config = {4000000, 48000, dm.deemph_tau, dm.pcm_gain};
-    dm.dsp = nbfm_demod_create(&dsp_config);
+    audio_demod_config_t dsp_config = {4000000, 48000, dm.deemph_tau, dm.pcm_gain};
+    dm.dsp = audio_demod_create(AUDIO_DEMOD_NBFM, &dsp_config);
     pthread_t aw_th, demod_th;
     if (!dm.dsp || pthread_create(&aw_th, NULL, audio_writer_thread, &aw) != 0) {
-        nbfm_demod_destroy(dm.dsp);
+        audio_demod_destroy(dm.dsp);
         audio_sink_destroy(dm.sink);
         aud10_fifo_destroy(&afifo);
         rf10_fifo_destroy(&rxq);
         return;
     }
-    if (pthread_create(&demod_th, NULL, nbfm_demod_thread, &dm) != 0) {
+    if (pthread_create(&demod_th, NULL, audio_demod_thread, &dm) != 0) {
         aw.active = false;
         aud10_fifo_stop(&afifo);
         pthread_cancel(aw_th);
         pthread_join(aw_th, NULL);
-        nbfm_demod_destroy(dm.dsp);
+        audio_demod_destroy(dm.dsp);
         audio_sink_destroy(dm.sink);
         aud10_fifo_destroy(&afifo);
         rf10_fifo_destroy(&rxq);
@@ -123,7 +123,7 @@ void nbfm_modem_selftest(sys_st *sys)
         pthread_cancel(aw_th);
         pthread_join(aw_th, NULL);
         aud10_fifo_destroy(&afifo);
-        nbfm_demod_destroy(dm.dsp);
+        audio_demod_destroy(dm.dsp);
         audio_sink_destroy(dm.sink);
         rf10_fifo_destroy(&rxq);
         return;
@@ -180,7 +180,7 @@ void nbfm_modem_selftest(sys_st *sys)
     selftest_audio_cue(dm.sink, 2475.0f);
     usleep(250 * 1000); // wait a little so the tone doesn't get cut off
 
-    nbfm_demod_destroy(dm.dsp);
+    audio_demod_destroy(dm.dsp);
     audio_sink_destroy(dm.sink);
     aud10_fifo_destroy(&afifo);
     rf10_fifo_destroy(&rxq);

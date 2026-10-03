@@ -7,6 +7,7 @@
 #pragma GCC diagnostic pop
 #undef nbfm_demod_ctrl_t
 #undef nbfm_demod_thread
+#include "nbfm_demod.h"
 #include "demod_worker.h"
 #include <assert.h>
 #include <stdlib.h>

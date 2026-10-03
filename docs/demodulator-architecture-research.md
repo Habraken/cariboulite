@@ -438,6 +438,21 @@ The earlier speech-distortion observation points toward the USB/Jabra playback
 path, rather than the FM extraction, but its specific cause remains unconfirmed.
 Step 4 may proceed.
 
+Step 4 implementation (2026-10-03) introduces the neutral `audio_demod.h`
+factory/processing API and capability queries. RX worker, pipeline and self-test
+use neutral names; the existing public FM and internal worker names remain
+compatibility wrappers. Noise-squelch availability is capability-based. Menu
+mode-switch guards and saved preferences are preserved. Frozen-reference tests
+now exercise the neutral API, including invalid modes and capability reporting;
+existing offline tests continue to exercise the legacy API. All seven relevant
+software suites and both application/demo builds pass. Exact comparison covers
+460,728 PCM samples, raw taps and progress per strict/production compiler policy.
+Lifecycle checks cover preserved frequency/audio/rate/squelch settings, capability
+masking and restoration, failed factory cleanup, and TX/RX/armed/active-loopback
+mode-switch refusal. Jan accepted step 4 on 2026-10-04 following the physical checks and clean
+strong-station reception. The originally requested physical checks were: repeat NBFM TX/RX, WBFM RX and stopped-only mode
+switching, including refusal while TX/RX/loopback are active.
+
 For CW, generate keyed IQ with known transition times and messages. Test detector
 edge bias from filter delay/ringing separately from parser accuracy on ideal
 mark/space events. Include changing speeds, unequal hand-keyed durations,
@@ -494,3 +509,28 @@ The four physical A/B logs are archived with findings in
 Both builds show similar SMI read-timeout rates and low audio-queue levels;
 no application-side ALSA xruns or DSP errors were logged. The external playback
 bridge was not captured, and the cause of the reported distortion remains open.
+
+Step 4 physical follow-up: Jan reports passing NBFM TX/RX and streaming guards,
+but WBFM clipping-like noise on the same Pi headphone route/station as step 3,
+worse at 4 MS/s than 2 MS/s. Acceptance remains pending. The application log
+contains ten sampled ALSA XRUN states and low audio-queue levels; PCM clipping
+is not measured. See [step-4 evidence](baselines/20261003-fm-step4/README.md).
+
+Further step-4 investigation: the preserved step-2 build also produces noise
+on the headphone route, but its new log has no sampled XRUN state or error.
+Jan reports no external ALSA-bridge errors. Step-4a has three sampled XRUN
+states. Underruns alone do not explain the observations; loopback PCM clipping
+and playback comparison remain to be measured. Additional logs are archived
+with the step-4 evidence. No step-4 regression has been established.
+
+On 2026-10-04, Jan also reported the same distortion with CaribouLite through
+SDR++ server mode. This independent receive-path observation further weakens
+attribution to the custom FM refactoring; exact SDR++ settings and shared
+playback components remain unconfirmed. See the step-4 evidence notes.
+
+Step 4 accepted by Jan on 2026-10-04. NBFM TX/RX and streaming control guards
+passed; the stronger adjacent station produced clean audio, including through
+Jabra playback. Distortion on 96.2 MHz was also observed through SDR++ and is
+tracked as a reception-specific issue with an unconfirmed RF cause, rather than
+an established refactoring regression. Extended endurance duration was not
+separately supplied. Step 5 may proceed.

@@ -53,6 +53,11 @@ void __wrap_free(void* p) { if(p) { assert(live); --live; } __real_free(p); }
 int main(void)
 {
     size_t total = 0;
+    assert(!audio_demod_create((audio_demod_mode_t)99,NULL) && errno==EINVAL);
+    assert(!audio_demod_capabilities(NULL));
+    assert(!audio_demod_mode_capabilities((audio_demod_mode_t)99));
+    assert(audio_demod_mode_capabilities(AUDIO_DEMOD_NBFM)==AUDIO_DEMOD_CAP_NOISE_SQUELCH);
+    assert(!audio_demod_mode_capabilities(AUDIO_DEMOD_WBFM));
     for (unsigned rate=2000000; rate<=4000000; rate*=2) {
         size_t n=rate/5;
         iq16_t *iq=malloc(n*sizeof(*iq));
@@ -79,20 +84,21 @@ int main(void)
             nbfm_demod_config_t config={rate,48000,0,10000};
             legacy_nbfm_demod_config_t old_config={rate,48000,0,10000};
             fail_allocation=1;
-            assert(!(mode?wbfm_demod_create(&config):nbfm_demod_create(&config)));
+            assert(!(audio_demod_create(mode?AUDIO_DEMOD_WBFM:AUDIO_DEMOD_NBFM,&config)));
             assert(errno==ENOMEM && !live);
             fail_allocation=0;
             size_t initial_bytes=bytes;
-            nbfm_demod_t *a=mode?wbfm_demod_create(&config):nbfm_demod_create(&config);
+            audio_demod_t *a=audio_demod_create(mode?AUDIO_DEMOD_WBFM:AUDIO_DEMOD_NBFM,&config);
             size_t current_bytes=bytes-initial_bytes;
             initial_bytes=bytes;
             legacy_nbfm_demod_t *b=mode?legacy_wbfm_demod_create(&old_config):legacy_nbfm_demod_create(&old_config);
             assert(a && b);
+            assert(audio_demod_capabilities(a)==(mode?0u:AUDIO_DEMOD_CAP_NOISE_SQUELCH));
             size_t old_bytes=bytes-initial_bytes;
             double current_cpu=0,old_cpu=0,current_peak=0,old_peak=0;
             size_t created_allocations=allocations;
             for (int pass=0; pass<3; ++pass) {
-                nbfm_demod_reset(a); legacy_nbfm_demod_reset(b);
+                audio_demod_reset(a); legacy_nbfm_demod_reset(b);
                 size_t used=0, call=0;
                 while (used<n) {
                     size_t count=1+(call*7919)%10007;
@@ -101,17 +107,17 @@ int main(void)
                     int16_t pcm_a[128],pcm_b[128];
                     float raw_a[128],raw_b[128];
                     if (call==31 || call==97) {
-                        nbfm_demod_reset(a); legacy_nbfm_demod_reset(b);
+                        audio_demod_reset(a); legacy_nbfm_demod_reset(b);
                     }
                     if (call%23==0) {
                         float tau=call%3==0?0:call%3==1?50e-6f:75e-6f;
                         float gain=call%2?10000:1000000;
-                        assert(nbfm_demod_set_audio(a,tau,gain)==legacy_nbfm_demod_set_audio(b,tau,gain));
+                        assert(audio_demod_set_audio(a,tau,gain)==legacy_nbfm_demod_set_audio(b,tau,gain));
                     }
                     double correction=(pass-1)*0.0005;
                     int tap=call%2;
                     clock_t start=clock();
-                    nbfm_demod_result_t x=nbfm_demod_process_with_raw(a,iq+used,count,pcm_a,tap?raw_a:NULL,cap,correction);
+                    audio_demod_result_t x=audio_demod_process_with_raw(a,iq+used,count,pcm_a,tap?raw_a:NULL,cap,correction);
                     double elapsed=(double)(clock()-start)/CLOCKS_PER_SEC;
                     current_cpu+=elapsed;
                     if(elapsed>current_peak) current_peak=elapsed;
@@ -129,7 +135,7 @@ int main(void)
                     used+=x.consumed; total+=x.produced; ++call;
                 }
             }
-            nbfm_demod_destroy(a); legacy_nbfm_demod_destroy(b);
+            audio_demod_destroy(a); legacy_nbfm_demod_destroy(b);
             assert(!live);
             printf("scenario %d %s %u Hz: state bytes %zu (reference %zu), CPU %.3fs (reference %.3fs), max call %.3fms (reference %.3fms)\n",
                    scenario,mode?"WBFM":"NBFM",rate,current_bytes,old_bytes,current_cpu,old_cpu,1000*current_peak,1000*old_peak);

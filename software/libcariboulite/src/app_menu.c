@@ -6,6 +6,7 @@
 #  define _GNU_SOURCE
 #endif
 
+#include "audio_demod.h"
 #include <stdio.h>
 #include "cariboulite.h"
 #include "cariboulite_setup.h"
@@ -1031,7 +1032,7 @@ static int monitor_cycle_rx_mode(tx_pipeline_t* tx, rx_pipeline_t* rx,
     if (tx_pipeline_running(tx) || rx_pipeline_running(rx) ||
         loopback->armed || loopback->active) return -EBUSY;
     rx_params_t next = *par;
-    next.mode = par->mode == FM_MODE_NBFM ? FM_MODE_WBFM : FM_MODE_NBFM;
+    next.mode = par->mode == AUDIO_DEMOD_NBFM ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM;
     rx_pipeline_destroy(rx);
     if (rx_pipeline_init(rx, sys, &sys->radio_high, &next) != 0) return -1;
     *par = next;
@@ -1491,9 +1492,9 @@ void monitor_modem_status(sys_st *sys)
         if (srx.timeouts_get > 0)        printw("    NOTE: Demod timed out waiting for frames\n");
 
         printw("RX mode: %s  [M] cycle (TX/RX/loopback stopped); TX mode: NBFM\n",
-            rxpar.mode == FM_MODE_WBFM ? "WBFM mono" : "NBFM");
+            rxpar.mode == AUDIO_DEMOD_WBFM ? "WBFM mono" : "NBFM");
         printw("Squelch: [N] noise %s  [C] carrier %s  audio %s\n",
-            rxpar.mode == FM_MODE_WBFM ? "N/A (WBFM)" : rxpar.noise_squelch_disabled ? "OFF" : "ON",
+            rxpar.mode == AUDIO_DEMOD_WBFM ? "N/A (WBFM)" : rxpar.noise_squelch_disabled ? "OFF" : "ON",
             rxpar.carrier_squelch_enabled ? "ON" : "OFF",
             !rx_pipeline_running(&rxp) ? "IDLE" :
             rx_pipeline_squelch_open(&rxp) ? "OPEN" : "MUTED");
@@ -1513,7 +1514,7 @@ void monitor_modem_status(sys_st *sys)
             continue;
         }
         if (key == 'n' || key == 'N' || key == 'c' || key == 'C') {
-            if ((key == 'n' || key == 'N') && rxpar.mode == FM_MODE_WBFM) {
+            if ((key == 'n' || key == 'N') && rxpar.mode == AUDIO_DEMOD_WBFM) {
                 rate_notice = "Noise squelch is available in NBFM only; [C] controls carrier squelch.";
                 continue;
             }

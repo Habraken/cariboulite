@@ -874,3 +874,31 @@ one current consumer and are not extracted as shared operations in this step.
 Both helpers are internal headers, require no additional link inputs, and
 perform no allocation, device I/O or threading. Public formats, raw-tap
 location, correction limits, progress and buffer ownership are unchanged.
+
+## Neutral audio demodulator boundary (refactoring step 4)
+
+`audio_demod.h` defines the standalone IQ16-to-mono-S16 audio-mode API:
+`audio_demod_create(mode, config)`, reset, set_audio, process,
+process_with_raw, destroy and capability queries. Implemented modes are
+`AUDIO_DEMOD_NBFM` (default/zero) and `AUDIO_DEMOD_WBFM`. Unsupported mode
+creation returns NULL with errno EINVAL. Mode is immutable for a live instance.
+The existing rate, buffer, progress, correction and reset contracts are retained.
+This audio-only boundary does not claim to support digital/data output.
+
+The factory/compatibility implementation remains in `nbfm_demod.c`; compile
+it with both existing mode implementations. `nbfm_demod.h` keeps the old types,
+mode constants and functions for offline/legacy callers. Both names refer to
+the same opaque state; ownership and destruction rules are identical.
+`demod_worker.h` exposes `audio_demod_ctrl_t` and `audio_demod_thread`, with
+legacy worker aliases retained. RX and modem self-test use the neutral API.
+
+`AUDIO_DEMOD_CAP_NOISE_SQUELCH` identifies the NBFM raw-tap noise metric.
+WBFM reports no noise-squelch capability; the pipeline masks unsupported noise
+squelch at initialization and during control updates. Carrier squelch remains
+a radio-RSSI feature independent of this DSP capability. A null handle or
+unsupported mode reports zero capability bits.
+
+Menu mode switching still requires TX, RX and interface loopback to be stopped
+and unarmed. It recreates only RX, preserving saved frequency, audio controls,
+rates and squelch preferences; unsupported noise squelch is disabled while
+WBFM is selected and restored from preferences when returning to NBFM.

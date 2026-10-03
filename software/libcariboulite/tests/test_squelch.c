@@ -1,4 +1,5 @@
 #define _GNU_SOURCE
+#include "nbfm_demod.h"
 #include "noise_squelch.h"
 #include "carrier_squelch.h"
 #include "demod_worker.h"
