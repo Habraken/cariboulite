@@ -4,6 +4,16 @@ Recorded 2026-09-16 from Jan's backlog. This is a proposed implementation
 order, not a claim that the features below are complete. Original item numbers
 are retained for tracking. Update this document as work is verified.
 
+## Current branch milestone — 2026-10-04
+
+The accepted development work through FM refactoring step 4 is merged into
+`main` at `7da1ee0`. New receive-mode development starts on
+`dev-additional-modes`; the original `dev` branch is retained. NBFM TX/RX and
+mono WBFM RX are implemented. CW listening, AM and SSB are next in the
+[demodulator plan](docs/demodulator-architecture-research.md); they are not yet
+implemented modes. The completed FM extraction preserves signal behavior,
+legacy APIs, streaming guards and mode-specific squelch capabilities.
+
 ## Existing foundation
 
 - Hardware modules already live under `software/libcariboulite/src/`:

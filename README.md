@@ -23,6 +23,14 @@ So, if you intend to use CaribouLite on RPI5 please don't - it won't work. Why w
 
 A Pi 5 transport redesign was proposed historically, but no working implementation is established here. Display/camera connectors are separate from the 40-pin GPIO header. Feasibility and scope are tracked as [DOC-10](ROADMAP.md#documentation-validation-backlog).
 
+## Development fork status — 4 October 2026
+
+The accepted NBFM TX/RX, mono WBFM RX and FM refactoring work is now on
+`main`. Further receive modes are developed on `dev-additional-modes`, starting
+with CW listening, then AM and SSB; these modes remain planned. See the
+[development overview](docs/wiki/Home.md), [FM plan](docs/demodulator-architecture-research.md)
+and [interface reference](docs/audio-dsp-interfaces.md).
+
 # Getting Started & Installation
 
 For this development checkout, also read [additional notes](ADDITIONAL-README.md),

@@ -1,6 +1,11 @@
 # Demodulator architecture and reuse
 
-Date: 2026-09-20. Status: design recommendation, not an implemented refactor.
+Design recorded 2026-09-20; status updated 2026-10-04. Refactoring steps 1–4
+are implemented, physically accepted and merged into `main` at `7da1ee0`.
+Additional receive modes continue on `dev-additional-modes`, starting with CW
+listening in step 5; AM/SSB and later decoding/data modes remain planned.
+The analysis below describes the original design baseline; implemented contracts
+are recorded in [Audio/DSP interfaces](audio-dsp-interfaces.md).
 Code reviewed at `44fee8a`, including the mono WBFM implementation originally
 introduced in `e1ebd4c`.
 
