@@ -116,6 +116,14 @@ are explained, and mode/path changes leave the radio in a defined state.
 
 ### D. FPGA antenna/PTT/PA sequencer (item 6)
 
+Next firmware development test, recorded 2026-10-08: establish repeatable LVDS
+timing on the physically tested main firmware before the next sequencer
+integration attempt. The [LVDS Fmax test plan](docs/lvds-fmax-next-test-2026-10-08.md)
+records the default/CE2 comparison, DDR-pair staging proposal, behavioral and
+timing acceptance criteria, and the following PMOD integration sequence.
+
+- [ ] Complete and accept the LVDS baseline test before the next sequencer
+  integration test.
 - [ ] Specify board pin allocation, electrical polarity, external PA interface,
   PTT sources, timing constraints and host/FPGA responsibility before RTL work.
 - [ ] Implement explicit RX, TX preparation, TX active, TX shutdown and fault

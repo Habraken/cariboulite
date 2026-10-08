@@ -277,3 +277,9 @@ variables: Make does not track those external changes.
 `make clean` removes local generated synthesis/routing/bitstream/header files;
 it does not remove the copied library header. Preserve a validated image or
 use an isolated checkout before cleaning. See `tests/README.md` for checks.
+
+The next planned firmware development test is
+[LVDS Fmax improvement before sequencer integration](../docs/lvds-fmax-next-test-2026-10-08.md).
+It starts from the physically tested main firmware and defines isolated build,
+receive-behavior and physical acceptance checks before reintroducing the PMOD
+prototype. The proposed optimizations have not yet been implemented.
