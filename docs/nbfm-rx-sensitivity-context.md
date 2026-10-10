@@ -47,7 +47,7 @@ At 430.125 MHz on the full board, this path uses the HiF front-end mixer and
 RF24 at an IF near 2.495 GHz. The driver handles the conversion's IQ inversion.
 The direct RF09 antenna-path findings below describe the earlier S1G setup.
 
-## Successful listening test (2026-10-10)
+## Successful listening tests (2026-10-10)
 
 The test used the **S1G (RF09) channel at 1 MS/s**.
 
@@ -59,6 +59,11 @@ a successful on-air listening test and a reported improvement in intelligibility
 After switching the app back to **HiF (RF24)**, the user also confirmed
 **good reception at 1 MS/s**. Successful listening results are therefore
 recorded for both S1G/RF09 and HiF/RF24 with the new complex channel filter.
+
+Following the discriminator angle correction to full `atan2f`, the user
+confirmed a further **successful listening test on HiF (RF24) at 1 MS/s**.
+This records on-air listening acceptance of the corrected discriminator in
+that configuration.
 
 An RF input level, SINAD result and quantitative sensitivity gain were not
 recorded for these tests.
@@ -82,7 +87,7 @@ flowchart TD
 | Chip filtering and rate | IQ runs at **1, 2 or 4 MS/s**, initially 4 MS/s. The chip digital filter cutoff is configured to **half the sample rate**, much wider than NBFM. |
 | Transport | FPGA buffers and transfers samples without RX filtering. Software stores signed 13-bit values in 16-bit containers and assembles **10 ms IQ blocks**. |
 | Software IQ filtering | Third-order CIC reduces IQ to **200 kS/s**, then a **321-tap complex FIR** filters and decimates to **50 kS/s**. Passband **±6 kHz**; stopband starts at **±9 kHz**. |
-| FM detector | Normalizes IQ amplitude, calculates successive-sample phase differences, and uses an approximate angle function. Audio normalization assumes **±2.5 kHz deviation**. |
+| FM detector | Normalizes IQ amplitude and calculates successive-sample phase differences with full **`atan2f`**, returning zero for a zero IQ product. Audio normalization assumes **±2.5 kHz deviation**. |
 | Audio | Linear resampling to **48 kHz**, approximately **5 Hz DC rejection**, **50 µs de-emphasis**, a **first-order 3.2 kHz low-pass**, then PCM gain and clipping. Menu 14 defaults to PCM gain 8000. |
 | Squelch | Noise squelch defaults **ON**; carrier squelch defaults **OFF**. Enabled detectors must both permit audio. |
 
@@ -112,17 +117,20 @@ from **±9 kHz**, and the complete filter adds approximately **0.807 ms delay**.
 These are computed filter properties, not measured receiver sensitivity gains.
 See the [implementation, tests and limitations](nbfm-channel-filter.md).
 
-### 2. Correct the discriminator's angle calculation
+### 2. Discriminator angle correction (implemented)
 
-`fast_atan2f_small` behaves incorrectly for large phase changes: a true angle of
-**2 radians returns approximately 4.50 radians**. Weak signals and noise can
-produce these large changes. Comparing against full `atan2f` would establish its
-effect on noise, distortion and CPU load.
+The incorrect `fast_atan2f_small` approximation has been replaced by full
+`atan2f`, with a zero-product guard. The former calculation returned about
+4.50 radians for a true 2-radian phase difference. The corrected calculation
+handles the full circle and restores the wanted modulation's amplitude.
 
-The implementation is in
-[nbfm_demod_dsp.c](../software/libcariboulite/src/nbfm_demod_dsp.c). Correctness of
-the large-angle calculation is a source finding; its effect on measured receiver
-sensitivity remains to be established.
+Paired measurements on this Pi found an added **29.5–32.4 µs per 10 ms block**,
+or about **0.3 percentage points of one CPU core**. Complete standalone DSP
+CPU use is about **2.96%, 3.45% and 4.53%** at **1/2/4 MS/s**. The angle is
+calculated only at the post-filter **50 kS/s** rate. See the
+[correction, tests and reproducible CPU benchmark](nbfm-discriminator-angle.md).
+The user has confirmed successful listening after this correction on
+**HiF (RF24) at 1 MS/s**. Calibrated sensitivity measurements remain pending.
 
 ### 3. Test narrower chip bandwidth and controlled gain settings
 

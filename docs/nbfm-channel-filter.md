@@ -65,8 +65,9 @@ the convolution. Processing and reset allocate no memory.
 NBFM reset now clears **all** filter histories and decimator phases, including
 at a partial input interval. It is equivalent to a fresh receiver with the
 same configuration. The previous compatibility reset retained partial boxcar
-accumulators. Discriminator normalization, its angle approximation, audio
-filters and rate correction remain as before.
+accumulators. Discriminator normalization, audio filters and rate correction
+remain as before. The subsequent [angle correction](nbfm-discriminator-angle.md)
+replaces the old approximation with full `atan2f` and a zero-product guard.
 
 The noise-squelch thresholds remain 0.12/0.18 RMS. Channel filtering changes
 the discriminator's noise statistics, so they require physical re-evaluation.
@@ -112,10 +113,11 @@ reference comparisons. NBFM keeps worker framing/control checks against the
 frozen worker, while its intentionally changed PCM is validated using the new
 filter tests and independently segmented production instances.
 
-Validation passed with strict and production compiler flags. Production mean
+Initial filter validation, before the angle correction, passed with strict and
+production compiler flags. Production mean
 DSP CPU time per 10 ms RF block was **0.269/0.314/0.426 ms** at **1/2/4 MS/s**
 on this Raspberry Pi; this excludes the radio, FIFO and playback workers.
 The synthetic full-deviation 3 kHz test also reports approximately **23% raw-tap
 residual**, compared with about **21%** in the original receiver. The existing
-angle approximation and interpolation remain a separate audio-quality limit;
-this raw measurement is before voice/audio filtering and is not receiver SINAD.
+interpolation remains an audio-quality limit after the angle correction; this
+raw measurement is before voice/audio filtering and is not receiver SINAD.

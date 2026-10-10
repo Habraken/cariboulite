@@ -868,8 +868,10 @@ The legacy low-pass history evaluation is retained for both modes.
 
 `fm_discriminator.h` computes current IQ times conjugate(previous IQ), using
 the original float operation order. It owns no history or scaling. NBFM keeps
-its limiter/small-angle approximation and 2.5 kHz normalization; WBFM keeps
-full `atan2f` and 75 kHz normalization. Previous-IQ and reset policy remain
+its limiter and 2.5 kHz normalization; the subsequent discriminator correction
+uses full `atan2f` with a zero-product guard at 50 kS/s. WBFM keeps full `atan2f`
+and 75 kHz normalization. See the [angle accuracy and CPU measurements](nbfm-discriminator-angle.md).
+Previous-IQ and reset policy remain
 mode-owned, as do resampling and WBFM FIR design/convolution. Those FIRs have
 one current consumer and are not extracted as shared operations in this step.
 

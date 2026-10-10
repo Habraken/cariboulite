@@ -210,12 +210,13 @@ static void voice_and_blocker(unsigned rate)
             if (!scenario) { clean_amplitude=amplitude; clean_distortion=distortion; }
             printf("%u Hz: %.0f Hz voice, %+.0f Hz tuning, adjacent %.0f dB: amplitude %.4f, residual %.2f%%\n",
                 rate,frequency,offset,blocker?20*log10(blocker):0,amplitude,100*distortion);
-            assert(amplitude>0.75 && amplitude<1.15);
-            assert(fabs(amplitude/clean_amplitude-1)<0.10);
-            // The unchanged 50-to-48 kHz interpolation and fast angle
-            // approximation already leave 21% residual at 3 kHz in the frozen
-            // legacy receiver. Check the new filter preserves wanted audio and
-            // tuning/blocker immunity without claiming that limitation is fixed.
+            // A full-deviation tone must recover near unit amplitude. The old
+            // small-angle formula loses approximately 5% and fails this check.
+            assert(amplitude>0.97 && amplitude<1.03);
+            assert(fabs(amplitude/clean_amplitude-1)<0.01);
+            // The unchanged 50-to-48 kHz interpolation still contributes raw
+            // residual at 3 kHz. Check tuning/blocker immunity separately from
+            // the corrected discriminator's amplitude and quadrant accuracy.
             assert(distortion<(voice ? 0.25 : 0.06));
             assert(distortion<clean_distortion+0.015);
         }

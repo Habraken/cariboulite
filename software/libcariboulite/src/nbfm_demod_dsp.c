@@ -21,19 +21,6 @@ typedef struct nb_state {
     double phase48;
 } nb_state_t;
 
-// Ultra-fast small-angle atan2f approximation
-// Error < 0.005 rad for |y/x| < 0.3 (typical in NBFM discriminator)
-static inline float fast_atan2f_small(float y, float x)
-{
-    // approximate atan(y/x) ≈ y / (|x| + 0.28f*|y|)
-    float abs_y = fabsf(y);
-    float abs_x = fabsf(x);
-    float angle = y / (abs_x + 0.28f * abs_y + 1e-10f);
-    if (x < 0.0f)
-        angle = (y >= 0.0f ? (float)M_PI + angle : -((float)M_PI - angle));
-    return angle;
-}
-
 int nb_demod_set_audio(nbfm_demod_t* dsp, float tau, float gain)
 {
     nb_state_t* s = (nb_state_t*)dsp;
@@ -105,7 +92,7 @@ nbfm_demod_result_t nb_demod_process_with_raw(nbfm_demod_t* dsp,
         if (s->have_prev50) {
             float re, im;
             fm_conjugate_product(i50, q50, s->pi50, s->pq50, &re, &im);
-            const float dphi = fast_atan2f_small(im, re);
+            const float dphi = fm_discriminator_angle(im, re);
             y50 = dphi * s->K_norm;                   // normalize to ~±1 @ ±dev
         } else {
             s->have_prev50 = 1;
