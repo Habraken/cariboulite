@@ -34,7 +34,9 @@ with 127 indicating invalid, as specified in the
 [AT86RF215 datasheet, section 6.2.5.5](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-42415-WIRELESS-AT86RF215_Datasheet.pdf).
 These thresholds refer to the modem measurement, not calibrated power at the
 external connector or an SDRPlay reading; front-end losses and bandwidth matter.
-AGC configuration is unchanged.
+The squelch detectors do not change AGC configuration. The
+[NBFM RX profile](nbfm-rx-sensitivity-context.md#minimum-modem-rx-bandwidth-and-explicit-agc-2026-10-10)
+explicitly enables filtered AGC at each RX start.
 
 The NBFM [complex channel filter](nbfm-channel-filter.md) changes the RF noise
 reaching the discriminator. The existing 0.12/0.18 RMS thresholds remain in
