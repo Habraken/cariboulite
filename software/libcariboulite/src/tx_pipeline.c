@@ -47,27 +47,15 @@ static void* tx_writer_thread_func(void* arg)
     size_t quarter_samples = native_samples / 4;
     if (quarter_samples == 0) quarter_samples = 8192; // safe default if ioctl failed
 
-    // Arm TX state once, then just keep feeding
-    int tx_active_hw = 0;
-
     while (1) {
         pthread_testcancel();
         if (!ctrl->active) break;
 
         if (!nbfm_tx_active) {
-            if (tx_active_hw) {
-                caribou_smi_set_driver_streaming_state(smi, (smi_stream_state_en)0);
-                tx_active_hw = 0;
-            }
             // light idle: don't busy spin
             struct timespec ts = {0, 2000000}; // 2 ms
             nanosleep(&ts, NULL);
             continue;
-        }
-
-        if (!tx_active_hw) {
-            caribou_smi_set_driver_streaming_state(smi, (smi_stream_state_en)3); // TX
-            tx_active_hw = 1;
         }
 
         // Get one 10 ms frame at the selected RF rate.
@@ -93,15 +81,33 @@ static void* tx_writer_thread_func(void* arg)
             caribou_smi_sample_complex_int16 *p =
                 (caribou_smi_sample_complex_int16 *)(frm.data + off);
 
+            // Lifecycle calls own the shared stream. A poll may complete after
+            // stop(), so recheck TX under the same lock used for the handoff.
+            // The write also uses cancellation points and shared SMI buffers.
+            int cancel_state;
+            pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cancel_state);
+            HW_LOCK();
+            if (!ctrl->active || !nbfm_tx_active) {
+                HW_UNLOCK();
+                pthread_setcancelstate(cancel_state, NULL);
+                break;
+            }
             int sent = caribou_smi_write_samples(smi, ch, p, (int)todo);  // returns *samples*
+            int write_error = errno;
+            if (sent < 0 && write_error != EAGAIN && write_error != EWOULDBLOCK) {
+                nbfm_tx_active = false;
+                caribou_smi_set_driver_streaming_state(smi, smi_stream_idle);
+            }
+            HW_UNLOCK();
+            pthread_setcancelstate(cancel_state, NULL);
+
             if (sent > 0) {
                 off += (size_t)sent;
-            } else if (sent == 0 || (sent < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))) {
+            } else if (sent == 0 || (sent < 0 && (write_error == EAGAIN || write_error == EWOULDBLOCK))) {
                 // transient backpressure -> try again
                 continue;
             } else {
-                // hard error: drop to idle cleanly
-                nbfm_tx_active = false;
+                // The hard error was shut down while holding the stream lock.
                 break;
             }
         }
@@ -109,12 +115,6 @@ static void* tx_writer_thread_func(void* arg)
             atomic_store(&ctrl->written_sequence, frm.tx_sequence);
     }
 
-    if (tx_active_hw) {
-        caribou_smi_set_driver_streaming_state(smi, (smi_stream_state_en)0);
-        HW_LOCK();
-        cariboulite_radio_activate_channel(ctrl->radio, cariboulite_channel_dir_tx, false);
-        HW_UNLOCK();
-    }
     return NULL;
 }
 
@@ -389,6 +389,7 @@ void tx_pipeline_stop(tx_pipeline_t* p)
     nbfm_tx_active = false;
     __sync_synchronize();
 
+    // Wait for any in-flight writer call before releasing the stream to RX.
     HW_LOCK();
     caribou_smi_set_driver_streaming_state(&p->sys->smi, (smi_stream_state_en)0); // idle
     cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_tx, false);

@@ -130,6 +130,34 @@ static unsigned fetched, write_calls, poll_calls, completed;
 static size_t accepted;
 static bool hard_failure, midframe_stop;
 static uint64_t frame_sequence;
+typedef enum { HANDOFF_NONE, HANDOFF_FIFO, HANDOFF_POLL, HANDOFF_WRITE } handoff_t;
+static handoff_t handoff;
+static smi_stream_state_en stream_state;
+static bool handoff_entered, handoff_release, shutdown_started, shutdown_done;
+static unsigned writes_after_rx;
+
+static void handoff_pause(void)
+{
+    pthread_mutex_lock(&gate_lock);
+    handoff_entered=true;
+    pthread_cond_broadcast(&gate_condition);
+    while (!handoff_release) pthread_cond_wait(&gate_condition,&gate_lock);
+    pthread_mutex_unlock(&gate_lock);
+}
+static void await_flag(const bool* flag)
+{
+    struct timespec deadline;
+    assert(!clock_gettime(CLOCK_REALTIME,&deadline)); deadline.tv_sec+=2;
+    while (!*flag)
+        assert(!pthread_cond_timedwait(&gate_condition,&gate_lock,&deadline));
+}
+int __wrap_nanosleep(const struct timespec* request, struct timespec* remain)
+{
+    (void)request; (void)remain;
+    // Terminate after the writer reaches its idle path, then check any exit work.
+    if (handoff!=HANDOFF_NONE) writer->active=false;
+    return 0;
+}
 static int16_t marker_i(uint64_t sequence, size_t sample)
 { return (int16_t)((sequence*3+sample*23)%30000-15000); }
 static int16_t marker_q(uint64_t sequence, size_t sample)
@@ -138,6 +166,7 @@ static int16_t marker_q(uint64_t sequence, size_t sample)
 bool rf10_fifo_get(rf10_fifo_t* fifo, rf10_frame_t* frame, int timeout)
 {
     assert(fifo==writer->fifo && timeout==-1);
+    if (handoff==HANDOFF_FIFO && !fetched) handoff_pause();
     if (fetched) {
         assert(accepted==writer->frame_samples);
         assert(atomic_load(&writer->written_sequence)==frame_sequence);
@@ -154,7 +183,13 @@ bool rf10_fifo_get(rf10_fifo_t* fifo, rf10_frame_t* frame, int timeout)
 size_t caribou_smi_get_native_batch_samples(caribou_smi_st* smi)
 { (void)smi; return 8192; }
 int caribou_smi_set_driver_streaming_state(caribou_smi_st* smi, smi_stream_state_en state)
-{ (void)smi; assert(state==smi_stream_idle || state==smi_stream_tx_channel); return 0; }
+{
+    assert(smi==&writer->radio->sys->smi);
+    assert(state==smi_stream_idle || state==smi_stream_tx_channel ||
+           state==smi_stream_rx_channel_0);
+    stream_state=state;
+    return 0;
+}
 int cariboulite_radio_activate_channel(cariboulite_radio_state_st* radio,
                                       cariboulite_channel_dir_en direction, bool active)
 { assert(radio==writer->radio && direction==cariboulite_channel_dir_tx && !active); return 0; }
@@ -162,6 +197,14 @@ int __wrap_poll(struct pollfd* fds, nfds_t count, int timeout)
 {
     assert(count==1 && timeout==10 && fds[0].events==POLLOUT);
     ++poll_calls;
+    if (handoff==HANDOFF_POLL && poll_calls==1) handoff_pause();
+    if (handoff==HANDOFF_WRITE && poll_calls>1) {
+        // The second poll occurs outside HW_LOCK, allowing shutdown to finish
+        // before the worker could retry its partially accepted first write.
+        pthread_mutex_lock(&gate_lock);
+        await_flag(&shutdown_done);
+        pthread_mutex_unlock(&gate_lock);
+    }
     fds[0].revents=poll_calls%13==0?0:POLLOUT;
     return poll_calls%11==0?0:1;
 }
@@ -169,6 +212,9 @@ int caribou_smi_write_samples(caribou_smi_st* smi, caribou_smi_channel_en channe
                              const caribou_smi_sample_complex_int16* samples, int count)
 {
     assert(smi==&writer->radio->sys->smi && channel==caribou_smi_channel_900);
+    if (handoff!=HANDOFF_NONE && stream_state==smi_stream_rx_channel_0)
+        ++writes_after_rx;
+    assert(stream_state==smi_stream_tx_channel);
     assert(atomic_load(&writer->written_sequence)==frame_sequence-1);
     size_t expected=writer->frame_samples-accepted;
     if (expected>2048) expected=2048; // Native getter returns samples; quarter=8192/4.
@@ -178,6 +224,7 @@ int caribou_smi_write_samples(caribou_smi_st* smi, caribou_smi_channel_en channe
         assert(samples[i].q==marker_q(frame_sequence,accepted+(size_t)i));
     }
     ++write_calls;
+    if (handoff==HANDOFF_WRITE && write_calls==1) handoff_pause();
     if (write_calls==2 && hard_failure) {
         errno=EIO; writer->active=false; return -1;
     }
@@ -202,6 +249,7 @@ static void writer_case(unsigned rate, bool fail, bool stop)
     atomic_init(&tx.written_sequence,20);
     writer=&tx;
     fetched=write_calls=poll_calls=completed=0; accepted=0;
+    handoff=HANDOFF_NONE; stream_state=smi_stream_tx_channel;
     hard_failure=fail; midframe_stop=stop; nbfm_tx_active=true;
     tx_writer_thread_func(&tx);
     if (fail || stop) {
@@ -214,6 +262,67 @@ static void writer_case(unsigned rate, bool fail, bool stop)
         assert(atomic_load(&tx.written_sequence)==23);
     }
 }
+static void stop_then_start_rx(void)
+{
+    // Simulate stop() clearing TX before its locked shutdown, then RX arming.
+    nbfm_tx_active=false;
+    HW_LOCK();
+    caribou_smi_set_driver_streaming_state(&writer->radio->sys->smi,smi_stream_idle);
+    caribou_smi_set_driver_streaming_state(&writer->radio->sys->smi,smi_stream_rx_channel_0);
+    HW_UNLOCK();
+}
+static void* shutdown_thread(void* unused)
+{
+    (void)unused;
+    pthread_mutex_lock(&gate_lock);
+    shutdown_started=true;
+    pthread_cond_broadcast(&gate_condition);
+    pthread_mutex_unlock(&gate_lock);
+    stop_then_start_rx();
+    pthread_mutex_lock(&gate_lock);
+    shutdown_done=true;
+    pthread_cond_broadcast(&gate_condition);
+    pthread_mutex_unlock(&gate_lock);
+    return NULL;
+}
+static void handoff_case(unsigned rate, handoff_t at)
+{
+    sys_st sys={0}; rf10_fifo_t fifo={0};
+    sys.smi.filedesc=123456;
+    sys.radio_low.sys=&sys;
+    tx_writer_ctrl_st tx={ .active=true, .radio=&sys.radio_low,
+                          .frame_samples=rate/100, .fifo=&fifo };
+    atomic_init(&tx.written_sequence,20);
+    writer=&tx;
+    fetched=write_calls=poll_calls=completed=0; accepted=0;
+    hard_failure=midframe_stop=false; nbfm_tx_active=true;
+    handoff=at; stream_state=smi_stream_tx_channel; writes_after_rx=0;
+    handoff_entered=handoff_release=shutdown_started=shutdown_done=false;
+    pthread_t thread, stopper;
+    assert(!pthread_create(&thread,NULL,tx_writer_thread_func,&tx));
+    pthread_mutex_lock(&gate_lock);
+    await_flag(&handoff_entered);
+    if (at==HANDOFF_WRITE) {
+        // A suspended write must hold HW_LOCK so mode changes cannot overtake it.
+        int busy=pthread_mutex_trylock(&g_hw_lock);
+        if (!busy) pthread_mutex_unlock(&g_hw_lock);
+        assert(busy==EBUSY);
+        assert(!pthread_create(&stopper,NULL,shutdown_thread,NULL));
+        await_flag(&shutdown_started);
+        assert(!shutdown_done && stream_state==smi_stream_tx_channel);
+    } else {
+        stop_then_start_rx();
+    }
+    handoff_release=true;
+    pthread_cond_broadcast(&gate_condition);
+    pthread_mutex_unlock(&gate_lock);
+    if (at==HANDOFF_WRITE) assert(!pthread_join(stopper,NULL));
+    assert(!pthread_join(thread,NULL));
+    assert(stream_state==smi_stream_rx_channel_0 && !writes_after_rx);
+    assert(write_calls==(at==HANDOFF_WRITE?1u:0u));
+    assert(atomic_load(&tx.written_sequence)==20);
+    handoff=HANDOFF_NONE;
+}
 int main(void)
 {
     for (unsigned rate=1000000; rate<=4000000; rate*=2) {
@@ -224,8 +333,12 @@ int main(void)
         writer_case(rate,false,false);
         writer_case(rate,true,false);
         writer_case(rate,false,true);
+        handoff_case(rate,HANDOFF_FIFO);
+        handoff_case(rate,HANDOFF_POLL);
+        handoff_case(rate,HANDOFF_WRITE);
         printf("PASS: %u MS/s: blocked/failed enqueue preserves injection progress, "
-               "padding stays silent, partial writes preserve markers, complete-frame acknowledgment\n",
+               "padding stays silent, partial writes preserve markers, complete-frame acknowledgment, "
+               "TX-to-RX handoff preserves RX after delayed/active writes and writer exit\n",
                rate/1000000);
     }
 }
