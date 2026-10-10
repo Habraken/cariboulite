@@ -1,4 +1,5 @@
-/* Frozen pre-extraction worker is the numerical oracle, not a rewritten model. */
+/* The frozen worker checks queue framing and clock control, not obsolete
+ * boxcar PCM. Independent current workers check deterministic filtered PCM. */
 #define nbfm_demod_ctrl_t legacy_demod_ctrl_t
 #define nbfm_demod_thread legacy_demod_thread
 #pragma GCC diagnostic push
@@ -95,22 +96,30 @@ static void compare_workers(void)
         .pcm_gain=8000,.deemph_tau=50e-6f,.prime_blocks_10ms=20};
     nbfm_demod_config_t config={rate,48000,50e-6f,8000};
     now.dsp=nbfm_demod_create(&config); assert(now.dsp);
+    nbfm_demod_ctrl_t repeat=now;
+    repeat.dsp=nbfm_demod_create(&config); assert(repeat.dsp);
     frames=captured=put_count=depth_calls=0; capture=before; legacy=&old; current=NULL;
     memset(old_puts,0,sizeof(old_puts));
     legacy_demod_thread(&old);
     size_t expected=captured, expected_depth_calls=depth_calls;
-    frames=captured=put_count=depth_calls=0; capture=after; legacy=NULL; current=&now;
+    frames=captured=put_count=depth_calls=0; capture=before; legacy=NULL; current=&now;
     nbfm_demod_thread(&now);
+    assert(expected==captured && expected_depth_calls==depth_calls);
+    assert(old.pcm_total_frames==now.pcm_total_frames && old.priming==now.priming);
+    assert(now.pcm_gain==1000000 && now.deemph_tau==0);
+    frames=captured=put_count=depth_calls=0; capture=after; current=&repeat;
+    nbfm_demod_thread(&repeat);
     assert(expected==captured && expected_depth_calls==depth_calls);
     for(size_t i=0;i<captured;++i) {
         if(before[i]!=after[i]) {
-            fprintf(stderr,"PCM mismatch at %zu: %d != %d\n",i,before[i],after[i]);
+            fprintf(stderr,"Independent worker PCM mismatch at %zu: %d != %d\n",i,before[i],after[i]);
             abort();
         }
     }
-    assert(old.pcm_total_frames==now.pcm_total_frames && old.priming==now.priming);
+    assert(now.pcm_total_frames==repeat.pcm_total_frames && now.priming==repeat.priming);
     nbfm_demod_destroy(now.dsp);
-    printf("PASS: %zu Hz, resets=%d, %zu PCM samples identical to pre-extraction worker\n",
+    nbfm_demod_destroy(repeat.dsp);
+    printf("PASS: %zu Hz, resets=%d, legacy queue framing and %zu deterministic filtered PCM samples\n",
         rate,reset_case,captured);
 }
 static void compare_blocks(double correction)
@@ -119,7 +128,7 @@ static void compare_blocks(double correction)
     nbfm_demod_t* a=nbfm_demod_create(&config); assert(a);
     nbfm_demod_t* b=nbfm_demod_create(&config); assert(b);
     size_t total=0;
-    // Reset at a non-decimation boundary to exercise preservation of partial I&D.
+    // Reset at a non-decimation boundary to exercise clearing partial filters.
     size_t cuts[]={13,rate/100-13,rate/100};
     for(size_t part=0;part<3;++part) {
         if(part==1) { nbfm_demod_reset(a); nbfm_demod_reset(b); }

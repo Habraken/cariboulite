@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare current FM DSP with the frozen pre-refactor implementation."""
+"""Check exact WBFM frozen PCM and filtered NBFM streaming/API invariants."""
 from pathlib import Path
 import subprocess
 import tempfile

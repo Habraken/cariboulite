@@ -1,6 +1,7 @@
 #include "fm_demod_internal.h"
 #include "fm_audio.h"
 #include "fm_discriminator.h"
+#include "nbfm_channel_filter.h"
 #include "math_compat.h"
 #include <errno.h>
 #include <math.h>
@@ -10,10 +11,9 @@
 typedef struct nb_state {
     nbfm_demod_t base;
     nbfm_demod_config_t config;
-    int D1, D2, use_limiter;
+    int use_limiter;
     float K_norm;
-    float ai1, aq1, ai2, aq2;
-    int cnt1, cnt2;
+    nbfm_channel_filter_t channel;
     float pi50, pq50;
     int have_prev50;
     fm_audio_state_t audio;
@@ -56,8 +56,7 @@ nbfm_demod_t* nb_demod_create(const nbfm_demod_config_t* config)
     if (!s) return NULL;
     s->base.mode = FM_MODE_NBFM;
     s->config = *config;
-    s->D1 = config->rf_rate / 200000;
-    s->D2 = 4;
+    nbfm_channel_filter_init(&s->channel, config->rf_rate);
     s->use_limiter = 1;
     s->K_norm = 50000.0f / (2.0f * (float)M_PI * NBFM_DEFAULT_DEVIATION_HZ);
     fm_audio_init(&s->audio);
@@ -67,6 +66,7 @@ void nb_demod_reset(nbfm_demod_t* dsp)
 {
     nb_state_t* s = (nb_state_t*)dsp;
     if (!s) return;
+    nbfm_channel_filter_reset(&s->channel);
     s->pi50 = s->pq50 = 0.0f;
     s->have_prev50 = 0;
     fm_audio_reset(&s->audio);
@@ -88,25 +88,9 @@ nbfm_demod_result_t nb_demod_process_with_raw(nbfm_demod_t* dsp,
     for (size_t n = 0; n < count && result.produced < capacity; ++n) {
         ++result.consumed;
         float y50 = 0.0f;
-        // --- accumulate at the configured RF rate (stage-1) ---
-        s->ai1 += (float)input[n].i;
-        s->aq1 += (float)input[n].q;
-        if (++s->cnt1 != s->D1) continue;
-
-        // boxcar avg #1
-        float i1 = s->ai1 / (float)s->D1;
-        float q1 = s->aq1 / (float)s->D1;
-        s->ai1 = s->aq1 = 0.0f; s->cnt1 = 0;
-
-        // --- accumulate @ 200k (stage-2 to 50k) ---
-        s->ai2 += i1;
-        s->aq2 += q1;
-        if (++s->cnt2 != s->D2) continue;
-
-        // boxcar avg #2 -> 50 kS/s complex sample
-        float i50 = s->ai2 / (float)s->D2;
-        float q50 = s->aq2 / (float)s->D2;
-        s->ai2 = s->aq2 = 0.0f; s->cnt2 = 0;
+        float i50, q50;
+        if (!nbfm_channel_filter_push(&s->channel, input[n], &i50, &q50))
+            continue;
 
         // --- limiter (unit vector) ---
         if (s->use_limiter) {

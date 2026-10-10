@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Compare the extracted DSP/worker with a frozen pre-extraction implementation."""
+"""Check NBFM worker framing, deterministic PCM and streaming equivalence.
+
+The frozen worker remains a queue-framing oracle; its boxcar PCM intentionally
+differs from the production complex channel filter.
+"""
 from pathlib import Path
 import subprocess
 import tempfile

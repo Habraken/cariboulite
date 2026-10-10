@@ -32,12 +32,20 @@ The user is investigating weak-signal reception in the **menu 14 NBFM receiver
 at 430.125 MHz**. The transmitter's actual FM deviation has not been confirmed;
 the current receiver normalizes discriminator output for **±2.5 kHz deviation**.
 
-The clearest software improvement candidate is **better channel filtering before
-FM demodulation**. The existing averaging stages admit considerably more noise
-and adjacent-channel energy than a typical NBFM signal needs. The findings below
-come from source/schematic inspection and filter calculations. Sensitivity gains
-have not been measured, and this note records investigation context rather than
-an implemented change.
+The first software improvement, **complex channel filtering before FM
+demodulation**, is now implemented with a **±6 kHz passband** and stopband from
+**±9 kHz**. See the [filter design and checks](nbfm-channel-filter.md). The
+remaining findings come from source/schematic inspection and calculations.
+Antenna-port sensitivity gains have not been measured.
+
+## Successful listening test (2026-10-10)
+
+Following implementation of the complex channel filter, the user reported
+clearly hearing the repeater's scheduled transmission and understanding its
+message. The user described reception as a definite improvement. This records
+a successful on-air listening test and a reported improvement in intelligibility.
+An RF input level, SINAD result and quantitative sensitivity gain were not
+recorded for this test.
 
 ## RX chain
 
@@ -47,7 +55,7 @@ flowchart TD
     B["AT86RF215 RF09: LNA → low-IF mixer → analog filter"]
     C["ADC → chip digital filtering → 13-bit IQ"]
     D["FPGA FIFO → SMI / DMA → software RX queue"]
-    E["IQ averaging → limiter → FM discriminator"]
+    E["CIC anti-alias filter → complex channel FIR → limiter → FM discriminator"]
     F["48 kHz audio → audio filters → squelch → ALSA"]
     A --> B --> C --> D --> E --> F
 ```
@@ -57,7 +65,7 @@ flowchart TD
 | RF frontend | Direct RF09/S1G path. Menu 14 selects **2 MHz analog bandwidth**. The board's wideband amplifier and mixer belong to the other receive path. |
 | Chip filtering and rate | IQ runs at **1, 2 or 4 MS/s**, initially 4 MS/s. The chip digital filter cutoff is configured to **half the sample rate**, much wider than NBFM. |
 | Transport | FPGA buffers and transfers samples without RX filtering. Software stores signed 13-bit values in 16-bit containers and assembles **10 ms IQ blocks**. |
-| Software IQ filtering | Two rectangular averages reduce IQ to **200 kS/s, then 50 kS/s**. There is no sharp NBFM channel filter. |
+| Software IQ filtering | Third-order CIC reduces IQ to **200 kS/s**, then a **321-tap complex FIR** filters and decimates to **50 kS/s**. Passband **±6 kHz**; stopband starts at **±9 kHz**. |
 | FM detector | Normalizes IQ amplitude, calculates successive-sample phase differences, and uses an approximate angle function. Audio normalization assumes **±2.5 kHz deviation**. |
 | Audio | Linear resampling to **48 kHz**, approximately **5 Hz DC rejection**, **50 µs de-emphasis**, a **first-order 3.2 kHz low-pass**, then PCM gain and clipping. Menu 14 defaults to PCM gain 8000. |
 | Squelch | Noise squelch defaults **ON**; carrier squelch defaults **OFF**. Enabled detectors must both permit audio. |
@@ -72,27 +80,21 @@ The relevant source files are
 
 ## Improvement candidates
 
-### 1. Replace the averaging decimators with proper channel filtering
+### 1. Complex channel filtering (implemented)
 
-The two averages are mathematically equivalent to one rectangular average of
+The original two averages were mathematically equivalent to one rectangular average of
 `RF_rate / 50000` consecutive input samples. Calculating its response gives a
 −3 dB point around **±22 kHz**, with a first zero at 50 kHz. At offsets of
 **12.5 and 25 kHz**, attenuation is only approximately **0.9 and 3.9 dB**,
 respectively, excluding chip filtering.
 
-Noise and neighbouring signals therefore reach the nonlinear FM detector. Audio
-filtering after demodulation cannot undo their effect on that detector.
-
-For **±2.5 kHz deviation** and approximately **3 kHz voice bandwidth**, a complex
-channel-filter passband around **±5.5–6 kHz** is a reasonable starting point,
-with allowance for tuning error. Confirm the actual modulation before selecting
-the filter. Use staged FIR filtering with adequate rejection before each
-decimation; adding a narrow filter only after the existing decimation cannot
-remove interference that has already aliased into the wanted channel.
-
-This is a proposed experiment, not a measured sensitivity improvement. See the
-[current NBFM DSP](../software/libcariboulite/src/nbfm_demod_dsp.c) and GNU Radio's
-[channel-filter description](https://wiki.gnuradio.org/index.php/Frequency_Xlating_FIR_Filter).
+The new CIC/FIR chain filters before both rate reductions and before the
+nonlinear FM detector. For **±2.5 kHz deviation** and **3 kHz voice bandwidth**,
+its **±6 kHz** passband provides about **±500 Hz tuning margin** beyond the
+5.5 kHz occupied-band estimate. The FIR reaches at least **76.58 dB attenuation**
+from **±9 kHz**, and the complete filter adds approximately **0.807 ms delay**.
+These are computed filter properties, not measured receiver sensitivity gains.
+See the [implementation, tests and limitations](nbfm-channel-filter.md).
 
 ### 2. Correct the discriminator's angle calculation
 

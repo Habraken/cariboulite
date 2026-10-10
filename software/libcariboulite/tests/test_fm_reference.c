@@ -58,18 +58,23 @@ int main(void)
     assert(!audio_demod_mode_capabilities((audio_demod_mode_t)99));
     assert(audio_demod_mode_capabilities(AUDIO_DEMOD_NBFM)==AUDIO_DEMOD_CAP_NOISE_SQUELCH);
     assert(!audio_demod_mode_capabilities(AUDIO_DEMOD_WBFM));
-    for (unsigned rate=2000000; rate<=4000000; rate*=2) {
+    for (unsigned rate=1000000; rate<=4000000; rate*=2) {
         size_t n=rate/5;
         iq16_t *iq=malloc(n*sizeof(*iq));
         assert(iq);
         // Include weak/noisy RF and silence, not only clean synthetic FM.
         for (int scenario=0; scenario<4; ++scenario) {
+        for (int mode=0; mode<2; ++mode) {
+        // The immutable WBFM fixture supports 2/4 MS/s. NBFM additionally
+        // verifies the 1 MS/s production path against a segmented instance.
+        if(mode && rate==1000000) continue;
         unsigned rng=0x12345678;
         double phase=0;
         for (size_t i=0; i<n; ++i) {
             double t=(double)i/rate;
-            phase=remainder(phase+2*M_PI*(13000+75000*sin(2*M_PI*1000*t)
-                  +7500*sin(2*M_PI*19000*t))/rate,2*M_PI);
+            phase=remainder(phase+2*M_PI*((mode?13000:1000)
+                  +(mode?75000:2500)*sin(2*M_PI*1000*t)
+                  +(mode?7500:250)*sin(2*M_PI*(mode?19000:2700)*t))/rate,2*M_PI);
             double amplitude=scenario==1?1200:12000;
             rng=rng*1664525u+1013904223u;
             double ni=(double)(rng>>16)-32768;
@@ -80,7 +85,6 @@ int main(void)
             if(scenario==2) iq[i]=(iq16_t){(int16_t)ni,(int16_t)nq};
             if(scenario==3 || (scenario==1 && i%10000<80)) iq[i]=(iq16_t){0,0};
         }
-        for (int mode=0; mode<2; ++mode) {
             nbfm_demod_config_t config={rate,48000,0,10000};
             legacy_nbfm_demod_config_t old_config={rate,48000,0,10000};
             fail_allocation=1;
@@ -91,14 +95,19 @@ int main(void)
             audio_demod_t *a=audio_demod_create(mode?AUDIO_DEMOD_WBFM:AUDIO_DEMOD_NBFM,&config);
             size_t current_bytes=bytes-initial_bytes;
             initial_bytes=bytes;
-            legacy_nbfm_demod_t *b=mode?legacy_wbfm_demod_create(&old_config):legacy_nbfm_demod_create(&old_config);
-            assert(a && b);
+            // NBFM intentionally changed its channel response and cold reset.
+            // Compare a second current instance using different chunk sizes;
+            // the frozen numerical oracle continues to apply only to WBFM.
+            legacy_nbfm_demod_t *b=mode?legacy_wbfm_demod_create(&old_config):NULL;
+            audio_demod_t *peer=mode?NULL:audio_demod_create(AUDIO_DEMOD_NBFM,&config);
+            assert(a && (mode?b!=NULL:peer!=NULL));
             assert(audio_demod_capabilities(a)==(mode?0u:AUDIO_DEMOD_CAP_NOISE_SQUELCH));
             size_t old_bytes=bytes-initial_bytes;
             double current_cpu=0,old_cpu=0,current_peak=0,old_peak=0;
             size_t created_allocations=allocations;
             for (int pass=0; pass<3; ++pass) {
-                audio_demod_reset(a); legacy_nbfm_demod_reset(b);
+                audio_demod_reset(a);
+                if(mode) legacy_nbfm_demod_reset(b); else audio_demod_reset(peer);
                 size_t used=0, call=0;
                 while (used<n) {
                     size_t count=1+(call*7919)%10007;
@@ -107,12 +116,14 @@ int main(void)
                     int16_t pcm_a[128],pcm_b[128];
                     float raw_a[128],raw_b[128];
                     if (call==31 || call==97) {
-                        audio_demod_reset(a); legacy_nbfm_demod_reset(b);
+                        audio_demod_reset(a);
+                        if(mode) legacy_nbfm_demod_reset(b); else audio_demod_reset(peer);
                     }
                     if (call%23==0) {
                         float tau=call%3==0?0:call%3==1?50e-6f:75e-6f;
                         float gain=call%2?10000:1000000;
-                        assert(audio_demod_set_audio(a,tau,gain)==legacy_nbfm_demod_set_audio(b,tau,gain));
+                        int expected=mode?legacy_nbfm_demod_set_audio(b,tau,gain):audio_demod_set_audio(peer,tau,gain);
+                        assert(audio_demod_set_audio(a,tau,gain)==expected);
                     }
                     double correction=(pass-1)*0.0005;
                     int tap=call%2;
@@ -122,7 +133,32 @@ int main(void)
                     current_cpu+=elapsed;
                     if(elapsed>current_peak) current_peak=elapsed;
                     start=clock();
-                    legacy_nbfm_demod_result_t y=legacy_nbfm_demod_process_with_raw(b,iq+used,count,pcm_b,tap?raw_b:NULL,cap,correction);
+                    audio_demod_result_t y={0};
+                    if(mode) {
+                        legacy_nbfm_demod_result_t old=legacy_nbfm_demod_process_with_raw(b,iq+used,count,pcm_b,tap?raw_b:NULL,cap,correction);
+                        y=(audio_demod_result_t){old.consumed,old.produced,old.error};
+                    } else if(!cap) {
+                        y=audio_demod_process_with_raw(peer,iq+used,count,pcm_b,tap?raw_b:NULL,0,correction);
+                    } else {
+                        const size_t chunks[]={17,113,3,1009};
+                        size_t part=0;
+                        while(y.consumed<x.consumed) {
+                            size_t chunk=chunks[(call+part)%4];
+                            if(chunk>x.consumed-y.consumed) chunk=x.consumed-y.consumed;
+                            size_t room=x.produced-y.produced;
+                            // Zero-output spans still consume input. Give them
+                            // capacity, then assert that no extra sample appears.
+                            if(!room) room=1;
+                            if(room>1+(part%5)) room=1+(part%5);
+                            audio_demod_result_t q=audio_demod_process_with_raw(peer,
+                                iq+used+y.consumed,chunk,pcm_b+y.produced,
+                                tap?raw_b+y.produced:NULL,room,correction);
+                            assert(!q.error && q.consumed && q.consumed<=chunk);
+                            y.consumed+=q.consumed; y.produced+=q.produced;
+                            assert(y.produced<=x.produced);
+                            ++part;
+                        }
+                    }
                     elapsed=(double)(clock()-start)/CLOCKS_PER_SEC;
                     old_cpu+=elapsed;
                     if(elapsed>old_peak) old_peak=elapsed;
@@ -135,13 +171,16 @@ int main(void)
                     used+=x.consumed; total+=x.produced; ++call;
                 }
             }
-            audio_demod_destroy(a); legacy_nbfm_demod_destroy(b);
+            audio_demod_destroy(a);
+            if(mode) legacy_nbfm_demod_destroy(b); else audio_demod_destroy(peer);
             assert(!live);
-            printf("scenario %d %s %u Hz: state bytes %zu (reference %zu), CPU %.3fs (reference %.3fs), max call %.3fms (reference %.3fms)\n",
-                   scenario,mode?"WBFM":"NBFM",rate,current_bytes,old_bytes,current_cpu,old_cpu,1000*current_peak,1000*old_peak);
+            printf("scenario %d %s %u Hz: state bytes %zu (%s %zu), CPU %.3fs (%s %.3fs), max call %.3fms (%s %.3fms)\n",
+                   scenario,mode?"WBFM":"NBFM",rate,current_bytes,mode?"frozen":"segmented",old_bytes,
+                   current_cpu,mode?"frozen":"segmented",old_cpu,1000*current_peak,
+                   mode?"frozen":"segmented",1000*old_peak);
         }
         }
         __real_free(iq);
     }
-    printf("FM frozen reference: %zu exact PCM samples and progress/raw comparisons passed\n",total);
+    printf("FM regression: %zu exact WBFM frozen/NBFM segmented PCM samples and progress/raw comparisons passed\n",total);
 }

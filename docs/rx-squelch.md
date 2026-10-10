@@ -36,6 +36,11 @@ These thresholds refer to the modem measurement, not calibrated power at the
 external connector or an SDRPlay reading; front-end losses and bandwidth matter.
 AGC configuration is unchanged.
 
+The NBFM [complex channel filter](nbfm-channel-filter.md) changes the RF noise
+reaching the discriminator. The existing 0.12/0.18 RMS thresholds remain in
+place pending physical re-evaluation; disable both squelches for sensitivity
+measurements.
+
 The RX reader performs one checked register read per captured 10 ms block only
 when carrier squelch is enabled. The register follows the selected RF09/RF24
 radio. It carries the value and validity with the IQ block through the RF FIFO,

@@ -5,6 +5,7 @@
 - [README validation report](documentation-audit-2026-09-16.md)
 - [FM architecture and accepted refactoring steps](demodulator-architecture-research.md)
 - [Menu 14 NBFM RX chain and sensitivity investigation](nbfm-rx-sensitivity-context.md)
+- [NBFM complex channel filter](nbfm-channel-filter.md)
 - [Scheduled menu 14 IQ recording](scheduled-menu14-iq-capture.md)
 - [Audio/DSP interfaces](audio-dsp-interfaces.md)
 - [Audio/DSP extension guide](audio-dsp-extension-guide.md)

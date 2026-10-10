@@ -12,8 +12,7 @@ typedef audio_demod_result_t nbfm_demod_result_t;
 nbfm_demod_t* nbfm_demod_create(const nbfm_demod_config_t* config);
 // Mono broadcast FM, +/-75 kHz deviation. Shares the streaming/audio API.
 nbfm_demod_t* wbfm_demod_create(const nbfm_demod_config_t* config);
-// NBFM preserves I&D accumulators for legacy compatibility (recreate for cold
-// reset). WBFM clears all signal history. Both reset filters and resampling.
+// Both modes clear all signal history, decimator phases, filters and resampling.
 void nbfm_demod_reset(nbfm_demod_t* dsp);
 // Update audio controls without resetting filter history.
 int nbfm_demod_set_audio(nbfm_demod_t* dsp, float deemph_tau, float pcm_gain);

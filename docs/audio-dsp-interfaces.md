@@ -33,8 +33,9 @@ provides [separate TX/RX frequency controls](monitor-frequency.md).
 | `app_menu.c` | UI, configuration and radio controls | Selects routes/settings, calls pipeline APIs and renders status |
 
 Both DSP modules expose creation, processing progress, reset and destruction.
-The modulator also retains its legacy push/pull APIs. Their reset and buffering
-semantics remain explicit and module-specific, preserving existing signal behavior.
+The modulator also retains its legacy push/pull APIs. Both FM receive modes now
+clear all signal histories and decimator phases on reset. NBFM uses the
+[complex channel filter](nbfm-channel-filter.md) before limiting/demodulation.
 
 ## Current radio architecture
 
@@ -500,12 +501,11 @@ and rejects invalid values with -EINVAL; processing uses the current controls.
 NULL is permitted for reset/destroy. Create allocates zeroed state; destroy frees
 it after the pipeline worker is joined.
 
-Reset preserves the old worker semantics: clear previous discriminator samples,
-DC/de-emphasis/LPF history, interpolation endpoints and fractional phase, but
-retain both integrate-and-dump accumulators/counters. Existing pipeline resets
-occur between complete 10 ms RF blocks, where those accumulators are empty.
-For a completely new stream at an arbitrary partial-decimation boundary, destroy
-and recreate the state. Reset does not alter configuration. The worker separately
+Reset clears previous discriminator samples, DC/de-emphasis/LPF history,
+interpolation endpoints, fractional phase and all CIC/FIR signal history and
+decimator phases. Following the NBFM channel-filter addition, reset is equivalent
+to a fresh receiver even at arbitrary partial-decimation boundaries.
+Reset does not alter configuration. The worker separately
 clears its partially packed output, correction, FIFO-depth EMA and servo engagement.
 
 The worker retains the existing 200 kHz then 50 kHz decimation cadence indirectly
@@ -544,11 +544,12 @@ if (dsp) {
 }
 ```
 
-`test_nbfm_demod.py` compares the old worker frozen from `b3da533` against the
-new DSP/worker using deterministic IQ and FIFO depths. It compares output samples,
-counts and ordering of FIFO puts/depth reads at both RF rates, with/without reset,
-changing gain/de-emphasis, clipping and dropped FIFO writes: 345,600 PCM samples
-match exactly. Separate block/capacity tests exercise zero and ±500 ppm correction,
+`test_nbfm_demod.py` retains the old worker frozen from `b3da533` as an oracle
+for counts and ordering of FIFO puts/depth reads, priming and clock control at
+all three RF rates. Independent current workers agree exactly on filtered PCM
+with/without reset, gain/de-emphasis changes, clipping and dropped FIFO writes.
+The original boxcar PCM is no longer the numerical expectation. Separate
+block/capacity tests exercise zero and ±500 ppm correction,
 reset during partial decimation, invalid inputs and zero-capacity behavior.
 `test_rx_lifecycle.py` additionally checks DSP creation failure and joins real
 waiting DSP/playback threads before destruction. **H4 passed**: Jan confirmed option 13, the baseline, correct pitch, clean
@@ -622,8 +623,8 @@ mono audio frames. There is no implicit resampling to a different audio rate.
 `nbfm_reset` discards queued audio and clears carrier phase, rational audio clock,
 frequency interpolation and pre-emphasis history while preserving configuration
 and allocated storage. Its signal state equals a newly created instance. This
-cold reset differs intentionally from the demodulator's compatibility reset,
-which preserves partial decimator accumulators. Reset/destroy accept NULL;
+cold reset now matches the demodulator's full signal-history reset.
+Reset/destroy accept NULL;
 queue inspection returns zero for NULL. Destroy releases storage after the owner
 has stopped; the application still recreates modulator instances at its existing
 pipeline lifecycle boundaries.
@@ -846,9 +847,10 @@ processing and reset allocate nothing. Compile all three source files when
 using the compatibility API. Shared audio and conjugate-product operations are extracted in step 3,
 with details below.
 
-Public configuration, progress, errors, raw taps, buffer ownership and reset
-semantics are unchanged. NBFM reset retains its integrate-and-dump accumulators;
-WBFM reset clears signal histories while retaining prepared coefficients.
+Public configuration, progress, errors, raw taps and buffer ownership are
+unchanged. Since the NBFM channel-filter addition, both modes clear all signal
+histories and decimator phases on reset while retaining their configuration
+and prepared coefficients.
 No ALSA, radio, FIFO or worker dependency is introduced.
 
 ## Shared FM/audio primitives (refactoring step 3)

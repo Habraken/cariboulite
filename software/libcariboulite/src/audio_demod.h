@@ -26,8 +26,7 @@ audio_demod_t* audio_demod_create(audio_demod_mode_t mode, const audio_demod_con
 #define AUDIO_DEMOD_CAP_NOISE_SQUELCH 1u
 unsigned audio_demod_mode_capabilities(audio_demod_mode_t mode);
 unsigned audio_demod_capabilities(const audio_demod_t* dsp);
-// NBFM preserves I&D accumulators for legacy compatibility (recreate for cold
-// reset). WBFM clears all signal history. Both reset filters and resampling.
+// Both modes clear all signal history, decimator phases, filters and resampling.
 void audio_demod_reset(audio_demod_t* dsp);
 // Update audio controls without resetting filter history.
 int audio_demod_set_audio(audio_demod_t* dsp, float deemph_tau, float pcm_gain);
