@@ -373,3 +373,22 @@ limit.
 Related context: [monitor tuning and sample rates](monitor-frequency.md),
 [audio/DSP interfaces](audio-dsp-interfaces.md), and
 [FM architecture and accepted refactoring](demodulator-architecture-research.md).
+
+## Runtime profiling and future decoder work (2026-10-10)
+
+The user reports no obvious gaps or pops during NBFM or WBFM listening.
+This is useful functional evidence; the earlier capture's drops and playback
+underrun occurred during muted reception, after the main transmission. They
+do not establish an audible problem during the later listening tests.
+
+A subsequent source review found incomplete audio-loss/recovery counters,
+unverified actual scheduling settings, missing RX discontinuity metadata and
+worker-health/control-synchronization weaknesses. Whole-app CPU and latency
+profiling is recommended before adding stereo/RDS or DAB+. Adjustable TX/RX
+CTCSS is a smaller extension, with an independent tone level and a combined
+±2.5 kHz deviation budget.
+
+The detailed [runtime review and decoder plan](runtime-profiling-and-decoder-plan.md)
+records the evidence, a hardware-free WBFM timing check, instrumentation gaps,
+optimization candidates and proposed acceptance criteria. Stereo/RDS, DAB+
+and CTCSS remain planned capabilities; this review did not change runtime code.

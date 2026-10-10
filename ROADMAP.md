@@ -225,6 +225,32 @@ Exit: a completed QO-100 QSO using SSB, CW or PSK with CaribouLite's role
 explicitly documented. Depends on the selected mode in C, the station design,
 external-PA sequencing in D where used, and audio/data adapters as needed.
 
+### I. Runtime profiling, broadcast decoding and adjustable CTCSS
+
+Added 2026-10-10 from Jan's requested receiver/transceiver extensions. NBFM
+and WBFM listening is reported free of obvious gaps or pops. The
+[runtime review and decoder plan](docs/runtime-profiling-and-decoder-plan.md)
+records instrumentation gaps and proposed sequencing; these features are
+not yet implemented.
+
+- [ ] Complete loss/recovery counters, actual scheduling reports, RX
+  discontinuity metadata and worker-health reporting. Profile whole-app CPU,
+  stage service/wait latency and queues at 1/2/4 MS/s, with recording off/on.
+  Optimize measured contributors and preserve accepted FM behavior.
+- [ ] Add adjustable CTCSS TX encoding and optional RX tone squelch, including
+  explicit tone deviation, total ±2.5 kHz modulation budget, tone rejection
+  from listening audio and compatible Quindar/PTT/tail timing.
+- [ ] Add a WBFM multiplex interface, pilot recovery and true stereo DSP/audio
+  transport with mono fallback. Measure separation, distortion and lock recovery.
+- [ ] Add independent RDS extraction, synchronization/checkwords and station
+  metadata, with block-error and reacquisition measurements.
+- [ ] Establish DAB+ reception on the full-board HiF/RF24 path using an existing
+  decoder first. Verify wideband IQ/filtering and 2/4 MS/s to 2.048 MS/s
+  resampling, then choose a separate decoder/backend integration and profile it.
+
+Exit: each enabled feature has repeatable signal-quality, continuity, CPU/latency
+and physical-reception results; unsupported configurations fail explicitly.
+
 ## Suggested order
 
 Start A, then B, then deliver C incrementally. Specify D early so the shared

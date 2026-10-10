@@ -71,7 +71,7 @@ flowchart TB
     subgraph rx["rx_pipeline — receive"]
         rxctl["RX lifecycle / configuration"]
         reader["SMI reader thread<br/>Checked RSSI read when carrier squelch is enabled"]
-        rxq[("RX RF FIFO: IQ + RSSI validity/value<br/>128 × 10 ms blocks<br/>Drop oldest when full")]
+        rxq[("RX RF FIFO: IQ + RSSI validity/value<br/>64 × 10 ms blocks<br/>Drop oldest when full")]
         demod["demod_worker thread<br/>nbfm_demod DSP and PCM block packing<br/>Queue-depth clock correction"]
         noise["noise_squelch<br/>Unfiltered audio above 6 kHz<br/>Default ON"]
         carrier["carrier_squelch<br/>Modem RSSI hysteresis<br/>Default OFF"]
