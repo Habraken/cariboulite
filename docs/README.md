@@ -4,6 +4,8 @@
 - [Development roadmap and unresolved documentation tasks](../ROADMAP.md)
 - [README validation report](documentation-audit-2026-09-16.md)
 - [FM architecture and accepted refactoring steps](demodulator-architecture-research.md)
+- [Menu 14 NBFM RX chain and sensitivity investigation](nbfm-rx-sensitivity-context.md)
+- [Scheduled menu 14 IQ recording](scheduled-menu14-iq-capture.md)
 - [Audio/DSP interfaces](audio-dsp-interfaces.md)
 - [Audio/DSP extension guide](audio-dsp-extension-guide.md)
 - [Step-4 physical evidence](baselines/20261003-fm-step4/README.md)
