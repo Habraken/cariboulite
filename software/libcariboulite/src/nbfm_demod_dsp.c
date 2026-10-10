@@ -59,7 +59,7 @@ nbfm_demod_t* nb_demod_create(const nbfm_demod_config_t* config)
     s->D1 = config->rf_rate / 200000;
     s->D2 = 4;
     s->use_limiter = 1;
-    s->K_norm = 50000.0f / (2.0f * (float)M_PI * 2500.0f);
+    s->K_norm = 50000.0f / (2.0f * (float)M_PI * NBFM_DEFAULT_DEVIATION_HZ);
     fm_audio_init(&s->audio);
     return &s->base;
 }

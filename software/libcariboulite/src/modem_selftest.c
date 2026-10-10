@@ -102,7 +102,7 @@ void nbfm_modem_selftest(sys_st *sys)
     nbfm_cfg_t cfg = {
         .audio_fs      = 48000.0,
         .rf_fs         = 4000000.0,
-        .f_dev_hz      = 2500.0,
+        .f_dev_hz      = NBFM_DEFAULT_DEVIATION_HZ,
         .preemph_tau_s = 0.0,
         .out_scale     = 4000.0f,
         .linear_interp = 1,

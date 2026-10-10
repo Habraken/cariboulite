@@ -124,7 +124,7 @@ app_menu_item_st handles[] =
 
 // constants
 #define SR   4000000.0   // sample rate
-#define DF   2500.0      // peak deviation (Hz)
+#define DF   NBFM_DEFAULT_DEVIATION_HZ // peak deviation (Hz)
 #define FM   700.0       // modulating tone (Hz)
 #define AMP  2047.0      // amplitude (safe for 13-bit signed)
 
@@ -844,7 +844,7 @@ static void nbfm_tx_tone(sys_st *sys)
         .tone_amp     = 0.4f,
         .mic_dev      = NULL,
         .out_scale    = 4000.0f,
-        .f_dev_hz     = 2500.0f,
+        .f_dev_hz     = NBFM_DEFAULT_DEVIATION_HZ,
     };
 
     if (tx_pipeline_init(&tx, sys, &sys->radio_low, &par) != 0) {
@@ -1070,7 +1070,7 @@ void monitor_modem_status(sys_st *sys)
         .tone_amp     = 0.4f,
         .mic_dev      = "plughw:Loopback,1,1", // app reads
         .out_scale    = 4000.0f,
-        .f_dev_hz     = 2500.0f,
+        .f_dev_hz     = NBFM_DEFAULT_DEVIATION_HZ,
     };
 
     rx_params_t rxpar = {

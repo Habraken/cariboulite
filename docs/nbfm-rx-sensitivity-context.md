@@ -3,6 +3,31 @@
 Recorded 2026-10-10 from source inspection at revision
 `60c6138` (`Fix TX-to-RX stream handoff`).
 
+## Deviation configuration (2026-10-10)
+
+The temporary **±5 kHz** experiment has been reverted at the user's request
+for their **12.5 kHz channel spacing**. NBFM TX defaults and RX discriminator
+normalization again use **±2.5 kHz**, matching the analysis below.
+
+The setting is shared in
+[nbfm_defaults.h](../software/libcariboulite/src/nbfm_defaults.h):
+`NBFM_DEFAULT_DEVIATION_HZ = 2500.0f`. It applies to TX menus 11/14, the
+physical baseline runner, modem self-test, memory demo and the modulator's
+NULL-config default, as well as NBFM RX normalization. Explicit caller-supplied
+TX deviation values retain their usual meaning.
+
+Noise-squelch RMS thresholds are restored to **0.12/0.18**, with the original
+RX PCM and raw discriminator scaling. Filtering, the angle approximation and
+the captured IQ are unchanged by this experiment.
+
+After changing the shared constant, rebuild:
+
+```sh
+cmake --build build --target cariboulite_test_app nbfm_memory_demo -j2
+```
+
+## Investigation context
+
 The user is investigating weak-signal reception in the **menu 14 NBFM receiver
 at 430.125 MHz**. The transmitter's actual FM deviation has not been confirmed;
 the current receiver normalizes discriminator output for **±2.5 kHz deviation**.

@@ -1,10 +1,12 @@
 #pragma once
 #include <stdbool.h>
+#include "nbfm_defaults.h"
 // Single-owner, allocation-free detector for unfiltered 48 kHz discriminator
-// audio, normalized to nominal +/-1 at +/-2.5 kHz deviation. No PCM gain.
+// audio, normalized to nominal +/-1 at NBFM_DEFAULT_DEVIATION_HZ. No PCM gain.
 // Two cascaded 6 kHz high-pass biquads, 20 ms power averaging.
-#define NOISE_SQUELCH_OPEN_RMS 0.12f
-#define NOISE_SQUELCH_CLOSE_RMS 0.18f
+// Preserve the physical noise thresholds calibrated with the 2.5 kHz profile.
+#define NOISE_SQUELCH_OPEN_RMS (0.12f * (2500.0f / NBFM_DEFAULT_DEVIATION_HZ))
+#define NOISE_SQUELCH_CLOSE_RMS (0.18f * (2500.0f / NBFM_DEFAULT_DEVIATION_HZ))
 typedef struct {
     float z1[2], z2[2], power;
     unsigned qualify;

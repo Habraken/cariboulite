@@ -28,7 +28,7 @@ static int run_roundtrip(audio_source_t* source, audio_sink_t* sink,
         (rf_rate != 1000000 && rf_rate != 2000000 && rf_rate != 4000000) ||
         audio_limit > SIZE_MAX / 84)
         return -EINVAL;
-    nbfm_cfg_t tx_cfg = {48000, rf_rate, 2500, 0, 4000, 1};
+    nbfm_cfg_t tx_cfg = {48000, rf_rate, NBFM_DEFAULT_DEVIATION_HZ, 0, 4000, 1};
     nbfm_demod_config_t rx_cfg = {rf_rate, 48000, 50e-6f, 8000};
     nbfm_mod_t* mod = nbfm_create(&tx_cfg);
     if (!mod) return -errno;

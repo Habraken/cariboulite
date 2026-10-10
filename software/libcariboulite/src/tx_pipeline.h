@@ -64,7 +64,7 @@ typedef struct {
 
     // NBFM modulator config (kept same as your current)
     float  out_scale;           // e.g., 4000.0f
-    float  f_dev_hz;            // e.g., 2500.0f
+    float  f_dev_hz;            // nominal deviation at unit audio, in Hz
 } tx_params_t;
 
 typedef struct {

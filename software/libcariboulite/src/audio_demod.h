@@ -2,8 +2,10 @@
 #include <stddef.h>
 #include "iq16.h"
 #include "audio_format.h"
+#include "nbfm_defaults.h"
 
 // Standalone DSP. No threads, device handles, queues or retained caller buffers.
+// NBFM normalizes discriminator audio for NBFM_DEFAULT_DEVIATION_HZ.
 typedef struct nbfm_demod audio_demod_t;
 typedef enum { AUDIO_DEMOD_NBFM = 0, AUDIO_DEMOD_WBFM = 1 } audio_demod_mode_t;
 typedef struct {

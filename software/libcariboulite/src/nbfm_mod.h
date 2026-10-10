@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include "audio_format.h"
 #include "iq16.h"
+#include "nbfm_defaults.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,7 +24,7 @@ typedef struct {
     int error;          // 0 or negative errno-style code; errors leave state intact
 } nbfm_result_t;
 
-// NULL config selects {48000, 4000000, 2500, 0, 12000, 1}.
+// NULL config selects {48000, 4000000, NBFM_DEFAULT_DEVIATION_HZ, 0, 12000, 1}.
 // Returns NULL with errno EINVAL/ENOMEM. Allocation occurs only at creation.
 nbfm_mod_t* nbfm_create(const nbfm_cfg_t* cfg);
 void nbfm_destroy(nbfm_mod_t* m); // NULL permitted

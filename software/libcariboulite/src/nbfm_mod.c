@@ -37,7 +37,7 @@ static int valid_config(const nbfm_cfg_t* c)
 }
 nbfm_mod_t* nbfm_create(const nbfm_cfg_t* config)
 {
-    const nbfm_cfg_t defaults = {48000, 4000000, 2500, 0, 12000, 1};
+    const nbfm_cfg_t defaults = {48000, 4000000, NBFM_DEFAULT_DEVIATION_HZ, 0, 12000, 1};
     const nbfm_cfg_t* c = config ? config : &defaults;
     if (!valid_config(c)) { errno = EINVAL; return NULL; }
     nbfm_mod_t* m = calloc(1, sizeof(*m));

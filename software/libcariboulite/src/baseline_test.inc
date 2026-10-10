@@ -36,7 +36,7 @@ int app_baseline_test(sys_st* sys, const char* firmware, const char* capture,
                 .freq_hz = 430100000.0, .tx_power_dbm = -3, .rf_fs = rate,
                 .tone_mode = menu == 11, .tone_hz = 600.0f, .tone_amp = 0.4f,
                 .mic_dev = menu == 11 ? NULL : capture,
-                .out_scale = 4000.0f, .f_dev_hz = 2500.0f,
+                .out_scale = 4000.0f, .f_dev_hz = NBFM_DEFAULT_DEVIATION_HZ,
             };
             rx_params_t rp = {
                 .freq_hz = 430100000.0, .pcm_dev = playback,

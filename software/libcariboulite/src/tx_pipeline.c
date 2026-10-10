@@ -180,7 +180,7 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     nbfm_cfg_t cfg = {
         .audio_fs      = 48000.0,
         .rf_fs         = rf_fs,
-        .f_dev_hz      = par->f_dev_hz,     // 2500.0
+        .f_dev_hz      = par->f_dev_hz,
         .preemph_tau_s = 0.0,
         .out_scale     = par->out_scale,    // 4000.0
         .linear_interp = 1,
