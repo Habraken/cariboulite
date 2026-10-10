@@ -12,6 +12,7 @@
 
 static unsigned block, out_block, rate, mode, seed;
 static double energy[4];
+static unsigned rms[4], detector_open[4], metric_valid[4], effective_open[4];
 static nbfm_demod_ctrl_t* worker;
 static nbfm_mod_t* mod;
 static double phase;
@@ -23,11 +24,27 @@ bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* frame, int timeout)
     (void)f; (void)timeout;
     if (block == 240) { worker->active = false; return false; }
     unsigned stage = block / 60;
+    if (block % 60 == 59) {
+        rms[stage] = atomic_load(&worker->noise_squelch_rms_milli);
+        detector_open[stage] = atomic_load(&worker->noise_squelch_detector_open);
+        metric_valid[stage] = atomic_load(&worker->noise_squelch_valid);
+        effective_open[stage] = atomic_load(&worker->squelch_open);
+    }
+    if (mode == 6 && block % 60 == 0) {
+        uint32_t levels;
+        assert(noise_squelch_pack_levels(stage == 1 ? 0.01f : 0.12f,
+                                         stage == 1 ? 0.02f : 0.18f, &levels));
+        if (stage == 3) levels = (180u << 16) | 120u; // malformed update ignored
+        atomic_store(&worker->noise_squelch_levels, levels);
+    }
     float audio[480];
-    for (unsigned i=0; i<480; ++i) { audio[i]=0.4f*sinf(phase); phase+=2*M_PI*600/48000; }
+    for (unsigned i=0; i<480; ++i) {
+        audio[i] = (mode == 6 ? 1.0f : 0.4f) * sinf(phase);
+        phase += 2*M_PI*(mode == 6 ? 3000 : 600)/48000;
+    }
     nbfm_result_t r=nbfm_process(mod,audio,480,frame->data,rate/100);
     assert(r.consumed==480 && r.produced==rate/100 && !r.error);
-    if ((mode == 0 || mode == 3) && stage == 1) {
+    if ((mode == 0 || mode == 3 || mode == 4) && stage == 1) {
         // Broadband RF noise, not just a manufactured audio detection signal.
         for (unsigned i=0;i<rate/100;++i) {
             seed=seed*1664525u+1013904223u; frame->data[i].i=(int16_t)(seed>>16);
@@ -55,6 +72,31 @@ void aud10_fifo_peek_depth(aud10_fifo_t* f,size_t* count,size_t* cap)
 
 static void detectors(void)
 {
+    uint32_t levels = 12345;
+    float open_rms = -1, close_rms = -1;
+    assert(noise_squelch_pack_levels(0.12f, 0.18f, &levels));
+    assert(levels == ((120u << 16) | 180u));
+    assert(noise_squelch_unpack_levels(levels, &open_rms, &close_rms));
+    assert(fabsf(open_rms - 0.12f) < 1e-6f && fabsf(close_rms - 0.18f) < 1e-6f);
+    assert(noise_squelch_pack_levels(NOISE_SQUELCH_OPEN_RMS, NOISE_SQUELCH_CLOSE_RMS, &levels));
+    assert(levels == ((200u << 16) | 300u));
+    assert(levels == noise_squelch_default_levels());
+    assert(noise_squelch_unpack_levels(0, &open_rms, &close_rms));
+    assert(open_rms == NOISE_SQUELCH_OPEN_RMS && close_rms == NOISE_SQUELCH_CLOSE_RMS);
+    const float invalid[][2] = {{0,.18f},{-.1f,.18f},{.18f,.12f},{.18f,.18f},
+        {.12f,8.001f},{NAN,.18f},{.12f,NAN},{INFINITY,.18f},{.12f,INFINITY}};
+    for (unsigned i=0; i<sizeof(invalid)/sizeof(invalid[0]); ++i) {
+        levels = 12345;
+        assert(!noise_squelch_pack_levels(invalid[i][0], invalid[i][1], &levels));
+        assert(levels == 12345);
+    }
+    assert(!noise_squelch_pack_levels(.1201f, .1202f, &levels)); // quantization collapses pair
+    assert(!noise_squelch_unpack_levels((180u << 16) | 120u, &open_rms, &close_rms));
+    assert(!noise_squelch_unpack_levels((120u << 16) | 8001u, &open_rms, &close_rms));
+    assert(!noise_squelch_unpack_levels(180u, &open_rms, &close_rms));
+    assert(noise_squelch_pack_levels(7.0f, 8.0f, &levels));
+    assert(!noise_squelch_pack_levels(.12f, .18f, NULL));
+    assert(!noise_squelch_unpack_levels(0, NULL, &close_rms));
     noise_squelch_t n={0};
     for(unsigned i=0;i<1439;++i) assert(!noise_squelch_process(&n,0));
     assert(noise_squelch_process(&n,0));
@@ -66,8 +108,24 @@ static void detectors(void)
     assert(!n.open);
     for(unsigned i=0;i<24000;++i) noise_squelch_process(&n,0.4f*sinf(2*M_PI*600*i/48000));
     assert(n.open);
+    noise_squelch_t old = n;
+    n.qualify = 123;
+    assert(noise_squelch_set_thresholds(&n, .14f, .20f));
+    assert(n.open == old.open && n.power == old.power && n.qualify == 0);
+    assert(!memcmp(n.z1, old.z1, sizeof(n.z1)) && !memcmp(n.z2, old.z2, sizeof(n.z2)));
+    n.qualify = 123;
+    assert(noise_squelch_set_thresholds(&n, .14f, .20f));
+    assert(n.qualify == 123); // unchanged update must not postpone opening/closing
+    old = n;
+    for (unsigned i=0; i<sizeof(invalid)/sizeof(invalid[0]); ++i) {
+        assert(!noise_squelch_set_thresholds(&n, invalid[i][0], invalid[i][1]));
+        assert(!memcmp(&n, &old, sizeof(n)));
+    }
     assert(!noise_squelch_process(&n,NAN));
     assert(!noise_squelch_process(&n,INFINITY));
+    assert(n.open_power == .14f*.14f && n.close_power == .20f*.20f);
+    noise_squelch_reset(&n);
+    assert(n.open_power == NOISE_SQUELCH_OPEN_RMS*NOISE_SQUELCH_OPEN_RMS);
     carrier_squelch_t c={0};
     assert(!carrier_squelch_process(&c,-97,true));
     assert(!carrier_squelch_process(&c,-97,true));
@@ -81,6 +139,29 @@ static void detectors(void)
     assert(c.open && !carrier_squelch_process(&c,127,true));
     assert(!carrier_squelch_process(&c,NAN,true));
     assert(!carrier_squelch_process(&c,-80,false));
+}
+static void measured_noise_levels(void)
+{
+    // Deterministic detector-band tones represent measured weak activity
+    // (about 0.15-0.18 RMS) and idle noise (about 1.2 RMS). Their detector RMS is
+    // checked directly; this is gate behavior, not a receiver sensitivity test.
+    noise_squelch_t current = {0}, previous = {0};
+    assert(noise_squelch_set_thresholds(&previous, .12f, .18f));
+    for (unsigned i=0; i<24000; ++i) {
+        float envelope = .26f + .015f*sinf(2*M_PI*2*i/48000);
+        float weak = envelope*sinf(2*M_PI*10000*i/48000);
+        noise_squelch_process(&current, weak);
+        assert(!noise_squelch_process(&previous, weak));
+    }
+    float measured = sqrtf(current.power);
+    assert(measured > .15f && measured < .18f);
+    assert(current.open && !previous.open);
+    for (unsigned i=0; i<2400; ++i)
+        assert(noise_squelch_process(&current, 1.84f*sinf(2*M_PI*10000*i/48000)));
+    for (unsigned i=2400; i<24000; ++i)
+        noise_squelch_process(&current, 1.84f*sinf(2*M_PI*10000*i/48000));
+    measured = sqrtf(current.power);
+    assert(measured > 1.15f && measured < 1.25f && !current.open);
 }
 static void raw_tap(void)
 {
@@ -107,24 +188,56 @@ static void integration(void)
     nbfm_demod_ctrl_t c={.active=true,.fifo_in=&rf,.afifo_out=&af,
         .sink=&sink,.fs_rf=rate,.fs_audio=48000,.pcm_rate=48000,
         .pcm_gain=8000,.deemph_tau=50e-6f};
-    atomic_init(&c.squelch_flags, mode==0 ? RX_SQUELCH_NOISE :
-        mode==1 ? RX_SQUELCH_CARRIER : RX_SQUELCH_NOISE|RX_SQUELCH_CARRIER);
+    unsigned flags = mode == 4 ? 0 : mode == 0 || mode == 5 || mode == 6 ? RX_SQUELCH_NOISE :
+        mode == 1 ? RX_SQUELCH_CARRIER : RX_SQUELCH_NOISE|RX_SQUELCH_CARRIER;
+    atomic_init(&c.squelch_flags, flags);
+    atomic_init(&c.squelch_open, 0);
+    atomic_init(&c.noise_squelch_levels, 0); // existing/offline callers retain defaults
+    atomic_init(&c.noise_squelch_rms_milli, 0);
+    atomic_init(&c.noise_squelch_detector_open, 0);
+    atomic_init(&c.noise_squelch_valid, 0);
     nbfm_demod_config_t dc={rate,48000,50e-6f,8000};
     nbfm_cfg_t mc={48000,rate,2500,0,4000,1};
-    c.dsp=nbfm_demod_create(&dc); mod=nbfm_create(&mc); assert(c.dsp && mod);
+    c.mode = mode == 5 ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM;
+    c.dsp=audio_demod_create(c.mode, &dc); mod=nbfm_create(&mc); assert(c.dsp && mod);
     worker=&c; block=out_block=0; phase=0; seed=123; memset(energy,0,sizeof(energy));
+    memset(rms, 0, sizeof(rms)); memset(detector_open, 0, sizeof(detector_open));
+    memset(metric_valid, 0, sizeof(metric_valid)); memset(effective_open, 0, sizeof(effective_open));
     nbfm_demod_thread(&c);
     assert(out_block>=239); // closed squelch must still enqueue audio on time
-    assert(energy[0]>1e8 && energy[1]==0 && energy[2]>1e8);
-    if(mode==1 || mode==3) assert(energy[3]==0); else assert(energy[3]>1e8);
+    if (mode < 4 || mode == 6) {
+        assert(energy[0]>1e8 && energy[1]==0 && energy[2]>1e8);
+        if(mode==1 || mode==3) assert(energy[3]==0); else assert(energy[3]>1e8);
+    } else {
+        for (unsigned stage=0; stage<4; ++stage) assert(energy[stage]>1e5);
+    }
+    for (unsigned stage=0; stage<4; ++stage) {
+        assert(metric_valid[stage] == (mode != 5));
+        if (mode == 5) assert(!rms[stage] && !detector_open[stage]);
+    }
+    if (mode == 4) {
+        assert(rms[1] > NOISE_SQUELCH_CLOSE_RMS*1000 && !detector_open[1] && effective_open[1]);
+        assert(rms[0] < NOISE_SQUELCH_OPEN_RMS*1000 && detector_open[0] && effective_open[0]);
+    }
+    if (mode == 6) {
+        for (unsigned stage=0; stage<4; ++stage) {
+            assert(rms[stage] > 20 && rms[stage] < 120);
+            assert(detector_open[stage] == (stage != 1));
+            assert(effective_open[stage] == (stage != 1));
+        }
+        // Live threshold changes do not reset DSP progress or the output queue.
+        assert(c.pcm_total_frames == out_block * 480u);
+    }
+    printf("rate=%u mode=%u RMS=[%u %u %u %u]\n", rate, mode, rms[0], rms[1], rms[2], rms[3]);
     nbfm_demod_destroy(c.dsp); nbfm_destroy(mod);
 }
 int main(void)
 {
     detectors();
+    measured_noise_levels();
     for(rate=1000000;rate<=4000000;rate*=2) {
         raw_tap();
-        for(mode=0;mode<4;++mode) integration();
+        for(mode=0;mode<7;++mode) integration();
     }
     puts("Squelch detectors and RX worker integration pass at 1/2/4 MS/s");
 }

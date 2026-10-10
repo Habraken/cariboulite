@@ -35,6 +35,8 @@ typedef struct {
 
     bool noise_squelch_disabled; // zero/default enables noise squelch
     bool carrier_squelch_enabled; // zero/default disables carrier squelch
+    float noise_squelch_open_rms; // both zero select the default 0.20/0.30 pair
+    float noise_squelch_close_rms;
 
     audio_demod_mode_t mode;       // zero/default is NBFM; selected at initialization
 
@@ -72,6 +74,11 @@ typedef struct {
     rf10_stats_t rxq;
 } rx_pipeline_stats_t;
 
+typedef struct {
+    float rms, open_rms, close_rms;
+    bool valid, detector_open; // valid only during NBFM RX after measurement
+} rx_noise_squelch_status_t;
+
 extern cariboulite_sample_complex_int16 latest_rx_sample;
 int rx_pipeline_init(rx_pipeline_t*, sys_st*, cariboulite_radio_state_st*, const rx_params_t*);
 // Each start verifies the modem profile: NBFM uses AGC and minimum RX analog
@@ -95,3 +102,7 @@ void rx_pipeline_reset_stats(rx_pipeline_t*);
 // Thread-safe controls; configuration survives start/stop, reset on re-init.
 void rx_pipeline_set_squelch(rx_pipeline_t*, bool noise_enabled, bool carrier_enabled);
 bool rx_pipeline_squelch_open(const rx_pipeline_t*);
+// Threshold pairs update atomically without stopping RX. Resolution 0.001 RMS;
+// require 0 < open < close <= 8.0 after rounding. PCM volume is independent.
+int rx_pipeline_set_noise_squelch_levels(rx_pipeline_t*, float open_rms, float close_rms);
+int rx_pipeline_get_noise_squelch_status(const rx_pipeline_t*, rx_noise_squelch_status_t*);

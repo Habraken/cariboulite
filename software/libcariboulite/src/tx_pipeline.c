@@ -124,8 +124,13 @@ static unsigned tx_tail_padding_frames(size_t native_samples,
 {
     // Writes acknowledge the kernel FIFO, not RF output. Enough accepted
     // silence displaces the tail through the FIFO, cyclic DMA and FPGA FIFO.
-    uint64_t pending = (uint64_t)native_samples * (fifo_multiplier + 1u) +
-                       native_samples / 4 + 1024;
+    // Older drivers use kfifo_alloc (round up); newer preallocated kfifo_init
+    // rounds down. The multiplier reports requested storage, not capacity.
+    // Use the larger power-of-two bound so a fast flush is safe for either.
+    uint64_t requested = (uint64_t)native_samples * fifo_multiplier;
+    uint64_t kernel_capacity = 1;
+    while (kernel_capacity < requested) kernel_capacity <<= 1;
+    uint64_t pending = kernel_capacity + native_samples + native_samples / 4 + 1024;
     unsigned frames = (unsigned)((pending + frame_samples - 1) / frame_samples);
     return frames < 25 ? 25 : frames;
 }
@@ -255,6 +260,7 @@ static void tx_clear_injection(tx_pipeline_t* p)
 {
     pthread_mutex_lock(&g_tx_injection_lock);
     p->tx_ctrl.inj.frames_left = 0;
+    p->tx_ctrl.inj.fast_padding = false;
     pthread_mutex_unlock(&g_tx_injection_lock);
 }
 
@@ -265,13 +271,14 @@ static bool tx_injection_can_run(const tx_pipeline_t* p)
 }
 
 static bool tx_inject_frames(tx_pipeline_t* p, float hz, int frames,
-                             uint64_t deadline)
+                             uint64_t deadline, bool fast_padding)
 {
     if (!tx_injection_can_run(p) || frames <= 0 || mono_ns() >= deadline)
         return false;
 
     pthread_mutex_lock(&g_tx_injection_lock);
     p->tx_ctrl.inj.hz = hz;
+    p->tx_ctrl.inj.fast_padding = fast_padding;
     p->tx_ctrl.inj.frames_left = frames;
     pthread_mutex_unlock(&g_tx_injection_lock);
 
@@ -293,7 +300,7 @@ static bool tx_inject_frames(tx_pipeline_t* p, float hz, int frames,
 static bool tx_inject_tone_with_zeros(tx_pipeline_t* p,
                                       float hz, int tone_ms,
                                       int pre_zero_frames,
-                                      int post_zero_frames)
+                                      int post_zero_frames, bool fast_padding)
 {
     if (pre_zero_frames  < 1) pre_zero_frames  = 1;
     if (post_zero_frames < 1) post_zero_frames = 1;
@@ -303,9 +310,9 @@ static bool tx_inject_tone_with_zeros(tx_pipeline_t* p,
                                    post_zero_frames) * 10 + (p->txq.cap + 1) * 10 + 600;
     if (budget_ms < 1000) budget_ms = 1000;
     const uint64_t deadline = mono_ns() + budget_ms * 1000000ULL;
-    return tx_inject_frames(p, 0.0f, pre_zero_frames, deadline) &&
-           tx_inject_frames(p, hz, ms_to_frames_10ms(tone_ms), deadline) &&
-           tx_inject_frames(p, 0.0f, post_zero_frames, deadline);
+    return tx_inject_frames(p, 0.0f, pre_zero_frames, deadline, false) &&
+           tx_inject_frames(p, hz, ms_to_frames_10ms(tone_ms), deadline, false) &&
+           tx_inject_frames(p, 0.0f, post_zero_frames, deadline, fast_padding);
 }
 
 int tx_pipeline_start(tx_pipeline_t* p)
@@ -325,6 +332,7 @@ int tx_pipeline_start(tx_pipeline_t* p)
     rf10_fifo_flush(&p->txq);
     pthread_mutex_lock(&g_tx_injection_lock);
     p->tx_ctrl.inj.hold_silence = false;
+    p->tx_ctrl.inj.fast_padding = false;
     pthread_mutex_unlock(&g_tx_injection_lock);
 
     HW_LOCK();
@@ -342,7 +350,7 @@ int tx_pipeline_start(tx_pipeline_t* p)
     p->running = true;
     
     // --- Quindar "start" tone: 2525 Hz for 250 ms with 5 frames of padding ---
-    if (!tx_inject_tone_with_zeros(p, 2525.0f, 250, 10, 5)) {
+    if (!tx_inject_tone_with_zeros(p, 2525.0f, 250, 10, 5, false)) {
         fprintf(stderr, "TX start tone aborted; stopping TX\n");
         nbfm_tx_active = false; // stop must skip another tone attempt
         tx_pipeline_stop(p);
@@ -370,12 +378,14 @@ void tx_pipeline_stop(tx_pipeline_t* p)
 {
     if (!p || !p->inited || !p->running) return;
     
-    // Keep TX running with silence long enough to carry the complete 250 ms
-    // Quindar tail through the kernel/DMA queues at the selected RF rate.
+    // Enough accepted silence displaces the complete 250 ms tail through the
+    // kernel/DMA queues. Generate final padding without audio-clock pacing:
+    // writer backpressure, rather than worst-case FIFO capacity, sets the wait.
     pthread_mutex_lock(&g_tx_injection_lock);
     p->tx_ctrl.inj.hold_silence = true;
     pthread_mutex_unlock(&g_tx_injection_lock);
-    if (tx_inject_tone_with_zeros(p, 2475.0f, 250, 5, p->tx_ctrl.tail_padding_frames)) {
+    if (tx_inject_tone_with_zeros(p, 2475.0f, 250, 5,
+                                p->tx_ctrl.tail_padding_frames, true)) {
         pthread_mutex_lock(&g_tx_injection_lock);
         uint64_t sequence = p->tx_ctrl.inj.last_sequence;
         pthread_mutex_unlock(&g_tx_injection_lock);

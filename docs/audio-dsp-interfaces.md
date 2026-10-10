@@ -108,7 +108,9 @@ flowchart TB
 
 The noise detector, carrier detector and PCM gate all execute inside the
 existing demod worker thread; they add no threads. Menu 14 uses **N** and **C**
-to toggle them. See [RX squelch](rx-squelch.md) for thresholds, interfaces,
+to toggle them, and **S** to change NBFM noise thresholds during RX. NBFM noise
+measurement continues with its gate bypassed; RMS and the detector decision
+are distinct from the combined gate. See [RX squelch](rx-squelch.md) for thresholds, interfaces,
 ownership, physical acceptance and regression checks.
 
 `pipeline_transport` implements the three application FIFOs shown above. Each
@@ -495,7 +497,11 @@ progress and unchanged state.
 
 Correction is a unitless fractional adjustment: the resampling increment is
 `(48000.0 / 50000.0) * (1.0 + correction)`. Positive correction produces more
-audio, negative less. The DSP has no FIFO-depth policy. One owner serializes
+audio, negative less. NBFM's subsequent interpolation correction uses
+`current + fraction * (previous - current)`, because the fractional remainder
+measures backward distance from the current endpoint. Output times/counts and
+the correction contract are unchanged; see [RX squelch](rx-squelch.md#signal-path).
+The DSP has no FIFO-depth policy. One owner serializes
 process, control updates, reset and destruction. `set_audio` preserves history
 and rejects invalid values with -EINVAL; processing uses the current controls.
 NULL is permitted for reset/destroy. Create allocates zeroed state; destroy frees
@@ -709,11 +715,15 @@ logs for stage-specific errors; this extraction does not add pipeline-wide worke
 error propagation or start checking every hardware return code.
 
 TX retains a 64-frame RF queue, 480-frame source blocks and rate-dependent
-20,000/40,000-IQ blocks. The mod worker gives injection priority over tone or
+10,000/20,000/40,000-IQ blocks. The mod worker gives injection priority over tone or
 microphone audio. The SMI writer keeps the existing nonblocking/poll/chunking
 behavior and radio channel selection. Start sends the existing opening cue;
-stop attempts its closing cue within the existing one-second injection budget
-and at most 600 ms queue-drain wait, then idles the hardware. Destroy stops the
+stop sends the closing cue and conservative downstream-buffer padding within
+a rate-dependent deadline, then waits for complete-frame writer acknowledgement
+before idling hardware. Final silent padding now bypasses the producer's audio
+clock and drains under FIFO/writer backpressure, eliminating the unnecessary
+capacity-duration carrier hang. Ordinary audio and both cues remain paced;
+see [TX tail timing](tx-tail-timing.md). Destroy stops the
 queue, cancels/joins created workers and releases source, modulator and buffers.
 
 RX retains a 128-frame RF queue that drops oldest on overflow and a 24-frame

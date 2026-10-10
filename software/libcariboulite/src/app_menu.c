@@ -32,6 +32,7 @@ _Static_assert(CARIBOU_SMI_BYTES_PER_SAMPLE == sizeof(caribou_smi_sample_complex
 #include "tone_source.h"
 #include "alsa_source.h"
 #include "nbfm_mod.h"
+#include "noise_squelch.h"
 #include "demod_worker.h"
 #include "pipeline_runtime.h"
 #include "tx_pipeline.h"
@@ -1021,6 +1022,56 @@ static bool monitor_frequency_prompt(bool tx,
     }
 }
 
+static bool monitor_parse_noise_levels(const char* text, float* open_rms, float* close_rms)
+{
+    char* end;
+    errno = 0;
+    float opening = strtof(text, &end);
+    if (end == text || errno || (*end != ' ' && *end != '\t')) return false;
+    const char* second = end;
+    float closing = strtof(second, &end);
+    if (end == second || errno) return false;
+    while (*end == ' ' || *end == '\t') ++end;
+    uint32_t levels;
+    if (*end || !noise_squelch_pack_levels(opening, closing, &levels)) return false;
+    return noise_squelch_unpack_levels(levels, open_rms, close_rms);
+}
+
+static bool monitor_noise_levels_prompt(float* open_rms, float* close_rms)
+{
+    char input[48] = {0};
+    size_t used = 0;
+    timeout(-1);
+    for (;;) {
+        move(getmaxy(stdscr)-1, 0); clrtoeol();
+        printw("Noise RMS open close [%.3f %.3f]: %s  (Enter applies; Esc cancels)",
+               *open_rms, *close_rms, input);
+        refresh();
+        int key = getch();
+        if (key == 27 || key == ERR) { timeout(200); return false; }
+        if (key == '\n' || key == '\r' || key == KEY_ENTER) {
+            timeout(200);
+            return used && monitor_parse_noise_levels(input, open_rms, close_rms);
+        }
+        if (key == KEY_BACKSPACE || key == 127 || key == 8) {
+            if (used) input[--used] = 0;
+        } else if (key >= 32 && key <= 126 && used < sizeof(input)-1) {
+            input[used++] = (char)key; input[used] = 0;
+        }
+    }
+}
+
+static int monitor_apply_noise_levels(rx_pipeline_t* rx, rx_params_t* par,
+                                      float open_rms, float close_rms)
+{
+    if (rx_pipeline_set_noise_squelch_levels(rx, open_rms, close_rms) != 0) return -1;
+    rx_noise_squelch_status_t status;
+    if (rx_pipeline_get_noise_squelch_status(rx, &status) != 0) return -1;
+    par->noise_squelch_open_rms = status.open_rms;
+    par->noise_squelch_close_rms = status.close_rms;
+    return 0;
+}
+
 static int monitor_start_tx(tx_pipeline_t* tx, rx_pipeline_t* rx, const tx_params_t* par)
 {
     rx_pipeline_stop(rx);
@@ -1078,6 +1129,8 @@ void monitor_modem_status(sys_st *sys)
         .pcm_dev       = "plughw:Loopback,0,0", // app writes
         .deemph_tau_s  = 50e-6f,
         .pcm_gain      = 8000.0f,
+        .noise_squelch_open_rms = NOISE_SQUELCH_OPEN_RMS,
+        .noise_squelch_close_rms = NOISE_SQUELCH_CLOSE_RMS,
         .fs_rf         = 4000000.0f,
         .fs_audio      = 48000.0f,
     };
@@ -1512,9 +1565,34 @@ void monitor_modem_status(sys_st *sys)
             rxpar.carrier_squelch_enabled ? "ON" : "OFF",
             !rx_pipeline_running(&rxp) ? "IDLE" :
             rx_pipeline_squelch_open(&rxp) ? "OPEN" : "MUTED");
+        if (rxpar.mode == AUDIO_DEMOD_NBFM) {
+            rx_noise_squelch_status_t noise;
+            if (rx_pipeline_get_noise_squelch_status(&rxp, &noise) == 0) {
+                if (noise.valid)
+                    printw("Noise RMS %.3f  detector %s  [S] open %.3f / close %.3f\n",
+                        noise.rms, noise.detector_open ? "OPEN" : "CLOSED",
+                        noise.open_rms, noise.close_rms);
+                else printw("Noise RMS --  [S] open %.3f / close %.3f\n",
+                        noise.open_rms, noise.close_rms);
+                printw("Higher noise thresholds admit noisier signals; levels can change during RX.\n");
+            }
+        }
         printw("\n%s\n", rate_notice);
         refresh();
         int key = getch();
+        if (key == 's' || key == 'S') {
+            if (rxpar.mode != AUDIO_DEMOD_NBFM) {
+                rate_notice = "Noise-squelch levels are available in NBFM mode.";
+                continue;
+            }
+            float opening = rxpar.noise_squelch_open_rms;
+            float closing = rxpar.noise_squelch_close_rms;
+            if (monitor_noise_levels_prompt(&opening, &closing) &&
+                monitor_apply_noise_levels(&rxp, &rxpar, opening, closing) == 0)
+                rate_notice = "Noise-squelch levels applied; saved for this monitor session.";
+            else rate_notice = "Levels retained. Enter 0 < open < close <= 8.0 (0.001 RMS steps).";
+            continue;
+        }
         if (key == 'm' || key == 'M') {
             int result = monitor_cycle_rx_mode(&txp, &rxp, &loopback, sys, &rxpar);
             if (result == -EBUSY) {

@@ -19,12 +19,27 @@
 pthread_mutex_t g_hw_lock = PTHREAD_MUTEX_INITIALIZER;
 volatile bool nbfm_tx_active, nbfm_rx_active;
 bool nbfm_tx_ready, nbfm_rx_ready;
-uint64_t mono_ns(void) { static uint64_t now; return now += 10000000; }
+static uint64_t producer_now;
+static unsigned producer_sleeps;
+static bool check_pacing_deadline;
+uint64_t mono_ns(void) { return producer_now += 10000000; }
 int set_rt_and_affinity_prio(int priority, int cpu)
 { (void)priority; (void)cpu; return 0; }
 int __wrap_clock_nanosleep(clockid_t clock, int flags,
                           const struct timespec* request, struct timespec* remain)
-{ (void)clock; (void)flags; (void)request; (void)remain; return 0; }
+{
+    assert(clock==CLOCK_MONOTONIC && flags==TIMER_ABSTIME && !remain);
+    assert(request->tv_nsec>=0 && request->tv_nsec<1000000000L);
+    ++producer_sleeps;
+    if (check_pacing_deadline) {
+        uint64_t deadline=(uint64_t)request->tv_sec*1000000000ull+
+                          (uint64_t)request->tv_nsec;
+        // Fast padding advances monotonic time without absolute sleeps. The
+        // next paced frame must use a future deadline, not a stale cue deadline.
+        assert(deadline==producer_now+10000000ull);
+    }
+    return 0;
+}
 
 static unsigned tone_changes, mic_reads;
 int __real_tone_source_set(audio_source_t*, float, float);
@@ -44,8 +59,54 @@ static dsp_producer_ctrl_t* producer;
 static pthread_mutex_t gate_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t gate_condition = PTHREAD_COND_INITIALIZER;
 static bool gate_enabled, gate_entered, gate_release, gate_success;
+static bool producer_initial_silent, producer_sequence_test;
 static unsigned producer_puts;
 static uint64_t blocked_sequence;
+
+static void check_producer_sequence(void)
+{
+    // Two paced prezeros, two paced cue frames, three unpaced final zeros,
+    // then paced hold silence, normal mic and normal tone frames. A stale
+    // fast-padding flag must not accelerate a tone, exhausted injection or mic.
+    static const unsigned sleeps[]={1,2,3,4,4,4,4,5,6,7};
+    static const unsigned changes[]={1,2,3,4,5,6,7,7,7,8};
+    static const int frames_left[]={2,1,2,1,3,2,1,0,0,0};
+    unsigned frame=producer_puts;
+    assert(frame>=1 && frame<=10);
+    assert(producer_sleeps==sleeps[frame-1]);
+    assert(tone_changes==changes[frame-1]);
+    assert(mic_reads==(frame>=9?1u:0u));
+    assert(producer_tx->inj.frames_left==frames_left[frame-1]);
+    uint64_t previous_sequence=frame==1?8:17+(frame<=8?frame-1:7);
+    assert(producer_tx->inj.last_sequence==previous_sequence);
+    bool audible=frame==3 || frame==4 || frame==9 || frame==10;
+    bool nonzero=false;
+    for (size_t i=0; i<480; ++i) {
+        nonzero |= producer_tx->a48k[i]!=0;
+        if (!audible) assert(producer_tx->a48k[i]==0);
+        if (frame==9) assert(producer_tx->a48k[i]==0.75f);
+    }
+    assert(nonzero==audible);
+
+    pthread_mutex_lock(&g_tx_injection_lock);
+    if (frame==2) {
+        // The successful enqueue decrements the old injection once more after
+        // this mock returns, so include that frame in the new stage's count.
+        producer_tx->inj.frames_left=3;
+        producer_tx->inj.hz=2475;
+        producer_tx->inj.fast_padding=true;
+    } else if (frame==4) {
+        producer_tx->inj.frames_left=4;
+        producer_tx->inj.hz=0;
+        producer_tx->inj.fast_padding=true;
+    } else if (frame==8) {
+        producer_tx->inj.hold_silence=false;
+    } else if (frame==9) {
+        producer_tx->tone_mode=true;
+    }
+    pthread_mutex_unlock(&g_tx_injection_lock);
+    if (frame==10) producer->active=false;
+}
 
 bool rf10_fifo_put(rf10_fifo_t* fifo, const rf10_frame_t* frame, int timeout)
 {
@@ -67,10 +128,14 @@ bool rf10_fifo_put(rf10_fifo_t* fifo, const rf10_frame_t* frame, int timeout)
         producer->active=false;
         return success;
     }
+    if (producer_sequence_test) {
+        check_producer_sequence();
+        return true;
+    }
     if (producer_puts==1) {
         bool nonzero=false;
         for (size_t i=0; i<480; ++i) nonzero |= producer_tx->a48k[i]!=0;
-        assert(nonzero); // The trailing cue precedes the silent padding.
+        assert(nonzero!=producer_initial_silent);
     } else {
         for (size_t i=0; i<480; ++i) assert(producer_tx->a48k[i]==0);
         assert(!mic_reads && tone_changes==1);
@@ -79,7 +144,8 @@ bool rf10_fifo_put(rf10_fifo_t* fifo, const rf10_frame_t* frame, int timeout)
     return true;
 }
 
-static void producer_case(unsigned rate, bool block, bool success, bool tone_mode)
+static void producer_case(unsigned rate, bool block, bool success, bool tone_mode,
+                          bool fast_padding)
 {
     rf10_fifo_t fifo={0};
     float audio[480];
@@ -90,11 +156,15 @@ static void producer_case(unsigned rate, bool block, bool success, bool tone_mod
         .tone=tone_source_open(600,0.4f,(audio_format_t){48000,1}),
         .tone_mode=tone_mode, .mic=&mic, .tone_hz=600, .tone_amp=0.4f,
         .frame_samples=rate/100, .next_sequence=17, .fifo=&fifo,
-        .inj={ .frames_left=1, .hz=2475, .last_sequence=8, .hold_silence=true } };
+        .inj={ .frames_left=1, .hz=fast_padding?0:2475, .last_sequence=8,
+               .hold_silence=true, .fast_padding=fast_padding } };
     dsp_producer_ctrl_t ctrl={ .active=true, .tx=&tx, .fifo=&fifo };
     assert(iq && tx.fm && tx.tone);
     producer_tx=&tx; producer=&ctrl;
     producer_puts=tone_changes=mic_reads=0;
+    producer_now=producer_sleeps=0;
+    producer_initial_silent=fast_padding; producer_sequence_test=false;
+    check_pacing_deadline=true;
     nbfm_tx_active=true;
     gate_enabled=block; gate_entered=gate_release=false; gate_success=success;
     if (block) {
@@ -116,12 +186,41 @@ static void producer_case(unsigned rate, bool block, bool success, bool tone_mod
         assert(producer_puts==1);
         assert(tx.inj.frames_left==(success?0:1));
         assert(tx.inj.last_sequence==(success?18u:8u));
+        assert(producer_sleeps==(fast_padding?0u:1u));
     } else {
         nbfm_mod_thread(&ctrl);
         assert(producer_puts==3 && tx.next_sequence==20);
         assert(tx.inj.frames_left==0 && tx.inj.last_sequence==18);
         assert(!mic_reads && tone_changes==1);
+        assert(producer_sleeps==(fast_padding?2u:3u));
     }
+    audio_source_destroy(tx.tone); nbfm_destroy(tx.fm); free(iq);
+}
+
+static void producer_pacing_case(unsigned rate)
+{
+    rf10_fifo_t fifo={0};
+    float audio[480];
+    iq16_t* iq=calloc(rate/100, sizeof(*iq));
+    nbfm_cfg_t config={48000,rate,2500,0,4000,1};
+    audio_source_t mic={ {48000,1}, &mic_ops };
+    tx_writer_ctrl_st tx={ .fm=nbfm_create(&config), .a48k=audio, .iq_rf=iq,
+        .tone=tone_source_open(600,0.4f,(audio_format_t){48000,1}),
+        .tone_mode=false, .mic=&mic, .tone_hz=600, .tone_amp=0.4f,
+        .frame_samples=rate/100, .next_sequence=17, .fifo=&fifo,
+        .inj={ .frames_left=2, .hz=0, .last_sequence=8, .hold_silence=true } };
+    dsp_producer_ctrl_t ctrl={ .active=true, .tx=&tx, .fifo=&fifo };
+    assert(iq && tx.fm && tx.tone);
+    producer_tx=&tx; producer=&ctrl;
+    producer_puts=tone_changes=mic_reads=0;
+    producer_now=producer_sleeps=0;
+    producer_sequence_test=true; gate_enabled=false; check_pacing_deadline=true;
+    nbfm_tx_active=true;
+    nbfm_mod_thread(&ctrl);
+    assert(producer_puts==10 && tx.next_sequence==27 && producer_sleeps==7);
+    assert(tx.inj.frames_left==0 && tx.inj.last_sequence==24);
+    assert(mic_reads==1 && tone_changes==8);
+    producer_sequence_test=false;
     audio_source_destroy(tx.tone); nbfm_destroy(tx.fm); free(iq);
 }
 
@@ -326,10 +425,14 @@ static void handoff_case(unsigned rate, handoff_t at)
 int main(void)
 {
     for (unsigned rate=1000000; rate<=4000000; rate*=2) {
-        producer_case(rate,true,true,true);
-        producer_case(rate,true,false,true);
-        producer_case(rate,false,true,true);
-        producer_case(rate,false,true,false);
+        producer_case(rate,true,true,true,false);
+        producer_case(rate,true,false,true,false);
+        producer_case(rate,false,true,true,false);
+        producer_case(rate,false,true,false,false);
+        producer_case(rate,true,true,true,true);
+        producer_case(rate,true,false,true,true);
+        producer_case(rate,false,true,true,true);
+        producer_pacing_case(rate);
         writer_case(rate,false,false);
         writer_case(rate,true,false);
         writer_case(rate,false,true);
@@ -337,7 +440,8 @@ int main(void)
         handoff_case(rate,HANDOFF_POLL);
         handoff_case(rate,HANDOFF_WRITE);
         printf("PASS: %u MS/s: blocked/failed enqueue preserves injection progress, "
-               "padding stays silent, partial writes preserve markers, complete-frame acknowledgment, "
+               "only finite final padding bypasses 10 ms pacing and stays silent, "
+               "pacing resumes after padding, partial writes preserve markers, complete-frame acknowledgment, "
                "TX-to-RX handoff preserves RX after delayed/active writes and writer exit\n",
                rate/1000000);
     }

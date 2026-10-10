@@ -72,34 +72,46 @@ void* nbfm_mod_thread(void* arg)
         }
 
         // ============================================================
-        // Normal TX ON path (10 ms cadence)
+        // Normal audio uses 10 ms cadence. Final stop padding is finite and
+        // silent; queue/driver backpressure paces it so an empty kernel FIFO
+        // does not leave an unmodulated carrier for its full capacity duration.
         // ============================================================
         // ---- schedule next absolute wake ----
-        next_ns += PERIOD_NS;
-        struct timespec next_ts = {
-            .tv_sec  = (time_t)(next_ns / 1000000000ull),
-            .tv_nsec = (long)(next_ns % 1000000000ull)
-        };
+        pthread_mutex_lock(&g_tx_injection_lock);
+        bool fast_padding = ctrl->tx->inj.fast_padding &&
+                            ctrl->tx->inj.frames_left > 0 && ctrl->tx->inj.hz == 0.0f;
+        pthread_mutex_unlock(&g_tx_injection_lock);
+        if (fast_padding) {
+            // Re-anchor each burst frame; never accumulate future deadlines.
+            next_ns = mono_ns();
+            last_wake = 0;
+        } else {
+            next_ns += PERIOD_NS;
+            struct timespec next_ts = {
+                .tv_sec  = (time_t)(next_ns / 1000000000ull),
+                .tv_nsec = (long)(next_ns % 1000000000ull)
+            };
 
-        // ---- sleep until the absolute deadline, handle EINTR ----
-        int rc;
-        do {
-            rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_ts, NULL);
-        } while (rc == EINTR);
+            // ---- sleep until the absolute deadline, handle EINTR ----
+            int rc;
+            do {
+                rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_ts, NULL);
+            } while (rc == EINTR);
 
-        // ---- timing diagnostics ----
-        uint64_t now = mono_ns();
-        if (last_wake) {
-            double dt_ms = (now - last_wake) / 1e6;
-            if ((frame_idx++ % 50) == 0)
-                fprintf(stderr, "producer: dt = %.3f ms  rc = %d\n", dt_ms, rc);
-        }
-        last_wake = now;
+            // ---- timing diagnostics ----
+            uint64_t now = mono_ns();
+            if (last_wake) {
+                double dt_ms = (now - last_wake) / 1e6;
+                if ((frame_idx++ % 50) == 0)
+                    fprintf(stderr, "producer: dt = %.3f ms  rc = %d\n", dt_ms, rc);
+            }
+            last_wake = now;
 
-        // ---- if sleep failed or we drifted >50 ms, re-anchor ----
-        if (rc != 0 || now > next_ns + 5 * PERIOD_NS) {
-            next_ns = now;
-            fprintf(stderr, "producer: re-anchor (rc=%d)\n", rc);
+            // ---- if sleep failed or we drifted >50 ms, re-anchor ----
+            if (rc != 0 || now > next_ns + 5 * PERIOD_NS) {
+                next_ns = now;
+                fprintf(stderr, "producer: re-anchor (rc=%d)\n", rc);
+            }
         }
 
         // ============================================================

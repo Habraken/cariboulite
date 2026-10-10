@@ -69,8 +69,9 @@ accumulators. Discriminator normalization, audio filters and rate correction
 remain as before. The subsequent [angle correction](nbfm-discriminator-angle.md)
 replaces the old approximation with full `atan2f` and a zero-product guard.
 
-The noise-squelch thresholds remain 0.12/0.18 RMS. Channel filtering changes
-the discriminator's noise statistics, so they require physical re-evaluation.
+The noise-squelch defaults are now 0.20/0.30 RMS after replaying a fresh RF24
+capture; see [RX squelch](rx-squelch.md). Channel filtering changes the
+discriminator's noise statistics, so thresholds require physical re-evaluation.
 Disable both squelches when measuring receiver sensitivity or SINAD. Filter
 response and synthetic FM checks do not establish an antenna-port sensitivity
 improvement.
@@ -119,5 +120,9 @@ DSP CPU time per 10 ms RF block was **0.269/0.314/0.426 ms** at **1/2/4 MS/s**
 on this Raspberry Pi; this excludes the radio, FIFO and playback workers.
 The synthetic full-deviation 3 kHz test also reports approximately **23% raw-tap
 residual**, compared with about **21%** in the original receiver. The existing
-interpolation remains an audio-quality limit after the angle correction; this
-raw measurement is before voice/audio filtering and is not receiver SINAD.
+interpolation was an audio-quality limit at that stage. The subsequent
+[interpolation correction](rx-squelch.md#signal-path) reduces this residual to
+approximately **6.34%** at 3 kHz and **0.02%** at 600 Hz, with corrected 3 kHz
+amplitude about **0.979**. These raw measurements precede voice/audio filtering
+and are not receiver SINAD. Noise thresholds can now be adjusted in menu 14
+using **S**, while **N** bypasses gating and retains live noise measurement.

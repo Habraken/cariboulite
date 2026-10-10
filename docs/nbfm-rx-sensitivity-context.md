@@ -38,6 +38,18 @@ demodulation**, is now implemented with a **±6 kHz passband** and stopband from
 remaining findings come from source/schematic inspection and calculations.
 Antenna-port sensitivity gains have not been measured.
 
+The saved IQ capture in `build/iq-captures/20261010T145900+0200/` was recorded
+on **S1G (RF09) at 1 MS/s before the NBFM receiver improvements**. It predates
+the complex channel filter, corrected discriminator and explicit AGC/minimum
+modem bandwidth profile. Replaying it through newer DSP can assess software
+behavior, but noise-squelch calibration for the current receiver requires
+fresh **HiF (RF24)** data with the improved receive configuration.
+
+A fresh capture with that profile is now available at
+`build/iq-captures/20261010T212317+0200_hif_idle/`. Although intended as an idle
+baseline, it contains a transmission the user described as **weak but
+intelligible**. See the [new measurements below](#fresh-capture-and-threshold-selection-2026-10-10).
+
 ## Current app channel: HiF (RF24)
 
 After the successful S1G listening test, the user requested switching the app
@@ -120,6 +132,18 @@ with the complex channel filter and corrected discriminator.
 
 An RF input level, SINAD result and quantitative sensitivity gain were not
 recorded for these tests.
+
+Following the interpolation correction, live noise-RMS display and retuning to
+**0.20 open / 0.30 close**, the user reported a **satisfactory listening test**.
+This records listening acceptance of the updated receiver; the channel and
+sample rate were not restated in that feedback. The user also reported the TX
+carrier remaining on roughly two seconds after the closing Quindar tone; that
+separate shutdown issue is documented in [TX tail timing](tx-tail-timing.md).
+
+After the TX shutdown fix, the user confirmed **RX and TX tests successful**.
+This records physical acceptance of the updated receiver and TX shutdown
+behavior. The feedback did not restate the channel or sample rate, or provide
+a measured carrier-release duration.
 
 ## RX chain
 
@@ -207,7 +231,102 @@ when testing manual gain; the current public setter clamps only to 23.
 See [radio configuration](../software/libcariboulite/src/cariboulite_radio.c) and
 the [AT86RF215 datasheet, §§6.2–6.2.5](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/Atmel-42415-WIRELESS-AT86RF215_Datasheet.pdf).
 
-### 4. S1G antenna matching network at 430 MHz (earlier setup)
+### 4. Interpolation correction and noise squelch controls (implemented)
+
+Current noise squelch measures high-frequency raw discriminator audio using
+two cascaded 6 kHz high-pass biquads and 20 ms power averaging. It opens below
+**0.20 RMS** after **30 ms** of qualification and closes above **0.30 RMS**
+after **120 ms**, followed by a 5 ms audio fade. Averaging and queued audio add
+to these qualification times. Higher RMS thresholds admit noisier signals;
+lower thresholds demand quieter signals. See [RX squelch](rx-squelch.md).
+
+The 50-to-48 kHz interpolator now weights its endpoints in the correct time
+direction: `current + fraction * (previous - current)`. For generated clean,
+full-deviation **3 kHz FM** at 1 MS/s, detector RMS decreased from approximately
+**0.121 to 0.052**, allowing even the original 0.12 threshold to open. Raw-tap residual
+decreased from about **23% to 6.34%** at 3 kHz and from **4.4% to 0.02%** at
+600 Hz. Residual channel-filter/FM distortion remains; these are synthetic
+measurements before voice filtering, not receiver SINAD.
+
+Menu 14 displays live noise RMS and the detector decision, including when **N**
+disables gating. **S** accepts opening and closing levels, for example
+`0.200 0.300`, during RX. The pair updates atomically in 0.001 RMS steps without
+resetting DSP or noise-filter history; it remains selected across rate/mode and
+TX/RX changes in the same monitor session. WBFM does not expose these controls.
+The defaults are now **0.20/0.30**, selected by replaying the fresh capture's
+user-reported weak but intelligible transmission. Its detector RMS was around
+0.15–0.20, while idle RMS was around 1.2. The former **0.12/0.18** pair never
+opened at nominal-timing replay, but opened intermittently with the live
+−500 ppm rate correction. The new pair admits the transmission consistently
+under both timing conditions. The **30/120 ms qualification** and 5 ms fade
+remain unchanged.
+
+Independent interpolation-time, streaming, correction and reset tests pass at
+1/2/4 MS/s and 0/±500 ppm. Channel, worker, squelch, pipeline-lifecycle and
+frozen WBFM reference checks also pass under the relevant strict and production
+flags. Current standalone DSP measurements are approximately **2.93%, 3.41%
+and 4.44% of one core** at 1/2/4 MS/s. Noise processing with the new controls
+and telemetry costs about **0.086% of one core**; the added control/telemetry
+cost is about **0.005 percentage points**. See [RX squelch](rx-squelch.md).
+
+Measure idle-channel, strong-signal and weakest-intelligible-signal noise on
+current HiF/RF24 at 1 MS/s. Select thresholds and timing from those measurements,
+with carrier squelch disabled during calibration. Evaluate weak-signal fading,
+speech beginnings and the closing noise tail. The old capture cannot establish
+thresholds for the improved hardware profile. The user subsequently reported
+a satisfactory listening test with the updated receiver. Replay and listening
+acceptance do not establish antenna-port sensitivity or the weakest
+intelligible signal level.
+
+#### Fresh capture and threshold selection (2026-10-10)
+
+RX ran at **430.125 MHz, HiF/RF24, 1 MS/s**, from 21:23:17 to 21:25:17 local
+time (UTC+02:00). The separate IQ file contains **119.96 nominal sample
+seconds**, 119,960,000 IQ pairs and 479,840,000 bytes. Active RF24 registers were
+**RXBWC `0x10`, RXDFE `0x04`, AGCC `0x01`, AGCS `0x15`**, confirming the
+narrow modem filters and enabled/unfrozen AGC with its −21 dBFS target.
+The capture completed with app exit status 0 and RX stopped.
+
+Activity was identified at approximately **43.17–46.72 s** and
+**65.21–84.20 s**, using nominal sample positions. During the main interval,
+detector RMS median was about **0.156** and its 95th percentile about **0.198**.
+Selected quiet intervals had median **1.226**, 5th percentile **1.162** and
+minimum **1.082**. The live recording used the former **0.12/0.18** pair with
+rate correction reaching **−500 ppm**. Its gate opened in 8 of 117 sampled
+DEMOD log readings, during the main activity; these samples are not a complete
+gate history. The user's observation describes the signal's intelligibility,
+not acceptance of the subsequently selected thresholds.
+
+Replay through the current DSP and actual squelch detector at nominal timing
+(0 ppm correction) compared:
+
+| Open / close RMS | Brief activity admitted | Main activity admitted | Opening lag: brief / main |
+| --- | --- | --- | --- |
+| 0.12 / 0.18 | 0% | 0% | Never opened |
+| 0.16 / 0.24 | 86.4% | 96.7% | 480 / 630 ms |
+| 0.18 / 0.27 | 89.8% | 99.4% | 360 / 110 ms |
+| **0.20 / 0.30** | **95.2%** | **99.5%** | **170 / 90 ms** |
+
+With −500 ppm correction, the old pair admitted about **43.1%** of the main
+activity rather than 0%, demonstrating its marginal opening qualification.
+The new pair admitted **99.49%** under both timing conditions; brief activity
+admission was **95.20%** at 0 ppm and **95.18%** at −500 ppm. Activity detector
+median RMS changed by less than 0.0003.
+
+The new pair produced two continuous openings, no chatter or false openings
+in the quiet reference intervals, and closed approximately 120 ms after each
+activity interval. The comparison supports a measured starting point for this
+setup; it does not establish antenna-port sensitivity. The user subsequently
+reported satisfactory listening with the updated receiver.
+
+The log contains **1,872 SMI read timeout messages**. The demodulation FIFO
+also overwrote **57 RF blocks after the raw-IQ capture tap**. Raw samples have
+no hardware timestamps, so continuity remains unverified and interval times
+are nominal. These diagnostics are retained with the recording.
+See the [capture report](../build/iq-captures/20261010T212317+0200_hif_idle/README.md)
+for metadata, detector traces and the 10-second active excerpt.
+
+### 5. S1G antenna matching network at 430 MHz (earlier setup)
 
 The [repository schematic, sheets 1 and 7](../hardware/rev2/schematics/CaribouLite.PDF)
 shows the direct path through S1G connector J2, series capacitor C22 (15 pF), and

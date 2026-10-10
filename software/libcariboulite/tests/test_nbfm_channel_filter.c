@@ -214,10 +214,10 @@ static void voice_and_blocker(unsigned rate)
             // small-angle formula loses approximately 5% and fails this check.
             assert(amplitude>0.97 && amplitude<1.03);
             assert(fabs(amplitude/clean_amplitude-1)<0.01);
-            // The unchanged 50-to-48 kHz interpolation still contributes raw
-            // residual at 3 kHz. Check tuning/blocker immunity separately from
-            // the corrected discriminator's amplitude and quadrant accuracy.
-            assert(distortion<(voice ? 0.25 : 0.06));
+            // Correct interpolation timing keeps deterministic raw residual
+            // below 7.5% at 3 kHz and 1% at 600 Hz. Reversed endpoint weighting
+            // produces about 23% and 4.4%, respectively, and fails both bounds.
+            assert(distortion<(voice ? 0.075 : 0.01));
             assert(distortion<clean_distortion+0.015);
         }
     }

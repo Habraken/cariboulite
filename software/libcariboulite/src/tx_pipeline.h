@@ -12,6 +12,7 @@ typedef struct {
     volatile float hz;            // 0 => zeros, else tone frequency
     uint64_t last_sequence;       // Last injected frame successfully enqueued
     bool hold_silence;            // Keep silence after the stop cue
+    bool fast_padding;            // Finite final silence drains via writer backpressure
 } tone_injector_t;
 
 typedef struct {

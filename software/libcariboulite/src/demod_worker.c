@@ -28,6 +28,9 @@ void* audio_demod_thread(void* arg)
     float raw[480];
     noise_squelch_t noise = {0};
     carrier_squelch_t carrier = {0};
+    const bool noise_supported =
+        audio_demod_capabilities(c->dsp) & AUDIO_DEMOD_CAP_NOISE_SQUELCH;
+    float open_rms = NOISE_SQUELCH_OPEN_RMS, close_rms = NOISE_SQUELCH_CLOSE_RMS;
     unsigned previous_flags = ~0u;
     float gate_gain = 0.0f;
     uint64_t last_log_ms = 0;
@@ -40,6 +43,9 @@ void* audio_demod_thread(void* arg)
             carrier_squelch_reset(&carrier);
             gate_gain = 0.0f;
             atomic_store(&c->squelch_open, 0);
+            atomic_store(&c->noise_squelch_valid, 0);
+            atomic_store(&c->noise_squelch_rms_milli, 0);
+            atomic_store(&c->noise_squelch_detector_open, 0);
             corr48 = depth_ema = 0.0;
             primed = 0;
             nout = 0;
@@ -54,6 +60,10 @@ void* audio_demod_thread(void* arg)
             carrier_squelch_reset(&carrier);
             previous_flags = flags;
         }
+        // Invalid control words leave the last valid pair unchanged. Reapply
+        // after detector reset without clearing history for unchanged levels.
+        noise_squelch_unpack_levels(atomic_load(&c->noise_squelch_levels), &open_rms, &close_rms);
+        noise_squelch_set_thresholds(&noise, open_rms, close_rms);
         bool carrier_open = !(flags & RX_SQUELCH_CARRIER) ||
             carrier_squelch_process(&carrier, frm.rssi_dbm, frm.rssi_valid);
         size_t offset = 0;
@@ -117,8 +127,10 @@ void* audio_demod_thread(void* arg)
             }
             bool open = false;
             for (size_t i = 0; i < result.produced; ++i) {
-                bool noise_open = !(flags & RX_SQUELCH_NOISE) ||
-                    noise_squelch_process(&noise, raw[i]);
+                // Continue measuring while bypassed so live threshold tuning
+                // observes the same pre-volume, pre-de-emphasis detector.
+                bool detector_open = noise_supported && noise_squelch_process(&noise, raw[i]);
+                bool noise_open = !noise_supported || !(flags & RX_SQUELCH_NOISE) || detector_open;
                 open = noise_open && carrier_open;
                 // Keep clock/queues running while closed; ramp over 5 ms.
                 if (!flags) gate_gain = 1.0f; // exact bypass for diagnostics
@@ -140,14 +152,27 @@ void* audio_demod_thread(void* arg)
                     size_t acnt = 0, acap = 0;
                     aud10_fifo_peek_depth(c->afifo_out, &acnt, &acap);
                     fprintf(stderr,
-                        "DEMOD: frames=%llu (%.1fs) ALSA=%s  aud_fifo=%zu/%zu (%.0f%%)  corr=%.5f\n",
+                        "DEMOD: frames=%llu (%.1fs) ALSA=%s  aud_fifo=%zu/%zu (%.0f%%)  corr=%.5f",
                         (unsigned long long)c->pcm_total_frames,
                         (double)c->pcm_total_frames / (double)c->pcm_rate,
                         audio_sink_state(c->sink), acnt, acap,
                         100.0 * (double)acnt / (double)acap, corr48);
+                    if (noise_supported)
+                        fprintf(stderr, "  noise_rms=%.3f open=%.3f close=%.3f detector=%s gate=%s",
+                            atomic_load(&c->noise_squelch_rms_milli) / 1000.0,
+                            (double)open_rms, (double)close_rms,
+                            noise.open ? "OPEN" : "CLOSED", open ? "OPEN" : "CLOSED");
+                    fputc('\n', stderr);
                     last_log_ms = ms;
                 }
             }
+        }
+        // Publish at RF-block rate; no square root in the sample loop.
+        if (noise_supported) {
+            atomic_store(&c->noise_squelch_rms_milli,
+                         (unsigned)lroundf(sqrtf(noise.power) * 1000.0f));
+            atomic_store(&c->noise_squelch_detector_open, noise.open);
+            atomic_store(&c->noise_squelch_valid, 1);
         }
     }
     return NULL;

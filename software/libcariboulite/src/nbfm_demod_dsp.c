@@ -108,10 +108,11 @@ nbfm_demod_result_t nb_demod_process_with_raw(nbfm_demod_t* dsp,
 
         // If we crossed 1.0, emit exactly one 48k sample at that crossing
         if (s->phase48 >= 1.0) {
+            // The phase overshoot measures how far the output crossing lies
+            // before the current endpoint, in 50 kHz sample intervals.
             const double frac = (s->phase48 - 1.0) / r;    // ∈ [0..1)
-            float y_lin;
-            // Preserve the legacy NBFM interpolation exactly.
-            y_lin = s->y_prev_50k + (float)frac * (s->y_curr_50k - s->y_prev_50k);
+            const float y_lin = s->y_curr_50k + (float)frac *
+                (s->y_prev_50k - s->y_curr_50k);
 
             if (raw_audio) raw_audio[result.produced] = y_lin;
 

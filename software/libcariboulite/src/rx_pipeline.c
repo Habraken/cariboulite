@@ -4,6 +4,7 @@
 #include "rx_pipeline.h"
 #include "pipeline_runtime.h"
 #include "alsa_sink.h"
+#include "noise_squelch.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -130,6 +131,11 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
         par->fs_audio != 48000 ||
         (par->mode != AUDIO_DEMOD_NBFM && par->mode != AUDIO_DEMOD_WBFM)) return -1;
 
+    uint32_t noise_levels = noise_squelch_default_levels();
+    if ((par->noise_squelch_open_rms != 0 || par->noise_squelch_close_rms != 0) &&
+        !noise_squelch_pack_levels(par->noise_squelch_open_rms,
+                                  par->noise_squelch_close_rms, &noise_levels)) return -1;
+
     // FIFOs
     rf10_fifo_init(&p->rxq,  /*cap=*/64, /*drop_oldest_on_full=*/true);
     aud10_fifo_init(&p->afifo, /*cap=*/24);
@@ -159,6 +165,10 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
         (par->noise_squelch_disabled || !(audio_demod_mode_capabilities(par->mode) & AUDIO_DEMOD_CAP_NOISE_SQUELCH) ? 0u : RX_SQUELCH_NOISE) |
         (par->carrier_squelch_enabled ? RX_SQUELCH_CARRIER : 0u));
     atomic_init(&p->demod.squelch_open, 0);
+    atomic_init(&p->demod.noise_squelch_levels, noise_levels);
+    atomic_init(&p->demod.noise_squelch_rms_milli, 0);
+    atomic_init(&p->demod.noise_squelch_detector_open, 0);
+    atomic_init(&p->demod.noise_squelch_valid, 0);
     // Demod setup
     p->demod.mode              = par->mode;
     p->demod.reset             = true;
@@ -438,4 +448,27 @@ void rx_pipeline_set_squelch(rx_pipeline_t* p, bool noise, bool carrier)
 bool rx_pipeline_squelch_open(const rx_pipeline_t* p)
 {
     return p && p->running && atomic_load(&p->demod.squelch_open);
+}
+
+int rx_pipeline_set_noise_squelch_levels(rx_pipeline_t* p, float open_rms, float close_rms)
+{
+    uint32_t levels;
+    if (!p || !p->inited || !noise_squelch_pack_levels(open_rms, close_rms, &levels)) return -1;
+    atomic_store(&p->demod.noise_squelch_levels, levels);
+    return 0;
+}
+
+int rx_pipeline_get_noise_squelch_status(const rx_pipeline_t* p, rx_noise_squelch_status_t* out)
+{
+    if (!p || !p->inited || !out) return -1;
+    memset(out, 0, sizeof(*out));
+    if (!noise_squelch_unpack_levels(atomic_load(&p->demod.noise_squelch_levels),
+                                    &out->open_rms, &out->close_rms)) return -1;
+    out->valid = p->running && p->demod.mode == AUDIO_DEMOD_NBFM &&
+        atomic_load(&p->demod.noise_squelch_valid);
+    if (out->valid) {
+        out->rms = atomic_load(&p->demod.noise_squelch_rms_milli) / 1000.0f;
+        out->detector_open = atomic_load(&p->demod.noise_squelch_detector_open);
+    }
+    return 0;
 }

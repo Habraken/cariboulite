@@ -408,9 +408,82 @@ static void test_modem_policy(void) {
     }
     puts("PASS: RF09/RF24 NBFM AGC/filter restoration at 1/2/4 MS/s, WBFM transitions, failed configuration blocks RX and retries cleanly");
 }
+static void test_noise_level_controls(void) {
+    float opening=0, closing=0;
+    assert(monitor_parse_noise_levels("0.120 0.180",&opening,&closing));
+    assert(fabsf(opening-.12f)<1e-6f && fabsf(closing-.18f)<1e-6f);
+    assert(monitor_parse_noise_levels(" .1404\t.2104 ",&opening,&closing));
+    assert(fabsf(opening-.140f)<1e-6f && fabsf(closing-.210f)<1e-6f);
+    const char* invalid[]={"", "0.12", "0.12,0.18", "0 0.18", "-0.1 0.2",
+        "0.18 0.12", "0.12 0.12", "0.1201 0.1202", "0.1 8.001",
+        "nan 0.2", "0.1 inf", "1e999 0.2", "0.12 0.18 extra", "0.12 0.18 0.3"};
+    for(unsigned i=0;i<sizeof(invalid)/sizeof(*invalid);++i) {
+        assert(!monitor_parse_noise_levels(invalid[i],&opening,&closing));
+        assert(fabsf(opening-.140f)<1e-6f && fabsf(closing-.210f)<1e-6f);
+    }
+    sys_st sys={0};
+    sys.radio_high.sys=&sys;
+    sys.radio_high.type=cariboulite_channel_hif;
+    rx_params_t par={.freq_hz=430125000,.pcm_dev="null",.fs_rf=1000000,.fs_audio=48000};
+    rx_pipeline_t rx={0};
+    rx_noise_squelch_status_t status;
+    // Invalid initial levels fail before allocating FIFOs or creating threads.
+    par.noise_squelch_open_rms=.2f; par.noise_squelch_close_rms=.1f;
+    int before=creates;
+    assert(rx_pipeline_init(&rx,&sys,&sys.radio_high,&par)<0 && creates==before);
+    par.noise_squelch_open_rms=par.noise_squelch_close_rms=0;
+    assert(rx_pipeline_init(&rx,&sys,&sys.radio_high,&par)==0);
+    assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0 && !status.valid);
+    assert(fabsf(status.open_rms-.20f)<1e-6f && fabsf(status.close_rms-.30f)<1e-6f);
+    assert(rx_pipeline_start(&rx)==0);
+    audio_demod_t* dsp=rx.demod.dsp;
+    rx.demod.reset=false;
+    before=creates;
+    assert(monitor_apply_noise_levels(&rx,&par,.1404f,.2104f)==0);
+    assert(fabsf(par.noise_squelch_open_rms-.140f)<1e-6f &&
+           fabsf(par.noise_squelch_close_rms-.210f)<1e-6f);
+    assert(rx.running && !rx.demod.reset && rx.demod.dsp==dsp && creates==before);
+    assert(monitor_apply_noise_levels(&rx,&par,.3f,.2f)<0);
+    assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0 && !status.valid);
+    assert(fabsf(status.open_rms-.140f)<1e-6f && fabsf(status.close_rms-.210f)<1e-6f);
+    // Publishing measurements remains independent of the effective gate.
+    atomic_store(&rx.demod.noise_squelch_rms_milli,52);
+    atomic_store(&rx.demod.noise_squelch_detector_open,1);
+    atomic_store(&rx.demod.noise_squelch_valid,1);
+    rx_pipeline_set_squelch(&rx,false,true);
+    assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0 && status.valid);
+    assert(fabsf(status.rms-.052f)<1e-6f && status.detector_open);
+    assert(!rx_pipeline_squelch_open(&rx));
+    rx_pipeline_stop(&rx);
+    assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0 && !status.valid);
+    rx_pipeline_destroy(&rx); check_clean(&rx);
+    for(unsigned rate=0;rate<sizeof(monitor_rates)/sizeof(*monitor_rates);++rate) {
+        par.fs_rf=monitor_rates[rate].fs;
+        assert(rx_pipeline_init(&rx,&sys,&sys.radio_high,&par)==0);
+        assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0);
+        assert(fabsf(status.open_rms-.140f)<1e-6f && fabsf(status.close_rms-.210f)<1e-6f);
+        tx_pipeline_t tx={0}; monitor_loopback_t loopback={0};
+        assert(monitor_cycle_rx_mode(&tx,&rx,&loopback,&sys,&par)==0);
+        assert(par.mode==AUDIO_DEMOD_WBFM);
+        assert(rx_pipeline_start(&rx)==0);
+        atomic_store(&rx.demod.noise_squelch_valid,1); // WBFM still cannot expose noise RMS.
+        assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0 && !status.valid);
+        rx_pipeline_stop(&rx);
+        assert(monitor_cycle_rx_mode(&tx,&rx,&loopback,&sys,&par)==0);
+        assert(par.mode==AUDIO_DEMOD_NBFM);
+        assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0);
+        assert(fabsf(status.open_rms-.140f)<1e-6f && fabsf(status.close_rms-.210f)<1e-6f);
+        rx_pipeline_destroy(&rx); check_clean(&rx);
+    }
+    assert(rx_pipeline_set_noise_squelch_levels(&rx,.12f,.18f)<0);
+    assert(rx_pipeline_get_noise_squelch_status(&rx,&status)<0);
+    puts("PASS: noise-level input validation, live atomic settings, bypass telemetry, and rate/mode persistence");
+}
+
 int main(void) {
     test_rssi_capture();
     test_modem_policy();
+    test_noise_level_controls();
     sys_st sys = {0};
     sys.radio_low.sys = sys.radio_high.sys = &sys;
     sys.radio_low.type = cariboulite_channel_s1g;
@@ -597,6 +670,9 @@ int main(void) {
     } padding_cases[] = {
         {131072, 2, false, 1000000, 43},
         {131072, 2, false, 2000000, 25},
+        {131072, 6, false, 1000000, 122},
+        {131072, 6, false, 2000000, 61},
+        {131072, 6, false, 4000000, 31},
         {131072, 32, false, 1000000, 436},
         {131072, 32, false, 2000000, 218},
         {131072, 32, false, 4000000, 109},

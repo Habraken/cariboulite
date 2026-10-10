@@ -14,6 +14,10 @@ typedef struct aud10_fifo_s aud10_fifo_t;
 typedef struct {
     atomic_uint squelch_flags; // control writes, worker reads; zero bypasses both
     atomic_uint squelch_open;  // worker publishes effective gate (0/1)
+    atomic_uint noise_squelch_levels; // open RMS milli (upper 16), close (lower); zero defaults
+    atomic_uint noise_squelch_rms_milli; // worker telemetry, raw detector RMS * 1000
+    atomic_uint noise_squelch_detector_open; // detector decision even while bypassed
+    atomic_uint noise_squelch_valid; // telemetry available for NBFM; zero before data/WBFM
     audio_demod_mode_t     mode;        // immutable while worker is alive
     audio_demod_t*       dsp;         // pipeline-owned; destroy after joining worker
     bool                active;

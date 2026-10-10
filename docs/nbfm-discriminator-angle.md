@@ -74,12 +74,15 @@ and production compiler flags. Public receiver checks cover silence, fading,
 random IQ and signal recovery at 1/2/4 MS/s. Streaming, reset, worker framing,
 channel selectivity, tuned voice recovery and squelch checks also pass.
 
-Full-deviation voice tones now recover normalized raw amplitudes of about
+At the time of the angle correction, full-deviation voice tones recovered
+normalized raw amplitudes of about
 **0.998 at 600 Hz** and **0.992 at 3 kHz**, including ±500 Hz tuning offsets and
 a +20 dB adjacent carrier. The previous approximation lost about 5% of the
-wanted amplitude. The unchanged 50-to-48 kHz interpolation still leaves about
-23% raw-tap residual in the full-deviation 3 kHz test, before audio filtering;
-this measurement is not receiver SINAD.
+wanted amplitude. The then-unchanged 50-to-48 kHz interpolation left about
+23% raw-tap residual in the full-deviation 3 kHz test. The subsequent
+[interpolation correction](rx-squelch.md#signal-path) reduces that to about
+6.34%, with corrected 3 kHz amplitude about 0.979. These measurements precede
+audio filtering and are not receiver SINAD.
 
 The existing noise-squelch thresholds are retained and their integration checks
 pass. On 2026-10-10, the user confirmed a **successful listening test on
