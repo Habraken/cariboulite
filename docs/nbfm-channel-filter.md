@@ -72,7 +72,8 @@ improvement.
 
 ## On-air listening result (2026-10-10)
 
-The user confirmed a successful listening test after installing the filter:
+The user confirmed a successful listening test on **S1G (RF09) at 1 MS/s**
+after installing the filter:
 the repeater's scheduled transmission was clearly audible and its message
 understandable, with a reported definite improvement. This physical listening
 result complements the automated checks. See the

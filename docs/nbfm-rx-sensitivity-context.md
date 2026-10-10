@@ -40,6 +40,8 @@ Antenna-port sensitivity gains have not been measured.
 
 ## Successful listening test (2026-10-10)
 
+The test used the **S1G (RF09) channel at 1 MS/s**.
+
 Following implementation of the complex channel filter, the user reported
 clearly hearing the repeater's scheduled transmission and understanding its
 message. The user described reception as a definite improvement. This records
