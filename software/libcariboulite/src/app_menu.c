@@ -115,10 +115,10 @@ app_menu_item_st handles[] =
 	{app_selection_modem_tx_cw, modem_tx_cw, "Modem transmit CW signal",},
 	{app_selection_modem_rx_iq, modem_rx_iq, "Modem receive I/Q stream",},
     {app_selection_synthesizer, synthesizer, "Synthesizer 85-4200 MHz",},
-	{app_selection_nbfm_tx_tone, nbfm_tx_tone, "NBFM TX Tone",},
-	{app_selection_nbfm_rx, nbfm_rx, "NBFM RX",},
+	{app_selection_nbfm_tx_tone, nbfm_tx_tone, "NBFM TX Tone (HiF)",},
+	{app_selection_nbfm_rx, nbfm_rx, "NBFM RX (HiF)",},
     {app_selection_nbfm_modem_selftest, nbfm_modem_selftest, "NBFM modem Self-Test",},
-	{app_selection_monitor_modem_status, monitor_modem_status, "Monitor Modem Status (S1G)",},
+	{app_selection_monitor_modem_status, monitor_modem_status, "Monitor Modem Status (HiF)",},
 };
 #define NUM_HANDLES 	(int)(sizeof(handles)/sizeof(app_menu_item_st))
 
@@ -847,7 +847,7 @@ static void nbfm_tx_tone(sys_st *sys)
         .f_dev_hz     = NBFM_DEFAULT_DEVIATION_HZ,
     };
 
-    if (tx_pipeline_init(&tx, sys, &sys->radio_low, &par) != 0) {
+    if (tx_pipeline_init(&tx, sys, &sys->radio_high, &par) != 0) {
         fprintf(stderr, "[tx_tone] init failed\n");
         return;
     }
@@ -867,7 +867,7 @@ static void nbfm_tx_tone(sys_st *sys)
                 // Recreate DSP too, discarding audio left by the previous run.
                 tx_pipeline_destroy(&tx);
                 if (caribou_fpga_soft_reset(&sys->fpga) != 0 ||
-                    tx_pipeline_init(&tx, sys, &sys->radio_low, &par) != 0) {
+                    tx_pipeline_init(&tx, sys, &sys->radio_high, &par) != 0) {
                     fprintf(stderr, "[tx_tone] clean restart failed\n");
                     break;
                 }
@@ -883,7 +883,7 @@ static void nbfm_tx_tone(sys_st *sys)
             }
             tx_pipeline_destroy(&tx);
             par.rf_fs = choice * 1000000;
-            if (tx_pipeline_init(&tx, sys, &sys->radio_low, &par) != 0) {
+            if (tx_pipeline_init(&tx, sys, &sys->radio_high, &par) != 0) {
                 fprintf(stderr, "[tx_tone] rate change failed\n");
                 break;
             }
@@ -893,7 +893,7 @@ static void nbfm_tx_tone(sys_st *sys)
     }
 
     tx_pipeline_destroy(&tx);
-    cariboulite_radio_set_tx_samp_cutoff_flt(&sys->radio_low, 4000000);
+    cariboulite_radio_set_tx_samp_cutoff_flt(&sys->radio_high, 4000000);
     printf("NBFM TX tone stopped.\n");
 }
 
@@ -909,7 +909,7 @@ static void nbfm_rx(sys_st *sys)
         .fs_audio      = 48000.0f,
     };
 
-    if (rx_pipeline_init(&rx, sys, &sys->radio_low, &par) != 0) {
+    if (rx_pipeline_init(&rx, sys, &sys->radio_high, &par) != 0) {
         fprintf(stderr, "[rx] init failed\n");
         return;
     }
@@ -935,7 +935,7 @@ static void nbfm_rx(sys_st *sys)
             }
             rx_pipeline_destroy(&rx);
             par.fs_rf = choice * 1000000.0f;
-            if (rx_pipeline_init(&rx, sys, &sys->radio_low, &par) != 0) {
+            if (rx_pipeline_init(&rx, sys, &sys->radio_high, &par) != 0) {
                 fprintf(stderr, "[rx] rate change failed\n");
                 break;
             }
@@ -945,7 +945,7 @@ static void nbfm_rx(sys_st *sys)
     }
 
     rx_pipeline_destroy(&rx);
-    cariboulite_radio_set_rx_sample_rate_flt(&sys->radio_low, 4000000);
+    cariboulite_radio_set_rx_sample_rate_flt(&sys->radio_high, 4000000);
     printf("NBFM RX stopped.\n");
 }
 
@@ -1060,7 +1060,7 @@ void monitor_modem_status(sys_st *sys)
     tx_pipeline_t txp = {0};
     rx_pipeline_t rxp = {0};
     monitor_loopback_t loopback = {0};
-    cariboulite_radio_state_st* radio = &sys->radio_low; // RF09 / S1G
+    cariboulite_radio_state_st* radio = &sys->radio_high; // RF24 / HiF
 
     tx_params_t txpar = {
         .freq_hz      = 430100000.0,

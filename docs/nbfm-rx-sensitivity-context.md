@@ -38,6 +38,15 @@ demodulation**, is now implemented with a **±6 kHz passband** and stopband from
 remaining findings come from source/schematic inspection and calculations.
 Antenna-port sensitivity gains have not been measured.
 
+## Current app channel: HiF (RF24)
+
+After the successful S1G listening test, the user requested switching the app
+back to **HiF (RF24)**. Menus **11, 12 and 14** now use `sys->radio_high` for
+TX and RX. The complex channel filter and ±2.5 kHz normalization remain active.
+At 430.125 MHz on the full board, this path uses the HiF front-end mixer and
+RF24 at an IF near 2.495 GHz. The driver handles the conversion's IQ inversion.
+The direct RF09 antenna-path findings below describe the earlier S1G setup.
+
 ## Successful listening test (2026-10-10)
 
 The test used the **S1G (RF09) channel at 1 MS/s**.
@@ -46,15 +55,20 @@ Following implementation of the complex channel filter, the user reported
 clearly hearing the repeater's scheduled transmission and understanding its
 message. The user described reception as a definite improvement. This records
 a successful on-air listening test and a reported improvement in intelligibility.
+
+After switching the app back to **HiF (RF24)**, the user also confirmed
+**good reception at 1 MS/s**. Successful listening results are therefore
+recorded for both S1G/RF09 and HiF/RF24 with the new complex channel filter.
+
 An RF input level, SINAD result and quantitative sensitivity gain were not
-recorded for this test.
+recorded for these tests.
 
 ## RX chain
 
 ```mermaid
 flowchart TD
-    A["S1G antenna connector → matching network"]
-    B["AT86RF215 RF09: LNA → low-IF mixer → analog filter"]
+    A["HiF antenna connector → front-end mixer"]
+    B["AT86RF215 RF24 at converted IF: LNA → low-IF mixer → analog filter"]
     C["ADC → chip digital filtering → 13-bit IQ"]
     D["FPGA FIFO → SMI / DMA → software RX queue"]
     E["CIC anti-alias filter → complex channel FIR → limiter → FM discriminator"]
@@ -64,7 +78,7 @@ flowchart TD
 
 | Stage | Current behavior |
 | --- | --- |
-| RF frontend | Direct RF09/S1G path. Menu 14 selects **2 MHz analog bandwidth**. The board's wideband amplifier and mixer belong to the other receive path. |
+| RF frontend | HiF/RF24 path. At **430.125 MHz**, the full board uses its front-end mixer to convert to an IF near **2.495 GHz**. Menu 14 selects **2 MHz modem analog bandwidth**. |
 | Chip filtering and rate | IQ runs at **1, 2 or 4 MS/s**, initially 4 MS/s. The chip digital filter cutoff is configured to **half the sample rate**, much wider than NBFM. |
 | Transport | FPGA buffers and transfers samples without RX filtering. Software stores signed 13-bit values in 16-bit containers and assembles **10 ms IQ blocks**. |
 | Software IQ filtering | Third-order CIC reduces IQ to **200 kS/s**, then a **321-tap complex FIR** filters and decimates to **50 kS/s**. Passband **±6 kHz**; stopband starts at **±9 kHz**. |
@@ -129,7 +143,7 @@ when testing manual gain; the current public setter clamps only to 23.
 See [radio configuration](../software/libcariboulite/src/cariboulite_radio.c) and
 the [AT86RF215 datasheet, §§6.2.1–6.2.3](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-42415-WIRELESS-AT86RF215_Datasheet.pdf).
 
-### 4. Check the antenna matching network at 430 MHz
+### 4. S1G antenna matching network at 430 MHz (earlier setup)
 
 The [repository schematic, sheets 1 and 7](../hardware/rev2/schematics/CaribouLite.PDF)
 shows the direct path through S1G connector J2, series capacitor C22 (15 pF), and

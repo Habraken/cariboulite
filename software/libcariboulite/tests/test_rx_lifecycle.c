@@ -328,28 +328,28 @@ int main(void) {
         tx_params_t split_tx={.tone_mode=true,.f_dev_hz=2500,.out_scale=4000,
             .freq_hz=430125000,.rf_fs=fs};
         rx_params_t split_rx={.pcm_dev="null",.freq_hz=868500000,.fs_rf=fs,.fs_audio=48000};
-        assert(monitor_init_pipelines(&tx,&p,&sys,&sys.radio_low,&split_tx,&split_rx));
-        assert(tx.radio==&sys.radio_low && p.radio==&sys.radio_low);
-        assert(tx.tx_ctrl.radio==&sys.radio_low && tx.dsp_ctrl.tx==&tx.tx_ctrl);
-        assert(p.rx_ctrl.radio==&sys.radio_low);
+        assert(monitor_init_pipelines(&tx,&p,&sys,&sys.radio_high,&split_tx,&split_rx));
+        assert(tx.radio==&sys.radio_high && p.radio==&sys.radio_high);
+        assert(tx.tx_ctrl.radio==&sys.radio_high && tx.dsp_ctrl.tx==&tx.tx_ctrl);
+        assert(p.rx_ctrl.radio==&sys.radio_high);
         assert(tx_pipeline_frame_samples(&tx)==monitor_rates[rate].frame_samples);
         assert(tx.tx_ctrl.tail_padding_frames==monitor_tail_padding[rate]);
         assert(rx_pipeline_frame_samples(&p)==monitor_rates[rate].frame_samples);
-        assert(test_tx_rate==fs && rate_tx_radio==&sys.radio_low);
+        assert(test_tx_rate==fs && rate_tx_radio==&sys.radio_high);
         assert(tx_gap_reads==before_gap_reads+1);
         assert(split_tx.freq_hz==430125000 && split_rx.freq_hz==868500000);
-        assert(tuned_radio==&sys.radio_low && tuned_frequency==split_rx.freq_hz);
+        assert(tuned_radio==&sys.radio_high && tuned_frequency==split_rx.freq_hz);
         pthread_t consumer;
         assert(__real_pthread_create(&consumer,NULL,consume_injection,&tx)==0);
         assert(monitor_start_tx(&tx,&p,&split_tx)==0);
         assert(tx.running && !p.running && tuned_frequency==split_tx.freq_hz);
-        assert(tuned_radio==&sys.radio_low && activated_radio==&sys.radio_low);
+        assert(tuned_radio==&sys.radio_high && activated_radio==&sys.radio_high);
         assert(last_stream==smi_stream_tx_channel);
         assert(monitor_start_rx(&tx,&p,&split_rx)==0);
         assert(p.running && !tx.running && tuned_frequency==split_rx.freq_hz);
-        assert(tuned_radio==&sys.radio_low && activated_radio==&sys.radio_low);
-        assert(last_stream==smi_stream_rx_channel_0 && p.rx_ctrl.radio==&sys.radio_low);
-        assert(test_rx_rate==fs && rate_rx_radio==&sys.radio_low);
+        assert(tuned_radio==&sys.radio_high && activated_radio==&sys.radio_high);
+        assert(last_stream==smi_stream_rx_channel_1 && p.rx_ctrl.radio==&sys.radio_high);
+        assert(test_rx_rate==fs && rate_rx_radio==&sys.radio_high);
         fail_tune=true;
         assert(monitor_start_tx(&tx,&p,&split_tx)!=0);
         assert(!tx.running && !p.running && !hardware_active);
@@ -358,7 +358,7 @@ int main(void) {
         fail_tune=false;
         assert(monitor_start_rx(&tx,&p,&split_rx)==0);
         assert(tuned_frequency==split_rx.freq_hz);
-        assert(last_stream==smi_stream_rx_channel_0);
+        assert(last_stream==smi_stream_rx_channel_1);
         assert(__real_pthread_cancel(consumer)==0);
         assert(__real_pthread_join(consumer,NULL)==0);
         rx_pipeline_destroy(&p); tx_pipeline_destroy(&tx);
@@ -443,12 +443,12 @@ int main(void) {
     for(int failure=1;failure<=4;++failure) {
         rx_pipeline_t rx={0};
         fail_create=creates+failure;
-        assert(!monitor_init_pipelines(&tx,&rx,&sys,&sys.radio_low,&tp,&par));
+        assert(!monitor_init_pipelines(&tx,&rx,&sys,&sys.radio_high,&tp,&par));
         assert(!tx.inited && !rx.inited);
         for(int i=1;i<=creates;++i) assert(!live[i]);
         fail_create=0;
     }
-    assert(monitor_init_pipelines(&tx,&p,&sys,&sys.radio_low,&tp,&par));
+    assert(monitor_init_pipelines(&tx,&p,&sys,&sys.radio_high,&tp,&par));
     monitor_loopback_t loopback = {0};
     nbfm_demod_t* original = p.demod.dsp;
     int original_creates = creates;
@@ -464,8 +464,8 @@ int main(void) {
         rx_params_t saved=par;
         assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)==0);
         assert(par.mode==FM_MODE_WBFM && p.demod.mode==FM_MODE_WBFM && !p.running);
-        assert(p.radio==&sys.radio_low && p.rx_ctrl.radio==&sys.radio_low);
-        assert(tx.radio==&sys.radio_low && tx.tx_ctrl.radio==&sys.radio_low);
+        assert(p.radio==&sys.radio_high && p.rx_ctrl.radio==&sys.radio_high);
+        assert(tx.radio==&sys.radio_high && tx.tx_ctrl.radio==&sys.radio_high);
         assert(par.freq_hz==saved.freq_hz && par.pcm_dev==saved.pcm_dev &&
                par.pcm_gain==saved.pcm_gain && par.deemph_tau_s==saved.deemph_tau_s &&
                par.fs_rf==saved.fs_rf && par.fs_audio==saved.fs_audio &&
@@ -476,21 +476,21 @@ int main(void) {
         rx_pipeline_set_squelch(&p,true,true);
         assert(atomic_load(&p.demod.squelch_flags)==RX_SQUELCH_CARRIER);
         assert(monitor_start_rx(&tx,&p,&par)==0);
-        assert(last_stream==smi_stream_rx_channel_0 && activated_radio==&sys.radio_low);
+        assert(last_stream==smi_stream_rx_channel_1 && activated_radio==&sys.radio_high);
         assert(p.rx_ctrl.rx_buffer_size==monitor_rates[rate].frame_samples);
-        assert(test_rx_rate==monitor_rates[rate].fs && rate_rx_radio==&sys.radio_low);
+        assert(test_rx_rate==monitor_rates[rate].fs && rate_rx_radio==&sys.radio_high);
         rx_pipeline_stop(&p);
         assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)==0);
         assert(par.mode==FM_MODE_NBFM && p.demod.mode==FM_MODE_NBFM && !p.running);
-        assert(p.radio==&sys.radio_low && p.rx_ctrl.radio==&sys.radio_low);
+        assert(p.radio==&sys.radio_high && p.rx_ctrl.radio==&sys.radio_high);
         assert(atomic_load(&p.demod.squelch_flags)==RX_SQUELCH_NOISE);
         assert(audio_demod_capabilities(p.demod.dsp)==AUDIO_DEMOD_CAP_NOISE_SQUELCH);
         assert(par.freq_hz==saved.freq_hz && par.pcm_gain==saved.pcm_gain &&
                par.deemph_tau_s==saved.deemph_tau_s && par.fs_rf==saved.fs_rf);
         assert(monitor_start_rx(&tx,&p,&par)==0);
-        assert(last_stream==smi_stream_rx_channel_0 && activated_radio==&sys.radio_low);
+        assert(last_stream==smi_stream_rx_channel_1 && activated_radio==&sys.radio_high);
         assert(p.rx_ctrl.rx_buffer_size==monitor_rates[rate].frame_samples);
-        assert(test_rx_rate==monitor_rates[rate].fs && rate_rx_radio==&sys.radio_low);
+        assert(test_rx_rate==monitor_rates[rate].fs && rate_rx_radio==&sys.radio_high);
         rx_pipeline_stop(&p);
     }
     fail_calloc = true;
@@ -551,5 +551,5 @@ int main(void) {
     assert(metadata_allocation == NULL);
     track_metadata = false;
     pthread_barrier_destroy(&reader_ready);
-    puts("PASS: S1G monitor frequency bands/routing/rates/modes, TX tail padding plans, TX/RX lifecycle, startup failures, FIFO timing and cancellation");
+    puts("PASS: S1G/HiF frequency bands, HiF monitor routing/rates/modes, TX tail padding plans, TX/RX lifecycle, startup failures, FIFO timing and cancellation");
 }

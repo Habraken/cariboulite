@@ -12,7 +12,7 @@ both requested frequencies to six decimal places in MHz. The hardware may round
 the requested value to its synthesizer resolution.
 
 **T** starts TX using the saved TX frequency; **R** starts RX using the saved RX
-frequency. Starting either direction stops the other. Both use the same RF09/S1G
+frequency. Starting either direction stops the other. Both use the same HiF/RF24
 radio and tuner, so these are alternate receive/transmit frequencies, not
 simultaneous duplex operation. Before activation, the monitor explicitly tunes
 the shared hardware for the requested direction, even after pipeline recreation.
@@ -24,10 +24,12 @@ recreation within the monitor session. Leaving and re-entering menu 14 restores
 defaults; there is no configuration-file persistence in this increment.
 Noise/carrier squelch choices remain independent of these frequencies.
 
-Input validation follows the current driver's S1G ranges: 377–530 MHz and
-779–1020 MHz inclusive on both board variants. These are driver limits,
-not a claim of verified performance throughout those ranges. The monitor
-retains the existing 430.1 MHz default.
+Input validation follows the current driver's HiF ranges: **1 MHz to below
+6000 MHz** on the full board, or **2385–2495 MHz** on the ISM board. The existing
+430.1 MHz default uses the full board's front-end mixer and RF24 receiver.
+These are driver limits, not a claim of verified performance throughout those
+ranges. Menus 11 and 12 also use HiF/RF24. The earlier S1G listening test remains
+recorded in the [receiver context](nbfm-rx-sensitivity-context.md).
 
 Press **1**, **2** or **4** with TX, RX and interface loopback stopped to select
 1, 2 or 4 MS/s for both directions. NBFM TX and NBFM/mono-WBFM RX use 10,000,
@@ -46,7 +48,7 @@ Hardware-free lifecycle tests cover different TX/RX frequencies on the shared
 radio at all three sample rates, restoration before activation, failed-tune start
 blocking and recovery, and preservation of requested values when the driver
 rounds its output. Input tests cover decimal MHz, whitespace, non-finite values,
-trailing junk and S1G bands. Loopback tests cover the frequency and rate hotkeys.
+trailing junk and both HiF and S1G bands. Loopback tests cover the frequency and rate hotkeys.
 
 The application build, RX lifecycle, TX stop-deadline, monitor loopback and
 baseline-runner software checks pass. Physical acceptance is pending. With an

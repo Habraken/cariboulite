@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Drive test_app menu 14 on a PTY and record decoded RF09 IQ before DSP."""
+"""Drive test_app menu 14 on a PTY and record decoded RX IQ before DSP."""
 import argparse
 from datetime import datetime
 import errno
@@ -23,6 +23,14 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[3]
 ZONE = ZoneInfo("Europe/Brussels")
 ANSI = re.compile(rb"\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\)|[()][A-Z0-9]|[=>])")
+RADIO_NAMES = {"hif": "HiF/RF24", "s1g": "S1G/RF09"}
+
+
+def monitor_radio(data):
+    matches = re.findall(rb"(S1G/RF09|HiF/RF24) \[T\] TX", ANSI.sub(b"", data))
+    if not matches:
+        raise RuntimeError("Cannot identify the menu 14 radio channel")
+    return "hif" if matches[-1] == b"HiF/RF24" else "s1g"
 
 
 def timestamp(value):
@@ -31,7 +39,7 @@ def timestamp(value):
 
 
 class TerminalApp:
-    def __init__(self, app, hook, iq, log):
+    def __init__(self, app, hook, iq, log, radio):
         self.log = log
         self.recent = b""
         self.eof = False
@@ -39,7 +47,8 @@ class TerminalApp:
         self.master, slave = pty.openpty()
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 120, 160, 0, 0))
         env = os.environ.copy()
-        env.update(TERM="xterm", LD_PRELOAD=str(hook), CARIBOULITE_RX_IQ_FILE=str(iq))
+        env.update(TERM="xterm", LD_PRELOAD=str(hook), CARIBOULITE_RX_IQ_FILE=str(iq),
+                   CARIBOULITE_RX_IQ_CHANNEL=radio)
         try:
             self.proc = subprocess.Popen([str(app)], cwd=ROOT, env=env,
                                          stdin=slave, stdout=slave, stderr=slave,
@@ -133,6 +142,8 @@ def main():
     parser.add_argument("--start", required=True, help="ISO local date/time; default zone Europe/Brussels")
     parser.add_argument("--stop", required=True, help="ISO local date/time, later than --start")
     parser.add_argument("--frequency-mhz", type=float, default=430.125)
+    parser.add_argument("--radio", choices=tuple(RADIO_NAMES), default="hif",
+                        help="Expected menu 14 channel; this does not change the app channel")
     parser.add_argument("--sample-rate", type=int, choices=(1000000, 2000000, 4000000), default=1000000)
     parser.add_argument("--app", type=Path, default=ROOT / "build/cariboulite_test_app")
     parser.add_argument("--output", type=Path, help="New output directory; existing directories are refused")
@@ -144,7 +155,10 @@ def main():
         parser.error(str(exc))
     if stop <= start:
         parser.error("--stop must be later than --start")
-    if not (377 <= args.frequency_mhz <= 530 or 779 <= args.frequency_mhz <= 1020):
+    if args.radio == "hif":
+        if not 1 <= args.frequency_mhz < 6000:
+            parser.error("HiF frequency must be at least 1 MHz and below 6000 MHz")
+    elif not (377 <= args.frequency_mhz <= 530 or 779 <= args.frequency_mhz <= 1020):
         parser.error("RF09 frequency must be in 377–530 or 779–1020 MHz")
     output = (args.output or ROOT / "build/iq-captures" /
               start.strftime("%Y%m%dT%H%M%S%z")).resolve()
@@ -152,6 +166,7 @@ def main():
     expected_bytes = round((stop - start).total_seconds() * args.sample_rate * 4)
     plan = {"scheduled_start": start.isoformat(), "scheduled_stop": stop.isoformat(),
             "timezone": "Europe/Brussels", "frequency_hz": round(args.frequency_mhz * 1000000),
+            "radio": args.radio, "channel": RADIO_NAMES[args.radio],
             "sample_rate": args.sample_rate, "iq_file": str(iq),
             "nominal_bytes": expected_bytes,
             "format": "little-endian interleaved signed int16 I,Q; native 13-bit amplitudes",
@@ -187,11 +202,16 @@ def main():
         if shutil.disk_usage(output).free < expected_bytes + 64 * 1024 * 1024:
             raise RuntimeError("Insufficient free disk space for the scheduled recording")
         with (output / "application.log").open("xb", buffering=0) as log:
-            terminal = TerminalApp(args.app, hook, iq, log)
+            terminal = TerminalApp(args.app, hook, iq, log, args.radio)
             event("app_started", pid=terminal.proc.pid)
             terminal.expect("Choice:", 45)
             terminal.send("14\n")
             terminal.expect("[G] RX", 30)
+            observed_radio = monitor_radio(terminal.recent)
+            metadata["observed_radio"] = observed_radio
+            if observed_radio != args.radio:
+                raise RuntimeError(f"Menu 14 uses {RADIO_NAMES[observed_radio]}; "
+                                   f"expected {RADIO_NAMES[args.radio]}")
             terminal.send("G")
             terminal.expect("RX MHz [")
             terminal.send(f"{args.frequency_mhz:.6f}\n")
@@ -206,7 +226,8 @@ def main():
             if start.timestamp() <= time.time():
                 raise RuntimeError("Setup missed the scheduled start; RX was not started")
             metadata["status"] = "armed"
-            event("configured", frequency_mhz=args.frequency_mhz, sample_rate=args.sample_rate)
+            event("configured", frequency_mhz=args.frequency_mhz, sample_rate=args.sample_rate,
+                  radio=observed_radio, channel=RADIO_NAMES[observed_radio])
             terminal.wait_until(start, event)
             terminal.send("R")
             event("rx_start_key_sent")
@@ -225,6 +246,11 @@ def main():
         if b"IQ_CAPTURE_ERROR" in data or not re.search(
                 rb"IQ_CAPTURE_COMPLETE samples=\d+ bytes=\d+ failed=0", data):
             raise RuntimeError("Capture did not finish cleanly; inspect application.log")
+        captured = re.findall(rb"IQ_CAPTURE_CHANNEL radio=(hif|s1g) channel=(HiF/RF24|S1G/RF09)", data)
+        expected_channel = (args.radio.encode(), RADIO_NAMES[args.radio].encode())
+        if captured != [expected_channel]:
+            raise RuntimeError("Captured radio channel does not match the requested menu channel")
+        metadata.update(captured_radio=captured[0][0].decode(), captured_channel=captured[0][1].decode())
         size = iq.stat().st_size
         if not size or size % 4:
             raise RuntimeError("IQ file is empty or contains an incomplete I/Q pair")

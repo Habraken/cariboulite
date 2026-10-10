@@ -3,6 +3,10 @@
 Implemented 2026-10-10 for the menu 14 receiver and other callers of the shared
 NBFM demodulator. TX remains at **±2.5 kHz** maximum nominal deviation.
 
+The app now routes menus 11/12/14 through **HiF (RF24)**. The filter operates
+on decoded complex IQ from either radio path. Successful listening results
+below cover **S1G (RF09)** and **HiF (RF24)**, both at **1 MS/s**.
+
 ## Design
 
 The requested 2.5 kHz deviation and 3 kHz voice bandwidth give an approximate
@@ -76,7 +80,8 @@ The user confirmed a successful listening test on **S1G (RF09) at 1 MS/s**
 after installing the filter:
 the repeater's scheduled transmission was clearly audible and its message
 understandable, with a reported definite improvement. This physical listening
-result complements the automated checks. See the
+result complements the automated checks. After switching back to
+**HiF (RF24)**, the user also confirmed **good reception at 1 MS/s**. See the
 [receiver investigation context](nbfm-rx-sensitivity-context.md#successful-listening-test-2026-10-10).
 
 ## Reproduction

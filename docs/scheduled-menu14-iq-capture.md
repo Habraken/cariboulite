@@ -1,7 +1,7 @@
 # Scheduled IQ recording through menu 14
 
 The [scheduler](../software/libcariboulite/tools/scheduled_menu14_iq.py) launches
-`build/cariboulite_test_app`, selects menu 14, saves the requested RF09 RX
+`build/cariboulite_test_app`, selects menu 14, saves the requested RX
 frequency, selects 1/2/4 MS/s, and sends **R** at the scheduled start and stop
 times. It exits through **Q**, then main-menu **99**, releasing the radio.
 
@@ -10,6 +10,14 @@ the samples returned by `cariboulite_radio_read_samples` before software
 decimation, FM demodulation and squelch. The scheduler builds it as a shared
 library and loads it only into the launched test application. The existing
 application and its production RX code do not need rebuilding.
+
+Menu 14 now uses **HiF/RF24**. The scheduler defaults to that expected channel,
+checks the menu banner before starting RX, and records the observed and captured
+channel in new session metadata. On the full board, HiF accepts frequencies from
+**1 MHz up to, but not including, 6000 MHz**. The application validates its board's
+actual range; an ISM-only board supports HiF only in its native 2.4 GHz band.
+The hook accepts either radio, locks each recording to its first channel, and
+reports an error if a different or unexpected channel supplies samples.
 
 ## Confirmed session
 
@@ -20,6 +28,7 @@ Requested on 2026-10-10:
 - Start: **2026-10-10 14:59:00 Europe/Brussels**.
 - Stop: **2026-10-10 15:01:00 Europe/Brussels**.
 
+This historical recording used the earlier **RF09/S1G** menu configuration.
 The user explicitly corrected the original stop time of 14:01 to 15:01 and
 closed the previously running test application before this session was started.
 
@@ -38,6 +47,9 @@ use Europe/Brussels; timestamps with explicit UTC offsets are also accepted.
 Use `--dry-run` to inspect the plan without accessing hardware. An existing
 output directory or IQ file is refused. The test application needs access to
 the radio device nodes and its existing ALSA Loopback audio devices.
+For an older build configured for S1G, add `--radio s1g`; that option checks the
+expected channel and does not switch the application's channel. The confirmed
+historical capture and its metadata are preserved.
 
 ## Output and format
 
@@ -50,6 +62,7 @@ The default output directory for the confirmed session is
   −4096 through +4095; there is no expansion to 16-bit full scale.
 - `metadata.json`: requested frequency/rate, scheduled and observed action
   times, application and hook hashes, source revision, sample count and status.
+  New recordings also include the expected, observed and captured radio channel.
 - `application.log`: terminal output, driver diagnostics and capture markers.
 
 The confirmed session completed normally. The start key was sent at
@@ -86,7 +99,8 @@ iq = pairs[:, 0].astype(np.float32) + 1j * pairs[:, 1].astype(np.float32)
 Successful completion requires normal application exit, a nonempty IQ file
 containing complete I/Q pairs, and an
 `IQ_CAPTURE_COMPLETE samples=... bytes=... failed=0` marker without capture
-errors. The scheduler writes `status: complete` only after these checks.
+errors. New recordings must also contain one `IQ_CAPTURE_CHANNEL` marker for
+the expected radio. The scheduler writes `status: complete` only after these checks.
 Failed sessions retain logs, metadata and any partial recording.
 
 The tap writes synchronously in the RX reader, so disk stalls can affect stream
