@@ -28,7 +28,8 @@ struct nbfm_mod {
 
 static int valid_config(const nbfm_cfg_t* c)
 {
-    return c->audio_fs == 48000 && (c->rf_fs == 2000000 || c->rf_fs == 4000000) &&
+    return c->audio_fs == 48000 &&
+        (c->rf_fs == 1000000 || c->rf_fs == 2000000 || c->rf_fs == 4000000) &&
         isfinite(c->f_dev_hz) && c->f_dev_hz >= 0 && c->f_dev_hz <= 24000 &&
         isfinite(c->preemph_tau_s) && c->preemph_tau_s >= 0 &&
         isfinite(c->out_scale) && c->out_scale >= 0 && c->out_scale <= 32767 &&

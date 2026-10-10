@@ -25,7 +25,8 @@ static int run_roundtrip(audio_source_t* source, audio_sink_t* sink,
     *counts = (roundtrip_counts_t){0};
     if (!source || !sink || source->format.sample_rate != 48000 ||
         source->format.channels != 1 || sink->sample_rate != 48000 ||
-        (rf_rate != 2000000 && rf_rate != 4000000) || audio_limit > SIZE_MAX / 84)
+        (rf_rate != 1000000 && rf_rate != 2000000 && rf_rate != 4000000) ||
+        audio_limit > SIZE_MAX / 84)
         return -EINVAL;
     nbfm_cfg_t tx_cfg = {48000, rf_rate, 2500, 0, 4000, 1};
     nbfm_demod_config_t rx_cfg = {rf_rate, 48000, 50e-6f, 8000};
@@ -115,7 +116,7 @@ int main(void)
     audio_source_result_t generated = audio_source_read(tone, input, frames);
     audio_source_destroy(tone);
     int result = generated.status != AUDIO_SOURCE_OK || generated.frames != frames;
-    for (unsigned rate = 2000000; !result && rate <= 4000000; rate *= 2) {
+    for (unsigned rate = 1000000; !result && rate <= 4000000; rate *= 2) {
         audio_source_t* source = memory_source_open(input, frames, (audio_format_t){48000, 1});
         audio_sink_t* sink = memory_sink_open(output, frames, (audio_format_t){48000, 1});
         roundtrip_counts_t counts = {0};

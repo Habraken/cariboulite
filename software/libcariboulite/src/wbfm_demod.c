@@ -46,7 +46,8 @@ int wb_demod_set_audio(nbfm_demod_t* dsp, float tau, float gain)
 }
 static nbfm_demod_t* allocate_state(const nbfm_demod_config_t* config)
 {
-    if (!config || (config->rf_rate != 2000000 && config->rf_rate != 4000000) ||
+    if (!config || (config->rf_rate != 1000000 && config->rf_rate != 2000000 &&
+        config->rf_rate != 4000000) ||
         config->audio_rate != 48000 || !isfinite(config->deemph_tau) ||
         config->deemph_tau < 0 || !isfinite(config->pcm_gain) || config->pcm_gain < 0) {
         errno = EINVAL;

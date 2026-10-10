@@ -126,7 +126,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->sys   = sys;
     p->radio = radio;
 
-    if ((par->fs_rf != 2000000 && par->fs_rf != 4000000) ||
+    if ((par->fs_rf != 1000000 && par->fs_rf != 2000000 && par->fs_rf != 4000000) ||
         par->fs_audio != 48000 ||
         (par->mode != AUDIO_DEMOD_NBFM && par->mode != AUDIO_DEMOD_WBFM)) return -1;
 
@@ -167,7 +167,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->demod.active            = true;
     p->demod.fifo_in           = &p->rxq;
     p->demod.afifo_out         = &p->afifo;
-    p->demod.fs_rf             = par->fs_rf;      // 4e6
+    p->demod.fs_rf             = par->fs_rf;
     p->demod.fs_audio          = par->fs_audio;   // 48e3
     p->demod.deemph_tau        = par->deemph_tau_s;
     p->demod.pcm_gain          = par->pcm_gain;

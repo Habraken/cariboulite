@@ -10,7 +10,7 @@ extern "C" {
 typedef struct nbfm_mod nbfm_mod_t;
 typedef struct {
     double audio_fs;      // exactly 48000 Hz, mono normalized float input
-    double rf_fs;         // exactly 2000000 or 4000000 IQ pairs/s
+    double rf_fs;         // exactly 1000000, 2000000 or 4000000 IQ pairs/s
     double f_dev_hz;      // 0..24000 Hz deviation at unit audio before pre-emphasis
     double preemph_tau_s; // finite >=0 seconds; zero disables pre-emphasis
     float  out_scale;     // finite 0..32767 signed IQ amplitude (not RF power)

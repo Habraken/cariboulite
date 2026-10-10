@@ -376,6 +376,15 @@ by itself select the historical 650 Hz tone. Audio/device and RF parameters
 remain hardcoded (roadmap items 2 and 5). The separate L interface-loopback
 diagnostic still uses RF24 reception; T/R normal operation uses RF09.
 
+In option 14, stop TX and RX, then press `1`, `2` or `4` to select a shared
+1, 2 or 4 MS/s RF sample rate. The rate applies to both TX and RX, including
+NBFM and mono WBFM reception; audio remains at 48 kHz. Rate changes are blocked
+while the separate `L` interface-loopback diagnostic is enabled.
+
+Stopping TX sends a 250 ms trailing Quindar tone, followed by silence long
+enough to clear the kernel and DMA buffers before switching the radio off.
+This takes longer at 1 MS/s; the tone duration stays at 250 ms.
+
 This is how the monitor modem status output should look like:
 ```
 CaribouLite Radio    [T]=TX ON/OFF  [R]=RX ON/OFF  [Q]=QUIT  [X]=RES  1766328674

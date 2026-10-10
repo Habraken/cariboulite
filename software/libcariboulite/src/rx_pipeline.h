@@ -38,14 +38,14 @@ typedef struct {
 
     audio_demod_mode_t mode;       // zero/default is NBFM; selected at initialization
 
-    // Fixed rates
-    float  fs_rf;               // 4e6
+    // Supported rates
+    float  fs_rf;               // 1e6, 2e6 or 4e6
     float  fs_audio;            // 48e3
 } rx_params_t;
 
 typedef struct {
     // Allocated/owned objects
-    rf10_fifo_t          rxq;       // IQ@4M → 10ms frames
+    rf10_fifo_t          rxq;       // IQ at the selected RF rate → 10ms frames
     aud10_fifo_t         afifo;     // 10ms PCM for ALSA
     rx_reader_ctrl_st    rx_ctrl;
     audio_demod_ctrl_t    demod;

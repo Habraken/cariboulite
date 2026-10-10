@@ -74,7 +74,7 @@ The app's `--baseline-test` mode calls the same TX/RX pipelines as options 11,
 12 and 14; option 14 initializes both pipelines through its existing helper.
 It deliberately bypasses menu input and curses rendering. It does not test UI
 key handling, live retuning, or the monitor's concurrent register display.
-Options 11 and 12 normally select `radio_low`; this runner explicitly selects
+Options 11, 12 and 14 normally select `radio_low` (S1G); this runner explicitly selects
 `radio_high` to match the HiF dummy load. Interactive menu defaults are unchanged.
 All sessions use the selected audio routes; the default loopback routes match
 the menu and reach the Jabra through the existing bridges. These differences are explicit so results are not mistaken for tests of

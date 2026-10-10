@@ -44,7 +44,7 @@ int app_baseline_test(sys_st* sys, const char* firmware, const char* capture,
                 .fs_rf = rate, .fs_audio = 48000.0f,
             };
             if (menu == 14) {
-                if (!monitor_init_pipelines(&tx, &rx, sys, &tp, &rp)) goto done;
+                if (!monitor_init_pipelines(&tx, &rx, sys, radio, &tp, &rp)) goto done;
                 if ((is_tx ? tx_pipeline_start(&tx) : rx_pipeline_start(&rx)) != 0) goto done;
             } else if (is_tx) {
                 if (tx_pipeline_init(&tx, sys, radio, &tp) != 0 ||

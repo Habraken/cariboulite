@@ -38,7 +38,7 @@ The [example](../software/libcariboulite/tools/nbfm_memory_demo.c) generates
 12,137 float samples of a 600 Hz tone, then connects these existing interfaces:
 
 ```text
-memory_source -> float mono 48 kHz -> nbfm_mod -> IQ16 at 2 or 4 MS/s
+memory_source -> float mono 48 kHz -> nbfm_mod -> IQ16 at 1, 2 or 4 MS/s
                                             -> nbfm_demod -> S16 mono 48 kHz -> memory_sink
 ```
 
@@ -54,7 +54,7 @@ This is a synchronous example, not a resumable streaming API. AGAIN returns
 `-EAGAIN`; successful operations with no progress return `-EIO`; fatal errors
 return after accounting for their valid prefix. It does not flush or pad DSP
 filter tails. The existing startup/resampling behavior produces 12,136 PCM
-samples from this input at either RF rate.
+samples from this input at each RF rate.
 
 ## Dependencies and ownership
 

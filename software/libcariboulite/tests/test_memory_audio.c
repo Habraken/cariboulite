@@ -184,7 +184,7 @@ static void runner_errors(void)
 int main(void)
 {
     adapter_contracts();
-    roundtrip(2000000); roundtrip(4000000);
+    roundtrip(1000000); roundtrip(2000000); roundtrip(4000000);
     runner_errors();
     return 0;
 }

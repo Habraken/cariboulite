@@ -16,7 +16,7 @@ provides [separate TX/RX frequency controls](monitor-frequency.md).
 | `tone_source.c/.h` | Frequency/amplitude -> 48 kHz mono float audio | Common source implementation for TX, injection and self-test tones |
 | `memory_audio.c/.h` | Borrowed float input / S16 output arrays | Finite nonblocking adapters; no devices or workers |
 | `nbfm_memory_demo.c` | Source -> NBFM IQ -> PCM -> sink | Standalone composition; C and math only |
-| `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Explicit progress/reset/error contract; 48 kHz mono and 2 or 4 MS/s IQ |
+| `nbfm_mod.c/.h` | Float audio -> packed signed 16-bit I/Q pairs | Explicit progress/reset/error contract; 48 kHz mono and 1, 2 or 4 MS/s IQ |
 | `audio_sink.h`, `alsa_sink.c/.h` | Mono S16 PCM at 48 kHz -> ALSA playback | Sink owns PCM configuration, stereo fallback, recovery and close |
 | `nbfm_demod.c/.h` | IQ16 -> mono S16 PCM | Standalone stateful DSP; caller supplies fractional rate correction |
 | `noise_squelch.c/.h` | Unfiltered 48 kHz discriminator audio -> open/closed | High-frequency noise detector; worker-owned, no hardware dependencies |
@@ -59,7 +59,7 @@ flowchart TB
         mic -->|"audio_source: float mono 48 kHz"| mod
         tone -->|"audio_source: float mono 48 kHz"| mod
         cue --> mod
-        mod -->|"IQ16: 2 or 4 MS/s"| txq
+        mod -->|"IQ16: 1, 2 or 4 MS/s"| txq
         txq --> writer
         txctl -.-> mod
         txctl -.-> writer
@@ -78,7 +78,7 @@ flowchart TB
         aq[("Audio FIFO<br/>24 × 480-sample blocks<br/>48 kHz mono S16 PCM")]
         playback["Audio writer thread"]
         sink["alsa_sink<br/>audio_sink interface<br/>Playback and recovery"]
-        reader -->|"IQ16: 2 or 4 MS/s"| rxq
+        reader -->|"IQ16: 1, 2 or 4 MS/s"| rxq
         rxq --> demod
         demod -->|"Unfiltered discriminator audio"| noise
         rxq -.->|"Captured RSSI"| carrier
@@ -111,7 +111,7 @@ to toggle them. See [RX squelch](rx-squelch.md) for thresholds, interfaces,
 ownership, physical acceptance and regression checks.
 
 `pipeline_transport` implements the three application FIFOs shown above. Each
-RF block holds 20,000 IQ pairs at 2 MS/s or 40,000 at 4 MS/s. TX source reads use
+RF block holds 10,000 IQ pairs at 1 MS/s, 20,000 at 2 MS/s or 40,000 at 4 MS/s. TX source reads use
 480 audio samples per block; there is no separate application audio FIFO before
 the modulator. ALSA buffering and kernel/FPGA transport buffers are internal to
 their respective layers and are not expanded here. The TX/RX paths share one
@@ -129,7 +129,7 @@ flowchart LR
     memory["memory_source<br/>Borrowed float array"] --> source["audio_source<br/>48 kHz mono float"]
     tone["tone_source<br/>Generated samples"] --> source
     source --> mod["nbfm_mod"]
-    mod -->|"IQ16 at 2 or 4 MS/s"| demod["nbfm_demod"]
+    mod -->|"IQ16 at 1, 2 or 4 MS/s"| demod["nbfm_demod"]
     demod --> sink["audio_sink<br/>48 kHz mono S16"]
     sink --> output["memory_sink<br/>Borrowed PCM array"]
 ```
@@ -571,7 +571,7 @@ void nbfm_destroy(nbfm_mod_t* m);
 ```
 
 Supported configuration is now checked before allocation: exactly 48 kHz mono
-float audio and 2 or 4 MS/s IQ; finite deviation in [0, 24000] Hz; finite,
+float audio and 1, 2 or 4 MS/s IQ; finite deviation in [0, 24000] Hz; finite,
 nonnegative pre-emphasis tau in seconds; finite IQ amplitude in [0, 32767];
 and interpolation mode 0 or 1. These are the supported bounds of this contract,
 not a claim that other combinations previously worked. NULL configuration retains

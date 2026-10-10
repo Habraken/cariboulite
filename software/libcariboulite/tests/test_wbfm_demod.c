@@ -65,7 +65,7 @@ static double tone_residual(const int16_t* p, size_t n, double hz)
 int main(void)
 {
     setbuf(stdout, NULL);
-    for(unsigned fs=2000000;fs<=4000000;fs*=2) {
+    for(unsigned fs=1000000;fs<=4000000;fs*=2) {
         size_t n=fs/5;
         iq16_t* iq=malloc(n*sizeof(*iq));
         int16_t a[12000], b[12000];
@@ -139,5 +139,5 @@ int main(void)
         nbfm_demod_destroy(dsp);
         free(iq);
     }
-    puts("PASS: mono WBFM at both rates, streaming, correction, reset, de-emphasis and multiplex rejection");
+    puts("PASS: mono WBFM at 1/2/4 MS/s, streaming, correction, reset, de-emphasis and multiplex rejection");
 }

@@ -45,7 +45,7 @@ setup, including audio checks. The current diagnostic menu includes:
 Menu 14 uses `radio_high`, the RF24/HiF mixer path, for TX and RX, with a default
 frequency of 430.100 MHz and ALSA loopback audio. Pressing T
 starts/toggles TX; it does not automatically select an internal test tone.
-RX supports stopped-only NBFM/mono-WBFM mode selection, 2/4 MS/s rate
+RX supports stopped-only NBFM/mono-WBFM mode selection, 1/2/4 MS/s rate
 selection and separate RX/TX frequency controls. Mode, rate and frequency
 changes are blocked while streaming, and loopback guards remain in place.
 NBFM noise squelch and optional carrier squelch are available; WBFM supports

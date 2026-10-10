@@ -15,6 +15,8 @@ static double energy[4];
 static nbfm_demod_ctrl_t* worker;
 static nbfm_mod_t* mod;
 static double phase;
+static const char* test_sink_state(audio_sink_t* sink) { (void)sink; return "TEST"; }
+static const audio_sink_ops_t test_sink_ops = {.state=test_sink_state};
 int set_rt_and_affinity_prio(int prio, int cpu) { (void)prio; (void)cpu; return 0; }
 bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* frame, int timeout)
 {
@@ -100,7 +102,8 @@ static void raw_tap(void)
 }
 static void integration(void)
 {
-    rf10_fifo_t rf={0}; aud10_fifo_t af={0}; audio_sink_t sink={0};
+    rf10_fifo_t rf={0}; aud10_fifo_t af={0};
+    audio_sink_t sink={.sample_rate=48000,.ops=&test_sink_ops};
     nbfm_demod_ctrl_t c={.active=true,.fifo_in=&rf,.afifo_out=&af,
         .sink=&sink,.fs_rf=rate,.fs_audio=48000,.pcm_rate=48000,
         .pcm_gain=8000,.deemph_tau=50e-6f};
@@ -119,9 +122,9 @@ static void integration(void)
 int main(void)
 {
     detectors();
-    for(rate=2000000;rate<=4000000;rate*=2) {
+    for(rate=1000000;rate<=4000000;rate*=2) {
         raw_tap();
         for(mode=0;mode<4;++mode) integration();
     }
-    puts("Squelch detectors and RX worker integration pass at 2/4 MS/s");
+    puts("Squelch detectors and RX worker integration pass at 1/2/4 MS/s");
 }

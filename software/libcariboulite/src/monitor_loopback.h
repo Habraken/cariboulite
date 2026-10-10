@@ -16,7 +16,8 @@ typedef struct {
 static bool monitor_loopback_blocks_control(const monitor_loopback_t* lb, int key)
 {
     return lb->armed && (key == 't' || key == 'T' || key == 'r' || key == 'R' ||
-                         key == '2' || key == '4' || key == 'f' || key == 'F' ||
+                         key == '1' || key == '2' || key == '4' ||
+                         key == 'f' || key == 'F' ||
                          key == 'g' || key == 'G');
 }
 

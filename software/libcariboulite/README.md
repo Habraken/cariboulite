@@ -48,7 +48,7 @@ python3 software/libcariboulite/tests/test_memory_audio.py
 ```
 
 The demo connects memory-backed audio to the standalone modulator and demodulator
-at 2 and 4 MS/s, without opening audio or radio devices. The
+at 1, 2 and 4 MS/s, without opening audio or radio devices. The
 [extension guide](../../docs/audio-dsp-extension-guide.md) also provides a direct
 C11/libm build that does not require the application's ALSA dependencies.
 
@@ -60,7 +60,15 @@ press `[m]` to cycle between NBFM and mono WBFM. `[R]` starts reception;
 frequency, sample rate and audio settings. TX remains NBFM. Other menu items
 keep their existing behavior.
 
-WBFM supports 2 and 4 MS/s IQ input and 48 kHz mono output, with nominal
+Press `[1]`, `[2]` or `[4]` while TX, RX and interface loopback are stopped to
+select 1, 2 or 4 MS/s for both directions. The monitor defaults to 4 MS/s.
+
+TX shutdown retains the 250 ms trailing Quindar tone. Silence padding scales
+with the selected RF rate and driver buffering, and shutdown waits for the
+writer to accept that padding before disabling TX. Stop therefore takes longer
+at 1 MS/s. Stalled producers or writers still have bounded shutdown deadlines.
+
+WBFM supports 1, 2 and 4 MS/s IQ input and 48 kHz mono output, with nominal
 75 kHz deviation and the monitor's existing 50 microsecond de-emphasis.
 It filters the RF channel before demodulation, removes the stereo multiplex
 components before audio resampling, and shares buffering, clock correction,

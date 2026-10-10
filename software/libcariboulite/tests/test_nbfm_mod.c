@@ -129,7 +129,7 @@ static void reset_and_errors(unsigned rate)
 int main(void)
 {
     nbfm_cfg_t cfg={48000,4000000,2500,0,12000,1};
-    for(int field=0;field<10;++field) {
+    for(int field=0;field<14;++field) {
         nbfm_cfg_t bad=cfg;
         switch(field) {
         case 0: bad.audio_fs=44100; break;
@@ -142,6 +142,10 @@ int main(void)
         case 7: bad.out_scale=NAN; break;
         case 8: bad.out_scale=32768; break;
         case 9: bad.linear_interp=2; break;
+        case 10: bad.rf_fs=NAN; break;
+        case 11: bad.rf_fs=INFINITY; break;
+        case 12: bad.audio_fs=NAN; break;
+        case 13: bad.audio_fs=INFINITY; break;
         }
         assert(!nbfm_create(&bad) && errno==EINVAL && live_allocations==0);
     }
@@ -158,7 +162,7 @@ int main(void)
     nbfm_result_t d=nbfm_process(defaults,NULL,0,actual,1);
     assert(d.produced==1 && actual[0].i==12000 && actual[0].q==0);
     nbfm_destroy(defaults);
-    for(unsigned rate=2000000;rate<=4000000;rate*=2) {
+    for(unsigned rate=1000000;rate<=4000000;rate*=2) {
         for(int linear=0;linear<=1;++linear) {
             compare_waveforms(rate,linear,0);
             compare_waveforms(rate,linear,75e-6);

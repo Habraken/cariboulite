@@ -149,7 +149,7 @@ int main(void)
 {
     nbfm_demod_config_t config={4000000,48000,50e-6f,8000};
     assert(!nbfm_demod_create(NULL));
-    config.rf_rate=1000000; assert(!nbfm_demod_create(&config)); config.rf_rate=4000000;
+    config.rf_rate=3000000; assert(!nbfm_demod_create(&config)); config.rf_rate=4000000;
     config.audio_rate=44100; assert(!nbfm_demod_create(&config)); config.audio_rate=48000;
     nbfm_demod_t* s=nbfm_demod_create(&config); assert(s);
     int16_t out[1]; iq16_t in={1,1};
@@ -161,7 +161,7 @@ int main(void)
     assert(nbfm_demod_process(s,&in,1,out,1,0.001).error==-EINVAL);
     assert(nbfm_demod_set_audio(s,NAN,8000)==-EINVAL);
     nbfm_demod_destroy(s); nbfm_demod_destroy(NULL);
-    for(rate=2000000;rate<=4000000;rate*=2) {
+    for(rate=1000000;rate<=4000000;rate*=2) {
         make_waveform();
         reset_case=false; compare_workers(); reset_case=true; compare_workers();
         compare_blocks(0); compare_blocks(0.0005); compare_blocks(-0.0005);

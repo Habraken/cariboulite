@@ -70,7 +70,7 @@ int main(void) {
     assert(monitor_loopback_start(&sys,&lb)==0);
     int start_calls=calls;
     assert(lb.armed && lb.active);
-    const char* blocked="tTrR24fFgG";
+    const char* blocked="tTrR124fFgG";
     for(const char* k=blocked;*k;++k) assert(monitor_loopback_blocks_control(&lb,*k));
     assert(!monitor_loopback_blocks_control(&lb,'l'));
     assert(!monitor_loopback_blocks_control(&lb,'q'));

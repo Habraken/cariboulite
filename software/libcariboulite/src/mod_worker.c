@@ -119,8 +119,7 @@ void* nbfm_mod_thread(void* arg)
         pthread_mutex_lock(&g_tx_injection_lock);
         int inj_left = ctrl->tx->inj.frames_left;
         float inj_hz = ctrl->tx->inj.hz;
-
-        if (inj_left > 0) ctrl->tx->inj.frames_left = inj_left - 1;
+        bool hold_silence = ctrl->tx->inj.hold_silence;
         pthread_mutex_unlock(&g_tx_injection_lock);
 
         if (inj_left > 0) {
@@ -129,6 +128,8 @@ void* nbfm_mod_thread(void* arg)
             audio_source_read(ctrl->tx->tone, ctrl->tx->a48k, 480);
 
             __sync_synchronize();
+        } else if (hold_silence) {
+            memset(ctrl->tx->a48k, 0, 480 * sizeof(float));
         } else {
             // normal path
             if (ctrl->tx->tone_mode) {
@@ -162,6 +163,7 @@ void* nbfm_mod_thread(void* arg)
         // 3) Pack one rf10_frame_t and push to FIFO (tag TX_EN)
         // ============================================================
         rf10_frame_t frm = {0};
+        frm.tx_sequence = ++ctrl->tx->next_sequence;
         for (size_t i = 0; i < ctrl->tx->frame_samples; i++) {
             frm.data[i].i = ctrl->tx->iq_rf[i].i | 0x0001;  // TX_EN in LSB
             frm.data[i].q = ctrl->tx->iq_rf[i].q;
@@ -174,6 +176,12 @@ void* nbfm_mod_thread(void* arg)
         // Blocking put; don’t drop frames
         bool ok = rf10_fifo_put(ctrl->fifo, &frm, -1);
         if (!ok) break; // stop signal
+        if (inj_left > 0) {
+            pthread_mutex_lock(&g_tx_injection_lock);
+            ctrl->tx->inj.last_sequence = frm.tx_sequence;
+            if (ctrl->tx->inj.frames_left > 0) --ctrl->tx->inj.frames_left;
+            pthread_mutex_unlock(&g_tx_injection_lock);
+        }
     }
 
     return NULL;

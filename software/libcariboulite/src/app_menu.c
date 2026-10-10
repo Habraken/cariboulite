@@ -118,7 +118,7 @@ app_menu_item_st handles[] =
 	{app_selection_nbfm_tx_tone, nbfm_tx_tone, "NBFM TX Tone",},
 	{app_selection_nbfm_rx, nbfm_rx, "NBFM RX",},
     {app_selection_nbfm_modem_selftest, nbfm_modem_selftest, "NBFM modem Self-Test",},
-	{app_selection_monitor_modem_status, monitor_modem_status, "Monitor Modem Status",},
+	{app_selection_monitor_modem_status, monitor_modem_status, "Monitor Modem Status (S1G)",},
 };
 #define NUM_HANDLES 	(int)(sizeof(handles)/sizeof(app_menu_item_st))
 
@@ -952,14 +952,15 @@ static void nbfm_rx(sys_st *sys)
 #include "monitor_loopback.h"
 
 static bool monitor_init_pipelines(tx_pipeline_t* tx, rx_pipeline_t* rx,
-                                   sys_st* sys, const tx_params_t* txpar,
+                                   sys_st* sys, cariboulite_radio_state_st* radio,
+                                   const tx_params_t* txpar,
                                    const rx_params_t* rxpar)
 {
-    if (tx_pipeline_init(tx, sys, &sys->radio_high, txpar) != 0) {
+    if (tx_pipeline_init(tx, sys, radio, txpar) != 0) {
         fprintf(stderr, "[monitor] TX initialization failed; returning to menu\n");
         return false;
     }
-    if (rx_pipeline_init(rx, sys, &sys->radio_high, rxpar) != 0) {
+    if (rx_pipeline_init(rx, sys, radio, rxpar) != 0) {
         fprintf(stderr, "[monitor] RX initialization failed; returning to menu\n");
         tx_pipeline_destroy(tx);
         return false;
@@ -969,7 +970,9 @@ static bool monitor_init_pipelines(tx_pipeline_t* tx, rx_pipeline_t* rx,
 
 // Configuration entry is separate from tuning: shared hardware is tuned only
 // after stopping the opposite direction, immediately before starting a stream.
-static bool monitor_parse_frequency(const char* text, bool full_board, double* hz)
+static bool monitor_parse_frequency(const char* text,
+                                    const cariboulite_radio_state_st* radio,
+                                    double* hz)
 {
     char* end;
     errno = 0;
@@ -978,14 +981,23 @@ static bool monitor_parse_frequency(const char* text, bool full_board, double* h
     while (*end == ' ' || *end == '\t') ++end;
     if (*end) return false;
     double value = mhz * 1000000.0;
-    bool valid = full_board ? value >= CARIBOULITE_6G_MIN && value < CARIBOULITE_6G_MAX
-                            : value >= CARIBOULITE_2G4_MIN && value <= CARIBOULITE_2G4_MAX;
+    bool valid;
+    if (radio->type == cariboulite_channel_s1g) {
+        valid = (value >= CARIBOULITE_S1G_MIN1 && value <= CARIBOULITE_S1G_MAX1) ||
+                (value >= CARIBOULITE_S1G_MIN2 && value <= CARIBOULITE_S1G_MAX2);
+    } else if (radio->sys->board_info.numeric_product_id == system_type_cariboulite_full) {
+        valid = value >= CARIBOULITE_6G_MIN && value < CARIBOULITE_6G_MAX;
+    } else {
+        valid = value >= CARIBOULITE_2G4_MIN && value <= CARIBOULITE_2G4_MAX;
+    }
     if (!valid) return false;
     *hz = value;
     return true;
 }
 
-static bool monitor_frequency_prompt(bool tx, bool full_board, double* hz)
+static bool monitor_frequency_prompt(bool tx,
+                                     const cariboulite_radio_state_st* radio,
+                                     double* hz)
 {
     char input[32] = {0};
     size_t used = 0;
@@ -999,7 +1011,7 @@ static bool monitor_frequency_prompt(bool tx, bool full_board, double* hz)
         if (key == 27 || key == ERR) { timeout(200); return false; }
         if (key == '\n' || key == '\r' || key == KEY_ENTER) {
             timeout(200);
-            return used && monitor_parse_frequency(input, full_board, hz);
+            return used && monitor_parse_frequency(input, radio, hz);
         }
         if (key == KEY_BACKSPACE || key == 127 || key == 8) {
             if (used) input[--used] = 0;
@@ -1033,8 +1045,9 @@ static int monitor_cycle_rx_mode(tx_pipeline_t* tx, rx_pipeline_t* rx,
         loopback->armed || loopback->active) return -EBUSY;
     rx_params_t next = *par;
     next.mode = par->mode == AUDIO_DEMOD_NBFM ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM;
+    cariboulite_radio_state_st* radio = rx->radio;
     rx_pipeline_destroy(rx);
-    if (rx_pipeline_init(rx, sys, &sys->radio_high, &next) != 0) return -1;
+    if (rx_pipeline_init(rx, sys, radio, &next) != 0) return -1;
     *par = next;
     return 0;
 }
@@ -1047,10 +1060,11 @@ void monitor_modem_status(sys_st *sys)
     tx_pipeline_t txp = {0};
     rx_pipeline_t rxp = {0};
     monitor_loopback_t loopback = {0};
+    cariboulite_radio_state_st* radio = &sys->radio_low; // RF09 / S1G
 
     tx_params_t txpar = {
         .freq_hz      = 430100000.0,
-        .tx_power_dbm = -6.0f,                 // Requested TX power for menu 14 (dBm)
+        .tx_power_dbm = -13.0f,                 // Requested TX power for menu 14 (dBm)
         .tone_mode    = false,
         .tone_hz      = 600.0f,
         .tone_amp     = 0.4f,
@@ -1069,7 +1083,7 @@ void monitor_modem_status(sys_st *sys)
     };
 
     // init once (threads idle until start)
-    if (!monitor_init_pipelines(&txp, &rxp, sys, &txpar, &rxpar)) return;
+    if (!monitor_init_pipelines(&txp, &rxp, sys, radio, &txpar, &rxpar)) return;
 
 	nbfm_tx_active = false;
     nbfm_rx_active = false;
@@ -1084,14 +1098,13 @@ void monitor_modem_status(sys_st *sys)
     float  tx_sr     = 4000000.0f;    // Default TX sample rate in Hz
     float  rx_bw     = 2000000.0f;    // Default RX bandwidth in Hz
     float  rx_sr     = 4000000.0f;    // Default RX sample rate in Hz
-    const char* rate_notice = "[2] 2 MS/s  [4] 4 MS/s: stop TX and RX before changing";
+    const char* rate_notice = "[1] 1 MS/s  [2] 2 MS/s  [4] 4 MS/s: stop TX and RX before changing";
 
 	int iq_tx_buffer_size = (1u << 18);
 	int iq_rx_buffer_size = (1u << 18);
 	cariboulite_sample_complex_int16 iq_tx_buffer[iq_tx_buffer_size]; // complex CS16 samples (I, Q interleaved)
     cariboulite_sample_complex_int16 iq_rx_buffer[iq_rx_buffer_size]; // complex CS16 samples (I, Q interleaved)
 
-	cariboulite_radio_state_st *radio = &sys->radio_high; // RF24 / HiF mixer path
     at86rf215_st *modem = &sys->modem;
 	caribou_fpga_st *fpga = &sys->fpga;
 	caribou_smi_st *smi = &sys->smi;
@@ -1154,7 +1167,8 @@ void monitor_modem_status(sys_st *sys)
 
 		time(&current_time);
 		move(0,0);
-		printw("RF24 [T] TX [R] RX [M] RX mode [L] loopback [2/4] MS/s [Q] quit [X] stats");
+		printw("%s [T] TX [R] RX [M] RX mode [L] loopback [1/2/4] MS/s [Q] quit [X] stats",
+               radio->type == cariboulite_channel_s1g ? "S1G/RF09" : "HiF/RF24");
 		move(0, screen_max_x - 12);
 		printw("%12ld",current_time);
         move(1,0);
@@ -1553,14 +1567,16 @@ void monitor_modem_status(sys_st *sys)
                 continue;
             }
             bool tx = key == 'f' || key == 'F';
-            bool full = sys->board_info.numeric_product_id == system_type_cariboulite_full;
-            if (monitor_frequency_prompt(tx, full, tx ? &txpar.freq_hz : &rxpar.freq_hz))
+            if (monitor_frequency_prompt(tx, radio, tx ? &txpar.freq_hz : &rxpar.freq_hz))
                 rate_notice = "Frequency saved; applied when that direction starts.";
-            else rate_notice = full ? "Unchanged: cancelled or invalid MHz (1 <= MHz < 6000)."
-                                    : "Unchanged: cancelled or invalid MHz (2385 <= MHz <= 2495).";
+            else if (radio->type == cariboulite_channel_s1g)
+                rate_notice = "Unchanged: cancelled or invalid MHz (377-530 or 779-1020).";
+            else rate_notice = sys->board_info.numeric_product_id == system_type_cariboulite_full
+                ? "Unchanged: cancelled or invalid MHz (1 <= MHz < 6000)."
+                : "Unchanged: cancelled or invalid MHz (2385 <= MHz <= 2495).";
             continue;
         }
-        if (key == '2' || key == '4') {
+        if (key == '1' || key == '2' || key == '4') {
             if (tx_pipeline_running(&txp) || rx_pipeline_running(&rxp)) {
                 rate_notice = "Stop TX and RX before changing sample rate.";
                 continue;
@@ -1569,7 +1585,7 @@ void monitor_modem_status(sys_st *sys)
             rx_pipeline_destroy(&rxp);
             txpar.rf_fs = (key - '0') * 1000000;
             rxpar.fs_rf = txpar.rf_fs;
-            if (!monitor_init_pipelines(&txp, &rxp, sys, &txpar, &rxpar)) break;
+            if (!monitor_init_pipelines(&txp, &rxp, sys, radio, &txpar, &rxpar)) break;
             cariboulite_radio_set_rx_sample_rate_flt(radio, rxpar.fs_rf);
             rate_notice = "TX/RX rate selected. [T] starts TX; [R] starts RX.";
             continue;
@@ -1605,7 +1621,7 @@ void monitor_modem_status(sys_st *sys)
                 tx_pipeline_destroy(&txp);
                 rx_pipeline_destroy(&rxp);
                 if (caribou_fpga_soft_reset(fpga) != 0 ||
-                    !monitor_init_pipelines(&txp, &rxp, sys, &txpar, &rxpar)) break;
+                    !monitor_init_pipelines(&txp, &rxp, sys, radio, &txpar, &rxpar)) break;
                 if (monitor_start_tx(&txp, &rxp, &txpar) != 0)
                     rate_notice = "TX tuning/start failed; see debug log.";
                 else rate_notice = "TX running at the saved TX frequency.";

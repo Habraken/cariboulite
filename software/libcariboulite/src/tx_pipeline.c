@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <errno.h>
+#include <sys/ioctl.h>
 
 static void* tx_writer_thread_func(void* arg)
 {
@@ -41,10 +42,9 @@ static void* tx_writer_thread_func(void* arg)
     int flags = fcntl(smi->filedesc, F_GETFL, 0);
     if (flags != -1) fcntl(smi->filedesc, F_SETFL, flags | O_NONBLOCK);
 
-    // Discover kernel "native" buffer and its quarter size (in samples)
-    size_t native_bytes = caribou_smi_get_native_batch_samples(smi);
-    const int BYTES_PER_SAMPLE = (int)sizeof(caribou_smi_sample_complex_int16);
-    size_t quarter_samples = (native_bytes / 4) / BYTES_PER_SAMPLE;
+    // The getter already returns IQ samples, not bytes.
+    size_t native_samples = caribou_smi_get_native_batch_samples(smi);
+    size_t quarter_samples = native_samples / 4;
     if (quarter_samples == 0) quarter_samples = 8192; // safe default if ioctl failed
 
     // Arm TX state once, then just keep feeding
@@ -70,7 +70,7 @@ static void* tx_writer_thread_func(void* arg)
             tx_active_hw = 1;
         }
 
-        // Get one frame from the producer (blocking). Size = 40k IQ16 samples.
+        // Get one 10 ms frame at the selected RF rate.
         rf10_frame_t frm;
         if (!rf10_fifo_get(fifo, &frm, /*timeout_ms=*/-1)) {
             continue;
@@ -105,6 +105,8 @@ static void* tx_writer_thread_func(void* arg)
                 break;
             }
         }
+        if (off == total)
+            atomic_store(&ctrl->written_sequence, frm.tx_sequence);
     }
 
     if (tx_active_hw) {
@@ -114,6 +116,18 @@ static void* tx_writer_thread_func(void* arg)
         HW_UNLOCK();
     }
     return NULL;
+}
+
+static unsigned tx_tail_padding_frames(size_t native_samples,
+                                       unsigned fifo_multiplier,
+                                       size_t frame_samples)
+{
+    // Writes acknowledge the kernel FIFO, not RF output. Enough accepted
+    // silence displaces the tail through the FIFO, cyclic DMA and FPGA FIFO.
+    uint64_t pending = (uint64_t)native_samples * (fifo_multiplier + 1u) +
+                       native_samples / 4 + 1024;
+    unsigned frames = (unsigned)((pending + frame_samples - 1) / frame_samples);
+    return frames < 25 ? 25 : frames;
 }
 
 int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
@@ -126,8 +140,18 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     p->radio = radio;
 
     unsigned rf_fs = par->rf_fs ? par->rf_fs : 4000000;
-    if (rf_fs != 4000000 && rf_fs != 2000000) return -1;
+    if (rf_fs != 4000000 && rf_fs != 2000000 && rf_fs != 1000000) return -1;
     p->tx_ctrl.frame_samples = rf_fs / 100;
+    atomic_init(&p->tx_ctrl.written_sequence, 0);
+    // Cache the buffer configuration before starting workers. If the query
+    // is unavailable, use the driver's largest supported FIFO multiplier.
+    int fifo_multiplier = 32;
+    if (ioctl(sys->smi.filedesc, SMI_STREAM_IOC_GET_FIFO_MULT, &fifo_multiplier) != 0 ||
+        fifo_multiplier < 2 || fifo_multiplier > 32) fifo_multiplier = 32;
+    size_t native_samples = caribou_smi_get_native_batch_samples(&sys->smi);
+    if (!native_samples) native_samples = 524288 / sizeof(caribou_smi_sample_complex_int16);
+    p->tx_ctrl.tail_padding_frames = tx_tail_padding_frames(native_samples,
+        (unsigned)fifo_multiplier, p->tx_ctrl.frame_samples);
 
     // FIFOs
     rf10_fifo_init(&p->txq, /*cap=*/64, /*drop_oldest_on_full=*/false);
@@ -274,8 +298,11 @@ static bool tx_inject_tone_with_zeros(tx_pipeline_t* p,
     if (pre_zero_frames  < 1) pre_zero_frames  = 1;
     if (post_zero_frames < 1) post_zero_frames = 1;
 
-    /* One budget for the whole sequence, not a fresh timeout for each stage. */
-    const uint64_t deadline = mono_ns() + 1000000000ULL;
+    /* One bounded budget covers the rate-dependent padding and queued frames. */
+    uint64_t budget_ms = (uint64_t)(pre_zero_frames + ms_to_frames_10ms(tone_ms) +
+                                   post_zero_frames) * 10 + (p->txq.cap + 1) * 10 + 600;
+    if (budget_ms < 1000) budget_ms = 1000;
+    const uint64_t deadline = mono_ns() + budget_ms * 1000000ULL;
     return tx_inject_frames(p, 0.0f, pre_zero_frames, deadline) &&
            tx_inject_frames(p, hz, ms_to_frames_10ms(tone_ms), deadline) &&
            tx_inject_frames(p, 0.0f, post_zero_frames, deadline);
@@ -296,6 +323,9 @@ int tx_pipeline_start(tx_pipeline_t* p)
 
     // Clear any stale queued frames before starting TX
     rf10_fifo_flush(&p->txq);
+    pthread_mutex_lock(&g_tx_injection_lock);
+    p->tx_ctrl.inj.hold_silence = false;
+    pthread_mutex_unlock(&g_tx_injection_lock);
 
     HW_LOCK();
     caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, caribou_fpga_io_ctrl_rfm_tx_lowpass);
@@ -322,32 +352,35 @@ int tx_pipeline_start(tx_pipeline_t* p)
     return 0;
 }
 
-static void tx_wait_fifo_drain(tx_pipeline_t* p, int timeout_ms)
+static bool tx_wait_written(tx_pipeline_t* p, uint64_t sequence, int timeout_ms)
 {
-    if (!p) return;
-    const uint64_t t0 = mono_ns();
+    if (!p || !sequence) return false;
+    const uint64_t deadline = mono_ns() + (uint64_t)timeout_ms * 1000000ULL;
     while (tx_injection_can_run(p)) {
-        rf10_stats_t s;
-        rf10_fifo_get_stats(&p->txq, &s);
-        if (s.count == 0) return;
-
-        const uint64_t now = mono_ns();
-        const double ms = (now - t0) / 1e6;
-        if (ms >= (double)timeout_ms) return;
+        if (atomic_load(&p->tx_ctrl.written_sequence) >= sequence) return true;
+        if (mono_ns() >= deadline) return false;
 
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 2*1000*1000 };
         nanosleep(&ts, NULL);
     }
+    return false;
 }
 
 void tx_pipeline_stop(tx_pipeline_t* p)
 {
     if (!p || !p->inited || !p->running) return;
     
-    // --- Quindar "stop" tone: 2475 Hz for the last 250 ms with 5 frames of padding ---
-    // Keep TX running while we send the tail tone
-    if (tx_inject_tone_with_zeros(p, 2475.0f, 250, 5, 25)) {
-        tx_wait_fifo_drain(p, 600);
+    // Keep TX running with silence long enough to carry the complete 250 ms
+    // Quindar tail through the kernel/DMA queues at the selected RF rate.
+    pthread_mutex_lock(&g_tx_injection_lock);
+    p->tx_ctrl.inj.hold_silence = true;
+    pthread_mutex_unlock(&g_tx_injection_lock);
+    if (tx_inject_tone_with_zeros(p, 2475.0f, 250, 5, p->tx_ctrl.tail_padding_frames)) {
+        pthread_mutex_lock(&g_tx_injection_lock);
+        uint64_t sequence = p->tx_ctrl.inj.last_sequence;
+        pthread_mutex_unlock(&g_tx_injection_lock);
+        if (!tx_wait_written(p, sequence, 600 + (p->txq.cap + 1) * 10))
+            fprintf(stderr, "TX tail drain timed out or writer failed; continuing hardware shutdown\n");
     } else {
         fprintf(stderr, "TX tail tone aborted; continuing hardware shutdown\n");
     }

@@ -4,11 +4,14 @@
 #include "pipeline_transport.h"
 #include "audio_source.h"
 #include "nbfm_mod.h"
+#include <stdatomic.h>
 
 // Internal application handles. One control owner serializes lifecycle calls.
 typedef struct {
     volatile int   frames_left;   // number of 10ms frames to override
     volatile float hz;            // 0 => zeros, else tone frequency
+    uint64_t last_sequence;       // Last injected frame successfully enqueued
+    bool hold_silence;            // Keep silence after the stop cue
 } tone_injector_t;
 
 typedef struct {
@@ -31,6 +34,9 @@ typedef struct {
     float    tone_amp;         // audio amplitude (0..1), e.g. 0.8f
 	
     size_t frame_samples;     // Immutable while pipeline threads exist
+    unsigned tail_padding_frames; // Silence covering kernel/DMA buffering
+    uint64_t next_sequence;   // Producer-owned, independent of diagnostic stats
+    atomic_uint_fast64_t written_sequence; // Last complete frame accepted by SMI
     rf10_fifo_t* fifo;         // FIFO for 10 ms frames
 	
     // new
@@ -48,7 +54,7 @@ typedef struct {
     // Radio
     double freq_hz;             // e.g., 430.1e6
     int    tx_power_dbm;        // e.g., -3
-    unsigned rf_fs;            // 0 defaults to 4 MS/s; also supports 2 MS/s
+    unsigned rf_fs;            // 1, 2 or 4 MS/s; 0 defaults to 4 MS/s
 
     // Baseband source for NBFM mod
     bool   tone_mode;           // true => synth audio
