@@ -36,6 +36,13 @@ Press **1**, **2** or **4** with TX, RX and interface loopback stopped to select
 20,000 or 40,000 IQ pairs per 10 ms block; the audio rate remains 48 kHz.
 TX setup verifies the FPGA sample gap (3, 1 or 0 respectively) before starting.
 
+Every NBFM RX start enables AGC using the filtered modem signal and selects
+the minimum RX analog bandwidth (**160 kHz**) and digital cutoff (**fS / 8**,
+or 125 kHz at 1 MS/s). The pipeline confirms TRXOFF before configuration and
+verifies the settings by register readback before activation. Switching to
+WBFM restores the wide RX filters on its next start. See the
+[modem RX profile](nbfm-rx-sensitivity-context.md#minimum-modem-rx-bandwidth-and-explicit-agc-2026-10-10).
+
 ## Implementation and validation
 
 The monitor parses and saves configuration, then calls the pipeline frequency

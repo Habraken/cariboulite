@@ -74,6 +74,8 @@ typedef struct {
 
 extern cariboulite_sample_complex_int16 latest_rx_sample;
 int rx_pipeline_init(rx_pipeline_t*, sys_st*, cariboulite_radio_state_st*, const rx_params_t*);
+// Each start verifies the modem profile: NBFM uses AGC and minimum RX analog
+// bandwidth/digital cutoff; WBFM restores the wide receive filters.
 int rx_pipeline_start(rx_pipeline_t*);
 void rx_pipeline_stop(rx_pipeline_t*);
 void rx_pipeline_destroy(rx_pipeline_t*);

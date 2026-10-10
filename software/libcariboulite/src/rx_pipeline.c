@@ -210,6 +210,60 @@ fail:
     return error;
 }
 
+// The app owns this mode-specific profile; generic radio/Soapy callers retain
+// their settings. Called under HW_LOCK, before enabling RX or its reader.
+static int configure_rx_modem(rx_pipeline_t* p)
+{
+    cariboulite_radio_state_st* radio = p->radio;
+    at86rf215_st* modem = &p->sys->modem;
+    const bool nbfm = p->demod.mode == AUDIO_DEMOD_NBFM;
+    const bool s1g = radio->type == cariboulite_channel_s1g;
+    cariboulite_radio_sample_rate_en rate;
+    switch ((unsigned)p->demod.fs_rf) {
+        case 1000000: rate = cariboulite_radio_rx_sample_rate_1000khz; break;
+        case 2000000: rate = cariboulite_radio_rx_sample_rate_2000khz; break;
+        case 4000000: rate = cariboulite_radio_rx_sample_rate_4000khz; break;
+        default: return -1;
+    }
+    const cariboulite_radio_rx_bw_en bw = nbfm ?
+        cariboulite_radio_rx_bw_160KHz : cariboulite_radio_rx_bw_2000KHz;
+    const cariboulite_radio_f_cut_en cutoff = nbfm ?
+        cariboulite_radio_rx_f_cut_0_25_half_fs : cariboulite_radio_rx_f_cut_half_fs;
+
+    // Frontend configuration requires TRXOFF. Tuning can leave TXPREP active,
+    // and the modem's TRXOFF command has an erratum, so confirm actual state.
+    uint8_t state = 0;
+    if (cariboulite_radio_activate_channel(radio, cariboulite_channel_dir_rx, false) != 0 ||
+        at86rf215_read_buffer(modem, s1g ? REG_RF09_STATE : REG_RF24_STATE,
+                             &state, 1) != 0 ||
+        (state & 0x07) != cariboulite_radio_state_cmd_trx_off) return -1;
+
+    // The bandwidth setter resets RCUT, so set the sample rate/cutoff last.
+    // The radio setters preserve IFS=1 and IFI=0, and update SMI timeouts.
+    if (cariboulite_radio_set_rx_bandwidth(radio, bw) != 0 ||
+        cariboulite_radio_set_rx_samp_cutoff(radio, rate, cutoff) != 0) return -1;
+    uint8_t filters[2] = {0};
+    if (at86rf215_read_buffer(modem, s1g ? REG_RF09_RXBWC : REG_RF24_RXBWC,
+                             filters, 2) != 0 ||
+        (filters[0] & 0x3f) != (0x10 | (unsigned)bw) ||
+        (filters[1] & 0xef) != (((unsigned)cutoff << 5) | (unsigned)rate)) return -1;
+
+    if (nbfm) {
+        // AGCI=0: measure after modem filtering. EN=1, FRZC=0, AVGS=0
+        // (8 samples), TGT=0 (-21 dBFS), matching fresh modem initialization.
+        // GCW is ignored with AGC enabled; RX entry resets automatic gain.
+        // Use a checked write/read rather than the unchecked setup helper.
+        uint8_t agc[2] = {0x01, 0x00};
+        const uint16_t reg = s1g ? REG_RF09_AGCC : REG_RF24_AGCC;
+        if (at86rf215_write_buffer(modem, reg, agc, 2) != 0 ||
+            at86rf215_read_buffer(modem, reg, agc, 2) != 0 ||
+            (agc[0] & 0x73) != 0x01 || (agc[1] & 0xe0) != 0) return -1;
+        radio->rx_agc_on = true;
+        radio->rx_gain_value_db = (agc[1] & 0x1f) * 3;
+    }
+    return 0;
+}
+
 int rx_pipeline_start(rx_pipeline_t* p)
 {
     if (!p || !p->inited || p->running) return -1;
@@ -232,7 +286,11 @@ int rx_pipeline_start(rx_pipeline_t* p)
     }
 
     HW_LOCK();
-    cariboulite_radio_set_rx_sample_rate_flt(p->radio, p->demod.fs_rf);
+    if (configure_rx_modem(p) != 0) {
+        HW_UNLOCK();
+        fprintf(stderr, "[rx] modem filter/AGC configuration failed; RX not started\n");
+        return -4;
+    }
     caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, caribou_fpga_io_ctrl_rfm_rx_lowpass);
     cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_rx, true);
     caribou_smi_set_driver_streaming_state(&p->sys->smi,

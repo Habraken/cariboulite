@@ -83,7 +83,7 @@ the repeater's scheduled transmission was clearly audible and its message
 understandable, with a reported definite improvement. This physical listening
 result complements the automated checks. After switching back to
 **HiF (RF24)**, the user also confirmed **good reception at 1 MS/s**. See the
-[receiver investigation context](nbfm-rx-sensitivity-context.md#successful-listening-test-2026-10-10).
+[receiver investigation context](nbfm-rx-sensitivity-context.md#successful-listening-tests-2026-10-10).
 
 ## Reproduction
 

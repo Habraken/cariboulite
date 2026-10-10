@@ -47,9 +47,56 @@ At 430.125 MHz on the full board, this path uses the HiF front-end mixer and
 RF24 at an IF near 2.495 GHz. The driver handles the conversion's IQ inversion.
 The direct RF09 antenna-path findings below describe the earlier S1G setup.
 
+## Minimum modem RX bandwidth and explicit AGC (2026-10-10)
+
+Each NBFM RX start now explicitly enables and releases AGC, using the signal
+after the modem's digital post-filter. Its **8-sample averaging** and
+**−21 dBFS target** match this driver's fresh initialization. The earlier
+−30 dBFS description confused the chip's register reset value with the
+driver's configured target.
+
+The modem uses its minimum **160 kHz analog bandwidth** and minimum digital
+cutoff, **`fS / 8`**. The selected IQ sample rate is retained:
+
+| IQ rate | Analog bandwidth | Digital cutoff | HiF RXBWC / RXDFE |
+| --- | --- | --- | --- |
+| 1 MS/s | 160 kHz | ±125 kHz | `0x10` / `0x04` |
+| 2 MS/s | 160 kHz | ±250 kHz | `0x10` / `0x02` |
+| 4 MS/s | 160 kHz | ±500 kHz | `0x10` / `0x01` |
+
+These are the narrowest hardware settings at the supported app rates; the
+software **±6 kHz channel filter** still provides NBFM channel selectivity.
+The modem IF shift remains enabled, with normal IF polarity. Its internal
+low IF follows the selected analog bandwidth; the external HiF conversion
+and driver IQ inversion handling remain in use.
+
+Before configuring the frontend, the pipeline stops the modem and confirms
+**TRXOFF**. It then reads back the bandwidth, cutoff, sample rate and AGC
+controls before enabling RX. A configuration or readback failure prevents RX
+startup and permits retry. The profile is reapplied after rate changes,
+TX/RX switches and interface loopback. WBFM RX restores the previous wide
+2 MHz analog filter and `fS / 2` digital cutoff when it starts.
+
+The policy is local to the app's
+[RX pipeline](../software/libcariboulite/src/rx_pipeline.c); generic radio API
+and SoapySDR settings are caller-controlled. The user confirmed a successful
+listening test with the new modem profile on **HiF (RF24) at 1 MS/s**.
+Calibrated sensitivity measurements remain pending.
+
+Hardware-free lifecycle checks pass for RF09 and RF24 at 1/2/4 MS/s, including
+stale AGC/filter restoration, NBFM/WBFM transitions and 38 injected configuration
+failures or readback mismatches with successful retries. Interface-loopback
+checks and the `cariboulite_test_app` build also pass. Reproduce with:
+
+```sh
+python3 software/libcariboulite/tests/test_rx_lifecycle.py
+python3 software/libcariboulite/tests/test_monitor_loopback.py
+cmake --build build --target cariboulite_test_app -j2
+```
+
 ## Successful listening tests (2026-10-10)
 
-The test used the **S1G (RF09) channel at 1 MS/s**.
+The initial channel-filter test used the **S1G (RF09) channel at 1 MS/s**.
 
 Following implementation of the complex channel filter, the user reported
 clearly hearing the repeater's scheduled transmission and understanding its
@@ -64,6 +111,12 @@ Following the discriminator angle correction to full `atan2f`, the user
 confirmed a further **successful listening test on HiF (RF24) at 1 MS/s**.
 This records on-air listening acceptance of the corrected discriminator in
 that configuration.
+
+After enabling AGC explicitly and selecting the minimum modem RX bandwidths,
+the user again confirmed a **successful listening test on HiF (RF24) at
+1 MS/s**. This records on-air listening acceptance with AGC enabled and
+unfrozen, **160 kHz analog bandwidth** and **±125 kHz digital cutoff**, together
+with the complex channel filter and corrected discriminator.
 
 An RF input level, SINAD result and quantitative sensitivity gain were not
 recorded for these tests.
@@ -83,8 +136,9 @@ flowchart TD
 
 | Stage | Current behavior |
 | --- | --- |
-| RF frontend | HiF/RF24 path. At **430.125 MHz**, the full board uses its front-end mixer to convert to an IF near **2.495 GHz**. Menu 14 selects **2 MHz modem analog bandwidth**. |
-| Chip filtering and rate | IQ runs at **1, 2 or 4 MS/s**, initially 4 MS/s. The chip digital filter cutoff is configured to **half the sample rate**, much wider than NBFM. |
+| RF frontend | HiF/RF24 path. At **430.125 MHz**, the full board uses its front-end mixer to convert to an IF near **2.495 GHz**. NBFM RX selects **160 kHz modem analog bandwidth**. |
+| Chip filtering and rate | IQ runs at **1, 2 or 4 MS/s**, initially 4 MS/s. NBFM uses the minimum chip digital cutoff, **one eighth of the sample rate**. |
+| AGC | Explicitly enabled and unfrozen at each NBFM RX start, using the filtered signal, **8-sample averaging** and a **−21 dBFS target**. |
 | Transport | FPGA buffers and transfers samples without RX filtering. Software stores signed 13-bit values in 16-bit containers and assembles **10 ms IQ blocks**. |
 | Software IQ filtering | Third-order CIC reduces IQ to **200 kS/s**, then a **321-tap complex FIR** filters and decimates to **50 kS/s**. Passband **±6 kHz**; stopband starts at **±9 kHz**. |
 | FM detector | Normalizes IQ amplitude and calculates successive-sample phase differences with full **`atan2f`**, returning zero for a zero IQ product. Audio normalization assumes **±2.5 kHz deviation**. |
@@ -132,24 +186,26 @@ calculated only at the post-filter **50 kS/s** rate. See the
 The user has confirmed successful listening after this correction on
 **HiF (RF24) at 1 MS/s**. Calibrated sensitivity measurements remain pending.
 
-### 3. Test narrower chip bandwidth and controlled gain settings
+### 3. Minimum chip bandwidth and explicit AGC (implemented)
 
-The AT86RF215 supports analog bandwidth down to **160 kHz**, which could reduce
-exposure to blockers and broadband noise. Narrowing hardware bandwidth still
-leaves software channel filtering necessary.
+The NBFM RX pipeline now selects the AT86RF215's minimum **160 kHz analog
+bandwidth** and **`fS / 8` digital cutoff**, reducing exposure to blockers and
+broadband noise before software channel filtering. The hardware filters remain
+much wider than NBFM, so software channel filtering is still necessary.
 
-Menu 14 does not explicitly configure AGC. Fresh initialization inherits chip
-defaults: AGC enabled, filtered measurement input, 8-sample averaging and a
-−30 dBFS target. Earlier gain changes can persist, so record actual AGC/gain
-registers during comparisons. The public gain setter uses different AGC settings
-and should not be treated as the menu's fresh-start configuration.
+AGC is explicitly enabled and unfrozen with filtered measurement input,
+8-sample averaging and a **−21 dBFS target**. This prevents earlier manual gain
+or AGC-freeze settings from persisting into an NBFM RX session. The generic
+public gain setter still uses different measurement settings and should not
+be treated as this app profile. Record the actual AGC/gain registers during
+physical comparisons.
 
 The maximum gain-control word also depends on analog bandwidth: 21 at
 160–500 kHz, 22 at 630–1000 kHz, and 23 at 1250–2000 kHz. Respect these limits
 when testing manual gain; the current public setter clamps only to 23.
 
 See [radio configuration](../software/libcariboulite/src/cariboulite_radio.c) and
-the [AT86RF215 datasheet, §§6.2.1–6.2.3](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-42415-WIRELESS-AT86RF215_Datasheet.pdf).
+the [AT86RF215 datasheet, §§6.2–6.2.5](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/Atmel-42415-WIRELESS-AT86RF215_Datasheet.pdf).
 
 ### 4. S1G antenna matching network at 430 MHz (earlier setup)
 
