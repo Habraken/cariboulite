@@ -46,6 +46,7 @@ retain their original revision and test conditions. See the
 - [FPGA build and registers](../firmware/README.md)
 - [FPGA simulation coverage](../firmware/tests/README.md)
 - [Next FPGA test: LVDS Fmax before sequencer integration](lvds-fmax-next-test-2026-10-08.md)
+- [Step 2: FPGA build headroom and external-PA control](fpga-pa-control-plan-2026-10-17.md)
 - [Rev2.8 quotation package and manufacturing holds](../manufacturing/rev2.8-full-eurocircuits/README.md)
 
 ## Recorded investigations and measurements

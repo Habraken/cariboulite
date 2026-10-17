@@ -31,6 +31,7 @@ this source review; it is not a new hardware qualification.
    backend. The same explicit configuration must produce matching hardware
    settings, with requested values distinct from fresh, valid readbacks.
 2. Establish FPGA build headroom, then add external-PA control. First complete
+   the [detailed step-2 execution plan](docs/fpga-pa-control-plan-2026-10-17.md), building on
    the existing [synthesis/routing and LVDS timing experiments](docs/lvds-fmax-next-test-2026-10-08.md),
    recording resource use, repeatability and timing margin before selecting build
    settings. The last recorded CE2 build failed LVDS timing; no replacement build
