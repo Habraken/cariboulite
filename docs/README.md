@@ -48,6 +48,7 @@ retain their original revision and test conditions. See the
 - [Next FPGA test: LVDS Fmax before sequencer integration](lvds-fmax-next-test-2026-10-08.md)
 - [Step 2: FPGA build headroom and external-PA control](fpga-pa-control-plan-2026-10-17.md)
 - [A2 FPGA build matrix](fpga-a2-build-matrix-2026-10-17.md)
+- [A3 controlled FPGA build-option experiments](fpga-a3-build-options-2026-10-17.md)
 - [Reserved-pad cleanup and serial qualification](fpga-warning-cleanup-2026-10-17.md)
 - [CE2 candidate programming and physical-test status](fpga-ce2-programming-2026-10-17.md)
 - [Rev2.8 quotation package and manufacturing holds](../manufacturing/rev2.8-full-eurocircuits/README.md)

@@ -44,6 +44,8 @@ the six runs, simulation checks, pad verification and retained evidence.
 Carry **CE2 serial** into further experiments on this source. The original
 default-serial recommendation below applied to the earlier HDL. Seed
 sensitivity, physical pad measurements and full A5 acceptance remain future work.
+The subsequent [A3 option comparison](fpga-a3-build-options-2026-10-17.md)
+retains this recipe after sixteen further controlled builds.
 
 ## Original A2 matrix before warning cleanup
 

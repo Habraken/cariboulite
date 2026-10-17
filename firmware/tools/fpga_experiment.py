@@ -544,14 +544,20 @@ def run(args):
     result = {"schema_version": 1, "created_utc": timestamp(), "status": "failed",
               "reference": str(reference), "reference_sha256": digest(reference / "reference.json"),
               "synthesis": args.synthesis, "refinement": args.refinement,
+              "tmg_ripup": args.tmg_ripup, "promote_globals": args.promote_globals,
+              "synthesis_device": args.synthesis_device,
               "seed": args.seed, "repeat": args.repeat, "stages": [], "metrics": {}, "artifacts": {}}
     synth = "synth_ice40 -top top" + (" -dffe_min_ce_use 2" if args.synthesis == "ce2" else "")
+    if args.synthesis_device == "lp":
+        synth += " -device lp"
     pipeline = [
         ("synthesis", [commands["yosys"], "-Q", "-T", "-p", synth + " -json top.json -blif top.blif", "top.v"],
          ["top.json", "top.blif"]),
         ("routing", [commands["nextpnr-ice40"], "--lp1k", "--package", "qn84", "--json", "top.json",
          "--pcf", "io.pcf", "--asc", "top.asc", "--write", "routed.json", "--report", "timing.json",
-         "--opt-timing", "--seed", str(args.seed), "--no-promote-globals"] +
+         "--opt-timing", "--seed", str(args.seed)] +
+         ([] if args.promote_globals else ["--no-promote-globals"]) +
+         (["--tmg-ripup"] if args.tmg_ripup else []) +
          (["--parallel-refine"] if args.refinement == "parallel" else []),
          ["top.asc", "routed.json", "timing.json"]),
         ("packing", [commands["icepack"], "top.asc", "top.bin"], ["top.bin"]),
@@ -622,6 +628,10 @@ def main():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--synthesis", choices=("default", "ce2"), required=True)
     p.add_argument("--refinement", choices=("parallel", "serial"), required=True)
+    p.add_argument("--tmg-ripup", action="store_true", help="enable timing-driven ripup during routing")
+    p.add_argument("--promote-globals", action="store_true", help="allow automatic global-net promotion during routing")
+    p.add_argument("--synthesis-device", choices=("default", "lp"), default="default",
+                   help="Yosys device mapping; default retains the inherited synthesis command")
     p.add_argument("--seed", type=int, default=16)
     p.add_argument("--repeat", type=int, default=1)
     p.add_argument("--timeout", type=positive, default=1800)

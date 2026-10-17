@@ -154,6 +154,28 @@ inspection; downstream stages stop after a failure. A zero tool exit code alone
 does not make a stage pass: required outputs must be nonempty. Failed timing
 prevents packing.
 
+## A3: compare one build option at a time
+
+The `run` command also accepts these explicit experiment options:
+
+| Runner option | Tool command change | Default when omitted |
+| --- | --- | --- |
+| `--tmg-ripup` | Add nextpnr `--tmg-ripup` | Timing-driven ripup disabled |
+| `--promote-globals` | Remove nextpnr `--no-promote-globals` | Automatic global promotion disabled |
+| `--synthesis-device lp` | Add Yosys `-device lp` | Inherited synthesis device selection |
+
+Use a fresh output directory for every run. Compare each option independently
+against a fixed synthesis/refinement/seed recipe before testing combinations.
+Installed Yosys help describes device selection as relevant to ABC9; inspect the
+actual synthesis log when interpreting this experiment. These switches change
+isolated commands, without editing the production Makefile or programming FPGA
+hardware. The original A2 commands remain identical when the switches are omitted.
+
+`result.json` records `tmg_ripup`, `promote_globals` and `synthesis_device` alongside
+the exact stage commands. A frozen runner predating these options cannot accept
+them: preserve a separate copy of the updated runner and its hash with the A3
+plan, while continuing to use the verified frozen HDL/toolchain reference.
+
 ## Summarize the matrix
 
 After the matrix completes, generate JSON and CSV comparisons in a fresh output
@@ -170,6 +192,11 @@ resource and clock ranges, warnings, artifact hashes and counts of distinct
 source, netlist, routed-design and image hashes. Missing and incomplete runs
 remain visible. A successful summary command means the report was written;
 inspect its `status_counts` to determine build outcomes.
+
+Groups and CSV columns include all three A3 options so distinct recipes remain
+separate. Older plans and results use the original defaults. For completed runs,
+recorded result options take precedence over plan options; planned options also
+label missing runs.
 
 Metrics prefer `result.json`, then the retained `work/timing.json`, then the
 last observation of each clock in `logs/routing.log`. This preserves measurements

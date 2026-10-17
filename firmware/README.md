@@ -22,6 +22,10 @@ The [cleanup qualification](../docs/fpga-warning-cleanup-2026-10-17.md) passes
 three fresh CE2-serial builds; default serial fails placement for this source.
 Use the isolated experiment commands in that record when evaluating this
 candidate; the production Makefile's historical defaults are unchanged.
+The subsequent [A3 comparison](../docs/fpga-a3-build-options-2026-10-17.md) retains
+CE2 serial with the original device selection and global promotion disabled;
+timing-driven ripup adds no measured gain. Seed and physical qualification
+remain A5 work before this becomes the accepted PA-development baseline.
 
 CaribouLite contains an FPGA device (ICE40 family) with 1280 LE. It has two designated roles:
 1. Step #1: Controlling and managing the RF front-end path, and other digital device control.

@@ -3,6 +3,7 @@
 
 import csv
 import importlib.util
+import itertools
 import json
 from pathlib import Path
 import subprocess
@@ -43,6 +44,50 @@ Info: Max frequency for clock             'lvds_clock_buf': 74.96 MHz (PASS at 6
 
 
 class SummaryTests(unittest.TestCase):
+    def test_a3_dimensions_prefer_recorded_options_then_plan_then_old_defaults(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            entry = {"name": "baseline", "synthesis": "ce2", "refinement": "serial"}
+            defaults = {"tmg_ripup": False, "promote_globals": False, "synthesis_device": "default"}
+            planned = {"tmg_ripup": True, "promote_globals": True, "synthesis_device": "lp"}
+            actual = {"tmg_ripup": True, "promote_globals": False, "synthesis_device": "lp"}
+            for expected, plan_options, result_options in ((defaults, {}, None), (planned, planned, None),
+                                                           (actual, defaults, actual)):
+                with self.subTest(expected=expected):
+                    if result_options is not None:
+                        (directory / "result.json").write_text(json.dumps({
+                            "status": "passed", "elapsed_s": 1, **result_options}))
+                    run = SUMMARY.summarize_run({**entry, **plan_options}, directory, [])
+                    self.assertEqual({field: run[field] for field in defaults}, expected)
+
+    def test_a3_option_combinations_form_separate_groups_and_csv_columns(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            runs = []
+            for index, (ripup, promote, device) in enumerate(itertools.product(
+                    (False, True), (False, True), ("default", "lp"))):
+                options = {"tmg_ripup": ripup, "promote_globals": promote, "synthesis_device": device}
+                entry = {"name": f"variant-{index}", "synthesis": "ce2", "refinement": "serial", **options}
+                runs.append(SUMMARY.summarize_run(entry, root / entry["name"], []))
+            legacy = SUMMARY.summarize_run({"name": "legacy", "synthesis": "ce2", "refinement": "serial"},
+                                           root / "legacy", [])
+            runs.append(legacy)
+            groups = SUMMARY.grouped(runs)
+            self.assertEqual(len(groups), 8)
+            self.assertEqual(sum(group["planned"] for group in groups), 9)
+            for group in groups:
+                expected = 2 if not group["tmg_ripup"] and not group["promote_globals"] and group["synthesis_device"] == "default" else 1
+                self.assertEqual(group["planned"], expected)
+            csv_path = root / "summary.csv"
+            SUMMARY.write_csv(csv_path, runs)
+            with csv_path.open(newline="") as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertEqual(len(rows), 9)
+            self.assertEqual(len({(row["tmg_ripup"], row["promote_globals"], row["synthesis_device"])
+                                  for row in rows}), 8)
+            self.assertEqual((rows[-1]["tmg_ripup"], rows[-1]["promote_globals"], rows[-1]["synthesis_device"]),
+                             ("False", "False", "default"))
+
     def test_real_padded_nextpnr_lines_include_all_five_final_clocks(self):
         report = SUMMARY.parse_routing_log(REAL_PADDED_ROUTING_LOG)
         self.assertEqual({name: values["achieved"] for name, values in report["fmax"].items()},
@@ -130,6 +175,10 @@ class SummaryTests(unittest.TestCase):
             self.assertIsNone(failed["hashes"]["image"])
             self.assertEqual(failed["evidence"]["fmax"]["lvds"]["origin"], "routing_log")
             group = summary["groups"][0]
+            self.assertEqual(len(summary["groups"]), 1)
+            for item in (group, *summary["runs"]):
+                self.assertEqual({field: item[field] for field in SUMMARY.EXPERIMENT_DEFAULTS},
+                                 SUMMARY.EXPERIMENT_DEFAULTS)
             self.assertEqual(group["planned"], 5)
             self.assertEqual(group["hashes"]["netlist"]["unique_count"], 1)
             self.assertEqual(group["fmax"]["lvds"]["achieved_mhz"], {"min": 56.24, "max": 74.96})

@@ -185,6 +185,15 @@ class ExperimentRunnerTests(unittest.TestCase):
                          ["synthesis", "routing", "packing"])
         self.assertEqual(summary["metrics"]["utilization"]["ICESTORM_RAM"]["used"], 16)
         self.assertIn("work/top.bin", summary["artifacts"])
+        self.assertIs(summary["tmg_ripup"], False)
+        self.assertIs(summary["promote_globals"], False)
+        self.assertEqual(summary["synthesis_device"], "default")
+        self.assertEqual(self.calls()[0]["args"], [
+            "-Q", "-T", "-p", "synth_ice40 -top top -json top.json -blif top.blif", "top.v"])
+        self.assertEqual(self.calls()[1]["args"], [
+            "--lp1k", "--package", "qn84", "--json", "top.json", "--pcf", "io.pcf",
+            "--asc", "top.asc", "--write", "routed.json", "--report", "timing.json",
+            "--opt-timing", "--seed", "16", "--no-promote-globals", "--parallel-refine"])
 
     def test_stage_failures_keep_evidence_and_stop_following_stages(self):
         self.freeze()
@@ -249,6 +258,58 @@ class ExperimentRunnerTests(unittest.TestCase):
         self.assertIn("--no-promote-globals", routing)
         self.assertNotIn("--timing-allow-fail", routing)
         self.assertEqual(routing[routing.index("--seed") + 1], "16")
+
+    def test_a3_options_change_only_requested_tool_arguments_and_record_selection(self):
+        self.freeze()
+        before_reference = self.content_hashes(self.reference)
+        before_repo = self.content_hashes(self.repo)
+        variants = (
+            ("inherited", (), False, False, "default"),
+            ("explicit-default", ("--synthesis-device", "default"), False, False, "default"),
+            ("ripup", ("--tmg-ripup",), True, False, "default"),
+            ("globals", ("--promote-globals",), False, True, "default"),
+            ("lp", ("--synthesis-device", "lp"), False, False, "lp"),
+            ("combined", ("--tmg-ripup", "--promote-globals", "--synthesis-device", "lp"),
+             True, True, "lp"),
+        )
+        for name, options, ripup, globals_allowed, device in variants:
+            with self.subTest(variant=name):
+                self.output = self.root / name
+                self.calls_file.unlink(missing_ok=True)
+                self.run_experiment("--synthesis", "ce2", "--refinement", "serial", *options)
+                calls = self.calls()
+                self.assertEqual([call["stage"] for call in calls],
+                                 ["synthesis", "routing", "packing"])
+                script = "synth_ice40 -top top -dffe_min_ce_use 2"
+                if device == "lp":
+                    script += " -device lp"
+                self.assertEqual(calls[0]["args"], [
+                    "-Q", "-T", "-p", script + " -json top.json -blif top.blif", "top.v"])
+                routing = [
+                    "--lp1k", "--package", "qn84", "--json", "top.json", "--pcf", "io.pcf",
+                    "--asc", "top.asc", "--write", "routed.json", "--report", "timing.json",
+                    "--opt-timing", "--seed", "16"]
+                if not globals_allowed:
+                    routing.append("--no-promote-globals")
+                if ripup:
+                    routing.append("--tmg-ripup")
+                self.assertEqual(calls[1]["args"], routing)
+                self.assertEqual(calls[2]["args"], ["top.asc", "top.bin"])
+                summary = json.loads((self.output / "result.json").read_text())
+                self.assertEqual(summary["status"], "passed")
+                self.assertIs(summary["tmg_ripup"], ripup)
+                self.assertIs(summary["promote_globals"], globals_allowed)
+                self.assertEqual(summary["synthesis_device"], device)
+                for call, record in zip(calls, summary["stages"]):
+                    self.assertEqual(record["command"][1:], call["args"])
+        self.assertEqual(self.content_hashes(self.reference), before_reference)
+        self.assertEqual(self.content_hashes(self.repo), before_repo)
+
+    def test_unsupported_synthesis_device_is_rejected_before_creating_run(self):
+        self.freeze()
+        self.run_experiment("--synthesis-device", "hx", success=False)
+        self.assertFalse(self.output.exists())
+        self.assertEqual(self.calls(), [])
 
     def test_existing_run_directory_is_never_overwritten(self):
         self.freeze()

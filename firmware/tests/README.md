@@ -59,12 +59,19 @@ recorded. These tests do not run real FPGA builds or access hardware. See the
 [runner guide](../tools/README.md) for A1 preparation, A2 execution and rollback
 requirements.
 
+A3 coverage checks the exact default tool commands, each independent ripup,
+global-promotion and LP-device option, combined options, and matching result
+metadata. Unsupported synthesis-device choices are rejected before execution.
+
 The matrix summarizer has checks for timing-report/log fallback, padded clock
 names, final versus placement timing, missing/incomplete runs and retained hashes:
 
 ```sh
 python3 firmware/tests/test_experiment_summary.py
 ```
+
+Summary checks also keep distinct A3 option combinations in separate groups and
+CSV columns, while interpreting older A2 records with their original defaults.
 
 The loopback bench connects the actual register controller and LVDS transmitter.
 It checks register decoding, 1,024 gap/phase/TX/FIFO combinations, exact debug

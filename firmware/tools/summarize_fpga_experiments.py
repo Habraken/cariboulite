@@ -19,6 +19,9 @@ CLOCK = re.compile(r"Max frequency for clock\s+['\"](.+?)['\"]:\s*(" + NUMBER +
 RESOURCE = re.compile(r"^\s*(?:Info:\s*)?([A-Z][A-Z0-9_]+):\s*(\d+)\s*/\s*(\d+)\b")
 ARTIFACTS = {"netlist": "top.json", "routed_netlist": "routed.json",
              "placement": "top.asc", "image": "top.bin"}
+EXPERIMENT_DEFAULTS = {"tmg_ripup": False, "promote_globals": False,
+                       "synthesis_device": "default"}
+GROUP_FIELDS = ("synthesis", "refinement", *EXPERIMENT_DEFAULTS)
 
 
 def digest(path):
@@ -153,6 +156,8 @@ def summarize_run(entry, directory, sources):
                      for number, line in enumerate(log.read_text(errors="replace").splitlines(), 1)
                      if re.search(r"\bwarning\b", line, re.I)]
     return {**{field: entry.get(field) for field in ("name", "synthesis", "refinement", "seed", "repeat")},
+            **{field: result.get(field, entry.get(field, default))
+               for field, default in EXPERIMENT_DEFAULTS.items()},
             "directory": str(directory), "status": status, "recorded_status": result.get("status"),
             "error": result.get("error"), "elapsed_s": result.get("elapsed_s"), "stages": stages,
             "metrics": metrics, "evidence": evidence, "hashes": hashes, "source_files": source_hashes,
@@ -166,8 +171,11 @@ def bounds(values):
 
 def grouped(runs):
     result = []
-    for key in sorted({(run["synthesis"], run["refinement"]) for run in runs}):
-        members = [run for run in runs if (run["synthesis"], run["refinement"]) == key]
+    def group_key(run):
+        return tuple(run.get(field, EXPERIMENT_DEFAULTS.get(field)) for field in GROUP_FIELDS)
+
+    for key in sorted({group_key(run) for run in runs}):
+        members = [run for run in runs if group_key(run) == key]
         clocks = sorted({name for run in members for name in run["metrics"]["fmax"]})
         resources = sorted({name for run in members for name in run["metrics"]["utilization"]})
         hashes = {}
@@ -175,7 +183,7 @@ def grouped(runs):
             values = [run["hashes"][name] for run in members if run["hashes"][name]]
             hashes[name] = {"unique_count": len(set(values)), "values": sorted(set(values)),
                             "missing_count": len(members) - len(values)}
-        result.append({"synthesis": key[0], "refinement": key[1], "planned": len(members),
+        result.append({**dict(zip(GROUP_FIELDS, key)), "planned": len(members),
                        "status_counts": dict(Counter(run["status"] for run in members)),
                        "elapsed_s": bounds(run["elapsed_s"] for run in members),
                        "stage_elapsed_s": {name: bounds(run["stages"].get(name, {}).get("elapsed_s") for run in members)
@@ -196,8 +204,9 @@ def clock_value(run, constraint):
 
 
 def write_csv(path, runs):
-    fields = ["name", "synthesis", "refinement", "seed", "repeat", "status", "elapsed_s", "error",
-              "system_fmax_mhz", "lvds_fmax_mhz", "logic_cells", "ram_blocks", "warnings_count"]
+    metadata_fields = ["name", "synthesis", "refinement", *EXPERIMENT_DEFAULTS,
+                       "seed", "repeat", "status", "elapsed_s", "error"]
+    fields = metadata_fields + ["system_fmax_mhz", "lvds_fmax_mhz", "logic_cells", "ram_blocks", "warnings_count"]
     fields += [f"{stage}_{field}" for stage in ("synthesis", "routing", "packing")
                for field in ("status", "exit_code", "elapsed_s")]
     fields += [name + "_sha256" for name in ("source", *ARTIFACTS)]
@@ -206,7 +215,7 @@ def write_csv(path, runs):
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
         for run in runs:
-            row = {field: run.get(field) for field in fields[:8]}
+            row = {field: run.get(field, EXPERIMENT_DEFAULTS.get(field)) for field in metadata_fields}
             row.update(system_fmax_mhz=clock_value(run, 62.5), lvds_fmax_mhz=clock_value(run, 64),
                        logic_cells=run["metrics"]["utilization"].get("ICESTORM_LC", {}).get("used"),
                        ram_blocks=run["metrics"]["utilization"].get("ICESTORM_RAM", {}).get("used"),

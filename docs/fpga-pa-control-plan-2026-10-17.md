@@ -2,13 +2,14 @@
 
 Proposed execution plan, 2026-10-17. Step 1 is committed at `47887c1`, with user
 confirmation of NBFM TX/RX in both applications and working WBFM RX. This plan
-records A1 preparation and the completed A2 build matrix. The CE2 cleanup
+records A1 preparation, the A2 build matrix and completed A3 experiments. The CE2 cleanup
 candidate has been [programmed and checked over SPI](fpga-ce2-programming-2026-10-17.md),
 and the user reported passing smoke tests in both applications on 2026-10-17.
 Full A5 acceptance, including physical pad measurements and other-seed
 qualification, remains pending. See the
 [reference and rollback record](fpga-a1-reference-2026-10-17.md) and
-[A2 results](fpga-a2-build-matrix-2026-10-17.md).
+[A2 results](fpga-a2-build-matrix-2026-10-17.md) and
+[A3 comparison](fpga-a3-build-options-2026-10-17.md).
 
 The deliverable is a repeatable, timing-qualified FPGA image with the agreed
 one- or two-output PA interface, integrated into the shared TX lifecycle and
@@ -68,7 +69,8 @@ Default serial was the provisional comparison baseline for that source. The
 subsequent [reserved-pad warning cleanup](fpga-warning-cleanup-2026-10-17.md)
 passes 3/3 with CE2 serial, while its default-serial builds fail placement.
 CE2 serial is therefore the provisional baseline for the cleanup candidate.
-No production defaults changed. A3 has not started.
+No production defaults changed. [A3 build-option experiments](fpga-a3-build-options-2026-10-17.md)
+are complete and retain this CE2-serial recipe.
 
 Keep the source, PCF, target, seed 16 and other build options fixed. Run three
 fresh full builds for each cell below, for twelve initial builds:
@@ -89,6 +91,17 @@ Output: a table of resource use, timing range, repeatability and failures. Measu
 run duration here before estimating the cost of further sweeps.
 
 ### A3. Resolve the measured limitation with controlled experiments
+
+Completed 2026-10-17. The [sixteen-build comparison](fpga-a3-build-options-2026-10-17.md)
+tested timing-driven ripup, global promotion and LP-device synthesis independently
+with both default and CE2 synthesis. Each passing recipe passed three fresh
+seed-16 builds. Retain the original CE2 serial recipe: 1035 cells, 245 free,
+system 72.76 MHz and LVDS 75.90 MHz, with every other clock passing. Ripup gives
+the same image, global promotion fails, and LP variants reduce LVDS margin.
+No receive staging or wide-enable refactor is selected. A4's receiver-comparison
+work is therefore not required for this unchanged RTL; proceed next to A5 seed
+qualification and remaining physical acceptance. Production defaults and
+packaged artifacts remain unchanged.
 
 Choose experiments from the A2 results, one factor at a time:
 
@@ -111,6 +124,9 @@ Revert experiments without a demonstrated benefit. Keep system and LVDS timing
 visible together; improving one clock does not compensate for failing another.
 
 ### A4. Verify any receive-RTL change before selecting it
+
+Not required for the unchanged RTL retained by A3. Apply these checks if later
+qualification or PA integration requires a receiver change.
 
 Add a comparison bench against the frozen receiver for both modem channels:
 
