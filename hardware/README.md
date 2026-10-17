@@ -74,14 +74,21 @@ To enable the above clocking schemes, the MODEM clock input jumper should be cut
 
 ### PMOD Connector
 
-The current top-level RTL declares four PMOD inputs and four outputs; the
-IO controller's generic PMOD output is disconnected. TX sync selection uses
+The current top-level RTL has four PMOD inputs and four pads reserved for
+future external PA outputs. The reserved `io_pmod_out` pads are declared `inout`
+and use input-only `SB_IO` cells with pull-ups disabled; the IO controller's
+generic PMOD output is disconnected. TX sync selection uses
 `io_pmod_in[1]` for RF09 and `[0]` for RF24. This does not establish GPS PPS
 capture, a general peripheral API or a TX/RX/PA sequencer.
 
 Pin numbering, voltage/current limits, PPS behavior and peripheral examples
 remain [DOC-04](../ROADMAP.md#documentation-validation-backlog). Do not infer
 physical connector numbering from these RTL array indices.
+
+The separate SMI write-request pad and the two mixer-control pads are also
+explicitly input-only without pull-ups. Their port names and physical constraints
+remain reserved; the SMI host still configures its corresponding request pin.
+RX and TX FIFO requests continue to share the active SMI read-request output.
 
 ### FPGA and LVDS
 

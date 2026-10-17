@@ -4,6 +4,8 @@ Completed 2026-10-17 on `dev-fpga-pa-control`, for
 [PA-control plan A1](fpga-pa-control-plan-2026-10-17.md#a1-freeze-the-reference-and-prepare-isolated-experiments).
 The reference checks passed and the twelve A2 commands are prepared. No real
 synthesis, placement/routing, packing, hardware programming or RF tests ran.
+The subsequent [A2 matrix is now complete](fpga-a2-build-matrix-2026-10-17.md);
+the text below records the A1 preparation state.
 
 ## Frozen reference
 
@@ -119,4 +121,5 @@ firmware-header publication. No production build default changed.
 The [runner guide](../firmware/tools/README.md) documents the commands, failure
 handling and timing fields. The derived clock-period margin is not actual
 worst-path slack; every clock must pass its real constraints, including system
-62.5 MHz and LVDS 64 MHz. A2 remains the next unstarted step.
+62.5 MHz and LVDS 64 MHz. A2 was the next unstarted step at this freeze;
+its later results are linked above.

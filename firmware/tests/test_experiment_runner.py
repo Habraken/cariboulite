@@ -32,7 +32,7 @@ if (name == "yosys" and ("-p" not in args or args[args.index("-p") + 1].startswi
     print(name + " fake version 1.0")
     sys.exit(0)
 with open(os.environ["FAKE_TOOL_CALLS"], "a") as trace:
-    trace.write(json.dumps({"stage": stage, "args": args, "cwd": str(Path.cwd())}) + "\n")
+    trace.write(json.dumps({"stage": stage, "args": args, "cwd": str(Path.cwd()), "source": Path("top.v").read_text()}) + "\n")
 print(stage + " standard output", flush=True)
 print(stage + " standard error", file=sys.stderr, flush=True)
 if os.environ.get("FAKE_TIMEOUT_STAGE") == stage:
@@ -146,6 +146,20 @@ class ExperimentRunnerTests(unittest.TestCase):
 
     def calls(self):
         return [json.loads(line) for line in self.calls_file.read_text().splitlines()] if self.calls_file.exists() else []
+
+    def create_candidate(self):
+        output = self.root / "candidate"
+        self.cli("candidate", "--reference", self.reference, "--repo", self.repo, "--output", output)
+        return output, json.loads((output / "reference.json").read_text())
+
+    @staticmethod
+    def reseal(path, manifest):
+        """Recompute outer checksums to exercise provenance checks independently."""
+        (path / "reference.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+        (path / "reference.sha256").write_text(hashlib.sha256((path / "reference.json").read_bytes()).hexdigest() + "\n")
+        files = sorted(artifact for artifact in path.rglob("*") if artifact.is_file() and artifact.name != "SHA256SUMS")
+        (path / "SHA256SUMS").write_text("".join(
+            f"{hashlib.sha256(artifact.read_bytes()).hexdigest()}  {artifact.relative_to(path)}\n" for artifact in files))
 
     @staticmethod
     def content_hashes(root):
@@ -406,6 +420,79 @@ class ExperimentRunnerTests(unittest.TestCase):
                         "commit", "-qm", "broken header"], cwd=self.repo, check=True, capture_output=True)
         self.cli("freeze", "--repo", self.repo, "--output", self.reference, success=False)
         self.assertFalse((self.reference / "reference.json").exists())
+
+    def test_candidate_builds_dirty_hdl_without_changing_parent_or_rollback(self):
+        parent_manifest = self.freeze()
+        parent = self.reference
+        before_parent = self.content_hashes(parent)
+        source = "module top(); wire candidate_change = 1'b1; endmodule\n"
+        (self.repo / "firmware/top.v").write_text(source)
+        before_repo = self.content_hashes(self.repo)
+        self.cli("freeze", "--repo", self.repo, "--output", self.root / "dirty-reference", success=False)
+        output, manifest = self.create_candidate()
+        self.assertEqual(manifest["kind"], "fpga-candidate")
+        self.assertFalse(manifest["firmware_source_matches_revision"])
+        self.assertEqual(manifest["packaged_image_role"], "rollback_only")
+        self.assertEqual(manifest["candidate"]["changed_files"], ["firmware/top.v"])
+        self.assertEqual((output / "source/firmware/top.v").read_text(), source)
+        self.assertIn("candidate_change", (output / "candidate/hdl.patch").read_text())
+        for name in parent_manifest["files"]:
+            if name.startswith("rollback/") or name == "toolchain.json":
+                self.assertEqual((output / name).read_bytes(), (parent / name).read_bytes())
+                self.assertEqual(manifest["files"][name], parent_manifest["files"][name])
+        self.cli("verify", "--reference", output)
+        frozen = subprocess.run([sys.executable, str(output / "tools/fpga_experiment.py"),
+                                 "verify", "--reference", str(output)], env=self.env, text=True, capture_output=True)
+        self.assertEqual(frozen.returncode, 0, frozen.stdout + frozen.stderr)
+        self.reference = output
+        self.run_experiment()
+        self.assertEqual(self.calls()[0]["source"], source)
+        self.assertEqual(self.content_hashes(parent), before_parent)
+        self.assertEqual(self.content_hashes(self.repo), before_repo)
+
+    def test_candidate_rejects_changes_to_pcf_and_makefile(self):
+        self.freeze()
+        for name in ("io.pcf", "Makefile"):
+            with self.subTest(file=name):
+                path = self.repo / "firmware" / name
+                original = path.read_bytes()
+                path.write_bytes(original + b"changed\n")
+                self.cli("candidate", "--reference", self.reference, "--repo", self.repo,
+                         "--output", self.root / "candidate", success=False)
+                self.assertFalse((self.root / "candidate").exists())
+                path.write_bytes(original)
+
+    def test_candidate_rejects_new_or_deleted_hdl_filenames(self):
+        self.freeze()
+        added = self.repo / "firmware/new.v"
+        added.write_text("module new(); endmodule\n")
+        self.cli("candidate", "--reference", self.reference, "--repo", self.repo,
+                 "--output", self.root / "candidate", success=False)
+        self.assertFalse((self.root / "candidate").exists())
+        added.unlink()
+        removed = self.repo / "firmware/included.v"
+        removed.unlink()
+        self.cli("candidate", "--reference", self.reference, "--repo", self.repo,
+                 "--output", self.root / "candidate", success=False)
+        self.assertFalse((self.root / "candidate").exists())
+
+    def test_forged_candidate_provenance_is_rejected_after_resealing(self):
+        self.freeze()
+        output, manifest = self.create_candidate()
+        del manifest["candidate"]["base_reference_sha256"]
+        self.reseal(output, manifest)
+        self.cli("verify", "--reference", output, success=False)
+
+    def test_candidate_cannot_reseal_changes_to_its_inherited_toolchain(self):
+        self.freeze()
+        output, manifest = self.create_candidate()
+        toolchain = output / "toolchain.json"
+        toolchain.write_text(toolchain.read_text() + "\n")
+        manifest["files"]["toolchain.json"] = {
+            "sha256": hashlib.sha256(toolchain.read_bytes()).hexdigest(),
+            "size_bytes": toolchain.stat().st_size, "mode": toolchain.stat().st_mode & 0o777}
+        self.reseal(output, manifest)
+        self.cli("verify", "--reference", output, success=False)
 
 
 if __name__ == "__main__":

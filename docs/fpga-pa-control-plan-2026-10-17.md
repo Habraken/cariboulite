@@ -2,8 +2,13 @@
 
 Proposed execution plan, 2026-10-17. Step 1 is committed at `47887c1`, with user
 confirmation of NBFM TX/RX in both applications and working WBFM RX. This plan
-does not record new FPGA builds or physical tests. A1 preparation is complete;
-see the [reference and rollback record](fpga-a1-reference-2026-10-17.md).
+records A1 preparation and the completed A2 build matrix. The CE2 cleanup
+candidate has been [programmed and checked over SPI](fpga-ce2-programming-2026-10-17.md),
+and the user reported passing smoke tests in both applications on 2026-10-17.
+Full A5 acceptance, including physical pad measurements and other-seed
+qualification, remains pending. See the
+[reference and rollback record](fpga-a1-reference-2026-10-17.md) and
+[A2 results](fpga-a2-build-matrix-2026-10-17.md).
 
 The deliverable is a repeatable, timing-qualified FPGA image with the agreed
 one- or two-output PA interface, integrated into the shared TX lifecycle and
@@ -36,7 +41,7 @@ the board; a version byte does not identify the entire programmed image.
 
 Completed 2026-10-17 on `dev-fpga-pa-control`. The
 [A1 record](fpga-a1-reference-2026-10-17.md) identifies the frozen artifacts,
-checks and prepared A2 commands. A2 has not started.
+checks and prepared A2 commands. A2 is now complete as recorded below.
 
 1. Record the source revision, clean/modified state, FPGA RTL and pin constraints,
    tool versions, build commands and known working image/header hashes.
@@ -54,6 +59,16 @@ Output: a reference manifest, rollback bundle and repeatable experiment commands
 No hardware programming is needed for A1 through A4.
 
 ### A2. Reproduce default and CE2 builds before changing RTL
+
+Completed 2026-10-17. All twelve builds ran: default parallel, default serial
+and CE2 serial passed 3/3 each; CE2 parallel failed LVDS timing 3/3. Both serial
+groups produced identical images within their repeats. See the
+[measurements, hashes and interpretation](fpga-a2-build-matrix-2026-10-17.md).
+Default serial was the provisional comparison baseline for that source. The
+subsequent [reserved-pad warning cleanup](fpga-warning-cleanup-2026-10-17.md)
+passes 3/3 with CE2 serial, while its default-serial builds fail placement.
+CE2 serial is therefore the provisional baseline for the cleanup candidate.
+No production defaults changed. A3 has not started.
 
 Keep the source, PCF, target, seed 16 and other build options fixed. Run three
 fresh full builds for each cell below, for twelve initial builds:

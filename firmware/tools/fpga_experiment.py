@@ -300,7 +300,7 @@ def verify_reference(path):
     if digest(manifest) != (path / "reference.sha256").read_text().strip():
         raise ValueError("reference manifest checksum mismatch")
     reference = json.loads(manifest.read_text())
-    if reference.get("schema_version") != 1 or reference.get("kind") != "fpga-reference":
+    if reference.get("schema_version") != 1 or reference.get("kind") not in ("fpga-reference", "fpga-candidate"):
         raise ValueError("unsupported reference manifest")
     actual = set()
     for artifact in path.rglob("*"):
@@ -322,7 +322,101 @@ def verify_reference(path):
     checksums = "".join(f"{digest(path / name)}  {name}\n" for name in sorted(actual - {"SHA256SUMS"}))
     if (path / "SHA256SUMS").read_text() != checksums:
         raise ValueError("reference checksum index mismatch")
+    if reference["kind"] == "fpga-candidate":
+        verify_candidate(path, reference)
     return reference
+
+
+def verify_candidate(path, reference):
+    details = reference.get("candidate", {})
+    base_path = path / "candidate/base-reference.json"
+    if (not isinstance(details, dict) or not base_path.is_file()
+            or reference.get("firmware_source_matches_revision") is not False
+            or details.get("source_origin") != "working_tree_existing_hdl"
+            or details.get("base_reference_sha256") != digest(base_path)):
+        raise ValueError("invalid candidate provenance")
+    base = json.loads(base_path.read_text())
+    if base.get("kind") != "fpga-reference" or details.get("base_revision") != base.get("git", {}).get("revision"):
+        raise ValueError("invalid candidate base reference")
+    hdl = sorted(name.removeprefix("source/") for name in base["files"]
+                 if name.startswith("source/firmware/") and Path(name).suffix in (".v", ".vh", ".sv", ".svh"))
+    if details.get("hdl_files") != hdl:
+        raise ValueError("candidate HDL inventory differs from its base")
+    mutable = {"source/" + name for name in hdl} | {"tools/fpga_experiment.py"}
+    for name, expected in base["files"].items():
+        if name not in mutable and reference["files"].get(name) != expected:
+            raise ValueError(f"candidate changed an inherited artifact: {name}")
+    changed = [name for name in hdl if reference["files"].get("source/" + name) != base["files"]["source/" + name]]
+    if details.get("changed_files") != changed or reference.get("build") != base.get("build"):
+        raise ValueError("candidate changes differ from recorded scope")
+
+
+def candidate(args):
+    """Snapshot edits to existing HDL without relabelling them committed source."""
+    parent = args.reference.resolve()
+    base = verify_reference(parent)
+    if base["kind"] != "fpga-reference":
+        raise ValueError("candidate must derive directly from a committed reference")
+    repo = args.repo.resolve()
+    hdl = sorted(name.removeprefix("source/") for name in base["files"]
+                 if name.startswith("source/firmware/") and Path(name).suffix in (".v", ".vh", ".sv", ".svh"))
+    current = sorted(str(path.relative_to(repo)) for path in (repo / "firmware").rglob("*")
+                     if path.suffix in (".v", ".vh", ".sv", ".svh") and path.is_file())
+    if current != hdl:
+        raise ValueError("candidate supports only existing HDL filenames; additions/deletions require a new reviewed scope")
+    for name in ("firmware/io.pcf", "firmware/Makefile"):
+        source = repo / name
+        if source.is_symlink() or not source.is_file() or source.read_bytes() != (parent / "source" / name).read_bytes():
+            raise ValueError(f"candidate must retain frozen build constraints: {name}")
+    cached = {}
+    for name in hdl:
+        source = repo / name
+        if source.is_symlink():
+            raise ValueError(f"unsafe candidate HDL input: {name}")
+        cached[name] = (source.read_bytes(), source.stat().st_mode & 0o777)
+    revision = git(repo, "rev-parse", "HEAD").decode().strip()
+    branch = git(repo, "branch", "--show-current").decode().strip()
+    status = git(repo, "status", "--porcelain=v1", "--untracked-files=all").decode()
+    patch = git(repo, "diff", "--no-ext-diff", "--binary", base["git"]["revision"], "--", *hdl)
+    if any((repo / name).read_bytes() != content for name, (content, _) in cached.items()):
+        raise ValueError("candidate HDL changed while its snapshot was being prepared")
+    out = reserve_output(args.output, repo, parent)
+    try:
+        for name in base["files"]:
+            copy_file(parent / name, out / name)
+        copy_file(parent / "reference.json", out / "candidate/base-reference.json")
+        (out / "candidate/hdl.patch").write_bytes(patch)
+        copy_file(Path(__file__).resolve(), out / "tools/fpga_experiment.py")
+        for name, (content, mode) in cached.items():
+            destination = out / "source" / name
+            destination.write_bytes(content)
+            destination.chmod(mode)
+        (out / "CANDIDATE.md").write_text(
+            "# Uncommitted HDL candidate\n\n"
+            "Only the existing frozen HDL input filenames may change. PCF, Makefile, toolchain, "
+            "rollback image, headers and host files remain inherited from the committed reference. "
+            "The packaged image is for rollback; it was not built from these candidate sources.\n\n"
+            "source/firmware is the exact candidate input snapshot. candidate/hdl.patch is the "
+            "working-tree HDL diff against the base revision; archives/source.tar.gz still "
+            "contains that base revision. candidate/base-reference.json records the original "
+            "artifact hashes. New HDL filenames require a separately reviewed scope.\n")
+        reference = {**base, "kind": "fpga-candidate", "created_utc": timestamp(), "repository": str(repo),
+                     "git": {"revision": revision, "branch": branch, "status": status},
+                     "firmware_source_matches_revision": False, "packaged_image_role": "rollback_only"}
+        reference["candidate"] = {"source_origin": "working_tree_existing_hdl", "base_reference": str(parent),
+                                  "base_reference_sha256": digest(parent / "reference.json"),
+                                  "base_revision": base["git"]["revision"], "hdl_files": hdl,
+                                  "changed_files": [name for name in hdl if file_inventory(out / "source")[name] != base["files"]["source/" + name]]}
+        verify_reference(parent)
+        reference["files"] = file_inventory(out)
+        write_json(out / "reference.json", reference)
+        (out / "reference.sha256").write_text(digest(out / "reference.json") + "\n")
+        (out / "SHA256SUMS").write_text("".join(f"{value['sha256']}  {name}\n" for name, value in file_inventory(out).items()))
+        verify_reference(out)
+        print(out / "reference.json")
+    except BaseException as error:
+        write_json(out / "failure.json", {"error": str(error), "created_utc": timestamp()})
+        raise
 
 
 def plan(args):
@@ -514,6 +608,10 @@ def main():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--checks-json", type=Path)
     p.add_argument("--baseline-json", type=Path, help="optional pre-preparation revision/status receipt")
+    p = sub.add_parser("candidate", help="snapshot changes to existing HDL while retaining reference constraints and rollback")
+    p.add_argument("--reference", type=Path, required=True)
+    p.add_argument("--repo", type=Path, default=REPO)
+    p.add_argument("--output", type=Path, required=True)
     p = sub.add_parser("verify", help="verify the reference manifest and artifact hashes")
     p.add_argument("--reference", type=Path, required=True)
     p = sub.add_parser("plan", help="write twelve A2 commands without executing FPGA tools")
@@ -533,6 +631,8 @@ def main():
     args = parser.parse_args()
     if args.action == "freeze":
         freeze(args)
+    elif args.action == "candidate":
+        candidate(args)
     elif args.action == "verify":
         verify_reference(args.reference)
         print("Reference hashes verified")

@@ -33,15 +33,16 @@ module top (
     //       it will "understand" we actually want an LVDS pair inputs. In addition, the pair is
     //       defined only by the "B" pins in BANK3 and not the "A" pins (which is counter-logical)
 
-    // MIXER
-    output o_mixer_fm,
-    output o_mixer_en,
+    // Reserved mixer pads: input-only until pin ownership is implemented.
+    inout o_mixer_fm,
+    inout o_mixer_en,
 
     // DIGITAL I/F
     input [3:0] i_config,
     input i_button,
     //inout [7:0] io_pmod,
-    output [3:0] io_pmod_out,
+    // Reserved for external PA control; currently input-only, without pull-ups.
+    inout [3:0] io_pmod_out,
     input [3:0] io_pmod_in,
     output o_led0,
     output o_led1,
@@ -80,7 +81,8 @@ module top (
     input i_smi_soe_se,
     input i_smi_swe_srw,
     inout [7:0] io_smi_data,
-    output o_smi_write_req,
+    // Reserved physical pad (Pi GPIO25); TX requests use o_smi_read_req below.
+    inout o_smi_write_req,
     output o_smi_read_req,
 
     // SPI
@@ -151,6 +153,51 @@ module top (
   wire int_miso;
   assign o_miso = (i_ss) ? 1'bZ : int_miso;
 
+  // Keep reserved pads in the same input-only/no-pull-up mode as the frozen
+  // reference. Omitting their ports/PCF entries would enable unused-pin pull-ups.
+  // These cells define pad configuration only; they do not implement PA or mixer
+  // control. Leave their input data disconnected, as in the reference build.
+  SB_IO #(
+      .PIN_TYPE(6'b000001),
+      .PULLUP(1'b0)
+  ) reserved_smi_write_req_pad (
+      .PACKAGE_PIN(o_smi_write_req),
+      .D_IN_0(),
+      .D_IN_1()
+  );
+
+  SB_IO #(
+      .PIN_TYPE(6'b000001),
+      .PULLUP(1'b0)
+  ) reserved_mixer_fm_pad (
+      .PACKAGE_PIN(o_mixer_fm),
+      .D_IN_0(),
+      .D_IN_1()
+  );
+
+  SB_IO #(
+      .PIN_TYPE(6'b000001),
+      .PULLUP(1'b0)
+  ) reserved_mixer_en_pad (
+      .PACKAGE_PIN(o_mixer_en),
+      .D_IN_0(),
+      .D_IN_1()
+  );
+
+  genvar pmod_pin;
+  generate
+      for (pmod_pin = 0; pmod_pin < 4; pmod_pin = pmod_pin + 1) begin: reserved_pmod_pad
+          SB_IO #(
+              .PIN_TYPE(6'b000001),
+              .PULLUP(1'b0)
+          ) pad (
+              .PACKAGE_PIN(io_pmod_out[pmod_pin]),
+              .D_IN_0(),
+              .D_IN_1()
+          );
+      end
+  endgenerate
+
   // SYSTEM CTRL
   sys_ctrl sys_ctrl_ins (
       .i_rst_b(i_rst_b),
@@ -200,10 +247,10 @@ module top (
       .i_config(i_config),
       .o_led0  (o_led0),
       .o_led1  (o_led1),
-      //.o_pmod  (io_pmod_out[3:0]), // disabled for sending debug info
+      // PMOD registers remain available for readback; pads are reserved above.
 
       // Analog interfaces
-      .o_mixer_fm(/*o_mixer_fm*/),
+      .o_mixer_fm(), // SPI owns the mixer; reserved pad is not driven here.
       .o_rx_h_tx_l(o_rx_h_tx_l),
       .o_rx_h_tx_l_b(o_rx_h_tx_l_b),
       .o_tr_vc1(o_tr_vc1),
@@ -211,7 +258,7 @@ module top (
       .o_tr_vc2(o_tr_vc2),
       .o_shdn_tx_lna(o_shdn_tx_lna),
       .o_shdn_rx_lna(o_shdn_rx_lna),
-      .o_mixer_en(/*o_mixer_en*/)
+      .o_mixer_en()
   );
 
   //=========================================================================
@@ -662,7 +709,8 @@ complex_fifo #(
   );
 
   assign o_smi_read_req  = (w_smi_data_direction) ? w_smi_read_req : w_smi_write_req;
-  //assign o_smi_write_req = 1'bZ;
+  // The separate write-request pad remains reserved/input-only above. Keep this
+  // shared RX/TX request and the internal TX FIFO backpressure signal intact.
 
   //assign o_led0 = w_smi_data_direction;
   //assign o_led1 = channel;

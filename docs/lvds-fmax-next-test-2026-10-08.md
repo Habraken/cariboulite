@@ -1,6 +1,9 @@
 # Next FPGA development test: LVDS Fmax before sequencer integration
 
-Recorded 2026-10-08. Status: **planned; optimization tests have not started**.
+Recorded 2026-10-08. Status updated 2026-10-17: the
+[A2 repeatability matrix](fpga-a2-build-matrix-2026-10-17.md) is complete;
+receive-RTL optimization has not started. That record completes the build
+repeatability comparison in step 1 below and preserves every result.
 This is the next firmware development test, followed by a separate PMOD
 sequencer integration test after the acceptance criteria below are met.
 

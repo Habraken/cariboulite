@@ -18,6 +18,20 @@ uses the real FIFO with a model of the free-running system-clock divider;
 it does not instantiate the full top level. These simulations do not cover
 physical LVDS timing or complete asynchronous-interface behavior.
 
+Reserved-pad checks instantiate the actual top level and the installed Yosys
+iCE40 cell models:
+
+```sh
+python3 firmware/tests/test_reserved_pads.py
+```
+
+They check that the four future PA pads and reserved SMI/mixer pads remain high
+impedance during reset and control activity, accept external levels without
+contention, and retain input-only/no-pull-up parameters. They also exercise SPI
+MISO release and the shared SMI FIFO request routing. These are simulation/model
+checks; physical connector levels and unconfigured-FPGA behavior need hardware
+qualification.
+
 See the [FPGA study](../../docs/fpga-gap-study-2026-09-13.md) for historical
 build settings, hardware results, limitations and rollback hashes. The current
 baseline and image hash are recorded in [firmware/README.md](../README.md).
@@ -44,6 +58,13 @@ test also verifies that a failed run does not prevent later results from being
 recorded. These tests do not run real FPGA builds or access hardware. See the
 [runner guide](../tools/README.md) for A1 preparation, A2 execution and rollback
 requirements.
+
+The matrix summarizer has checks for timing-report/log fallback, padded clock
+names, final versus placement timing, missing/incomplete runs and retained hashes:
+
+```sh
+python3 firmware/tests/test_experiment_summary.py
+```
 
 The loopback bench connects the actual register controller and LVDS transmitter.
 It checks register decoding, 1,024 gap/phase/TX/FIFO combinations, exact debug

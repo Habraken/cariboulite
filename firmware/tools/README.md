@@ -73,6 +73,38 @@ twelve fresh-output commands: default/CE2 synthesis × parallel/serial refinemen
 verified reference. The generated script continues after failed runs, retains
 every result, and returns failure if any run failed.
 
+## Snapshot an HDL candidate
+
+Use `candidate` for edits to the existing HDL input files while keeping the
+committed reference intact. This permits experiments before committing the
+candidate, without describing its source as the committed baseline:
+
+```sh
+python3 firmware/tools/fpga_experiment.py candidate \
+  --reference /tmp/cariboulite-fpga-a1-reference \
+  --repo . \
+  --output /tmp/cariboulite-fpga-candidate
+python3 /tmp/cariboulite-fpga-candidate/tools/fpga_experiment.py verify \
+  --reference /tmp/cariboulite-fpga-candidate
+```
+
+The candidate copies the reference into a separate, fresh directory and replaces
+its existing HDL inputs with a stable working-tree snapshot. The recursive HDL
+filename set, `io.pcf` and Makefile must remain unchanged. New/deleted HDL files
+or different build constraints require a separately reviewed scope.
+
+`reference.json` identifies it as `fpga-candidate`, records working-tree status
+and changed files, and marks `firmware_source_matches_revision` false.
+`candidate/hdl.patch` and `candidate/base-reference.json` preserve the source diff
+and original reference identities. `verify` checks the inherited artifacts and
+the candidate's complete inventory. Run experiments with the runner frozen into
+that candidate, using its directory as `--reference`.
+
+The inherited packaged image, headers, host files, source archive and reference
+check logs still describe the original baseline. The image is explicitly
+`rollback_only`; it was not built from candidate HDL. Store new simulation and
+build results separately. Normal `freeze` continues to require committed inputs.
+
 ## A2: execute an isolated experiment
 
 The following command is an A2 operation. It synthesizes, places/routes and packs
@@ -121,6 +153,31 @@ Failures, timeouts, interrupted stages and missing outputs remain available for
 inspection; downstream stages stop after a failure. A zero tool exit code alone
 does not make a stage pass: required outputs must be nonempty. Failed timing
 prevents packing.
+
+## Summarize the matrix
+
+After the matrix completes, generate JSON and CSV comparisons in a fresh output
+directory. This command only reads the plan, reference and retained runs:
+
+```sh
+python3 firmware/tools/summarize_fpga_experiments.py \
+  --plan /tmp/cariboulite-fpga-a2-plan/plan.json \
+  --output /tmp/cariboulite-fpga-a2-summary
+```
+
+The summary includes every planned run, stage status/exit codes/durations,
+resource and clock ranges, warnings, artifact hashes and counts of distinct
+source, netlist, routed-design and image hashes. Missing and incomplete runs
+remain visible. A successful summary command means the report was written;
+inspect its `status_counts` to determine build outcomes.
+
+Metrics prefer `result.json`, then the retained `work/timing.json`, then the
+last observation of each clock in `logs/routing.log`. This preserves measurements
+when nextpnr exits on failed timing before the experiment runner parses its
+report. Each measurement records its evidence source; log measurements before
+routing completes are marked as estimates. A failing run remains failed even
+when it produced placement or report files. The summarizer also checks retained
+artifact hashes against each completed run's inventory.
 
 ## Timing interpretation
 

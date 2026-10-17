@@ -255,7 +255,5 @@ always @(posedge i_sys_clk or negedge i_rst_b) begin
         end
     end
 end
-// SMI write request mirrors FIFO backpressure
-assign o_smi_write_req = !i_tx_fifo_full;
 
 endmodule

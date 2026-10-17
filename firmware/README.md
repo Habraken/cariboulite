@@ -12,6 +12,17 @@ The October 15 [hardware-paced TX](../docs/tx-hardware-paced-design.md) changes
 are in the driver and userspace; they do not require new FPGA firmware.
 LVDS timing optimization and PMOD sequencer integration remain planned.
 
+Development source update on 2026-10-17: seven reserved SMI/mixer/PMOD pads now
+have explicit input-only `SB_IO` cells with pull-ups disabled, and the duplicate
+TX FIFO backpressure assignment is removed. Their existing pin constraints are
+retained. This source cleanup does not replace the packaged image above or add
+PA control. The reserved ports retain their historical names (including `o_`
+names) but are declared `inout` to connect the physical I/O cells.
+The [cleanup qualification](../docs/fpga-warning-cleanup-2026-10-17.md) passes
+three fresh CE2-serial builds; default serial fails placement for this source.
+Use the isolated experiment commands in that record when evaluating this
+candidate; the production Makefile's historical defaults are unchanged.
+
 CaribouLite contains an FPGA device (ICE40 family) with 1280 LE. It has two designated roles:
 1. Step #1: Controlling and managing the RF front-end path, and other digital device control.
 2. Step #2: Streaming SMI I/Q data from the RPI to the modem, and from the modem LVDS back to the SMI interface.
@@ -180,7 +191,11 @@ The IO_CTRL module is in charge of configuring and reading the Pin-IO resources 
 |---|---|---|----|----|----|----|----|
 |PMODD7|PMODD6|PMODD5|PMODD4|PMODD3|PMODD2|PMODD1|PMODD0|
 
-* `PMODD[7:0]`: stored/read back by `io_ctrl.v`, but not connected to physical pin direction control in `top.v`. The top level declares four inputs and four outputs. This is not an implemented eight-pin bidirectional GPIO interface.
+* `PMODD[7:0]`: stored/read back by `io_ctrl.v`, but not connected to physical pin
+  direction control in `top.v`. Four PMOD inputs remain active inputs; four pads
+  named `io_pmod_out` are reserved for future external PA control and explicitly
+  input-only, with pull-ups disabled. This is not an implemented eight-pin
+  bidirectional GPIO interface.
 
 ### IOC'00100': data_io_ctrl_pmod_pin_val
 
@@ -195,7 +210,7 @@ The IO_CTRL module is in charge of configuring and reading the Pin-IO resources 
 |PMOD7|PMOD6|PMOD5|PMOD4|PMOD3|PMOD2|PMOD1|PMOD0|
 
 * The implementation stores only bits 3–0 and returns zero in bits 7–4.
-  The IO controller's PMOD output connection is disabled in `top.v`; reads return
+  The IO controller does not drive the reserved PMOD pads in `top.v`; reads return
   stored state, not sampled connector levels. The old configurable weak-pull-up
   claim is unsupported by this RTL. Pin mapping, electrical limits and intended
   PMOD functionality remain DOC-04.
@@ -218,7 +233,11 @@ The IO_CTRL module is in charge of configuring and reading the Pin-IO resources 
 * `TRVC2` - the value of `TRVC2` signal in the PCB.
 * `LNATX` - controlling the Transmit PA operation, `'1'`: Shutdown, `'0'`: Operational.
 * `LNARX` - controlling the Receive LNA operation, `'1'`: Shutdown, `'0'`: Operational.
-* `MXREN` - readback reports `mixer_en_state`, but `io_ctrl.v` ties its `o_mixer_en` output high and `top.v` leaves that port disconnected. Register state does not establish physical mixer disable.
+* `MXREN` - readback reports `mixer_en_state`, but `io_ctrl.v` ties its internal
+  `o_mixer_en` output high and `top.v` leaves that module output disconnected.
+  The physical mixer-enable pad is explicitly input-only without a pull-up;
+  current mixer ownership is through SPI. Register state does not establish
+  physical mixer disable.
 
 ### Mixer FM registers (historical proposal)
 
@@ -226,6 +245,9 @@ The IO_CTRL module is in charge of configuring and reading the Pin-IO resources 
 low. The old second `00101` heading also collided with the RF pin register.
 There is no implemented mixer FM register contract to document; decide whether
 this feature is needed before assigning opcodes (DOC-03).
+The physical mixer-FM pad is reserved/input-only with its pull-up disabled.
+Changing either mixer pad to an FPGA output requires reviewing the mixer's
+ENBL/GPO5 or GPO3/FM mode and ownership first.
 
 ## Clocking
 
