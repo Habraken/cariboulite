@@ -2,7 +2,8 @@
 
 Proposed execution plan, 2026-10-17. Step 1 is committed at `47887c1`, with user
 confirmation of NBFM TX/RX in both applications and working WBFM RX. This plan
-does not record new FPGA builds or physical tests.
+does not record new FPGA builds or physical tests. A1 preparation is complete;
+see the [reference and rollback record](fpga-a1-reference-2026-10-17.md).
 
 The deliverable is a repeatable, timing-qualified FPGA image with the agreed
 one- or two-output PA interface, integrated into the shared TX lifecycle and
@@ -32,6 +33,10 @@ the board; a version byte does not identify the entire programmed image.
 ## A. Qualify the FPGA build
 
 ### A1. Freeze the reference and prepare isolated experiments
+
+Completed 2026-10-17 on `dev-fpga-pa-control`. The
+[A1 record](fpga-a1-reference-2026-10-17.md) identifies the frozen artifacts,
+checks and prepared A2 commands. A2 has not started.
 
 1. Record the source revision, clean/modified state, FPGA RTL and pin constraints,
    tool versions, build commands and known working image/header hashes.

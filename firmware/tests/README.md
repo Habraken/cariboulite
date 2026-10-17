@@ -28,6 +28,23 @@ Build dependency/failure checks (no FPGA tools or hardware required):
 python3 firmware/tests/test_build.py
 ```
 
+The isolated experiment runner has separate checks using temporary repositories
+and fake synthesis, placement/routing and packing tools:
+
+```sh
+python3 firmware/tests/test_experiment_runner.py
+```
+
+These exercise frozen source/image/header and host-file preservation, full hash
+verification, the twelve-command seed-16 plan, isolated stage ordering, fixed
+default/CE2 and parallel/serial options, timing rejection, missing outputs,
+failures/timeouts, retained logs, tool/reference tampering, protected source
+paths, and refusal to overwrite existing output. The generated matrix-script
+test also verifies that a failed run does not prevent later results from being
+recorded. These tests do not run real FPGA builds or access hardware. See the
+[runner guide](../tools/README.md) for A1 preparation, A2 execution and rollback
+requirements.
+
 The loopback bench connects the actual register controller and LVDS transmitter.
 It checks register decoding, 1,024 gap/phase/TX/FIFO combinations, exact debug
 frames, no settled-loopback FIFO consumption, exit/resumption and reset.
