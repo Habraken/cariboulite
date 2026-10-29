@@ -396,8 +396,16 @@ from the file, soft reset, wait 100 ms, read versions, then select debug mode
 0 and low-power frontend mode. `cariboulite_configure_fpga` also restores
 the SMI GPIO setup and performs its existing programming/status operations.
 Checked SPI reads additionally confirm communication, the manufacturer ID
-and final low-power mode. Version numbers alone cannot distinguish this
-file from the older embedded firmware.
+and final low-power mode. Version numbers alone do not uniquely identify the
+programmed image.
+
+Normal startup loads the embedded image when the FPGA is not already operational.
+Both embedded and file-based programming apply a soft reset after loading, so
+the firmware's LED indication is consistent. The current embedded image matches
+the packaged `firmware/top.bin`; both user LEDs are on after initialization and
+remain on through RX/TX start and soft reset. The separate A5 development image
+also uses this LED pattern, although its reserved-pad cleanup and build differ;
+neither image implements the planned external PA sequencer.
 
 `ACCEPTED` acknowledges the request. Programming then runs asynchronously
 in state `FPGA_PROGRAMMING`; use `status` or the monitor to wait for `IDLE`

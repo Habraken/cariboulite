@@ -188,7 +188,10 @@ int caribou_fpga_program_to_fpga(caribou_fpga_st* dev, unsigned char *buffer, si
                 continue;
             }
         
-            //caribou_fpga_soft_reset(dev);
+            /* Apply the firmware's reset defaults, including its LED marker,
+             * just as file-based programming does. Configuration alone leaves
+             * the LED flip-flops at their power-up state. */
+            caribou_fpga_soft_reset(dev);
             io_utils_usleep(100000);
 
             caribou_fpga_get_status(dev, NULL);
