@@ -51,6 +51,39 @@ ls -l /dev/smi
 Expect `smi_stream_dev` and `bcm2835_smi`; module sizes and device major numbers
 vary. These checks establish installation state, not successful sample streaming.
 
+### Missing `/dev/smi` after a kernel update
+
+If the backend reports `Cannot claim /dev/smi (No such file or directory)` and
+initialization error `-4` after reboot, check the running kernel and its driver:
+
+```sh
+uname -r
+modinfo -F vermagic smi_stream_dev
+lsmod | grep smi
+```
+
+`Module smi_stream_dev not found`, or a vermagic kernel release different from
+`uname -r`, means the driver needs rebuilding for the running kernel. Kernel
+updates do not rebuild this module automatically. From the repository root,
+with the blob generator available as described above, reinstall only the driver:
+
+```sh
+cat /etc/modprobe.d/smi_stream_mod_cariboulite.conf
+./driver/install.sh install 6 2 3
+```
+
+Use your existing parameter values; `6 2 3` is an example. With all radio
+applications stopped, if `smi_stream_dev` is currently absent from `lsmod` and
+the boot-created device `/sys/bus/platform/devices/soc:smi_dev` is present,
+load the newly installed module without rebooting:
+
+```sh
+sudo modprobe smi_stream_dev
+ls -l /dev/smi
+```
+
+Otherwise reboot before checking `/dev/smi` and restarting the backend.
+
 ## Streaming and hardware-paced TX
 
 The current source uses cyclic DMA for RX and TX: a 524,288-byte ring divided

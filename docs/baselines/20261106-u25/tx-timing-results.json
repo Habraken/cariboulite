@@ -1,0 +1,444 @@
+{
+  "schema_version": 1,
+  "board_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+  "kernel": "6.18.60+rpt-rpi-v8",
+  "smi_source_clock_hz": 125000003,
+  "git_head_before_diagnostics": "a4e56b6fadd7f8834d75f74987724baebbb6857d",
+  "files": {
+    "build/radio-backend/cariboulite_radio_backend": "4fdbce698072adaa8d576f916837b65bbae641969abbbd9897707b18feba83ce",
+    "build/libcariboulite.so": "562c3937272720562561d7c769cb7d8d6beb9415c4f5470227b55a4562c3798f",
+    "firmware/top.bin": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6",
+    "driver/smi_stream_dev.c": "7cb14a11aef62cc6792d2ab297d6386bac15795e3f96cf826abf73db91b44bf8",
+    "firmware/top.v": "7bef21947b5b0f3f982d90bbaf3059ad70d531f46acd3908c69f7b69a365e1dd",
+    "firmware/smi_ctrl.v": "d1a99374e207cff1a7b1062fc83059c792bf8f8f37db609d58b7b63a686c09cb"
+  },
+  "profile": {
+    "channel": "RF24",
+    "frequency_hz": 430100000,
+    "requested_power_dbm": -12,
+    "source": "600 Hz tone"
+  },
+  "rf_sample_rate_hz": 1000000,
+  "expected_queue_frames_per_second": 100,
+  "stable_window_warmup_seconds": 1,
+  "user_tone_observation": "I picked up the test tone! User reported; exact trial, pitch and signal quality not independently identified.",
+  "trials": [
+    {
+      "case": "baseline",
+      "started_utc": "2026-11-06T21:36:30.337189+00:00",
+      "finished_utc": "2026-11-06T21:36:37.253894+00:00",
+      "backend_returncode": 0,
+      "error": null,
+      "cleanup_errors": [],
+      "stable_window_valid": true,
+      "elapsed_s": 4.953318299999864,
+      "rates": {
+        "queue.puts/s": 446.3674381676745,
+        "queue.gets/s": 446.3674381676745,
+        "queue.drops/s": 0.0,
+        "queue.timeouts_put/s": 0.0,
+        "queue.timeouts_get/s": 0.0,
+        "writer.calls/s": 582.4378376814749,
+        "writer.samples/s": 4465370.214549024,
+        "writer.partial_writes/s": 136.07039951380037,
+        "writer.errors/s": 0.0,
+        "driver.completed_periods/s": 136.27228437954784,
+        "driver.accepted_bytes/s": 17861480.858196095,
+        "driver.fifo_dequeued_bytes/s": 17861480.858196095,
+        "driver.underrun_periods/s": 0.0,
+        "dma_iq_equivalents/s": 4465370.214549024,
+        "fifo_dequeued_iq/s": 4465370.214549024
+      },
+      "deltas": {
+        "queue.puts": 2211,
+        "queue.gets": 2211,
+        "queue.drops": 0,
+        "queue.timeouts_put": 0,
+        "queue.timeouts_get": 0,
+        "writer.calls": 2885,
+        "writer.samples": 22118400,
+        "writer.partial_writes": 674,
+        "writer.errors": 0,
+        "driver.completed_periods": 675,
+        "driver.accepted_bytes": 88473600,
+        "driver.fifo_dequeued_bytes": 88473600,
+        "driver.underrun_periods": 0
+      },
+      "modem_state_histogram": {
+        "3": 84,
+        "4": 15
+      },
+      "tx_timing": {
+        "valid": true,
+        "write_setup": 1,
+        "write_strobe": 4,
+        "write_hold": 2,
+        "write_pace": 1
+      },
+      "desired_sample_gap": 3,
+      "spi_failures": 0,
+      "idle_after_stop": true,
+      "idle_modem_state": 2,
+      "idle_tx_timing": {
+        "valid": true,
+        "write_setup": 1,
+        "write_strobe": 5,
+        "write_hold": 1,
+        "write_pace": 1
+      },
+      "tx_faults": [],
+      "validation": {
+        "clean_exit": true,
+        "idle_after_stop": true,
+        "correct_gap_logged": true,
+        "no_spi_failures": true,
+        "no_driver_underruns": true,
+        "no_writer_errors": true,
+        "timing_restored": true
+      },
+      "observed_fpga_sample_gap": 3
+    },
+    {
+      "case": "timing-1-8-4",
+      "started_utc": "2026-11-06T21:36:48.941978+00:00",
+      "finished_utc": "2026-11-06T21:36:56.201880+00:00",
+      "backend_returncode": 0,
+      "error": null,
+      "cleanup_errors": [],
+      "stable_window_valid": true,
+      "elapsed_s": 4.949807127999975,
+      "rates": {
+        "queue.puts/s": 178.99687343130847,
+        "queue.gets/s": 178.592817283608,
+        "queue.drops/s": 0.0,
+        "queue.timeouts_put/s": 0.0,
+        "queue.timeouts_get/s": 0.0,
+        "writer.calls/s": 233.14039722317153,
+        "writer.samples/s": 1787415.0994596176,
+        "writer.partial_writes/s": 54.547579939563526,
+        "writer.errors/s": 0.0,
+        "driver.completed_periods/s": 54.547579939563526,
+        "driver.accepted_bytes/s": 7149660.3978384705,
+        "driver.fifo_dequeued_bytes/s": 7149660.3978384705,
+        "driver.underrun_periods/s": 0.0,
+        "dma_iq_equivalents/s": 1787415.0994596176,
+        "fifo_dequeued_iq/s": 1787415.0994596176
+      },
+      "deltas": {
+        "queue.puts": 886,
+        "queue.gets": 884,
+        "queue.drops": 0,
+        "queue.timeouts_put": 0,
+        "queue.timeouts_get": 0,
+        "writer.calls": 1154,
+        "writer.samples": 8847360,
+        "writer.partial_writes": 270,
+        "writer.errors": 0,
+        "driver.completed_periods": 270,
+        "driver.accepted_bytes": 35389440,
+        "driver.fifo_dequeued_bytes": 35389440,
+        "driver.underrun_periods": 0
+      },
+      "modem_state_histogram": {
+        "4": 99
+      },
+      "tx_timing": {
+        "valid": true,
+        "write_setup": 1,
+        "write_strobe": 8,
+        "write_hold": 4,
+        "write_pace": 1
+      },
+      "desired_sample_gap": 3,
+      "spi_failures": 0,
+      "idle_after_stop": true,
+      "idle_modem_state": 2,
+      "idle_tx_timing": {
+        "valid": true,
+        "write_setup": 1,
+        "write_strobe": 5,
+        "write_hold": 1,
+        "write_pace": 1
+      },
+      "tx_faults": [],
+      "validation": {
+        "clean_exit": true,
+        "idle_after_stop": true,
+        "correct_gap_logged": true,
+        "no_spi_failures": true,
+        "no_driver_underruns": true,
+        "no_writer_errors": true,
+        "timing_restored": true
+      },
+      "observed_fpga_sample_gap": 3
+    },
+    {
+      "case": "timing-2-12-6",
+      "started_utc": "2026-11-06T21:37:19.458740+00:00",
+      "finished_utc": "2026-11-06T21:37:27.123623+00:00",
+      "backend_returncode": 0,
+      "error": null,
+      "cleanup_errors": [],
+      "stable_window_valid": true,
+      "elapsed_s": 4.951545572999748,
+      "rates": {
+        "queue.puts/s": 99.9687860491848,
+        "queue.gets/s": 99.9687860491848,
+        "queue.drops/s": 0.0,
+        "queue.timeouts_put/s": 0.0,
+        "queue.timeouts_get/s": 0.0,
+        "writer.calls/s": 130.4643147227745,
+        "writer.samples/s": 999277.4835761875,
+        "writer.partial_writes/s": 30.495528673589707,
+        "writer.errors/s": 0.0,
+        "driver.completed_periods/s": 30.495528673589707,
+        "driver.accepted_bytes/s": 3997109.93430475,
+        "driver.fifo_dequeued_bytes/s": 3997109.93430475,
+        "driver.underrun_periods/s": 0.0,
+        "dma_iq_equivalents/s": 999277.4835761875,
+        "fifo_dequeued_iq/s": 999277.4835761875
+      },
+      "deltas": {
+        "queue.puts": 495,
+        "queue.gets": 495,
+        "queue.drops": 0,
+        "queue.timeouts_put": 0,
+        "queue.timeouts_get": 0,
+        "writer.calls": 646,
+        "writer.samples": 4947968,
+        "writer.partial_writes": 151,
+        "writer.errors": 0,
+        "driver.completed_periods": 151,
+        "driver.accepted_bytes": 19791872,
+        "driver.fifo_dequeued_bytes": 19791872,
+        "driver.underrun_periods": 0
+      },
+      "modem_state_histogram": {
+        "4": 99
+      },
+      "tx_timing": {
+        "valid": true,
+        "write_setup": 2,
+        "write_strobe": 12,
+        "write_hold": 6,
+        "write_pace": 1
+      },
+      "desired_sample_gap": 3,
+      "spi_failures": 0,
+      "idle_after_stop": true,
+      "idle_modem_state": 2,
+      "idle_tx_timing": {
+        "valid": true,
+        "write_setup": 1,
+        "write_strobe": 5,
+        "write_hold": 1,
+        "write_pace": 1
+      },
+      "tx_faults": [],
+      "validation": {
+        "clean_exit": true,
+        "idle_after_stop": true,
+        "correct_gap_logged": true,
+        "no_spi_failures": true,
+        "no_driver_underruns": true,
+        "no_writer_errors": true,
+        "timing_restored": true
+      },
+      "observed_fpga_sample_gap": 3
+    },
+    {
+      "case": "baseline-repeat",
+      "started_utc": "2026-11-06T21:38:13.326777+00:00",
+      "finished_utc": "2026-11-06T21:38:20.201871+00:00",
+      "backend_returncode": 0,
+      "error": null,
+      "cleanup_errors": [],
+      "stable_window_valid": true,
+      "elapsed_s": 4.952104780999889,
+      "rates": {
+        "queue.puts/s": 446.4768210242863,
+        "queue.gets/s": 446.4768210242863,
+        "queue.drops/s": 0.0,
+        "queue.timeouts_put/s": 0.0,
+        "queue.timeouts_get/s": 0.0,
+        "writer.calls/s": 582.5805647467508,
+        "writer.samples/s": 4466464.458680947,
+        "writer.partial_writes/s": 136.1037437224645,
+        "writer.errors/s": 0.0,
+        "driver.completed_periods/s": 136.30567806033164,
+        "driver.accepted_bytes/s": 17865857.83472379,
+        "driver.fifo_dequeued_bytes/s": 17865857.83472379,
+        "driver.underrun_periods/s": 0.0,
+        "dma_iq_equivalents/s": 4466464.458680947,
+        "fifo_dequeued_iq/s": 4466464.458680947
+      },
+      "deltas": {
+        "queue.puts": 2211,
+        "queue.gets": 2211,
+        "queue.drops": 0,
+        "queue.timeouts_put": 0,
+        "queue.timeouts_get": 0,
+        "writer.calls": 2885,
+        "writer.samples": 22118400,
+        "writer.partial_writes": 674,
+        "writer.errors": 0,
+        "driver.completed_periods": 675,
+        "driver.accepted_bytes": 88473600,
+        "driver.fifo_dequeued_bytes": 88473600,
+        "driver.underrun_periods": 0
+      },
+      "modem_state_histogram": {
+        "3": 84,
+        "4": 15
+      },
+      "tx_timing": {
+        "valid": true,
+        "write_setup": 1,
+        "write_strobe": 4,
+        "write_hold": 2,
+        "write_pace": 1
+      },
+      "desired_sample_gap": 3,
+      "spi_failures": 0,
+      "idle_after_stop": true,
+      "idle_modem_state": 2,
+      "idle_tx_timing": {
+        "valid": true,
+        "write_setup": 1,
+        "write_strobe": 5,
+        "write_hold": 1,
+        "write_pace": 1
+      },
+      "tx_faults": [],
+      "validation": {
+        "clean_exit": true,
+        "idle_after_stop": true,
+        "correct_gap_logged": true,
+        "no_spi_failures": true,
+        "no_driver_underruns": true,
+        "no_writer_errors": true,
+        "timing_restored": true
+      },
+      "observed_fpga_sample_gap": 3
+    },
+    {
+      "case": "timing-2-12-6-repeat",
+      "started_utc": "2026-11-06T21:38:41.056509+00:00",
+      "finished_utc": "2026-11-06T21:38:58.690620+00:00",
+      "backend_returncode": 0,
+      "error": null,
+      "cleanup_errors": [],
+      "stable_window_valid": true,
+      "elapsed_s": 14.966622901999926,
+      "rates": {
+        "queue.puts/s": 100.08937953530109,
+        "queue.gets/s": 100.08937953530109,
+        "queue.drops/s": 0.0,
+        "queue.timeouts_put/s": 0.0,
+        "queue.timeouts_get/s": 0.0,
+        "writer.calls/s": 130.62398998098374,
+        "writer.samples/s": 1000558.1150841288,
+        "writer.partial_writes/s": 30.53461044568264,
+        "writer.errors/s": 0.0,
+        "driver.completed_periods/s": 30.53461044568264,
+        "driver.accepted_bytes/s": 4002232.460336515,
+        "driver.fifo_dequeued_bytes/s": 4002232.460336515,
+        "driver.underrun_periods/s": 0.0,
+        "dma_iq_equivalents/s": 1000558.1150841288,
+        "fifo_dequeued_iq/s": 1000558.1150841288
+      },
+      "deltas": {
+        "queue.puts": 1498,
+        "queue.gets": 1498,
+        "queue.drops": 0,
+        "queue.timeouts_put": 0,
+        "queue.timeouts_get": 0,
+        "writer.calls": 1955,
+        "writer.samples": 14974976,
+        "writer.partial_writes": 457,
+        "writer.errors": 0,
+        "driver.completed_periods": 457,
+        "driver.accepted_bytes": 59899904,
+        "driver.fifo_dequeued_bytes": 59899904,
+        "driver.underrun_periods": 0
+      },
+      "modem_state_histogram": {
+        "4": 297
+      },
+      "tx_timing": {
+        "valid": true,
+        "write_setup": 2,
+        "write_strobe": 12,
+        "write_hold": 6,
+        "write_pace": 1
+      },
+      "desired_sample_gap": 3,
+      "spi_failures": 0,
+      "idle_after_stop": true,
+      "idle_modem_state": 2,
+      "idle_tx_timing": {
+        "valid": true,
+        "write_setup": 1,
+        "write_strobe": 5,
+        "write_hold": 1,
+        "write_pace": 1
+      },
+      "tx_faults": [],
+      "validation": {
+        "clean_exit": true,
+        "idle_after_stop": true,
+        "correct_gap_logged": true,
+        "no_spi_failures": true,
+        "no_driver_underruns": true,
+        "no_writer_errors": true,
+        "timing_restored": true
+      },
+      "observed_fpga_sample_gap": 3
+    }
+  ],
+  "smi_before": {
+    "state": 0,
+    "flags": 0,
+    "read_timing": [
+      1,
+      5,
+      1,
+      1
+    ],
+    "write_timing": [
+      1,
+      5,
+      1,
+      1
+    ],
+    "fifo_limit_bytes": 2097152,
+    "fifo_queued_bytes": 0
+  },
+  "smi_after": {
+    "state": 0,
+    "flags": 0,
+    "read_timing": [
+      1,
+      5,
+      1,
+      1
+    ],
+    "write_timing": [
+      1,
+      5,
+      1,
+      1
+    ],
+    "fifo_limit_bytes": 2097152,
+    "fifo_queued_bytes": 0
+  },
+  "original_files_unchanged": {
+    "build/radio-backend/cariboulite_radio_backend": true,
+    "build/libcariboulite.so": true,
+    "firmware/top.bin": true,
+    "driver/smi_stream_dev.c": true,
+    "firmware/top.v": true,
+    "firmware/smi_ctrl.v": true
+  },
+  "limits": "DMA rates measure byte transport; RF quality, 2/4MSps, microphone, long-term stability and other boards are not qualified."
+}

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "board_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+  "measurement": {
+    "recorded_utc": "2026-11-06T22:11:16.239251+00:00",
+    "source": "User-reported oscilloscope reading",
+    "board_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+    "j6_pin": 7,
+    "divider": 32,
+    "measured_output_mhz": "1.1602",
+    "measured_output_hz": 1160200,
+    "inferred_u25_hz": 37126400,
+    "inferred_system_clock_hz": 18563200,
+    "consistent_nominal_u25_hz": 37125000,
+    "scope_model_accuracy_and_averaging": "Not specified; arithmetic does not establish oscillator calibration or exact ordering code",
+    "interpretation": "U25 approximately37.125MHz, clearly incompatible with intended125MHz frequency; applies to tested board only"
+  },
+  "diagnostic_image": {
+    "path": "firmware/diagnostics/u25-clock-probe.bin",
+    "sha256": "b17ab3901c0c89dc09fd34d7140662c35e977b7e0fe0908d0e7fbff19a448cbb",
+    "bytes": 32220,
+    "divider": 32,
+    "j6_pin": 7,
+    "fpga_pin": "B21"
+  },
+  "source_inputs": {
+    "firmware/lvds_tx.v": "693565d3a2d7c4d53db541199a37b503d00575691d2960210101155703bfe882",
+    "firmware/top.v": "7bef21947b5b0f3f982d90bbaf3059ad70d531f46acd3908c69f7b69a365e1dd",
+    "firmware/complex_fifo.v": "f036954a020dbe2c2cd758d8cf7c07efcfd3d2c1868fe5f314595bcde2ddf0c4",
+    "firmware/smi_ctrl.v": "d1a99374e207cff1a7b1062fc83059c792bf8f8f37db609d58b7b63a686c09cb",
+    "firmware/lvds_rx.v": "f0f3e7eed1eb20f8ebccb482a66b7d7c60e35814f48495fc2d393bc906032f9e",
+    "firmware/spi_if.v": "5aa6f6ff6262ce5584d12722791f2e00ac53669d685c05b0f6bdf33e1918c57f",
+    "firmware/sys_ctrl.v": "4fd4389859ea0d43cb288cef87767e59751b8cef3f28bfb34e78bf36586117fb",
+    "firmware/io_ctrl.v": "e463c905c26ea475af5be1384a82b858c71b246e3a4d70ca8a3776d6e7fd0cc4",
+    "firmware/spi_slave.v": "1daa78c564578feeb7d1ef1c0f1fb98750fbc5ff37d983c192f63c5dd850b87d",
+    "firmware/io.pcf": "cf1325997701b0c0d25dcaf4c79799f3b2105f72593c4c6fea97741dfb9358ac"
+  },
+  "timing": {
+    "i_glob_clock$SB_IO_IN": {
+      "achieved": 287.43890380859375,
+      "constraint": 125
+    },
+    "i_sck$SB_IO_IN": {
+      "achieved": 187.4765625,
+      "constraint": 5
+    },
+    "lvds_clock_buf": {
+      "achieved": 65.70301818847656,
+      "constraint": 64
+    },
+    "r_counter": {
+      "achieved": 74.9007568359375,
+      "constraint": 62.5
+    },
+    "smi_ctrl_ins.soe_and_reset": {
+      "achieved": 198.4520721435547,
+      "constraint": 16
+    }
+  },
+  "routed_pad_verification": "Routed JSON and ASC agree: B21 output PIN_TYPE=011001; other reserved pads input only, pull-ups disabled.",
+  "current_image": "original",
+  "reference_board_comparison": "Pending; user not ready to swap boards.",
+  "programming": {
+    "started_utc": "2026-11-06T21:58:27.058719+00:00",
+    "finished_utc": "2026-11-06T21:58:28.731603+00:00",
+    "input_sha256": "b17ab3901c0c89dc09fd34d7140662c35e977b7e0fe0908d0e7fbff19a448cbb",
+    "loader_sha256": "fbb7f81d120b3f638f42c21487dcc635e9f6951d742a3e32fccbc00466e7109e",
+    "library_sha256": "562c3937272720562561d7c769cb7d8d6beb9415c4f5470227b55a4562c3798f",
+    "exit_code": 0,
+    "log_sha256": "074a9f004baa4ef1a59b7013b13f97c93d1eeac70e145a6764933156a719466f",
+    "verified_readbacks": "VERIFIED cdone=1 sys=1 manufacturer=1 sys_module=1 io_module=1 smi_module=1 low_power_mode=0x00"
+  },
+  "restoration": {
+    "started_utc": "2026-11-06T22:11:15.057656+00:00",
+    "finished_utc": "2026-11-06T22:11:16.732731+00:00",
+    "input_sha256": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6",
+    "loader_sha256": "fbb7f81d120b3f638f42c21487dcc635e9f6951d742a3e32fccbc00466e7109e",
+    "library_sha256": "562c3937272720562561d7c769cb7d8d6beb9415c4f5470227b55a4562c3798f",
+    "exit_code": 0,
+    "log_sha256": "f7b045091ab172907f9b518a948e90cb5799bc5d2f401081e3965cf8976e9277",
+    "verified_readbacks": "VERIFIED cdone=1 sys=1 manufacturer=1 sys_module=1 io_module=1 smi_module=1 low_power_mode=0x00"
+  }
+}

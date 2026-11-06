@@ -1,0 +1,36 @@
+--- a/top.v
++++ b/top.v
+@@ -186,0 +187,6 @@
++  // Temporary U25 measurement: the counter directly observes i_glob_clock.
++  // Its MSB has a period of 32 input cycles, independent of modem/reset clocks.
++  reg [4:0] u25_clock_divider = 5'd0;
++  always @(posedge i_glob_clock)
++      u25_clock_divider <= u25_clock_divider + 5'd1;
++
+@@ -190,8 +196,18 @@
+-          SB_IO #(
+-              .PIN_TYPE(6'b000001),
+-              .PULLUP(1'b0)
+-          ) pad (
+-              .PACKAGE_PIN(io_pmod_out[pmod_pin]),
+-              .D_IN_0(),
+-              .D_IN_1()
+-          );
++          if (pmod_pin == 3) begin: u25_measurement_output
++              SB_IO #(
++                  .PIN_TYPE(6'b011001),
++                  .PULLUP(1'b0)
++              ) pad (
++                  .PACKAGE_PIN(io_pmod_out[pmod_pin]),
++                  .D_OUT_0(u25_clock_divider[4])
++              );
++          end else begin: input_only
++              SB_IO #(
++                  .PIN_TYPE(6'b000001),
++                  .PULLUP(1'b0)
++              ) pad (
++                  .PACKAGE_PIN(io_pmod_out[pmod_pin]),
++                  .D_IN_0(),
++                  .D_IN_1()
++              );
++          end

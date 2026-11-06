@@ -4,6 +4,17 @@ Recorded 2026-09-16 from Jan's backlog. This is a proposed implementation
 order, not a claim that the features below are complete. Original item numbers
 are retained for tracking. Update this document as work is verified.
 
+## Pending hardware checks — 2026-11-06
+
+- [ ] Cross-check the U25 clock measurement on the known-good original reference
+  board using the **exact same divide-by-32 FPGA image** as the reproduction
+  board, verified against the SHA-256 in the
+  [measurement procedure](docs/u25-clock-measurement-2026-11-06.md).
+  Measure J6 pin 7 with ground on pin 9 or 10; a 125 MHz U25 should read
+  **3.90625 MHz / 256 ns**. Record board identity, actual frequency, scope/probe
+  settings and a scope photograph, then restore the original radio firmware.
+  Pending the user's board swap; the reference-board measurement has not run.
+
 ## Current branch milestone — 2026-10-16
 
 The accepted development work through FM refactoring step 4 is merged into

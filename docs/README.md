@@ -55,6 +55,8 @@ retain their original revision and test conditions. See the
 
 ## Recorded investigations and measurements
 
+- [Reproduction-board U25 clock measurement and FPGA scope probe](u25-clock-measurement-2026-11-06.md)
+- [Reproduction-board TX timing diagnosis and temporary 1 MS/s workaround](u25-tx-timing-diagnosis-2026-11-06.md)
 - [Pi Zero 2 W TX baseline and hardware-paced follow-up](pi-zero-tx-queue-test-2026-10-15.md)
 - [Pi 4 hardware-paced TX validation](pi4-tx-validation-2026-10-15.md)
 - [Menu 14 NBFM RX chain and sensitivity investigation](nbfm-rx-sensitivity-context.md)
