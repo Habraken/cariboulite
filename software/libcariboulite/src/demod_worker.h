@@ -22,6 +22,8 @@ typedef struct {
     atomic_uint noise_squelch_rms_milli; // worker telemetry, raw detector RMS * 1000
     atomic_uint noise_squelch_detector_open; // detector decision even while bypassed
     atomic_uint noise_squelch_valid; // telemetry available for NBFM; zero before data/WBFM
+    bool sinad_enabled; // immutable while running; 1 kHz NBFM measurement
+    atomic_uint sinad_db_milli; // zero = unavailable; positive = dB * 1000
     audio_demod_mode_t     mode;        // immutable while worker is alive
     audio_demod_t*       dsp;         // pipeline-owned; destroy after joining worker
     bool                active;

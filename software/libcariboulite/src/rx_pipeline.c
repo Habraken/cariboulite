@@ -229,6 +229,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
         (par->carrier_squelch_enabled ? RX_SQUELCH_CARRIER : 0u));
     atomic_init(&p->demod.squelch_open, 0);
     atomic_init(&p->demod.noise_squelch_levels, noise_levels);
+    p->demod.sinad_enabled = par->sinad_enabled;
+    atomic_init(&p->demod.sinad_db_milli, 0);
     atomic_init(&p->demod.noise_squelch_rms_milli, 0);
     atomic_init(&p->demod.noise_squelch_detector_open, 0);
     atomic_init(&p->demod.noise_squelch_valid, 0);
@@ -566,4 +568,12 @@ int rx_pipeline_get_noise_squelch_status(const rx_pipeline_t* p, rx_noise_squelc
         out->detector_open = atomic_load(&p->demod.noise_squelch_detector_open);
     }
     return 0;
+}
+
+/* Zero means unavailable, including stopped RX and unsupported modes. */
+float rx_pipeline_sinad_db(const rx_pipeline_t* p)
+{
+    if (!p || !p->inited || !p->running || !p->demod.sinad_enabled
+        || p->demod.mode != AUDIO_DEMOD_NBFM || !atomic_load(&p->demod.alive)) return 0;
+    return atomic_load(&p->demod.sinad_db_milli) / 1000.0f;
 }

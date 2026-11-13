@@ -3,6 +3,7 @@
 #endif
 #include "demod_worker.h"
 #include "noise_squelch.h"
+#include "sinad.h"
 #include "carrier_squelch.h"
 #include "pipeline_transport.h"
 #include "pipeline_runtime.h"
@@ -35,6 +36,7 @@ void* audio_demod_thread(void* arg)
     aud10_frame_t audio;
     float raw[480];
     noise_squelch_t noise = {0};
+    sinad_t sinad;
     carrier_squelch_t carrier = {0};
     const bool noise_supported =
         audio_demod_capabilities(c->dsp) & AUDIO_DEMOD_CAP_NOISE_SQUELCH;
@@ -47,6 +49,8 @@ void* audio_demod_thread(void* arg)
     while (c->active) {
         if (c->reset) {
             audio_demod_reset(c->dsp);
+            sinad_reset(&sinad);
+            atomic_store(&c->sinad_db_milli, 0);
             noise_squelch_reset(&noise);
             carrier_squelch_reset(&carrier);
             gate_gain = 0.0f;
@@ -140,6 +144,9 @@ void* audio_demod_thread(void* arg)
             for (size_t i = 0; i < result.produced; ++i) {
                 // Continue measuring while bypassed so live threshold tuning
                 // observes the same pre-volume, pre-de-emphasis detector.
+                if (c->sinad_enabled && noise_supported && sinad_process(&sinad, raw[i]))
+                    atomic_store(&c->sinad_db_milli, sinad.valid
+                        ? (unsigned)lround(sinad.db * 1000) : 0);
                 bool detector_open = noise_supported && noise_squelch_process(&noise, raw[i]);
                 bool noise_open = !noise_supported || !(flags & RX_SQUELCH_NOISE) || detector_open;
                 open = noise_open && carrier_open;

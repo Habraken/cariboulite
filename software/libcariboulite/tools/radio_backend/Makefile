@@ -43,7 +43,7 @@ $(OUT)/modem_snapshot_shared.o: $(SRC)/modem_snapshot.c | $(OUT)
 
 clean:
 	rm -f $(OBJECTS) $(OBJECTS:.o=.d) "$(OUT)/cariboulite_radio_backend" "$(OUT)/cariboulite_radio_backend.tmp" "$(OUT)/demod_worker_backend.c" "$(OUT)/test_status_publisher" "$(OUT)/test_modem_snapshot"
-	rm -f "$(OUT)/cariboulite_radio_controller" "$(OUT)/cariboulite_radio_controller.tmp" "$(OUT)/cariboulite_radio_monitor" "$(OUT)/cariboulite_radio_monitor.tmp" "$(OUT)/test_command_protocol" "$(OUT)/test_control_server"
+	rm -f "$(OUT)/cariboulite_radio_controller" "$(OUT)/cariboulite_radio_controller.tmp" "$(OUT)/cariboulite_radio_monitor" "$(OUT)/cariboulite_radio_monitor.tmp" "$(OUT)/test_command_protocol" "$(OUT)/test_control_server" "$(OUT)/test_sinad"
 	rm -f "$(OUT)/cariboulite_rx_backend" "$(OUT)/cariboulite_rx_backend.tmp" "$(OUT)/cariboulite_radio_control" "$(OUT)/cariboulite_radio_control.tmp"
 
 $(OUT)/test_status_publisher: $(HERE)/status_publisher.c $(HERE)/status_publisher.h $(HERE)/test_status_publisher.c | $(OUT)
@@ -58,7 +58,11 @@ $(OUT)/test_command_protocol: $(HERE)/command_protocol.c $(HERE)/command_protoco
 $(OUT)/test_control_server: $(HERE)/control_server.c $(HERE)/control_server.h $(HERE)/command_protocol.c $(HERE)/status_publisher.c $(HERE)/test_control_server.c | $(OUT)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Werror $(HERE)/control_server.c $(HERE)/command_protocol.c $(HERE)/status_publisher.c $(HERE)/test_control_server.c -lm -o "$@"
 
-test: all $(OUT)/test_status_publisher $(OUT)/test_modem_snapshot $(OUT)/test_command_protocol $(OUT)/test_control_server
+$(OUT)/test_sinad: $(SRC)/sinad.h $(ROOT)/software/libcariboulite/tests/test_sinad.c | $(OUT)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(DSPFLAGS) -Werror $(ROOT)/software/libcariboulite/tests/test_sinad.c -lm -o "$@"
+
+test: all $(OUT)/test_sinad $(OUT)/test_status_publisher $(OUT)/test_modem_snapshot $(OUT)/test_command_protocol $(OUT)/test_control_server
+	"$(OUT)/test_sinad"
 	"$(OUT)/test_status_publisher"
 	"$(OUT)/test_modem_snapshot"
 	"$(OUT)/test_command_protocol"

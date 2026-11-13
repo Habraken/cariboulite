@@ -300,6 +300,7 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
     rx = _mapping(snapshot.get("rx"))
     tx = _mapping(snapshot.get("tx"))
     noise = _mapping(rx.get("noise"))
+    sinad = _mapping(rx.get("sinad"))
     hardware = _mapping(snapshot.get("hardware"))
     loopback = _mapping(snapshot.get("loopback"))
     control = _mapping(snapshot.get("control"))
@@ -366,6 +367,8 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
         f"RX squelch: noise={_on(rx.get('noise_enabled'))}"
         f"  carrier={_on(rx.get('carrier_enabled'))}"
         f"  audio gate={_on(rx.get('gate_open'))}",
+        f"RX SINAD: {_formatted(sinad.get('db'), '.1f') + ' dB' if sinad.get('db') is not None else 'unavailable'}"
+        f"  enabled={_on(sinad.get('enabled'))}  tone=1000 Hz  filter=300–3000 Hz",
         f"RX noise detector: valid={_on(noise.get('valid'))}"
         f"  open={_on(noise.get('detector_open') if noise_valid else None)}"
         f"  RMS={_formatted(noise.get('rms'), '.4f') if noise_valid else 'unavailable'}"

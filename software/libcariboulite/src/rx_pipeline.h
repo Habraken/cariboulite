@@ -40,6 +40,7 @@ typedef struct {
     float  deemph_tau_s;        // 50e-6 (EU) or 75e-6 (NA)
     float  pcm_gain;            // e.g., 8000.0f
 
+    bool sinad_enabled; // optional 1 kHz NBFM link-quality estimate
     bool noise_squelch_disabled; // zero/default enables noise squelch
     bool carrier_squelch_enabled; // zero/default disables carrier squelch
     float noise_squelch_open_rms; // both zero select the default 0.20/0.30 pair
@@ -102,6 +103,8 @@ typedef struct {
     float rms, open_rms, close_rms;
     bool valid, detector_open; // valid only during NBFM RX after measurement
 } rx_noise_squelch_status_t;
+
+float rx_pipeline_sinad_db(const rx_pipeline_t*);
 
 extern cariboulite_sample_complex_int16 latest_rx_sample;
 int rx_pipeline_init(rx_pipeline_t*, sys_st*, cariboulite_radio_state_st*, const rx_params_t*);

@@ -102,6 +102,7 @@ static void usage(FILE *out, const char *program)
         "  --dry-run                 exercise status IPC without hardware or audio\n"
         "  --help                    show this help\n"
         "Receive options:\n"
+        "  --rx-sinad                enable 1 kHz NBFM SINAD estimate (300-3000 Hz)\n"
         "  --rx-start                start reception after initialization\n"
         "  --rx-frequency HZ         default 430125000\n"
         "  --rx-sample-rate HZ       1000000, 2000000 or 4000000 (default 1000000)\n"
@@ -160,9 +161,10 @@ static int parse_options(int argc, char **argv, options_t *o)
     enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
-        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION };
+        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD };
     static const struct option long_options[] = {
         {"channel", required_argument, NULL, CHANNEL},
+        {"rx-sinad", no_argument, NULL, SINAD},
         {"rx-start", no_argument, NULL, RX_START},
         {"rx-frequency", required_argument, NULL, FREQ},
         {"rx-sample-rate", required_argument, NULL, RATE},
@@ -268,6 +270,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         case STATUS_HZ:
             if (number(optarg, &o->status_hz, 0.5, 20)) return -1;
             break;
+        case SINAD: o->rx.sinad_enabled = true; break;
         case NO_NOISE: o->rx.noise_squelch_disabled = true; break;
         case CARRIER: o->rx.carrier_squelch_enabled = true; break;
         case NOISE_OPEN: case NOISE_CLOSE:
@@ -1501,6 +1504,9 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
             "\"errors\":%" PRIu64 ",\"last_error\":%d}",
             r->calls, r->samples, r->short_reads, r->zero_reads, r->errors, r->last_error);
     }
+    char sinad_db[32] = "null";
+    float sinad_value = live && o->rx.sinad_enabled && !o->transition ? rx_pipeline_sinad_db(pipeline) : 0;
+    if (sinad_value > 0) snprintf(sinad_db, sizeof(sinad_db), "%.3f", (double)sinad_value);
     const bool noise_enabled = o->rx.mode == AUDIO_DEMOD_NBFM && !o->rx.noise_squelch_disabled;
     radio_profile_t rx_profile;
     if (radio_profile_rx(o->rx.mode, (unsigned)o->rx.fs_rf, &rx_profile)) return -1;
@@ -1529,6 +1535,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"rx\":{\"running\":%s,\"queue\":%s,\"noise_enabled\":%s,\"carrier_enabled\":%s,"
         "\"gate_open\":%s,\"noise\":{\"valid\":%s,\"detector_open\":%s,\"rms\":%s,"
         "\"open_rms\":%.3f,\"close_rms\":%.3f},"
+        "\"sinad\":{\"enabled\":%s,\"db\":%s,\"tone_hz\":1000,\"low_hz\":300,\"high_hz\":3000},"
         "\"audio_queue\":%s,\"playback\":%s,\"reader\":%s,"
         "\"workers\":{\"reader\":%s,\"demod\":%s,\"audio\":%s}},"
         "\"tx\":%s,\"hardware\":%s,"
@@ -1554,7 +1561,8 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         noise_enabled ? "true" : "false", o->rx.carrier_squelch_enabled ? "true" : "false",
         live ? (rx_pipeline_squelch_open(pipeline) ? "true" : "false") : "null",
         noise.valid ? "true" : "false", noise.valid ? (noise.detector_open ? "true" : "false") : "null",
-        rms, (double)noise.open_rms, (double)noise.close_rms, audio_queue, playback_stats, reader,
+        rms, (double)noise.open_rms, (double)noise.close_rms,
+        o->rx.sinad_enabled ? "true" : "false", sinad_db, audio_queue, playback_stats, reader,
         reader_worker, demod_worker, audio_worker,
         tx_json, hardware, o->config_generation, o->pipeline_generation,
         o->rx_requested ? "true" : "false", backend_control_state(o),

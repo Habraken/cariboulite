@@ -138,6 +138,7 @@ Launch options:
 | `--tx-deviation HZ` | Nominal NBFM deviation at unit audio amplitude: `0` through `24000`; default `2500` (±2.5 kHz). |
 | `--socket PATH` | Status socket; default path described below. |
 | `--control-socket PATH` | Command socket; default `control.sock` beside the status socket. |
+| `--rx-sinad` | Enable the optional [1 kHz NBFM SINAD estimate](sinad.md), independent of squelch and volume. Default off. |
 | `--rx-start` | Start RX automatically after initialization; RX otherwise remains stopped until a controller command. |
 | `--seconds N` | Exit after this wall time after initial setup, including time with RX stopped. |
 | `--status-hz HZ` | Hardware/status update frequency; default `5`. |

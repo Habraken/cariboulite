@@ -361,6 +361,12 @@ int main(int argc, char **argv) {
                                         capture_output=True, timeout=3)
                 self.assertEqual(result.returncode, 0, result.stderr.decode())
 
+    def test_sinad_dry_run_is_unavailable_even_when_enabled(self):
+        self.start_backend("--rx-sinad")
+        snapshot = self.once()
+        self.assertTrue(snapshot["rx"]["sinad"]["enabled"])
+        self.assertIsNone(snapshot["rx"]["sinad"]["db"])
+
     def test_wbfm_selection_has_no_fake_reception_or_noise_measurements(self):
         process = self.start_backend("--rx-mode", "wbfm", "--rx-frequency", "100100000",
                                      "--rx-sample-rate", "2000000", seconds=".8")
@@ -413,6 +419,7 @@ int main(int argc, char **argv) {
 #include <assert.h>
 #include <sched.h>
 
+float rx_pipeline_sinad_db(const rx_pipeline_t *p) { (void)p; return 20.125f; }
 bool rx_pipeline_running(const rx_pipeline_t *p) { (void)p; return true; }
 bool rx_pipeline_squelch_open(const rx_pipeline_t *p) { (void)p; return true; }
 int rx_pipeline_get_noise_squelch_status(const rx_pipeline_t *p,
@@ -427,6 +434,7 @@ int main(void) {
     char *arguments[] = {"fixture", NULL};
     assert(!parse_options(1, arguments, &options));
     assert(options.tx.pacing_mode == TX_PACING_HARDWARE_REQUIRED);
+    options.rx.sinad_enabled = true;
     rx_pipeline_t pipeline = {.inited=true};
     rx_pipeline_stats_t stats = {
         .rxq = {.cap=64, .count=2, .puts=101, .gets=99, .drops=3,
@@ -576,6 +584,8 @@ int main(void) {
         self.assertEqual(snapshot["config"]["observed"], {
             "rx": unavailable_profile, "tx": unavailable_profile})
         rx = snapshot["rx"]
+        self.assertEqual(rx["sinad"], {"enabled": True, "db": 20.125,
+            "tone_hz": 1000, "low_hz": 300, "high_hz": 3000})
         self.assertEqual(rx["queue"]["puts"], 101)
         self.assertEqual(rx["audio_queue"], {
             "capacity": 24, "depth": 12, "puts": 21, "gets": 9, "drops": 2,
