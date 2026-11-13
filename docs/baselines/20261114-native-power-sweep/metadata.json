@@ -1,0 +1,553 @@
+{
+  "source_commit": "1e4948c",
+  "driver_srcversion": "5AD373CAE4DBC118FE6E425",
+  "tx_host": "pi4g-trixie",
+  "rx_host": "pi4f-trixie",
+  "frequency_hz": 430100000,
+  "channel": "RF24",
+  "attenuation_db_nominal": 90,
+  "tone_hz": 1000,
+  "tone_amplitude": 0.4,
+  "tx_deviation_hz": 2500,
+  "settle_seconds": 2,
+  "measure_seconds": 5,
+  "rates": [
+    [
+      1,
+      4000000
+    ],
+    [
+      2,
+      2000000
+    ],
+    [
+      3,
+      1333333
+    ],
+    [
+      4,
+      1000000
+    ],
+    [
+      5,
+      800000
+    ],
+    [
+      6,
+      666667
+    ],
+    [
+      8,
+      500000
+    ],
+    [
+      10,
+      400000
+    ]
+  ],
+  "tx_powers_dbm": [
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14
+  ],
+  "axes": [
+    "rx",
+    "tx"
+  ],
+  "timestamp_filter": "RX snapshots must be newer than measurement start; status drained throughout settling",
+  "shared_reference": "4M/4M measured independently in both axes",
+  "profiles": {
+    "rx_4000000": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_2000000": {
+      "rx": {
+        "sample_rate_hz": 2000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 250000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 2000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 250000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_1333333": {
+      "rx": {
+        "sample_rate_hz": 1333333,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 166666
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 1333333.333,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 166666.667
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_1000000": {
+      "rx": {
+        "sample_rate_hz": 1000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 125000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 1000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 125000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_800000": {
+      "rx": {
+        "sample_rate_hz": 800000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 100000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 800000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 100000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_666667": {
+      "rx": {
+        "sample_rate_hz": 666667,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 83333
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 666666.667,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 83333.333
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_500000": {
+      "rx": {
+        "sample_rate_hz": 500000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 62500
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 500000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 62500.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_400000": {
+      "rx": {
+        "sample_rate_hz": 400000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 50000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 400000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 50000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "tx_4000000": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "tx_2000000": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 2000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 250000,
+        "sample_gap": 1
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 2000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 250000.0
+      }
+    },
+    "tx_1333333": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 1333333,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 166666,
+        "sample_gap": 2
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 1333333.333,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 166666.667
+      }
+    },
+    "tx_1000000": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 1000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 125000,
+        "sample_gap": 3
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 1000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 125000.0
+      }
+    },
+    "tx_800000": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 800000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 100000,
+        "sample_gap": 4
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 800000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 100000.0
+      }
+    },
+    "tx_666667": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 666667,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 83333,
+        "sample_gap": 5
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 666666.667,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 83333.333
+      }
+    },
+    "tx_500000": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 500000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 62500,
+        "sample_gap": 7
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 500000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 62500.0
+      }
+    },
+    "tx_400000": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 400000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 50000,
+        "sample_gap": 9
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 400000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 50000.0
+      }
+    }
+  },
+  "run_id": "cariboulite-native-power-sweep-20261113T231340Z",
+  "backends": {
+    "rx": {
+      "host": "pi4f-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "role": "rx",
+      "args": [
+        "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+        "--channel",
+        "RF24",
+        "--rx-frequency",
+        "430100000",
+        "--tx-frequency",
+        "430100000",
+        "--tx-sample-rate",
+        "4000000",
+        "--tx-power",
+        "-12",
+        "--tx-source",
+        "tone",
+        "--tx-deviation",
+        "2500",
+        "--rx-mode",
+        "nbfm",
+        "--rx-sample-rate",
+        "1000000",
+        "--rx-sinad",
+        "--rx-playback",
+        "plughw:USB,0,0",
+        "--seconds",
+        "7200",
+        "--socket",
+        "/tmp/cariboulite-native-power-sweep-20261113T231340Z/rx_div6/rx/ipc/status.sock"
+      ],
+      "uid": 0,
+      "binary_sha256": "c88f36633a10e5d60a7e7e68ebf7a15d125d2a453e35beb46d5988ce66277f5c"
+    },
+    "tx": {
+      "host": "pi4g-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "role": "tx",
+      "args": [
+        "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+        "--channel",
+        "RF24",
+        "--rx-frequency",
+        "430100000",
+        "--tx-frequency",
+        "430100000",
+        "--tx-sample-rate",
+        "4000000",
+        "--tx-power",
+        "-12",
+        "--tx-source",
+        "tone",
+        "--tx-deviation",
+        "2500",
+        "--rx-mode",
+        "nbfm",
+        "--rx-sample-rate",
+        "1000000",
+        "--rx-sinad",
+        "--rx-playback",
+        "plughw:USB,0,0",
+        "--seconds",
+        "7200",
+        "--socket",
+        "/tmp/cariboulite-native-power-sweep-20261113T231340Z/tx_div3/tx/ipc/status.sock"
+      ],
+      "uid": 0,
+      "binary_sha256": "c88f36633a10e5d60a7e7e68ebf7a15d125d2a453e35beb46d5988ce66277f5c"
+    }
+  },
+  "source_manifest_sha256": "3cb96a5ccca5369aec5c3ff411390d19873e6e2eb797e08c0aacd93836992866",
+  "recording_end_utc": "2026-11-13T23:47:17+00:00",
+  "module_images": {
+    "pi4g-trixie": {
+      "host": "pi4g-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "vermagic": "6.18.60+rpt-rpi-v8 SMP preempt mod_unload modversions aarch64",
+      "parameters": {
+        "fifo_mtu_multiplier": "6",
+        "addr_dir_offset": "2",
+        "addr_ch_offset": "3"
+      },
+      "module_path": "/home/pi/src/cariboulite/build/driver-tx-window/smi_stream_dev.ko",
+      "module_sha256": "32b41c39a9e9485d16bd3ce1d03e4529538c7fbf664ab7e380c3c0b2edde1f39",
+      "loaded_srcversion": "5AD373CAE4DBC118FE6E425",
+      "installed_path": "/lib/modules/6.18.60+rpt-rpi-v8/kernel/drivers/char/broadcom/smi_stream_dev.ko.xz",
+      "backup_path": "/tmp/cariboulite-window-backup-pi4g-trixie.ko.xz",
+      "backup_sha256": "8a4ed7a05307de3992744c0595c4083462479130a598571cc6f41c55358f0592",
+      "installed_module_sha256": "32b41c39a9e9485d16bd3ce1d03e4529538c7fbf664ab7e380c3c0b2edde1f39",
+      "durable_backup_path": "/home/pi/src/cariboulite/build/driver-tx-window/installed-before-window-pi4g-trixie.ko.xz"
+    },
+    "pi4f-trixie": {
+      "host": "pi4f-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "vermagic": "6.18.60+rpt-rpi-v8 SMP preempt mod_unload modversions aarch64",
+      "parameters": {
+        "fifo_mtu_multiplier": "6",
+        "addr_dir_offset": "2",
+        "addr_ch_offset": "3"
+      },
+      "module_path": "/tmp/smi_stream_dev.ko",
+      "module_sha256": "32b41c39a9e9485d16bd3ce1d03e4529538c7fbf664ab7e380c3c0b2edde1f39",
+      "loaded_srcversion": "5AD373CAE4DBC118FE6E425",
+      "installed_path": "/lib/modules/6.18.60+rpt-rpi-v8/kernel/drivers/char/broadcom/smi_stream_dev.ko.xz",
+      "backup_path": "/tmp/cariboulite-window-backup-pi4f-trixie.ko.xz",
+      "backup_sha256": "8a4ed7a05307de3992744c0595c4083462479130a598571cc6f41c55358f0592",
+      "installed_module_sha256": "32b41c39a9e9485d16bd3ce1d03e4529538c7fbf664ab7e380c3c0b2edde1f39",
+      "durable_backup_path": "/home/pi/src/cariboulite/build/driver-tx-window/installed-before-window-pi4f-trixie.ko.xz"
+    }
+  }
+}
