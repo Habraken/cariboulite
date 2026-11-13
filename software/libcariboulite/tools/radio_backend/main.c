@@ -1504,6 +1504,16 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
             "\"errors\":%" PRIu64 ",\"last_error\":%d}",
             r->calls, r->samples, r->short_reads, r->zero_reads, r->errors, r->last_error);
     }
+    char alignment[512] = "null";
+    if (radio && radio->sys && !o->dry_run) {
+        smi_rx_stats_t framing;
+        smi_rx_stream_stats(&radio->sys->smi.rx_stream,&framing);
+        snprintf(alignment,sizeof(alignment),
+            "{\"acquisitions\":%" PRIu64 ",\"failures\":%" PRIu64 ",\"ambiguous\":%" PRIu64
+            ",\"invalid_frames\":%" PRIu64 ",\"discarded_bytes\":%" PRIu64 ",\"emitted_samples\":%" PRIu64
+            ",\"stream_resets\":%" PRIu64 "}", framing.acquisitions,framing.alignment_failures,
+            framing.ambiguous_windows,framing.invalid_frames,framing.discarded_bytes,framing.emitted_samples,framing.stream_resets);
+    }
     char sinad_db[32] = "null";
     float sinad_value = live && o->rx.sinad_enabled && !o->transition ? rx_pipeline_sinad_db(pipeline) : 0;
     if (sinad_value > 0) snprintf(sinad_db, sizeof(sinad_db), "%.3f", (double)sinad_value);
@@ -1535,6 +1545,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"rx\":{\"running\":%s,\"queue\":%s,\"noise_enabled\":%s,\"carrier_enabled\":%s,"
         "\"gate_open\":%s,\"noise\":{\"valid\":%s,\"detector_open\":%s,\"rms\":%s,"
         "\"open_rms\":%.3f,\"close_rms\":%.3f},"
+        "\"alignment\":%s,"
         "\"sinad\":{\"enabled\":%s,\"db\":%s,\"tone_hz\":1000,\"low_hz\":300,\"high_hz\":3000},"
         "\"audio_queue\":%s,\"playback\":%s,\"reader\":%s,"
         "\"workers\":{\"reader\":%s,\"demod\":%s,\"audio\":%s}},"
@@ -1562,7 +1573,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         live ? (rx_pipeline_squelch_open(pipeline) ? "true" : "false") : "null",
         noise.valid ? "true" : "false", noise.valid ? (noise.detector_open ? "true" : "false") : "null",
         rms, (double)noise.open_rms, (double)noise.close_rms,
-        o->rx.sinad_enabled ? "true" : "false", sinad_db, audio_queue, playback_stats, reader,
+        alignment, o->rx.sinad_enabled ? "true" : "false", sinad_db, audio_queue, playback_stats, reader,
         reader_worker, demod_worker, audio_worker,
         tx_json, hardware, o->config_generation, o->pipeline_generation,
         o->rx_requested ? "true" : "false", backend_control_state(o),

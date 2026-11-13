@@ -405,19 +405,18 @@ void rx_pipeline_stop(rx_pipeline_t* p)
     nbfm_rx_active = false;
     __sync_synchronize();
 
-    HW_LOCK();
-    cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_rx, false);
-    caribou_smi_set_driver_streaming_state(&p->sys->smi, (smi_stream_state_en)0);
-    caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, caribou_fpga_io_ctrl_rfm_low_power);
-    HW_UNLOCK();
-
-    // join reader here
+    // Join the sole decoder owner before a stream transition clears carry.
     p->rx_ctrl.active = false;
     if (p->rx_thread_created) {
         pthread_cancel(p->rx_thread);
         pthread_join(p->rx_thread, NULL);
         p->rx_thread_created = false;
     }
+    HW_LOCK();
+    cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_rx, false);
+    caribou_smi_set_driver_streaming_state(&p->sys->smi, (smi_stream_state_en)0);
+    caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, caribou_fpga_io_ctrl_rfm_low_power);
+    HW_UNLOCK();
 
 
     p->running = false;

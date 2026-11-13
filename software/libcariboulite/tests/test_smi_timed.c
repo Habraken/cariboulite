@@ -12,6 +12,8 @@ static int64_t now;
 static int calls, polls, mode, prefix, interrupts, rx_offset;
 static unsigned char output[128];
 static size_t output_len;
+static unsigned char rx_wire[4096];
+static size_t rx_wire_len, rx_wire_pos, rx_wire_step;
 int __wrap_clock_gettime(clockid_t id, struct timespec *ts) {
     (void)id; ts->tv_sec=now/1000000; ts->tv_nsec=(now%1000000)*1000; return 0;
 }
@@ -36,6 +38,13 @@ ssize_t __wrap_write(int fd, const void *buf, size_t n) {
 ssize_t __wrap_read(int fd, void *buf, size_t n) {
     (void)fd; ++calls;
     if (mode==1) { errno=EIO; return -1; }
+    if (mode==6) {
+        if(rx_wire_pos==rx_wire_len)return 0;
+        size_t take=1+(rx_wire_step++%23);
+        if(take>n)take=n;
+        if(take>rx_wire_len-rx_wire_pos)take=rx_wire_len-rx_wire_pos;
+        memcpy(buf,rx_wire+rx_wire_pos,take);rx_wire_pos+=take;return take;
+    }
     if (mode==2 || mode==3 || mode==5) {
         if(n>24)n=24;
         uint32_t word=mode==5?0x84037048:(mode==2?0x80004000:0);
@@ -44,6 +53,13 @@ ssize_t __wrap_read(int fd, void *buf, size_t n) {
         return n;
     }
     return 0;
+}
+static void prime_rx(caribou_smi_st *d) {
+    unsigned char frames[4*(SMI_RX_CONFIRM_WORDS+4)];
+    for(size_t k=0;k<sizeof(frames);k+=4){uint32_t w=0x80004000;memcpy(frames+k,&w,4);}
+    memset(&d->rx_stream,0,sizeof(d->rx_stream));d->rx_pending_bytes=d->rx_pending_offset=0;
+    smi_rx_result_t r=smi_rx_stream_feed(&d->rx_stream,frames,sizeof(frames),NULL,NULL,SMI_RX_CONFIRM_WORDS+4,false);
+    assert(!r.error&&r.produced==SMI_RX_CONFIRM_WORDS+4&&!d->rx_stream.length);
 }
 int main(void) {
     uint8_t scratch[128];
@@ -61,6 +77,7 @@ int main(void) {
         }
         for(mode=1;mode<=4;mode++) {
             now=0;interrupts=0;
+            if(!tx)prime_rx(&d);
             int r=tx?caribou_smi_write_timed(&d,0,samples,32,1000):caribou_smi_read_timed(&d,0,samples,NULL,32,1000);
             if(mode==1 || mode==4) assert(r==-1);
             if(mode==2) assert(r==(tx?32:6));
@@ -68,7 +85,7 @@ int main(void) {
         }
     }
     // Modem EXTLB returns the TX control bit at bit 16 unchanged.
-    mode=5; interrupts=0;
+    mode=5; interrupts=0;prime_rx(&d);
     assert(caribou_smi_read_timed(&d,0,samples,NULL,32,1000)==-3);
     assert(caribou_smi_read_loopback_timed(&d,caribou_smi_channel_900,
                                          samples,32,1000)==6);
@@ -90,6 +107,24 @@ int main(void) {
     mode=1;assert(caribou_smi_read_loopback_timed(&d,0,samples,32,1000)==-1);
     mode=0;now=0;interrupts=3;
     assert(caribou_smi_read_loopback_timed(&d,0,samples,32,1000)==0 && now==1000);
+    // Real API boundary: byte-fragmented device reads and one-sample callers.
+    mode=6;rx_wire_pos=rx_wire_step=0;rx_wire_len=3+800*4;memset(rx_wire,0xaa,3);
+    for(unsigned k=0;k<800;++k){uint32_t w=0x80004000|(((k*131)&8191)<<1)|(((k*317)&8191)<<17)|(k&1);memcpy(rx_wire+3+4*k,&w,4);}
+    memset(&d.rx_stream,0,sizeof(d.rx_stream));d.rx_pending_bytes=d.rx_pending_offset=0;
+    unsigned got=0;unsigned char metadata;
+    for(unsigned attempt=0;got<800&&attempt<10000;++attempt){
+        int r=caribou_smi_read_timed(&d,caribou_smi_channel_2400,samples,(caribou_smi_sample_meta*)&metadata,1,0);
+        assert(r==0||r==1);
+        if(r){int i=(got*131)&8191,q=(got*317)&8191;if(i>=4096)i-=8192;if(q>=4096)q-=8192;
+            assert(samples[0].i==i&&samples[0].q==q&&metadata==(got&1));++got;}
+    }
+    assert(got==800&&d.rx_stream.stats.acquisitions==1&&d.rx_stream.stats.discarded_bytes==3&&d.rx_stream.stats.invalid_frames==0);
+    // Timed API retains its native-batch output bound even with buffered IQ.
+    prime_rx(&d);
+    for(size_t k=0;k<528;k+=4){uint32_t w=0x80004000;memcpy(d.rx_stream.bytes+k,&w,4);}
+    d.rx_stream.length=528;d.rx_channel=0;
+    int previous_calls=calls;
+    assert(caribou_smi_read_timed(&d,0,samples,NULL,1000,0)==32&&calls==previous_calls);
     // Every possible partial byte prefix: retry must reproduce the exact wire data.
     for(int bytes=1;bytes<8;bytes++) {
         unsigned char expected[16];

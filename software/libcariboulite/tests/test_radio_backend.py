@@ -468,9 +468,13 @@ int main(void) {
     modem_snapshot modem;
     modem_snapshot_init(&modem, at86rf215_rf_channel_2400mhz);
     status_publisher_t publisher = {0};
+    sys_st framing_sys = {0};
+    framing_sys.smi.rx_stream.stats = (smi_rx_stats_t){.acquisitions=2,.alignment_failures=3,
+        .ambiguous_windows=4,.invalid_frames=5,.discarded_bytes=6,.emitted_samples=7008,.stream_resets=9};
+    cariboulite_radio_state_st framing_radio = {.sys=&framing_sys,.actual_rf_frequency=430125000};
     char packet[STATUS_PUBLISHER_MAX_PACKET_BYTES];
     int size = make_snapshot(packet, sizeof(packet), &options, "fixture", 1,
-        "RX", &pipeline, &stats, &modem, &publisher, NULL, NULL);
+        "RX", &pipeline, &stats, &modem, &publisher, &framing_radio, NULL);
     assert(size > 0); puts(packet);
 
     // Largest supported escaped device name and counters exercise bounds on
@@ -484,7 +488,7 @@ int main(void) {
     stats.audio_worker.scheduling = stats.demod_worker.scheduling;
     stats.audio_worker.scheduling.requested_priority = 70;
     size = make_snapshot(packet, sizeof(packet), &options, "fixture", UINT64_MAX,
-        "RX", &pipeline, &stats, &modem, &publisher, NULL, NULL);
+        "RX", &pipeline, &stats, &modem, &publisher, &framing_radio, NULL);
     assert(size > 0); puts(packet);
     // RX resumes while TX workers remain allocated and parked. Both sets of
     // lifetime counters must still fit the monitor transport together.
@@ -584,6 +588,8 @@ int main(void) {
         self.assertEqual(snapshot["config"]["observed"], {
             "rx": unavailable_profile, "tx": unavailable_profile})
         rx = snapshot["rx"]
+        self.assertEqual(rx["alignment"], {"acquisitions": 2, "failures": 3, "ambiguous": 4,
+            "invalid_frames": 5, "discarded_bytes": 6, "emitted_samples": 7008, "stream_resets": 9})
         self.assertEqual(rx["sinad"], {"enabled": True, "db": 20.125,
             "tone_hz": 1000, "low_hz": 300, "high_hz": 3000})
         self.assertEqual(rx["queue"]["puts"], 101)
@@ -620,6 +626,7 @@ int main(void) {
         self.assertIs(scheduling["mlock_attempted"], False)
         self.assertEqual(workers["audio"]["scheduling"], {"valid": False})
         display = "\n".join(client.format_snapshot(snapshot))
+        self.assertIn("RX framing: locks=2  failures=3  invalid=5  discarded bytes=6", display)
         self.assertIn("underruns=7", display)
         self.assertIn("recovery(attempt/ok/fail)=8/9/10", display)
         self.assertIn("sched=SCHED_OTHER/0", display)

@@ -15,5 +15,5 @@ with tempfile.TemporaryDirectory(prefix='soapy-stream-') as directory:
     subprocess.run(['c++','-std=c++11',*includes,str(tests/'test_soapy_stream.cpp'),*map(str,sources),*[f'-Wl,--wrap={s}' for s in wraps],str(root/'build/src/iir/libiir.so'),'-Wl,-rpath,'+str(root/'build/src/iir'),*libs,'-o',exe],check=True)
     subprocess.run([exe],check=True,timeout=10)
     exe=str(Path(directory)/'smi')
-    subprocess.run(['cc','-D_GNU_SOURCE',*includes,str(tests/'test_smi_timed.c'),str(src/'caribou_smi/caribou_smi.c'),*[f'-Wl,--wrap={s}' for s in ['read','write','ppoll','clock_gettime']],*libs,'-o',exe],check=True)
+    subprocess.run(['cc','-D_GNU_SOURCE',*includes,str(tests/'test_smi_timed.c'),str(src/'caribou_smi/caribou_smi.c'),str(src/'caribou_smi/smi_rx_stream.c'),*[f'-Wl,--wrap={s}' for s in ['read','write','ppoll','clock_gettime']],*libs,'-o',exe],check=True)
     subprocess.run([exe],check=True,timeout=10)

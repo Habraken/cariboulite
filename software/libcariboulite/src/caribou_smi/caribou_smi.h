@@ -16,6 +16,7 @@ extern "C" {
 #include <sys/time.h>
 
 
+#include "smi_rx_stream.h"
 #include "kernel/bcm2835_smi.h"
 #include "kernel/smi_stream_dev.h"
 
@@ -69,6 +70,9 @@ typedef struct
 {
     int initialized;
     int filedesc;
+    smi_rx_stream_t rx_stream;
+    size_t rx_pending_offset, rx_pending_bytes;
+    int rx_channel;
     size_t write_partial_bytes; // prefix of the next unreported sample already sent
 	size_t native_batch_len;
     uint32_t sample_rate;
@@ -116,7 +120,8 @@ int caribou_smi_write_samples(caribou_smi_st *smi,
                       int n_samples);
 
 // Timed variants: at most one native batch; timeout_us <= 0 means try once.
-// Return partial sample counts, zero on timeout, negative on failure.
+// Return genuine partial sample counts, zero on timeout/framing acquisition,
+// negative on failure. Normal RX retains byte fragments; no interpolated IQ.
 // Writes retain the same partial-sample retry contract described above.
 int caribou_smi_read_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
     caribou_smi_sample_complex_int16 *samples, caribou_smi_sample_meta *metadata,
@@ -133,6 +138,7 @@ size_t caribou_smi_get_native_batch_samples(caribou_smi_st* dev);
 
 void caribou_smi_setup_ios(caribou_smi_st* dev);
 void caribou_smi_set_sample_rate(caribou_smi_st* dev, uint32_t sample_rate);
+// Stop/join the reader before flushing or changing the stream/channel.
 int caribou_smi_flush_fifo(caribou_smi_st* dev);
 
 int caribou_smi_get_current_settings(caribou_smi_st* dev, struct smi_settings* settings);

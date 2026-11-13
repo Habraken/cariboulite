@@ -1,0 +1,428 @@
+[
+  {
+    "case": "fresh_2m",
+    "label": "verified",
+    "seconds": 15,
+    "packets": 73,
+    "sinad_mean": 21.93195890410959,
+    "sinad_min": 21.348,
+    "sinad_max": 22.276,
+    "below_10_fraction": 0.0,
+    "noise_mean": 0.01452054794520548,
+    "noise_max": 0.017,
+    "alignment": {
+      "acquisitions": 1,
+      "failures": 0,
+      "ambiguous": 0,
+      "invalid_frames": 0,
+      "discarded_bytes": 3,
+      "emitted_samples": 53411839,
+      "stream_resets": 22
+    },
+    "rx_counters": {
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 2670,
+        "gets": 2670,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 2671,
+        "gets": 2671,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 2671,
+        "frames_requested": 1282080,
+        "frames_written": 1282080,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 3137,
+        "samples": 53400000,
+        "short_reads": 164,
+        "zero_reads": 303,
+        "errors": 0,
+        "last_error": 0
+      }
+    },
+    "tx_underruns": 0
+  },
+  {
+    "case": "fresh_4m",
+    "label": "verified",
+    "seconds": 15,
+    "packets": 73,
+    "sinad_mean": 22.063520547945206,
+    "sinad_min": 21.887,
+    "sinad_max": 22.355,
+    "below_10_fraction": 0.0,
+    "noise_mean": 0.013986301369863013,
+    "noise_max": 0.016,
+    "alignment": {
+      "acquisitions": 1,
+      "failures": 0,
+      "ambiguous": 0,
+      "invalid_frames": 0,
+      "discarded_bytes": 1,
+      "emitted_samples": 107020287,
+      "stream_resets": 22
+    },
+    "rx_counters": {
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 2675,
+        "gets": 2675,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 2676,
+        "gets": 2676,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 2676,
+        "frames_requested": 1284480,
+        "frames_written": 1284480,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 3004,
+        "samples": 107000000,
+        "short_reads": 165,
+        "zero_reads": 164,
+        "errors": 0,
+        "last_error": 0
+      }
+    },
+    "tx_underruns": 0
+  },
+  {
+    "case": "fresh_1m_a",
+    "label": "verified",
+    "seconds": 15,
+    "packets": 74,
+    "sinad_mean": 21.54983783783784,
+    "sinad_min": 21.362,
+    "sinad_max": 21.738,
+    "below_10_fraction": 0.0,
+    "noise_mean": 0.01458108108108108,
+    "noise_max": 0.016,
+    "alignment": {
+      "acquisitions": 1,
+      "failures": 0,
+      "ambiguous": 0,
+      "invalid_frames": 0,
+      "discarded_bytes": 2,
+      "emitted_samples": 26902527,
+      "stream_resets": 22
+    },
+    "rx_counters": {
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 2690,
+        "gets": 2690,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 2691,
+        "gets": 2691,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 2691,
+        "frames_requested": 1291680,
+        "frames_written": 1291680,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 3322,
+        "samples": 26900000,
+        "short_reads": 165,
+        "zero_reads": 467,
+        "errors": 0,
+        "last_error": 0
+      }
+    },
+    "tx_underruns": 0
+  },
+  {
+    "case": "fresh_1m_b",
+    "label": "verified",
+    "seconds": 15,
+    "packets": 73,
+    "sinad_mean": 21.525794520547944,
+    "sinad_min": 21.298,
+    "sinad_max": 21.797,
+    "below_10_fraction": 0.0,
+    "noise_mean": 0.014794520547945205,
+    "noise_max": 0.017,
+    "alignment": {
+      "acquisitions": 1,
+      "failures": 0,
+      "ambiguous": 0,
+      "invalid_frames": 0,
+      "discarded_bytes": 1680,
+      "emitted_samples": 26705500,
+      "stream_resets": 22
+    },
+    "rx_counters": {
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 2670,
+        "gets": 2670,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 2671,
+        "gets": 2671,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 2671,
+        "frames_requested": 1282080,
+        "frames_written": 1282080,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 3295,
+        "samples": 26700000,
+        "short_reads": 164,
+        "zero_reads": 461,
+        "errors": 0,
+        "last_error": 0
+      }
+    },
+    "tx_underruns": 0
+  },
+  {
+    "case": "fresh_1m_c",
+    "label": "verified",
+    "seconds": 15,
+    "packets": 74,
+    "sinad_mean": 21.470108108108107,
+    "sinad_min": 21.3,
+    "sinad_max": 21.651,
+    "below_10_fraction": 0.0,
+    "noise_mean": 0.015810810810810812,
+    "noise_max": 0.019,
+    "alignment": {
+      "acquisitions": 1,
+      "failures": 0,
+      "ambiguous": 0,
+      "invalid_frames": 0,
+      "discarded_bytes": 1632,
+      "emitted_samples": 26902120,
+      "stream_resets": 22
+    },
+    "rx_counters": {
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 2690,
+        "gets": 2690,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 2691,
+        "gets": 2691,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 2691,
+        "frames_requested": 1291680,
+        "frames_written": 1291680,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 3319,
+        "samples": 26900000,
+        "short_reads": 167,
+        "zero_reads": 462,
+        "errors": 0,
+        "last_error": 0
+      }
+    },
+    "tx_underruns": 0
+  },
+  {
+    "case": "sustained_1m",
+    "label": "verified",
+    "seconds": 120,
+    "packets": 597,
+    "sinad_mean": 21.56475711892797,
+    "sinad_min": 20.597,
+    "sinad_max": 21.969,
+    "below_10_fraction": 0.0,
+    "noise_mean": 0.015231155778894473,
+    "noise_max": 0.019,
+    "alignment": {
+      "acquisitions": 1,
+      "failures": 0,
+      "ambiguous": 0,
+      "invalid_frames": 0,
+      "discarded_bytes": 1664,
+      "emitted_samples": 131890784,
+      "stream_resets": 22
+    },
+    "rx_counters": {
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 13189,
+        "gets": 13189,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 4,
+        "puts": 13194,
+        "gets": 13190,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 6,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 13190,
+        "frames_requested": 6331200,
+        "frames_written": 6330720,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 16165,
+        "samples": 131890000,
+        "short_reads": 801,
+        "zero_reads": 2175,
+        "errors": 0,
+        "last_error": 0
+      }
+    },
+    "tx_underruns": 0
+  }
+]

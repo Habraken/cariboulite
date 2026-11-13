@@ -1,0 +1,16 @@
+[
+  {
+    "case": "fresh_1m_a",
+    "decoder": "samples=7999999 acquisitions=1 discarded_bytes=1 failures=0 invalid_frames=0 pending_bytes=3",
+    "input_sha256": "9a58d58c3e0f2e7274f1030ea348a23a991e48b2134da8cd64246ae0aa67c121",
+    "output_sha256": "092a101498f6accc5330ea6baab0fdd5e0ebae5ce3e2bf54339e62a3c1aa13e4",
+    "exact_match_to_continuous_reference": true
+  },
+  {
+    "case": "fresh_1m_b",
+    "decoder": "samples=7999999 acquisitions=1 discarded_bytes=2 failures=0 invalid_frames=0 pending_bytes=2",
+    "input_sha256": "4d808e2244591f8313e1e97e37735c56a55acdfba9d708b022e16e22315553c8",
+    "output_sha256": "0efe9c7467925f4533061e06a94ecf2531804f07438b13f0f94e0d4a84e52814",
+    "exact_match_to_continuous_reference": true
+  }
+]

@@ -63,17 +63,12 @@ static inline void caribou_smi_tx_accum_reset(void)
 int caribou_smi_set_driver_streaming_state(caribou_smi_st* dev, smi_stream_state_en state)
 {
     static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
-    static smi_stream_state_en last = smi_stream_idle;
-
     pthread_mutex_lock(&mtx);
-    if (state == last) {
-        pthread_mutex_unlock(&mtx);
-        return 0;            // no-op: desired == current (cached)
-    }
-
     int r = ioctl(dev->filedesc, SMI_STREAM_IOC_SET_STREAM_STATUS, state);
     if (r == 0) {
-        last = state;        // update only on success
+        dev->state = state;  // enforce the driver state; do not cache across devices
+        dev->rx_pending_offset = dev->rx_pending_bytes = 0;
+        smi_rx_stream_reset(&dev->rx_stream);
         dev->write_partial_bytes = 0; // a new stream cannot resume an old sample
     }
     pthread_mutex_unlock(&mtx);
@@ -753,6 +748,8 @@ void caribou_smi_set_sample_rate(caribou_smi_st* dev, uint32_t sample_rate)
 //=========================================================================
 void caribou_smi_set_debug_mode(caribou_smi_st* dev, caribou_smi_debug_mode_en mode)
 {
+    dev->rx_pending_offset = dev->rx_pending_bytes = 0;
+    smi_rx_stream_reset(&dev->rx_stream);
     dev->debug_mode = mode;
 }
 
@@ -771,11 +768,60 @@ static int caribou_smi_calc_read_timeout(uint32_t sample_rate, size_t len)
 }
 
 //=========================================================================
+static int64_t smi_deadline_us(long timeout_us);
+static int smi_transfer_until(caribou_smi_st *dev, void *buffer, size_t bytes,
+                             bool tx, int64_t deadline);
+
+/* One reader owns pending bytes and decoder state. Stream transitions must
+ * join/park that reader before resetting state, as required for TX as well. */
+static int smi_read_normal(caribou_smi_st *dev, caribou_smi_channel_en channel,
+    caribou_smi_sample_complex_int16 *samples, caribou_smi_sample_meta *metadata,
+    size_t count, bool timed, long timeout_us)
+{
+    if (!count) return 0;
+    if (!dev || dev->filedesc<0 || !dev->read_temp_buffer || dev->native_batch_len<4) return -1;
+    if (timed && count>dev->native_batch_len/4) count=dev->native_batch_len/4;
+    if (count>INT_MAX) return -1;
+    if (dev->rx_channel!=(int)channel) {
+        dev->rx_channel=(int)channel;
+        dev->rx_pending_offset=dev->rx_pending_bytes=0;
+        smi_rx_stream_reset(&dev->rx_stream);
+    }
+    int64_t deadline=timed?smi_deadline_us(timeout_us):0;
+    size_t total=0; bool read_done=false;
+    while (total<count) {
+        size_t available=dev->rx_pending_bytes-dev->rx_pending_offset;
+        smi_rx_result_t r=smi_rx_stream_feed(&dev->rx_stream,
+            dev->read_temp_buffer+dev->rx_pending_offset,available,
+            samples?samples+total:NULL,metadata?(uint8_t*)(metadata+total):NULL,
+            count-total,channel==caribou_smi_channel_2400);
+        dev->rx_pending_offset+=r.consumed;total+=r.produced;
+        if (dev->rx_pending_offset==dev->rx_pending_bytes)
+            dev->rx_pending_offset=dev->rx_pending_bytes=0;
+        if (r.error) return total?(int)total:r.error;
+        if (total==count) break;
+        if (dev->rx_pending_bytes) continue;
+        if (timed && read_done) break;
+        size_t wanted=(count-total)*4;
+        if (!dev->rx_stream.locked && wanted<4*(SMI_RX_CONFIRM_WORDS+1)) wanted=4*(SMI_RX_CONFIRM_WORDS+1);
+        if (wanted>dev->native_batch_len) wanted=dev->native_batch_len;
+        int n=timed?smi_transfer_until(dev,dev->read_temp_buffer,wanted,false,deadline)
+            :caribou_smi_timeout_read(dev,dev->read_temp_buffer,wanted,
+                caribou_smi_calc_read_timeout(dev->sample_rate,wanted));
+        read_done=true;
+        if (n<=0) return total?(int)total:n<0?-1:0;
+        dev->rx_pending_bytes=(size_t)n;
+    }
+    return (int)total;
+}
+
 int caribou_smi_read(caribou_smi_st* dev, caribou_smi_channel_en channel,
                     caribou_smi_sample_complex_int16* samples,
                     caribou_smi_sample_meta* metadata,
                     size_t length_samples)
 {
+    if (dev && dev->debug_mode==caribou_smi_none)
+        return smi_read_normal(dev,channel,samples,metadata,length_samples,false,0);
     caribou_smi_sample_complex_int16* sample_offset = samples;
     caribou_smi_sample_meta* meta_offset = metadata;
     size_t left_to_read = length_samples * CARIBOU_SMI_BYTES_PER_SAMPLE;        // in bytes
@@ -1083,6 +1129,8 @@ int caribou_smi_read_timed(caribou_smi_st *dev, caribou_smi_channel_en channel,
     caribou_smi_sample_complex_int16 *samples, caribou_smi_sample_meta *metadata,
     size_t count, long timeout_us)
 {
+    if (dev && dev->debug_mode==caribou_smi_none)
+        return smi_read_normal(dev,channel,samples,metadata,count,true,timeout_us);
     if (!count) return 0;
     if (!dev || dev->filedesc < 0 || !samples || !dev->read_temp_buffer ||
         dev->native_batch_len < CARIBOU_SMI_BYTES_PER_SAMPLE) return -1;
@@ -1109,6 +1157,10 @@ int caribou_smi_read_loopback_timed(caribou_smi_st *dev,
     if (!dev || dev->filedesc < 0 || !samples || !dev->read_temp_buffer ||
         dev->native_batch_len < CARIBOU_SMI_BYTES_PER_SAMPLE) return -1;
     if (dev->debug_mode != caribou_smi_none) return -2;
+    if (dev->rx_pending_bytes || dev->rx_stream.length || dev->rx_stream.locked) {
+        dev->rx_pending_offset=dev->rx_pending_bytes=0;
+        smi_rx_stream_reset(&dev->rx_stream);
+    }
     size_t capacity = dev->native_batch_len / CARIBOU_SMI_BYTES_PER_SAMPLE;
     if (count > capacity) count = capacity;
     int n = smi_transfer_until(dev, dev->read_temp_buffer, count * 4,
@@ -1196,6 +1248,8 @@ int caribou_smi_flush_fifo(caribou_smi_st* dev)
         ZF_LOGE("failed flushing driver fifos");
         return -1;
     }
+    dev->rx_pending_offset=dev->rx_pending_bytes=0;
+    smi_rx_stream_reset(&dev->rx_stream);
     return 0;
 }
 

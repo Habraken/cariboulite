@@ -1,0 +1,44 @@
+{
+  "tx_host": "pi4g-trixie",
+  "rx_host": "pi4f-trixie",
+  "frequency_hz": 430100000,
+  "tx_rate_hz": 4000000,
+  "tx_power_dbm": 0,
+  "tone_hz": 1000,
+  "amplitude": 0.4,
+  "deviation_hz": 2500,
+  "cases": [
+    [
+      "fresh_2m",
+      2000000,
+      null
+    ],
+    [
+      "fresh_4m",
+      4000000,
+      null
+    ],
+    [
+      "fresh_1m_a",
+      1000000,
+      null
+    ],
+    [
+      "fresh_1m_b",
+      1000000,
+      null
+    ],
+    [
+      "fresh_1m_c",
+      1000000,
+      null
+    ],
+    [
+      "sustained_1m",
+      1000000,
+      null
+    ]
+  ],
+  "capture_samples": 0,
+  "software": "production streaming decoder, no diagnostic preloads"
+}
