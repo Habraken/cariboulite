@@ -1,0 +1,18 @@
+{
+  "host": "pi4f-trixie",
+  "kernel": "6.18.60+rpt-rpi-v8",
+  "vermagic": "6.18.60+rpt-rpi-v8 SMP preempt mod_unload modversions aarch64",
+  "parameters": {
+    "fifo_mtu_multiplier": "6",
+    "addr_dir_offset": "2",
+    "addr_ch_offset": "3"
+  },
+  "module_path": "/tmp/smi_stream_dev.ko",
+  "module_sha256": "32b41c39a9e9485d16bd3ce1d03e4529538c7fbf664ab7e380c3c0b2edde1f39",
+  "loaded_srcversion": "5AD373CAE4DBC118FE6E425",
+  "installed_path": "/lib/modules/6.18.60+rpt-rpi-v8/kernel/drivers/char/broadcom/smi_stream_dev.ko.xz",
+  "backup_path": "/tmp/cariboulite-window-backup-pi4f-trixie.ko.xz",
+  "backup_sha256": "8a4ed7a05307de3992744c0595c4083462479130a598571cc6f41c55358f0592",
+  "installed_module_sha256": "32b41c39a9e9485d16bd3ce1d03e4529538c7fbf664ab7e380c3c0b2edde1f39",
+  "durable_backup_path": "/home/pi/src/cariboulite/build/driver-tx-window/installed-before-window-pi4f-trixie.ko.xz"
+}

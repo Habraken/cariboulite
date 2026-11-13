@@ -957,45 +957,37 @@ static void stream_smi_read_dma_callback(void *param)
     wake_up_interruptible(&inst->poll_event);
     inst->current_read_chunk++;
 }
-static inline void smi_kick_if_idle(struct bcm2835_smi_instance *smi_inst)
+/* Keep every finite SMI window on a complete DMA-period/IQ boundary.
+ * Preserve the existing length cap, rounding down rather than ending with
+ * three bytes of an IQ word. DMA may already have prefetched the next period.
+ */
+static inline u32 smi_transfer_window_bytes(void)
 {
-    /* If the SMI just finished a programmed chunk (ACTIVE==0), start the next one. */
-    if (!smi_is_active(smi_inst)) {
-        /* Program a long window for the next run */
-        u32 len = (u32)SMI_REFRESH_CHUNKS * (DMA_BOUNCE_BUFFER_SIZE/4);
-        if (len > 0x00FFFFFF) len = 0x00FFFFFF;   /* SMIL is effectively 24-bit */
-        write_smi_reg(smi_inst, len, SMIL);
-
-        /* START latches SMIL only when ACTIVE==0 */
-        u32 smics = read_smi_reg(smi_inst, SMICS);
-        smics |= SMICS_START;
-        write_smi_reg(smi_inst, smics, SMICS);
-        mb();
-    }
+    const u32 q = DMA_BOUNCE_BUFFER_SIZE / 4;
+    const u32 quarters = min_t(u32, SMI_REFRESH_CHUNKS, 0x00ffffffu / q);
+    return quarters * q;
 }
 
-/* Re-arm from a context that continues running even when DMA is paused */
+/* Watchdog and hrtimer can both observe the same idle edge. Serialize their
+ * check/start so a delayed restart never disturbs an already active window.
+ * Clearing the FIFO here discards prefetched TX bytes; only stream setup or
+ * teardown may clear it. A finite-window restart must preserve the FIFO.
+ */
 static inline void smi_rearm_if_idle(struct bcm2835_smi_dev_instance *i)
 {
     struct bcm2835_smi_instance *smi = i->smi_inst;
-    
-    if (READ_ONCE(i->state) != smi_stream_tx_channel ||
-        !READ_ONCE(i->transfer_thread_running))
-        return;
-
-    if (!smi_is_active(smi)) {
-        u32 len = (u32)SMI_REFRESH_CHUNKS * (DMA_BOUNCE_BUFFER_SIZE/4);
-        if (len > 0x00FFFFFF) len = 0x00FFFFFF;
-        write_smi_reg(smi, len, SMIL);
-        
+    unsigned long flags;
+    spin_lock_irqsave(&smi->transaction_lock, flags);
+    if (READ_ONCE(i->state) == smi_stream_tx_channel &&
+        READ_ONCE(i->transfer_thread_running) && !smi_is_active(smi)) {
+        write_smi_reg(smi, smi_transfer_window_bytes(), SMIL);
         u32 smics = read_smi_reg(smi, SMICS);
-        smics |= SMICS_CLEAR | SMICS_ENABLE | SMICS_WRITE;
-        
-        smics |= SMICS_START;
+        smics &= ~SMICS_CLEAR;
+        smics |= SMICS_ENABLE | SMICS_WRITE | SMICS_START;
         write_smi_reg(smi, smics, SMICS);
         mb();
-        dev_dbg(i->dev, "rearm: EN=1 WRITE=1 START=1 SMIL=%u\n", len);
     }
+    spin_unlock_irqrestore(&smi->transaction_lock, flags);
 }
 
 // static inline void smi_kick_if_idle(struct bcm2835_smi_instance *smi_inst)
@@ -1315,11 +1307,10 @@ int transfer_thread_init(struct bcm2835_smi_dev_instance *inst,
     //write_smi_reg(inst->smi_inst, q, SMIL);
     //write_smi_reg(inst->smi_inst, SMI_REFRESH_CHUNKS * q, SMIL);
     
-    const u32 q   = (u32)(DMA_BOUNCE_BUFFER_SIZE / 4);
-    u32 len       = (u32)SMI_REFRESH_CHUNKS * q;    /* long window */
-    if (len > 0x00FFFFFF) len = 0x00FFFFFF;         /* SMIL is ~24-bit */
-    write_smi_reg(inst->smi_inst, len, SMIL);
-    
+    u32 window = min_t(u32, SMI_REFRESH_CHUNKS * (DMA_BOUNCE_BUFFER_SIZE / 4),
+                       0x00ffffffu);
+    if (dir == DMA_MEM_TO_DEV) window = smi_transfer_window_bytes();
+    write_smi_reg(inst->smi_inst, window, SMIL);
 
     /* One-time START pulse */
     u32 smics = read_smi_reg(inst->smi_inst, SMICS);

@@ -143,7 +143,7 @@ struct poll_table_struct {int unused;};
 typedef unsigned __poll_t;
 static void poll_wait(struct file* f,int* e,struct poll_table_struct* p) {(void)f;(void)e;(void)p;}
 '''
-production = '\n'.join(function(sig) for sig in [
+production = function('static inline u32 smi_transfer_window_bytes(void)') + '\n'.join(function(sig) for sig in [
     'static unsigned int smi_tx_fifo_available(struct bcm2835_smi_dev_instance *i)',
     'static void smi_tx_fill_quiet(void *buffer, unsigned int bytes)',
     'static long smi_tx_set_buffer_limit(unsigned long arg)',
