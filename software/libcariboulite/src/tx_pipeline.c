@@ -137,6 +137,7 @@ static void* tx_writer_thread_func(void* arg)
 
         // Get one 10 ms frame at the selected RF rate.
         rf10_frame_t frm;
+        frm.sample_count = 0;
         if (!rf10_fifo_get(fifo, &frm, /*timeout_ms=*/-1)) {
             tx_worker_end(ctrl, false);
             continue;
@@ -144,7 +145,12 @@ static void* tx_writer_thread_func(void* arg)
 
         // Stream it out in chunks ≈ kernel quarter (keep kfifo topped up)
         size_t off = 0;
-        const size_t total = ctrl->frame_samples; // Selected rate * 10 ms
+        const size_t total = frm.sample_count ? frm.sample_count : ctrl->frame_samples;
+        if (total > ctrl->frame_samples) {
+            tx_worker_fail(ctrl, -EPROTO);
+            tx_worker_end(ctrl, false);
+            break;
+        }
         struct pollfd pfd = { .fd = smi->filedesc, .events = POLLOUT, .revents = 0 };
 
         while (off < total && nbfm_tx_active) {
@@ -264,7 +270,7 @@ static int tx_detect_pacing(tx_writer_ctrl_st* ctrl, int fd, tx_pacing_mode_t mo
      * Accepted padding displaces the cue even when DMA retirement is delayed. */
     uint64_t pending = (uint64_t)ctrl->driver_config.fifo_limit_bytes / 4 +
         status.ring_bytes / 4 + status.period_bytes / 4 + 1024;
-    unsigned frames = (unsigned)((pending + ctrl->frame_samples - 1) / ctrl->frame_samples);
+    unsigned frames = (unsigned)((pending + (ctrl->rf_rate_hz / 100) - 1) / (ctrl->rf_rate_hz / 100));
     ctrl->tail_padding_frames = frames < 25 ? 25 : frames;
     return 0;
 }
@@ -379,7 +385,7 @@ static int tx_configure_nbfm_profile(tx_pipeline_t* p, int requested_power)
 {
     cariboulite_radio_state_st* radio = p->radio;
     const bool low = radio->type == cariboulite_channel_s1g;
-    const unsigned rate = (unsigned)p->tx_ctrl.frame_samples * 100;
+    const unsigned rate = p->tx_ctrl.rf_rate_hz;
     radio_profile_t profile;
     if (radio_profile_tx(rate, &profile)) return -1;
     const cariboulite_radio_sample_rate_en rate_code = profile.rate;
@@ -465,7 +471,9 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     }
     p->tx_ctrl.gate_initialized = true;
     p->tx_ctrl.verify_start_profile = par->verify_start_profile;
-    p->tx_ctrl.frame_samples = rf_fs / 100;
+    p->tx_ctrl.rf_rate_hz = profile.sample_rate_hz;
+    unsigned divider = (unsigned)profile.rate;
+    p->tx_ctrl.frame_samples = (40000 + divider - 1) / divider;
     atomic_init(&p->tx_ctrl.written_sequence, 0);
     // Cache the buffer configuration before starting workers. If the query
     // is unavailable, use the driver's largest supported FIFO multiplier.
@@ -475,7 +483,7 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     size_t native_samples = caribou_smi_get_native_batch_samples(&sys->smi);
     if (!native_samples) native_samples = 524288 / sizeof(caribou_smi_sample_complex_int16);
     p->tx_ctrl.tail_padding_frames = tx_tail_padding_frames(native_samples,
-        (unsigned)fifo_multiplier, p->tx_ctrl.frame_samples);
+        (unsigned)fifo_multiplier, (40000 / divider));
 
     int pacing_error = tx_detect_pacing(&p->tx_ctrl, sys->smi.filedesc, par->pacing_mode);
     if (pacing_error) {
@@ -593,7 +601,7 @@ static int tx_verify_start_profile(tx_pipeline_t* p, int requested_power)
     bool low = p->radio->type == cariboulite_channel_s1g;
     int power_code = radio_profile_tx_power_code(p->radio->type, requested_power);
     if (power_code < 0) return -1;
-    unsigned rate = (unsigned)p->tx_ctrl.frame_samples * 100;
+    unsigned rate = p->tx_ctrl.rf_rate_hz;
     unsigned rate_code = tx_rate_code(rate);
     uint8_t pac = 0, txcutc = 0, txdfe = 0, state = 0, gap = 255;
     int pac_error = at86rf215_read_buffer(&p->sys->modem,
@@ -609,7 +617,7 @@ static int tx_verify_start_profile(tx_pipeline_t* p, int requested_power)
     bool mismatch = pac_error || cutoff_error || rate_error || state_error || gap_error
         || (pac & 0x7f) != (0x60 | power_code) || (txcutc & 0xcf) != 0x80
         || txdfe != expected_dfe
-        || gap != 4000000 / rate - 1
+        || gap != rate_code - 1
         || ((state & 7) != at86rf215_radio_state_cmd_tx_prep
             && (state & 7) != at86rf215_radio_state_cmd_tx);
     if (mismatch)
@@ -619,7 +627,7 @@ static int tx_verify_start_profile(tx_pipeline_t* p, int requested_power)
             "STATE=0x%02X rc=%d gap=%u expected=%u rc=%d\n",
             pac, 0x60 | power_code, pac_error, txcutc, cutoff_error,
             txdfe, expected_dfe, rate_error,
-            state, state_error, gap, 4000000 / rate - 1, gap_error);
+            state, state_error, gap, rate_code - 1, gap_error);
     return mismatch ? -1 : 0;
 }
 

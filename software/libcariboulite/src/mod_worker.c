@@ -5,6 +5,7 @@
 #include "pipeline_runtime.h"
 #include "mod_worker.h"
 #include "tone_source.h"
+#include "radio_rates.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,21 +22,29 @@ int tx_generate_frame(tx_writer_ctrl_st* tx, rf10_frame_t* frame)
     if (!tx || !frame || !tx->fm || !tx->a48k || !tx->iq_rf || !tx->frame_samples ||
         tx->frame_samples > sizeof(frame->data) / sizeof(frame->data[0]))
         return -EINVAL;
+    unsigned divider = radio_rate_divider(tx->rf_rate_hz ? tx->rf_rate_hz :
+                                          (unsigned)tx->frame_samples * 100);
+    if (!divider) return -EINVAL;
+    unsigned phase = tx->rf_frame_phase + 40000;
+    size_t count = phase / divider;
+    if (!count || count > tx->frame_samples) return -EINVAL;
     nbfm_result_t mod = nbfm_process(tx->fm, tx->a48k, 480,
-                                    tx->iq_rf, tx->frame_samples);
-    if (mod.error || mod.consumed != 480 || mod.produced != tx->frame_samples || mod.held_audio) {
+                                    tx->iq_rf, count);
+    if (mod.error || mod.consumed != 480 || mod.produced != count || mod.held_audio) {
         fprintf(stderr, "TX modulator error: %d, audio=%zu, IQ=%zu, held=%zu\n",
                 mod.error, mod.consumed, mod.produced, mod.held_audio);
         return mod.error < 0 ? mod.error : -EINVAL;
     }
     memset(frame, 0, sizeof(*frame));
+    tx->rf_frame_phase = phase % divider;
+    frame->sample_count = (uint32_t)count;
     frame->tx_sequence = ++tx->next_sequence;
-    for (size_t index = 0; index < tx->frame_samples; ++index) {
+    for (size_t index = 0; index < count; ++index) {
         frame->data[index].i = tx->iq_rf[index].i | 0x0001;
         frame->data[index].q = tx->iq_rf[index].q;
     }
-    latest_tx_sample.i = frame->data[tx->frame_samples / 2].i;
-    latest_tx_sample.q = frame->data[tx->frame_samples / 2].q;
+    latest_tx_sample.i = frame->data[count / 2].i;
+    latest_tx_sample.q = frame->data[count / 2].q;
     return 0;
 }
 

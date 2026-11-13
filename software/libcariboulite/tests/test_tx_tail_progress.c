@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include "tx_pipeline.h"
+#include "radio_rates.h"
 #include "pipeline_runtime.h"
 #include "mod_worker.h"
 #include "tone_source.h"
@@ -271,19 +272,25 @@ static int16_t marker_i(uint64_t sequence, size_t sample)
 static int16_t marker_q(uint64_t sequence, size_t sample)
 { return (int16_t)((sequence*101+sample*19)%29000-14500); }
 
+static size_t current_frame_samples(void)
+{
+    unsigned d=radio_rate_divider(writer->rf_rate_hz);
+    return d ? (uint64_t)fetched*40000/d-(uint64_t)(fetched-1)*40000/d : writer->frame_samples;
+}
 bool rf10_fifo_get(rf10_fifo_t* fifo, rf10_frame_t* frame, int timeout)
 {
     assert(fifo==writer->fifo && timeout==-1);
     if (handoff==HANDOFF_FIFO && !fetched) handoff_pause();
     if (fetched) {
-        assert(accepted==writer->frame_samples);
+        assert(accepted==current_frame_samples());
         assert(atomic_load(&writer->written_sequence)==frame_sequence);
         ++completed;
     }
     if (fetched==3) { writer->active=false; return false; }
     frame_sequence=21+fetched++;
     frame->tx_sequence=frame_sequence;
-    for (size_t i=0; i<writer->frame_samples; ++i)
+    frame->sample_count=(uint32_t)current_frame_samples();
+    for (size_t i=0; i<current_frame_samples(); ++i)
         frame->data[i]=(iq16_t){marker_i(frame_sequence,i),marker_q(frame_sequence,i)};
     accepted=0;
     return true;
@@ -324,7 +331,7 @@ int caribou_smi_write_samples(caribou_smi_st* smi, caribou_smi_channel_en channe
         ++writes_after_rx;
     assert(stream_state==smi_stream_tx_channel);
     assert(atomic_load(&writer->written_sequence)==frame_sequence-1);
-    size_t expected=writer->frame_samples-accepted;
+    size_t expected=current_frame_samples()-accepted;
     if (expected>2048) expected=2048; // Native getter returns samples; quarter=8192/4.
     assert(count==(int)expected);
     for (int i=0; i<count; ++i) {
@@ -361,7 +368,8 @@ static void writer_case(unsigned rate, bool fail, bool stop)
     sys.smi.filedesc=123456; // fcntl may fail; the SMI and poll calls are mocked.
     sys.radio_low.sys=&sys;
     tx_writer_ctrl_st tx={ .active=true, .radio=&sys.radio_low,
-                          .frame_samples=rate/100, .fifo=&fifo };
+                          .frame_samples=(40000+radio_rate_divider(rate)-1)/radio_rate_divider(rate),
+                          .rf_rate_hz=rate, .fifo=&fifo };
     atomic_init(&tx.written_sequence,20);
     writer=&tx;
     fetched=write_calls=poll_calls=completed=0; accepted=0;
@@ -381,7 +389,7 @@ static void writer_case(unsigned rate, bool fail, bool stop)
     } else {
         assert(fetched==3 && completed==3);
         assert(atomic_load(&tx.written_sequence)==23);
-        assert(atomic_load(&tx.write_samples) == 3 * tx.frame_samples);
+        assert(atomic_load(&tx.write_samples) == 120000 / radio_rate_divider(rate));
         assert(atomic_load(&tx.partial_writes) && atomic_load(&tx.zero_writes));
         assert(atomic_load(&tx.would_block) && !atomic_load(&tx.write_errors));
     }
@@ -449,6 +457,13 @@ static void handoff_case(unsigned rate, handoff_t at)
 }
 int main(void)
 {
+    const unsigned extra_rates[]={1333333,800000,666667,500000,400000};
+    for(unsigned k=0;k<5;++k){
+        writer_case(extra_rates[k],false,false);
+        writer_case(extra_rates[k],true,false);
+        writer_case(extra_rates[k],false,true);
+    }
+    puts("PASS: new native TX rates preserve variable frame boundaries through partial/retried writes");
     for (unsigned rate=1000000; rate<=4000000; rate*=2) {
         producer_case(rate,true,true,true,false);
         producer_case(rate,true,false,true,false);

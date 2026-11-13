@@ -244,7 +244,8 @@ static void check_native_rates(void)
         assert(!radio_profile_rx(AUDIO_DEMOD_NBFM,rates[k],&p));
         assert((unsigned)p.rate==codes[k]&&p.sample_rate_hz==rates[k]);
         assert(!radio_profile_rx(AUDIO_DEMOD_WBFM,rates[k],&p)&&p.digital_cutoff_hz>=100000);
-        assert(radio_profile_tx(rates[k],&p)==((rates[k]==1000000||rates[k]==2000000||rates[k]==4000000)?0:-1));
+        assert(!radio_profile_tx(rates[k],&p));
+        assert((unsigned)p.rate==codes[k] && p.tx_sample_gap==codes[k]-1);
     }
 }
 

@@ -55,7 +55,9 @@ typedef struct {
     float    tone_hz;          // default 600.0f
     float    tone_amp;         // audio amplitude (0..1), e.g. 0.8f
 	
-    size_t frame_samples;     // Immutable while pipeline threads exist
+    size_t frame_samples;     // Maximum frame length, immutable while workers exist
+    unsigned rf_rate_hz;      // Canonical native rate label (not frame length * 100)
+    unsigned rf_frame_phase;  // Producer-owned remainder for fractional 10 ms frames
     unsigned tail_padding_frames; // Silence covering kernel/DMA buffering
     uint64_t next_sequence;   // Producer-owned, independent of diagnostic stats
     atomic_uint_fast64_t written_sequence; // Last complete frame accepted by SMI

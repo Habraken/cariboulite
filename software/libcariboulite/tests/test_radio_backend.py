@@ -129,6 +129,18 @@ class RadioBackendTests(unittest.TestCase):
         self.assertEqual(len(rows), 39)
         self.assertTrue(all("=0x--" in row for row in rows))
 
+    def test_all_native_tx_cli_profiles(self):
+        for rate,divider in [(4000000,1),(2000000,2),(1333333,3),(1000000,4),
+                             (800000,5),(666667,6),(500000,8),(400000,10)]:
+            with self.subTest(rate=rate):
+                p=self.start_backend("--tx-sample-rate",str(rate))
+                reader=socket.socket(socket.AF_UNIX,socket.SOCK_SEQPACKET)
+                reader.settimeout(2);reader.connect(str(self.path))
+                state=json.loads(reader.recv(16384));reader.close()
+                self.assertEqual(state['config']['tx_sample_rate_hz'],rate)
+                self.assertEqual(state['config']['profile']['tx']['sample_gap'],divider-1)
+                self.stop_backend(p)
+
     def test_default_dry_run_connects_to_real_monitor_and_expires_cleanly(self):
         process = self.start_backend(seconds="1.2")
         snapshot = self.once()

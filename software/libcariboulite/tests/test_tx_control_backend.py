@@ -359,7 +359,7 @@ class TxControlBackendTests(unittest.TestCase):
             with self.subTest(power=power):
                 denied = self.command(peer, f"tx_power {power}", "INVALID")
                 self.assertEqual(self.settings(denied), self.settings(previous))
-        for rate in (1000000, 2000000, 4000000):
+        for rate in (400000, 500000, 666667, 800000, 1000000, 1333333, 2000000, 4000000):
             with self.subTest(rate=rate):
                 self.assertEqual(self.command(peer, f"tx_sample_rate {rate}")["tx_rate"], rate)
         tone = self.command(peer, "tx_tone 3000 1")

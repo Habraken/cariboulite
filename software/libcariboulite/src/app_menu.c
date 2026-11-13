@@ -38,6 +38,7 @@ _Static_assert(CARIBOU_SMI_BYTES_PER_SAMPLE == sizeof(caribou_smi_sample_complex
 #include "tx_pipeline.h"
 #include "rx_pipeline.h"
 #include "radio_profile.h"
+#include "radio_rates.h"
 #include "modem_snapshot.h"
 #include "modem_selftest.h"
 
@@ -857,15 +858,17 @@ static void nbfm_tx_tone(sys_st *sys)
     }
 
     for (;;) {
-        int choice = -1;
+        char choice[16];
+        unsigned selected_rate;
         printf("TX freq: %.0f Hz  power: %d dBm\n", par.freq_hz, par.tx_power_dbm);
-        printf("TX rate: %u samples/s; %zu samples/10ms; gap %u (verified at setup)\n",
+        printf("TX rate: %u samples/s; up to %zu samples/10ms; gap %u (verified at setup)\n",
                par.rf_fs ? par.rf_fs : 4000000, tx_pipeline_frame_samples(&tx),
-               4000000 / (par.rf_fs ? par.rf_fs : 4000000) - 1);
-        printf(" [1] Toggle NBFM TX   [2] Select 2 MS/s   [4] Select 4 MS/s   [99] Return\n");
-        printf(" Choice: ");
-        if (scanf("%d", &choice) != 1) continue;
-        if (choice == 1) {
+               radio_rate_divider(par.rf_fs ? par.rf_fs : 4000000) - 1);
+        printf(" [T] Toggle NBFM TX   [1/2/3/4/5/6/8/A] Rate divider   [99] Return\n");
+        printf(" Rates: 1=4M 2=2M 3=4M/3 4=1M 5=800k 6=2M/3 8=500k A=400k S/s\n Choice: ");
+        if (scanf("%15s", choice) != 1) break;
+        selected_rate = choice[0] && !choice[1] ? radio_rate_for_key(choice[0]) : 0;
+        if (!strcmp(choice, "t") || !strcmp(choice, "T")) {
             if (!tx.running) {
                 // Join idle workers before resetting shared FPGA FIFO state.
                 // Recreate DSP too, discarding audio left by the previous run.
@@ -880,18 +883,18 @@ static void nbfm_tx_tone(sys_st *sys)
                 tx_pipeline_stop(&tx);
                 printf("TX: OFF\n");
             }
-        } else if (choice == 2 || choice == 4) {
+        } else if (selected_rate) {
             if (tx.running) {
                 printf("Stop TX before changing sample rate.\n");
                 continue;
             }
             tx_pipeline_destroy(&tx);
-            par.rf_fs = choice * 1000000;
+            par.rf_fs = selected_rate;
             if (tx_pipeline_init(&tx, sys, &sys->radio_high, &par) != 0) {
                 fprintf(stderr, "[tx_tone] rate change failed\n");
                 break;
             }
-        } else if (choice == 99) {
+        } else if (!strcmp(choice, "99") || !strcmp(choice, "q") || !strcmp(choice, "Q")) {
             break;
         }
     }
@@ -919,31 +922,33 @@ static void nbfm_rx(sys_st *sys)
     }
 
     for (;;) {
-        int choice = -1;
+        char choice[16];
+        unsigned selected_rate;
         printf("RX freq: %.0f Hz\n", par.freq_hz);
         printf("RX rate: %.0f samples/s (%.0f samples/10ms)\n", par.fs_rf, par.fs_rf / 100);
-        printf(" [1] Toggle NBFM RX   [2] Select 2 MS/s   [4] Select 4 MS/s   [99] Return\n");
-        printf(" Choice: ");
-        if (scanf("%d", &choice) != 1) continue;
-        if (choice == 1) {
+        printf(" [R] Toggle NBFM RX   [1/2/3/4/5/6/8/A] Rate divider   [99] Return\n");
+        printf(" Rates: 1=4M 2=2M 3=4M/3 4=1M 5=800k 6=2M/3 8=500k A=400k S/s\n Choice: ");
+        if (scanf("%15s", choice) != 1) break;
+        selected_rate = choice[0] && !choice[1] ? radio_rate_for_key(choice[0]) : 0;
+        if (!strcmp(choice, "r") || !strcmp(choice, "R")) {
             if (!rx.running) {
                 if (rx_pipeline_start(&rx) == 0) printf("RX: ON\n");
             } else {
                 rx_pipeline_stop(&rx);
                 printf("RX: OFF\n");
             }
-        } else if (choice == 2 || choice == 4) {
+        } else if (selected_rate) {
             if (rx.running) {
                 printf("Stop RX before changing sample rate.\n");
                 continue;
             }
             rx_pipeline_destroy(&rx);
-            par.fs_rf = choice * 1000000.0f;
+            par.fs_rf = selected_rate;
             if (rx_pipeline_init(&rx, sys, &sys->radio_high, &par) != 0) {
                 fprintf(stderr, "[rx] rate change failed\n");
                 break;
             }
-        } else if (choice == 99) {
+        } else if (!strcmp(choice, "99") || !strcmp(choice, "q") || !strcmp(choice, "Q")) {
             break;
         }
     }
@@ -1170,7 +1175,7 @@ void monitor_modem_status(sys_st *sys)
 	noecho();
 	timeout(200);
         
-    const char* rate_notice = "[1] 1 MS/s  [2] 2 MS/s  [4] 4 MS/s: stop TX and RX before changing";
+    const char* rate_notice = "[1/2/3/4/5/6/8/A] Native rate = 4 MS/s / hex key; stop TX and RX first";
 
     at86rf215_st *modem = &sys->modem;
 	caribou_fpga_st *fpga = &sys->fpga;
@@ -1203,12 +1208,12 @@ void monitor_modem_status(sys_st *sys)
 
 		time(&current_time);
 		move(0,0);
-		printw("%s [T] TX [R] RX [M] RX mode [L] loopback [1/2/4] MS/s [Q] quit [X] stats",
+		printw("%s [T] TX [R] RX [M] RX mode [L] loopback [1/2/3/4/5/6/8/A] divider [Q] quit [X] stats",
                radio->type == cariboulite_channel_s1g ? "S1G/RF09" : "HiF/RF24");
 		move(0, screen_max_x - 12);
 		printw("%12ld",current_time);
         move(1,0);
-        printw("Requested TX: %d dBm  TX %.0f / RX %.0f MS/s", txpar.tx_power_dbm,
+        printw("Requested TX: %d dBm  TX %.7g / RX %.7g MS/s", txpar.tx_power_dbm,
             txpar.rf_fs / 1000000.0, rxpar.fs_rf / 1000000);
         move(1, screen_max_x - 12);
         printw("%12.5f", elapsed_time);
@@ -1501,14 +1506,14 @@ void monitor_modem_status(sys_st *sys)
                 : "Unchanged: cancelled or invalid MHz (2385 <= MHz <= 2495).";
             continue;
         }
-        if (key == '1' || key == '2' || key == '4') {
+        if (radio_rate_for_key(key)) {
             if (tx_pipeline_running(&txp) || rx_pipeline_running(&rxp)) {
                 rate_notice = "Stop TX and RX before changing sample rate.";
                 continue;
             }
             tx_pipeline_destroy(&txp);
             rx_pipeline_destroy(&rxp);
-            txpar.rf_fs = (key - '0') * 1000000;
+            txpar.rf_fs = radio_rate_for_key(key);
             rxpar.fs_rf = txpar.rf_fs;
             if (!monitor_init_pipelines(&txp, &rxp, sys, radio, &txpar, &rxpar)) break;
             rate_notice = "TX/RX rate selected. [T] starts TX; [R] starts RX.";

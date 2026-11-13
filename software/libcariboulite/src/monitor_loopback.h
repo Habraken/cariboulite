@@ -1,5 +1,6 @@
 #ifndef MONITOR_LOOPBACK_H
 #define MONITOR_LOOPBACK_H
+#include "radio_rates.h"
 
 // AT86RF215 datasheet 4.5.7: EXTLB is for interface tests, never normal RF TX.
 // Menu 14 owns the hardware and has stopped both pipelines before these calls.
@@ -16,7 +17,7 @@ typedef struct {
 static bool monitor_loopback_blocks_control(const monitor_loopback_t* lb, int key)
 {
     return lb->armed && (key == 't' || key == 'T' || key == 'r' || key == 'R' ||
-                         key == '1' || key == '2' || key == '4' ||
+                         radio_rate_for_key(key) ||
                          key == 'f' || key == 'F' ||
                          key == 'g' || key == 'G');
 }

@@ -1,4 +1,7 @@
 #include "nbfm_mod.h"
+#include "radio_rates.h"
+#include <stdint.h>
+#include <string.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <math.h>
@@ -22,14 +25,22 @@ struct nbfm_mod {
     float* afifo; size_t cap, head, tail, cnt;
     
     //new
-    double lm_phase;
+    uint32_t lm_phase, divider;
     int use_lin;
 };
 
+static unsigned native_divider(double hz)
+{
+    uint64_t bits;memcpy(&bits,&hz,sizeof(bits));
+    if ((bits & UINT64_C(0x7ff0000000000000)) == UINT64_C(0x7ff0000000000000) ||
+        hz < 400000 || hz > 4000000) return 0;
+    unsigned d = radio_rate_divider((unsigned)hz);
+    return d && (hz == (unsigned)hz || hz == 4000000.0 / d) ? d : 0;
+}
 static int valid_config(const nbfm_cfg_t* c)
 {
     return c->audio_fs == 48000 &&
-        (c->rf_fs == 1000000 || c->rf_fs == 2000000 || c->rf_fs == 4000000) &&
+        native_divider(c->rf_fs) &&
         isfinite(c->f_dev_hz) && c->f_dev_hz >= 0 && c->f_dev_hz <= 24000 &&
         isfinite(c->preemph_tau_s) && c->preemph_tau_s >= 0 &&
         isfinite(c->out_scale) && c->out_scale >= 0 && c->out_scale <= 32767 &&
@@ -42,7 +53,8 @@ nbfm_mod_t* nbfm_create(const nbfm_cfg_t* config)
     if (!valid_config(c)) { errno = EINVAL; return NULL; }
     nbfm_mod_t* m = calloc(1, sizeof(*m));
     if (!m) { errno = ENOMEM; return NULL; }
-    m->fs_a=c->audio_fs; m->fs_rf=c->rf_fs;
+    m->divider=native_divider(c->rf_fs);
+    m->fs_a=c->audio_fs; m->fs_rf=4000000.0/m->divider;
     m->f_dev=c->f_dev_hz; m->out_scale=c->out_scale;
     m->lin=c->linear_interp; m->R=m->fs_rf/m->fs_a; m->a_to_rf=1.0/m->R;
     m->k=2.0*M_PI*m->f_dev/m->fs_rf;
@@ -57,7 +69,7 @@ void nbfm_reset(nbfm_mod_t* m)
 {
     if (!m) return;
     m->head=m->tail=m->cnt=0;
-    m->phase=m->dphi_cur=m->dphi_next=m->lm_phase=0;
+    m->phase=m->dphi_cur=m->dphi_next=0; m->lm_phase=0;
     m->interp_step=0; m->interp_acc=1;
     m->pe.x1=0;
 }
@@ -107,8 +119,8 @@ static int fetch_audio(nbfm_mod_t* m) {
 
 static size_t generate_iq(nbfm_mod_t* m, iq16_t* dst, size_t N, size_t* held)
 {
-    const double L = m->fs_rf;
-    const double M = m->fs_a;
+    const uint32_t L = 4000000;
+    const uint32_t M = 48000 * m->divider;
     size_t out = 0;
 
     while (out < N) {

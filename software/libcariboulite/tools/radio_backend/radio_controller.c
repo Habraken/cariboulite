@@ -72,20 +72,20 @@ static void command_help(void)
          "  status | get          read current settings\n"
          "  frequency MHz         set RX and TX frequency while both are stopped\n"
          "  mode nbfm|wbfm        set mode while both are stopped; TX stays NBFM\n"
-         "  rate 1|2|4            set RX and TX sample rate in MS/s while stopped\n"
+         "  rate MS/s            set RX and TX native sample rate in MS/s while stopped\n"
          "  rx start | rx stop    start/stop reception\n"
          "  rx frequency MHz      saved RX frequency, for example 430.125\n"
          "  rx mode nbfm|wbfm     WBFM is mono\n"
          "  rx rate [MS/s]       no value opens divider menu; RX: .4/.5/.666667/.8/1/1.333333/2/4\n"
          "  rx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
-         "  tx divider KEY       TX divider key (currently 1/2/4)\n"
+         "  tx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
          "  squelch noise on|off  noise squelch enable\n"
          "  squelch carrier on|off  carrier squelch enable\n"
          "  squelch levels OPEN CLOSE  noise RMS thresholds: 0 < OPEN < CLOSE <= 8\n"
          "  tx start | tx stop    key/unkey NBFM TX; keep this controller connected\n"
          "  tx frequency MHz      saved TX frequency, for example 430.125\n"
          "  tx power DBM          integer -14..14; backend applies channel limits\n"
-         "  tx rate [MS/s]       no value opens divider menu; TX: 1/2/4\n"
+         "  tx rate [MS/s]       no value opens divider menu; TX: .4/.5/.666667/.8/1/1.333333/2/4\n"
          "  tx source mic|tone    saved TX audio source\n"
          "  tx tone HZ AMP        0 < HZ <= 3000, 0 < AMP <= 1\n"
          "  fpga program          load firmware/top.bin, as test_app menu 3 does\n"
@@ -252,9 +252,12 @@ static int parse_command(const char *input, ui_command_t *command)
     } else if (count == 3 && !strcmp(name, "tx") &&
                (!strcmp(tokens[1], "rate") || !strcmp(tokens[1], "sample-rate"))) {
         double rate;
-        if (parse_number(tokens[2], &rate) || (rate != 1 && rate != 2 && rate != 4)) return -1;
+        if (parse_number(tokens[2], &rate) || rate < .4 || rate > 4) return -1;
+        unsigned hz = (unsigned)lround(rate * 1000000);
+        unsigned divider = radio_rate_divider(hz);
+        if (!divider || fabs(rate * 1000000 - hz) > .5) return -1;
         command->request.command = CONTROL_TX_SAMPLE_RATE;
-        command->request.tx_sample_rate_hz = (unsigned)rate * 1000000;
+        command->request.tx_sample_rate_hz = radio_rate_label(divider);
     } else if (count == 3 && !strcmp(name, "tx") && !strcmp(tokens[1], "source") &&
                (!strcmp(tokens[2], "mic") || !strcmp(tokens[2], "tone"))) {
         command->request.command = CONTROL_TX_SOURCE;

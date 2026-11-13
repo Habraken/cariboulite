@@ -19,11 +19,10 @@ static inline double radio_rate_exact(unsigned hz)
 }
 static inline int radio_tx_rate_supported(unsigned hz)
 {
-    /* RX is extended first; TX is enabled only after its pacing validation. */
-    return hz==1000000||hz==2000000||hz==4000000;
+    return radio_rate_divider(hz) != 0;
 }
 
-static inline unsigned radio_rate_for_key(char key)
+static inline unsigned radio_rate_for_key(int key)
 {
     unsigned d=key>='1'&&key<='9'?(unsigned)(key-'0'):(key=='a'||key=='A'?10:0);
     unsigned hz=radio_rate_label(d);return radio_rate_divider(hz)==d?hz:0;

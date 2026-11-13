@@ -1,0 +1,79 @@
+[
+  {
+    "log": "tx-native-full-tests2.log",
+    "bytes": 19691,
+    "tail": [
+      "----------------------------------------------------------------------",
+      "Ran 11 tests in 5.190s",
+      "",
+      "OK",
+      "make: Leaving directory '/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend'"
+    ]
+  },
+  {
+    "log": "tx-native-control-allrates.log",
+    "bytes": 2900,
+    "tail": [
+      "",
+      "----------------------------------------------------------------------",
+      "Ran 17 tests in 10.688s",
+      "",
+      "OK"
+    ]
+  },
+  {
+    "log": "tx-native-old-mod.log",
+    "bytes": 5862,
+    "tail": [
+      "PASS: 4000000 Hz, interpolation=1, tau=0: legacy IQ within 1 count, exact chunking and underrun",
+      "PASS: 4000000 Hz, interpolation=1, tau=7.5e-05: legacy IQ within 1 count, exact chunking and underrun",
+      "PASS: 4000000 Hz, interpolation=1, tau=0: recovered 1 kHz deviation 1496.788 Hz, residual 0.0777 Hz RMS",
+      "PASS: 4000000 Hz, interpolation=1, tau=7.5e-05: recovered 1 kHz deviation 1514.549 Hz, residual 0.0752 Hz RMS",
+      "PASS: 4000000 Hz, full-scale envelope error 0.6207 counts, DC deviation 18000.000039 Hz"
+    ]
+  },
+  {
+    "log": "tx-native-lifecycle.log",
+    "bytes": 16230,
+    "tail": [
+      "FIFO timed wait 0: 100.1 ms",
+      "FIFO timed wait 1: 100.1 ms",
+      "FIFO timed wait 2: 100.1 ms",
+      "FIFO timed wait 3: 100.1 ms",
+      "PASS: S1G/HiF routing/rates/modes, modem policy, TX/RX lifecycle, shared FIFO/playback/reader stats, worker errors and cancellation"
+    ]
+  },
+  {
+    "log": "tx-native-loopback-test.log",
+    "bytes": 4780,
+    "tail": [
+      "[monitor loopback] cleanup complete; radios off",
+      "[monitor loopback] setup failed; cleaning up",
+      "[monitor loopback] cleanup failed; controls remain locked",
+      "[monitor loopback] cleanup complete; radios off",
+      "PASS: loopback sequencing, no TX commands, register restoration, fresh samples, every start/stop I/O failure and cleanup retry"
+    ]
+  },
+  {
+    "log": "tx-native-pacing-test.log",
+    "bytes": 7484,
+    "tail": [
+      "[tx_pipeline] SMI write-profile restore failed: -5",
+      "[scheduling] th=548316062048 actual=SCHED_OTHER/0 affinity=1 requested=FIFO/40 cpu=1 selected=1 rt_error=1 fallback_error=0 affinity_error=0 mlock=attempted mlock_error=0 query_error=0",
+      "[scheduling] th=548307607904 actual=SCHED_OTHER/0 affinity=2 requested=FIFO/48 cpu=2 selected=2 rt_error=1 fallback_error=0 affinity_error=0 mlock=attempted mlock_error=0 query_error=0",
+      "[tx_pipeline] SMI write-profile restore failed: -5",
+      "PASS: strict driver refusal, bounded native retirement/application backpressure, no host frame timer, nonblocking writes, independent cue capture, cores, Quindar counts, parked single-frame priming before 8.192 ms DMA refill, verified 1/4/2 write-only timing, canonical DMA/read preservation, idle locked restoration on stop/abort/start failure/destroy, calibrated pre-write profile, admission failure and bounded abort"
+    ]
+  },
+  {
+    "log": "tx-native-deadline-test.log",
+    "bytes": 2486,
+    "tail": [
+      "PASS 4 MS/s, FIFO multiplier 6, current round-down capacity 4 native: empty/partial/full backlog, complete 250 ms tone, carrier off <= 152.160 ms after RF tone, writer completion, bounded failures",
+      "PASS 4 MS/s, FIFO multiplier 6, legacy round-up capacity 8 native: empty/partial/full backlog, complete 250 ms tone, carrier off <= 21.088 ms after RF tone, writer completion, bounded failures",
+      "PASS 4 MS/s, FIFO multiplier 16, current round-down capacity 16 native: empty/partial/full backlog, complete 250 ms tone, carrier off <= 21.057 ms after RF tone, writer completion, bounded failures",
+      "PASS 4 MS/s, FIFO multiplier 16, legacy round-up capacity 16 native: empty/partial/full backlog, complete 250 ms tone, carrier off <= 21.057 ms after RF tone, writer completion, bounded failures",
+      "PASS: paced full-capacity padding recreates 2106.160 ms carrier hang; fixed 250 ms padding recreates cutoff; inactive/repeated stop safe"
+    ]
+  }
+]

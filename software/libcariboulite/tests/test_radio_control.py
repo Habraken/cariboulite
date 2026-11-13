@@ -479,6 +479,12 @@ class RadioControlTests(unittest.TestCase):
             result=self.once("rx divider "+key)
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertEqual(owner.packets[-1][2:],["sample_rate",str(hz)])
+            result=self.once("tx divider "+key)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertEqual(owner.packets[-1][2:],["tx_sample_rate",str(hz)])
+        for command,hz in [("tx rate .4",400000),("tx rate .666667",666667),("tx rate 1.333333",1333333)]:
+            result=self.once(command);self.assertEqual(result.returncode,0,result.stderr)
+            self.assertEqual(owner.packets[-1][2:],["tx_sample_rate",str(hz)])
         result=self.once("rx rate 1")
         self.assertEqual(result.returncode,0,result.stderr)
         self.assertEqual(owner.packets[-1][2:],["sample_rate","1000000"])

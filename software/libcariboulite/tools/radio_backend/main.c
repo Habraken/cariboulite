@@ -120,7 +120,7 @@ static void usage(FILE *out, const char *program)
         "  --tx-power DBM            default -12; RF24 -12..14, RF09 -14..14\n"
         "  --tx-mode nbfm            only supported TX mode (default nbfm)\n"
         "  --tx-deviation HZ         nominal NBFM deviation 0..24000 (default %.0f)\n"
-        "  --tx-sample-rate HZ       1000000, 2000000 or 4000000 (default 1000000)\n"
+        "  --tx-sample-rate HZ       native 400000..4000000 (default 1000000)\n"
         "  --tx-source mic|tone      default mic; tone 600 Hz, amplitude 0.4\n"
         "  --tx-microphone DEVICE    default plughw:Loopback,1,1\n"
         "Legacy unprefixed RX options, --microphone and --start-stopped remain accepted.\n",
@@ -253,10 +253,10 @@ static int parse_options(int argc, char **argv, options_t *o)
             if (value != 0 && o->tx.f_dev_hz == 0) return -1;
             break;
         case TX_RATE:
-            if (number(optarg, &value, 1e6, 4e6)
+            if (number(optarg, &value, 4e5, 4e6)
                 || value != (unsigned)value
                 || radio_profile_tx((unsigned)value, &profile)) return -1;
-            o->tx.rf_fs = (unsigned)value; break;
+            o->tx.rf_fs = profile.sample_rate_hz; break;
         case TX_SOURCE:
             if (strcmp(optarg, "mic") && strcmp(optarg, "tone")) return -1;
             o->tx.tone_mode = !strcmp(optarg, "tone"); break;
@@ -1079,7 +1079,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
                 o->rx.fs_rf = (float)profile.sample_rate_hz; changed = true;
             }
             if (both && o->tx.rf_fs != request->sample_rate_hz) {
-                o->tx.rf_fs = request->sample_rate_hz;
+                o->tx.rf_fs = profile.sample_rate_hz;
                 c->tx_configuration_dirty = true; changed = true;
             }
         }
@@ -1160,7 +1160,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
     case CONTROL_TX_SAMPLE_RATE:
         if (radio_profile_tx(request->tx_sample_rate_hz, &profile)) code = "INVALID";
         else if (o->tx.rf_fs != request->tx_sample_rate_hz) {
-            o->tx.rf_fs = request->tx_sample_rate_hz;
+            o->tx.rf_fs = profile.sample_rate_hz;
             c->tx_configuration_dirty = true; changed = true;
         }
         break;
