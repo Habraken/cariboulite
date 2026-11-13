@@ -1,0 +1,74 @@
+--- caribou_smi.c
++++ caribou_smi_candidate.c
+@@ -319,6 +319,13 @@
+ }
+ 
+ //=========================================================================
++static int diag_last_phase = -1;
++static unsigned long long diag_phase_counts[4], diag_false_locks_avoided;
++__attribute__((destructor)) static void diag_report_alignment(void)
++{
++    fprintf(stderr, "DIAG_ALIGNMENT phase_counts=%llu,%llu,%llu,%llu legacy_false_locks_avoided=%llu\n",
++        diag_phase_counts[0], diag_phase_counts[1], diag_phase_counts[2], diag_phase_counts[3], diag_false_locks_avoided);
++}
+ static int caribou_smi_find_buffer_offset(caribou_smi_st* dev, uint8_t *buffer, size_t len)
+ {
+     size_t offs = 0;
+@@ -332,23 +339,41 @@
+ 
+     if (dev->debug_mode == caribou_smi_none)
+     {
+-        for (offs = 0; offs<(len-(CARIBOU_SMI_BYTES_PER_SAMPLE*4)); offs++)
+-        {
+-            uint32_t s1 = *((uint32_t*)(&buffer[offs]));
+-            uint32_t s2 = *((uint32_t*)(&buffer[offs+4]));
+-            uint32_t s3 = *((uint32_t*)(&buffer[offs+8]));
+-            uint32_t s4 = *((uint32_t*)(&buffer[offs+12]));
+-			
+-            //printf("%d => %08X\n", offs, s);
+-            if ((s1 & 0xC001C000) == 0x80004000 &&
+-                (s2 & 0xC001C000) == 0x80004000 &&
+-                (s3 & 0xC001C000) == 0x80004000 &&
+-                (s4 & 0xC001C000) == 0x80004000)
+-            {
+-                found = true;
+-                break;
++        /* DIAGNOSTIC CANDIDATE: select the byte phase with greatest whole-read
++         * framing agreement, rather than accepting four coincidental headers.
++         * A previous phase breaks equal-score ties on short partial reads.
++         * This intentionally leaves the legacy sample-padding contract alone.
++         * It is not a complete streaming-fragment preservation fix. */
++        int best = -1;
++        size_t best_valid = 0, best_count = 1;
++        for (unsigned phase = 0; phase < 4; ++phase) {
++            size_t count = (len - phase) / 4, valid = 0;
++            for (size_t j = 0; j < count; ++j) {
++                uint32_t word;
++                memcpy(&word, buffer + phase + 4*j, sizeof(word));
++                valid += (word & 0xC001C000u) == 0x80004000u;
+             }
+-        }
++            uint64_t lhs = (uint64_t)valid * best_count;
++            uint64_t rhs = (uint64_t)best_valid * count;
++            if (count && (best < 0 || lhs > rhs ||
++                (lhs == rhs && (int)phase == diag_last_phase))) {
++                best = (int)phase; best_valid = valid; best_count = count;
++            }
++        }
++        if (best < 0 || best_valid * 100 < best_count * 95) return -1;
++        int legacy = -1;
++        for (unsigned phase = 0; phase < 4 && phase + 16 <= len && legacy < 0; ++phase) {
++            bool match = true;
++            for (unsigned j = 0; j < 4; ++j) {
++                uint32_t word; memcpy(&word, buffer + phase + 4*j, sizeof(word));
++                if ((word & 0xC001C000u) != 0x80004000u) match = false;
++            }
++            if (match) legacy = (int)phase;
++        }
++        ++diag_phase_counts[best];
++        if (legacy != best) ++diag_false_locks_avoided;
++        diag_last_phase = best;
++        return best;
+     }
+     else if (dev->debug_mode == caribou_smi_push || dev->debug_mode == caribou_smi_pull)
+     {

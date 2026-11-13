@@ -1,0 +1,32 @@
+[
+  {
+    "file": "alignment-offset-1.bin",
+    "source_case": "fresh_1m_a",
+    "raw_read_byte_offset": 40000,
+    "read_monotonic_ns": 606057948414232,
+    "expected_offset": 1,
+    "legacy_offset": 0,
+    "valid_frame_fractions": [
+      0.15625,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "sha256": "47e5363c9e9e45516099812a0a148fc78a2ccf1ae91cfd4a6daa68e42e1dcdca"
+  },
+  {
+    "file": "alignment-offset-2.bin",
+    "source_case": "fresh_1m_b",
+    "raw_read_byte_offset": 80000,
+    "read_monotonic_ns": 606112737420044,
+    "expected_offset": 2,
+    "legacy_offset": 1,
+    "valid_frame_fractions": [
+      0.0,
+      0.7401574803149606,
+      1.0,
+      0.0
+    ],
+    "sha256": "cb638566362058cf1d1b16c2374e0f4b0afc70f8b1baca24146b74f589886fbb"
+  }
+]

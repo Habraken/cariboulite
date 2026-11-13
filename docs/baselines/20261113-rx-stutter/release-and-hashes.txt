@@ -1,0 +1,13 @@
+pi4f-trixie
+    PID USER     COMMAND
+closed
+throttled=0x0
+21c88c71144a0ed1683c27d395b3dff509cf6f8a1e12e6f285a9ef7cb1b9a767  /home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend
+562c3937272720562561d7c769cb7d8d6beb9415c4f5470227b55a4562c3798f  /home/pi/src/cariboulite/build/libcariboulite.so
+dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6  /home/pi/src/cariboulite/firmware/top.bin
+pi4g-trixie
+    PID USER     COMMAND
+throttled=0x0
+21c88c71144a0ed1683c27d395b3dff509cf6f8a1e12e6f285a9ef7cb1b9a767  /home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend
+562c3937272720562561d7c769cb7d8d6beb9415c4f5470227b55a4562c3798f  /home/pi/src/cariboulite/build/libcariboulite.so
+dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6  /home/pi/src/cariboulite/firmware/top.bin

@@ -1,0 +1,128 @@
+{
+  "matrix": {
+    "frequency_hz": 430100000,
+    "channel": "RF24",
+    "tx_sample_rate_hz": 4000000,
+    "tx_power_dbm": 0,
+    "tone_hz": 1000,
+    "tone_amplitude": 0.4,
+    "tx_deviation_hz": 2500,
+    "sequence": [
+      [
+        1000000,
+        60
+      ],
+      [
+        2000000,
+        35
+      ],
+      [
+        4000000,
+        35
+      ],
+      [
+        1000000,
+        60
+      ],
+      [
+        4000000,
+        35
+      ],
+      [
+        2000000,
+        35
+      ],
+      [
+        1000000,
+        60
+      ]
+    ]
+  },
+  "capture_cases": {
+    "tx_host": "pi4g-trixie",
+    "rx_host": "pi4f-trixie",
+    "frequency_hz": 430100000,
+    "tx_rate_hz": 4000000,
+    "tx_power_dbm": 0,
+    "tone_hz": 1000,
+    "amplitude": 0.4,
+    "deviation_hz": 2500,
+    "cases": [
+      [
+        "fresh_1m_a",
+        1000000,
+        null
+      ],
+      [
+        "warm_4_to_1",
+        1000000,
+        "warm"
+      ],
+      [
+        "fresh_1m_b",
+        1000000,
+        null
+      ],
+      [
+        "soft_reset_1m",
+        1000000,
+        "fpga_soft_reset"
+      ],
+      [
+        "hard_program_1m",
+        1000000,
+        "fpga_hard_reset"
+      ],
+      [
+        "fresh_2m",
+        2000000,
+        null
+      ],
+      [
+        "fresh_4m",
+        4000000,
+        null
+      ]
+    ],
+    "capture_samples": 8000000
+  },
+  "candidate": {
+    "tx_host": "pi4g-trixie",
+    "rx_host": "pi4f-trixie",
+    "frequency_hz": 430100000,
+    "tx_rate_hz": 4000000,
+    "tx_power_dbm": 0,
+    "tone_hz": 1000,
+    "amplitude": 0.4,
+    "deviation_hz": 2500,
+    "cases": [
+      [
+        "candidate_fresh_1m_a",
+        1000000,
+        null
+      ],
+      [
+        "candidate_fresh_1m_b",
+        1000000,
+        null
+      ],
+      [
+        "candidate_fresh_1m_c",
+        1000000,
+        null
+      ],
+      [
+        "candidate_fresh_2m",
+        2000000,
+        null
+      ],
+      [
+        "candidate_fresh_4m",
+        4000000,
+        null
+      ]
+    ],
+    "capture_samples": 1000000,
+    "smi_candidate": "whole-read frame consensus, diagnostic preload only"
+  }
+}

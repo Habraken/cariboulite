@@ -1,0 +1,3086 @@
+[
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": null,
+    "nominal_rx_input_dbm": null,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -118.96,
+      "min": -127,
+      "max": -113,
+      "stdev": 4.344344983232033,
+      "median": -119,
+      "n": 25
+    },
+    "sinad_db": null,
+    "noise_rms": {
+      "mean": 1.21512,
+      "min": 1.14,
+      "max": 1.253,
+      "stdev": 0.03058638041133125,
+      "median": 1.22,
+      "n": 25
+    },
+    "sinad_valid_fraction": 0,
+    "gate_open_fraction": 0.0,
+    "tx_actual_power_dbm": null,
+    "tx_actual_frequency_hz": null,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604020.696838316,
+    "last_rx_monotonic_s": 604025.514436366,
+    "tx_pa_code": null,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": -12,
+    "nominal_rx_input_dbm": -102,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -103.44,
+      "min": -106,
+      "max": -101,
+      "stdev": 1.4742229591663987,
+      "median": -103,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 16.27024,
+      "min": 16.162,
+      "max": 16.36,
+      "stdev": 0.07035284879330296,
+      "median": 16.284,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.04348,
+      "min": 0.04,
+      "max": 0.048,
+      "stdev": 0.0020639767440550284,
+      "median": 0.043,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -11,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604029.328320276,
+    "last_rx_monotonic_s": 604034.146173025,
+    "tx_pa_code": 0,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": -10,
+    "nominal_rx_input_dbm": -100,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -102.44,
+      "min": -105,
+      "max": -100,
+      "stdev": 1.4742229591663987,
+      "median": -102,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 17.028200000000002,
+      "min": 16.839,
+      "max": 17.144,
+      "stdev": 0.07936098957716348,
+      "median": 17.012,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.039760000000000004,
+      "min": 0.036,
+      "max": 0.043,
+      "stdev": 0.001507757717053153,
+      "median": 0.04,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -10,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604038.762416466,
+    "last_rx_monotonic_s": 604043.579755502,
+    "tx_pa_code": 1,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": -8,
+    "nominal_rx_input_dbm": -98,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -100.84,
+      "min": -103,
+      "max": -98,
+      "stdev": 1.312757911167681,
+      "median": -101,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 18.44944,
+      "min": 18.4,
+      "max": 18.557,
+      "stdev": 0.0489166638273705,
+      "median": 18.437,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.031920000000000004,
+      "min": 0.03,
+      "max": 0.035,
+      "stdev": 0.0012884098726725136,
+      "median": 0.032,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604047.995370877,
+    "last_rx_monotonic_s": 604052.815024621,
+    "tx_pa_code": 3,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": -6,
+    "nominal_rx_input_dbm": -96,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -98.36,
+      "min": -101,
+      "max": -97,
+      "stdev": 1.1135528725660044,
+      "median": -98,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 19.97436,
+      "min": 19.824,
+      "max": 20.109,
+      "stdev": 0.08568784433434357,
+      "median": 20.003,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0244,
+      "min": 0.022,
+      "max": 0.026,
+      "stdev": 0.0010000000000000002,
+      "median": 0.024,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -5,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604057.23042894,
+    "last_rx_monotonic_s": 604062.048607094,
+    "tx_pa_code": 6,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": -4,
+    "nominal_rx_input_dbm": -94,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -96.44,
+      "min": -99,
+      "max": -95,
+      "stdev": 0.8698658900466593,
+      "median": -96,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 7.75472,
+      "min": 2.909,
+      "max": 20.932,
+      "stdev": 6.9453478405812525,
+      "median": 4.623,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0658,
+      "min": 0.019,
+      "max": 0.57,
+      "stdev": 0.1284490820000932,
+      "median": 0.022,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -3,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604066.464147093,
+    "last_rx_monotonic_s": 604071.28193953,
+    "tx_pa_code": 8,
+    "wide_sinad_range": true,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": -2,
+    "nominal_rx_input_dbm": -92,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -94.36,
+      "min": -95,
+      "max": -93,
+      "stdev": 0.5686240703077327,
+      "median": -94,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 2.3198,
+      "min": 1.045,
+      "max": 21.748,
+      "stdev": 4.068075241028202,
+      "median": 1.507,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.30384,
+      "min": 0.017,
+      "max": 0.764,
+      "stdev": 0.23539252324574797,
+      "median": 0.297,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -2,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604075.697564579,
+    "last_rx_monotonic_s": 604080.515390532,
+    "tx_pa_code": 10,
+    "wide_sinad_range": true,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": 0,
+    "nominal_rx_input_dbm": -90,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -92.2,
+      "min": -93,
+      "max": -91,
+      "stdev": 0.5,
+      "median": -92,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 2.59644,
+      "min": 1.186,
+      "max": 4.849,
+      "stdev": 1.3002152091096304,
+      "median": 2.157,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.15008,
+      "min": 0.013,
+      "max": 0.801,
+      "stdev": 0.20015991939779887,
+      "median": 0.066,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 0,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604085.131902423,
+    "last_rx_monotonic_s": 604089.949469323,
+    "tx_pa_code": 12,
+    "wide_sinad_range": true,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": 2,
+    "nominal_rx_input_dbm": -88,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -90.6,
+      "min": -92,
+      "max": -89,
+      "stdev": 0.6454972243679028,
+      "median": -91,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 4.2614,
+      "min": 1.605,
+      "max": 22.638,
+      "stdev": 5.6264933425121315,
+      "median": 2.048,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.18092,
+      "min": 0.012,
+      "max": 0.89,
+      "stdev": 0.2135163772016876,
+      "median": 0.119,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 1,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604094.364899976,
+    "last_rx_monotonic_s": 604099.182294154,
+    "tx_pa_code": 14,
+    "wide_sinad_range": true,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": 4,
+    "nominal_rx_input_dbm": -86,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -87.92,
+      "min": -89,
+      "max": -87,
+      "stdev": 0.5715476066494082,
+      "median": -88,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 23.17268,
+      "min": 22.992,
+      "max": 23.374,
+      "stdev": 0.13672256580389341,
+      "median": 23.169,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.010239999999999999,
+      "min": 0.009,
+      "max": 0.011,
+      "stdev": 0.0006633249580710798,
+      "median": 0.01,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 3,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604103.597704691,
+    "last_rx_monotonic_s": 604108.414922387,
+    "tx_pa_code": 17,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": 6,
+    "nominal_rx_input_dbm": -84,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -84.48,
+      "min": -85,
+      "max": -84,
+      "stdev": 0.5099019513592785,
+      "median": -84,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 5.08672,
+      "min": 1.783,
+      "max": 23.235,
+      "stdev": 5.614814411596047,
+      "median": 3.4,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.15968,
+      "min": 0.008,
+      "max": 0.85,
+      "stdev": 0.23346479391976854,
+      "median": 0.013,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 5,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604112.830472304,
+    "last_rx_monotonic_s": 604117.647874585,
+    "tx_pa_code": 21,
+    "wide_sinad_range": true,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": 8,
+    "nominal_rx_input_dbm": -82,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79.6,
+      "min": -80,
+      "max": -79,
+      "stdev": 0.5,
+      "median": -80,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 10.25624,
+      "min": 1.983,
+      "max": 23.595,
+      "stdev": 7.691890677200242,
+      "median": 7.401,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.1176,
+      "min": 0.007,
+      "max": 0.87,
+      "stdev": 0.20929843127298717,
+      "median": 0.011,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604122.063317275,
+    "last_rx_monotonic_s": 604126.881195989,
+    "tx_pa_code": 29,
+    "wide_sinad_range": true,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": 10,
+    "nominal_rx_input_dbm": -80,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79,
+      "min": -80,
+      "max": -78,
+      "stdev": 0.408248290463863,
+      "median": -79,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 9.93172,
+      "min": 2.491,
+      "max": 22.928,
+      "stdev": 8.372259375063182,
+      "median": 5.138,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0704,
+      "min": 0.007,
+      "max": 0.439,
+      "stdev": 0.13258519273785188,
+      "median": 0.009,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604131.29406069,
+    "last_rx_monotonic_s": 604136.104721059,
+    "tx_pa_code": 31,
+    "wide_sinad_range": true,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": 12,
+    "nominal_rx_input_dbm": -78,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -78.88,
+      "min": -79,
+      "max": -78,
+      "stdev": 0.33166247903553997,
+      "median": -79,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 9.62816,
+      "min": 3.169,
+      "max": 23.136,
+      "stdev": 7.8595564372297755,
+      "median": 5.778,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.02872,
+      "min": 0.008,
+      "max": 0.233,
+      "stdev": 0.04714474166507509,
+      "median": 0.01,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604140.721014347,
+    "last_rx_monotonic_s": 604145.538515668,
+    "tx_pa_code": 31,
+    "wide_sinad_range": true,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 1000000,
+    "tx_power_dbm": 14,
+    "nominal_rx_input_dbm": -76,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -78.96,
+      "min": -80,
+      "max": -78,
+      "stdev": 0.4546060565661952,
+      "median": -79,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 12.31308,
+      "min": 3.334,
+      "max": 23.238,
+      "stdev": 8.460779228889027,
+      "median": 8.215,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.07908,
+      "min": 0.008,
+      "max": 0.925,
+      "stdev": 0.20745299065892817,
+      "median": 0.01,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604149.954212941,
+    "last_rx_monotonic_s": 604154.771780089,
+    "tx_pa_code": 31,
+    "wide_sinad_range": true,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": null,
+    "nominal_rx_input_dbm": null,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -107.52,
+      "min": -108,
+      "max": -106,
+      "stdev": 0.6531972647421809,
+      "median": -108,
+      "n": 25
+    },
+    "sinad_db": null,
+    "noise_rms": {
+      "mean": 1.27744,
+      "min": 1.213,
+      "max": 1.35,
+      "stdev": 0.035771357256889194,
+      "median": 1.271,
+      "n": 25
+    },
+    "sinad_valid_fraction": 0,
+    "gate_open_fraction": 0.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604159.068370988,
+    "last_rx_monotonic_s": 604163.88599535,
+    "tx_pa_code": null,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": -12,
+    "nominal_rx_input_dbm": -102,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -103,
+      "min": -107,
+      "max": -101,
+      "stdev": 1.3228756555322954,
+      "median": -103,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 15.87372,
+      "min": 15.747,
+      "max": 15.996,
+      "stdev": 0.07456793323317112,
+      "median": 15.902,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.04724,
+      "min": 0.041,
+      "max": 0.05,
+      "stdev": 0.0020672042311618215,
+      "median": 0.047,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -11,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604167.699407782,
+    "last_rx_monotonic_s": 604172.517296464,
+    "tx_pa_code": 0,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": -10,
+    "nominal_rx_input_dbm": -100,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -102.48,
+      "min": -106,
+      "max": -100,
+      "stdev": 1.5307950004273378,
+      "median": -103,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 16.78408,
+      "min": 16.597,
+      "max": 16.894,
+      "stdev": 0.0917786830732857,
+      "median": 16.812,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.04132,
+      "min": 0.036,
+      "max": 0.045,
+      "stdev": 0.0020149441679609883,
+      "median": 0.041,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -10,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604176.933970322,
+    "last_rx_monotonic_s": 604181.752269915,
+    "tx_pa_code": 1,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": -8,
+    "nominal_rx_input_dbm": -98,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -100.96,
+      "min": -104,
+      "max": -99,
+      "stdev": 1.485485330343813,
+      "median": -101,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 18.23708,
+      "min": 18.114,
+      "max": 18.359,
+      "stdev": 0.08658758571527442,
+      "median": 18.227,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0336,
+      "min": 0.031,
+      "max": 0.037,
+      "stdev": 0.0015811388300841895,
+      "median": 0.034,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604186.369578257,
+    "last_rx_monotonic_s": 604191.187568533,
+    "tx_pa_code": 3,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": -6,
+    "nominal_rx_input_dbm": -96,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -98,
+      "min": -99,
+      "max": -96,
+      "stdev": 1.0,
+      "median": -98,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 19.88036,
+      "min": 19.692,
+      "max": 19.982,
+      "stdev": 0.07353280447074816,
+      "median": 19.878,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0256,
+      "min": 0.024,
+      "max": 0.028,
+      "stdev": 0.0010801234497346429,
+      "median": 0.026,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -5,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604195.604316517,
+    "last_rx_monotonic_s": 604200.422180897,
+    "tx_pa_code": 6,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": -4,
+    "nominal_rx_input_dbm": -94,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -96.52,
+      "min": -98,
+      "max": -95,
+      "stdev": 0.8717797887081347,
+      "median": -96,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 21.01776,
+      "min": 20.869,
+      "max": 21.104,
+      "stdev": 0.07375707875632438,
+      "median": 21.055,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.02084,
+      "min": 0.02,
+      "max": 0.024,
+      "stdev": 0.0009433981132056603,
+      "median": 0.021,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -3,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604204.83927355,
+    "last_rx_monotonic_s": 604209.657906835,
+    "tx_pa_code": 8,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": -2,
+    "nominal_rx_input_dbm": -92,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -94.64,
+      "min": -96,
+      "max": -94,
+      "stdev": 0.6377042156569663,
+      "median": -95,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 21.59984,
+      "min": 21.528,
+      "max": 21.693,
+      "stdev": 0.0502922127835589,
+      "median": 21.598,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.01736,
+      "min": 0.016,
+      "max": 0.02,
+      "stdev": 0.0008602325267042621,
+      "median": 0.017,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -2,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604214.07428532,
+    "last_rx_monotonic_s": 604218.891626392,
+    "tx_pa_code": 10,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": 0,
+    "nominal_rx_input_dbm": -90,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -92.8,
+      "min": -94,
+      "max": -92,
+      "stdev": 0.5773502691896257,
+      "median": -93,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.07032,
+      "min": 21.931,
+      "max": 22.211,
+      "stdev": 0.07809754584278948,
+      "median": 22.066,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.01464,
+      "min": 0.013,
+      "max": 0.016,
+      "stdev": 0.0007571877794400364,
+      "median": 0.015,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 0,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604223.307231134,
+    "last_rx_monotonic_s": 604228.125278797,
+    "tx_pa_code": 12,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": 2,
+    "nominal_rx_input_dbm": -88,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -90.84,
+      "min": -92,
+      "max": -90,
+      "stdev": 0.6879922480183431,
+      "median": -91,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.44932,
+      "min": 22.323,
+      "max": 22.58,
+      "stdev": 0.07891541885673128,
+      "median": 22.436,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.01304,
+      "min": 0.012,
+      "max": 0.014,
+      "stdev": 0.0006757711644237765,
+      "median": 0.013,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 1,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604232.540785435,
+    "last_rx_monotonic_s": 604237.361092703,
+    "tx_pa_code": 14,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": 4,
+    "nominal_rx_input_dbm": -86,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -88.12,
+      "min": -89,
+      "max": -87,
+      "stdev": 0.43969686527576396,
+      "median": -88,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.84696,
+      "min": 22.687,
+      "max": 22.981,
+      "stdev": 0.08769429856039676,
+      "median": 22.832,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.01124,
+      "min": 0.011,
+      "max": 0.012,
+      "stdev": 0.00043588989435406776,
+      "median": 0.011,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 3,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604241.977975022,
+    "last_rx_monotonic_s": 604246.795569318,
+    "tx_pa_code": 17,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": 6,
+    "nominal_rx_input_dbm": -84,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -84.72,
+      "min": -86,
+      "max": -84,
+      "stdev": 0.5416025603090641,
+      "median": -85,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.8962,
+      "min": 22.75,
+      "max": 23.055,
+      "stdev": 0.1046685243996491,
+      "median": 22.908,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.00984,
+      "min": 0.009,
+      "max": 0.011,
+      "stdev": 0.0007461009761866465,
+      "median": 0.01,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 5,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604251.211808956,
+    "last_rx_monotonic_s": 604256.029643459,
+    "tx_pa_code": 21,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": 8,
+    "nominal_rx_input_dbm": -82,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79.88,
+      "min": -80,
+      "max": -79,
+      "stdev": 0.33166247903553997,
+      "median": -80,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 23.12504,
+      "min": 23.027,
+      "max": 23.218,
+      "stdev": 0.04871471372525282,
+      "median": 23.113,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.00828,
+      "min": 0.008,
+      "max": 0.01,
+      "stdev": 0.0005416025603090638,
+      "median": 0.008,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604260.446749534,
+    "last_rx_monotonic_s": 604265.264234066,
+    "tx_pa_code": 29,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": 10,
+    "nominal_rx_input_dbm": -80,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79.08,
+      "min": -80,
+      "max": -79,
+      "stdev": 0.27688746209726917,
+      "median": -79,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.65528,
+      "min": 22.495,
+      "max": 22.766,
+      "stdev": 0.07858091371319065,
+      "median": 22.64,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.00816,
+      "min": 0.008,
+      "max": 0.009,
+      "stdev": 0.0003741657386773938,
+      "median": 0.008,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604269.680963392,
+    "last_rx_monotonic_s": 604274.498937941,
+    "tx_pa_code": 31,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": 12,
+    "nominal_rx_input_dbm": -78,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79.08,
+      "min": -80,
+      "max": -78,
+      "stdev": 0.4,
+      "median": -79,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.56076,
+      "min": 22.296,
+      "max": 22.682,
+      "stdev": 0.09884764370821698,
+      "median": 22.557,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0084,
+      "min": 0.007,
+      "max": 0.01,
+      "stdev": 0.0006454972243679025,
+      "median": 0.008,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604278.914631748,
+    "last_rx_monotonic_s": 604283.732480175,
+    "tx_pa_code": 31,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 2000000,
+    "tx_power_dbm": 14,
+    "nominal_rx_input_dbm": -76,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79.04,
+      "min": -80,
+      "max": -79,
+      "stdev": 0.2,
+      "median": -79,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.56784,
+      "min": 22.381,
+      "max": 22.686,
+      "stdev": 0.10232370204405226,
+      "median": 22.576,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0088,
+      "min": 0.008,
+      "max": 0.011,
+      "stdev": 0.0008660254037844385,
+      "median": 0.009,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604288.348819232,
+    "last_rx_monotonic_s": 604293.166216467,
+    "tx_pa_code": 31,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": null,
+    "nominal_rx_input_dbm": null,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -98.08,
+      "min": -99,
+      "max": -97,
+      "stdev": 0.7023769168568492,
+      "median": -98,
+      "n": 25
+    },
+    "sinad_db": null,
+    "noise_rms": {
+      "mean": 1.27544,
+      "min": 1.205,
+      "max": 1.36,
+      "stdev": 0.043648291299125695,
+      "median": 1.258,
+      "n": 25
+    },
+    "sinad_valid_fraction": 0,
+    "gate_open_fraction": 0.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604297.400996566,
+    "last_rx_monotonic_s": 604302.229487369,
+    "tx_pa_code": null,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": -12,
+    "nominal_rx_input_dbm": -102,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -97.92,
+      "min": -100,
+      "max": -96,
+      "stdev": 1.5253414918196733,
+      "median": -98,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 15.70816,
+      "min": 15.555,
+      "max": 15.811,
+      "stdev": 0.08139086762858194,
+      "median": 15.733,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0486,
+      "min": 0.045,
+      "max": 0.053,
+      "stdev": 0.002101586702153082,
+      "median": 0.049,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -11,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604306.052918356,
+    "last_rx_monotonic_s": 604310.882767791,
+    "tx_pa_code": 0,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": -10,
+    "nominal_rx_input_dbm": -100,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -97.6,
+      "min": -100,
+      "max": -95,
+      "stdev": 1.6832508230603462,
+      "median": -98,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 16.5128,
+      "min": 16.415,
+      "max": 16.613,
+      "stdev": 0.05485207379853576,
+      "median": 16.502,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0434,
+      "min": 0.04,
+      "max": 0.047,
+      "stdev": 0.0017078251276599324,
+      "median": 0.043,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -10,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604315.312940511,
+    "last_rx_monotonic_s": 604320.145388061,
+    "tx_pa_code": 1,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": -8,
+    "nominal_rx_input_dbm": -98,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -97.84,
+      "min": -100,
+      "max": -95,
+      "stdev": 1.624807680927192,
+      "median": -98,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 18.05956,
+      "min": 17.923,
+      "max": 18.176,
+      "stdev": 0.08513179977736489,
+      "median": 18.012,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.034480000000000004,
+      "min": 0.03,
+      "max": 0.038,
+      "stdev": 0.0020024984394500776,
+      "median": 0.035,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604324.574681852,
+    "last_rx_monotonic_s": 604329.408839436,
+    "tx_pa_code": 3,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": -6,
+    "nominal_rx_input_dbm": -96,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -96.44,
+      "min": -99,
+      "max": -93,
+      "stdev": 2.218858565419016,
+      "median": -96,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 19.84196,
+      "min": 19.745,
+      "max": 19.929,
+      "stdev": 0.05067583250426127,
+      "median": 19.831,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.02532,
+      "min": 0.023,
+      "max": 0.028,
+      "stdev": 0.0012489995996796794,
+      "median": 0.025,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -5,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604333.842309391,
+    "last_rx_monotonic_s": 604338.66495305,
+    "tx_pa_code": 6,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": -4,
+    "nominal_rx_input_dbm": -94,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -95.36,
+      "min": -98,
+      "max": -93,
+      "stdev": 1.7291616465790582,
+      "median": -96,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 20.73788,
+      "min": 20.646,
+      "max": 20.897,
+      "stdev": 0.08117743939461618,
+      "median": 20.756,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0212,
+      "min": 0.019,
+      "max": 0.023,
+      "stdev": 0.0011547005383792512,
+      "median": 0.021,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -3,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604343.086467306,
+    "last_rx_monotonic_s": 604347.912703546,
+    "tx_pa_code": 8,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": -2,
+    "nominal_rx_input_dbm": -92,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -93.84,
+      "min": -97,
+      "max": -91,
+      "stdev": 1.6753109164172084,
+      "median": -94,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 21.47656,
+      "min": 21.359,
+      "max": 21.588,
+      "stdev": 0.07150062936785954,
+      "median": 21.493,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.01764,
+      "min": 0.016,
+      "max": 0.02,
+      "stdev": 0.000952190457139046,
+      "median": 0.018,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": -2,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604352.333353482,
+    "last_rx_monotonic_s": 604357.155418469,
+    "tx_pa_code": 10,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": 0,
+    "nominal_rx_input_dbm": -90,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -92.04,
+      "min": -95,
+      "max": -90,
+      "stdev": 1.5937377450509227,
+      "median": -92,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.07072,
+      "min": 21.997,
+      "max": 22.164,
+      "stdev": 0.04611355549076653,
+      "median": 22.079,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.01516,
+      "min": 0.014,
+      "max": 0.017,
+      "stdev": 0.0009433981132056607,
+      "median": 0.015,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 0,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604361.777809347,
+    "last_rx_monotonic_s": 604366.602609649,
+    "tx_pa_code": 12,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": 2,
+    "nominal_rx_input_dbm": -88,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -90.6,
+      "min": -93,
+      "max": -88,
+      "stdev": 1.3228756555322954,
+      "median": -90,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.45212,
+      "min": 22.412,
+      "max": 22.593,
+      "stdev": 0.04699939715925423,
+      "median": 22.433,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.01356,
+      "min": 0.012,
+      "max": 0.015,
+      "stdev": 0.0006506407098647714,
+      "median": 0.014,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 1,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604371.030219487,
+    "last_rx_monotonic_s": 604375.853007208,
+    "tx_pa_code": 14,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": 4,
+    "nominal_rx_input_dbm": -86,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -88.24,
+      "min": -90,
+      "max": -87,
+      "stdev": 1.0908712114635715,
+      "median": -88,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 23.2808,
+      "min": 23.099,
+      "max": 23.45,
+      "stdev": 0.11285314941698915,
+      "median": 23.313,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0106,
+      "min": 0.01,
+      "max": 0.012,
+      "stdev": 0.0006454972243679026,
+      "median": 0.011,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 3,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604380.270899516,
+    "last_rx_monotonic_s": 604385.096426904,
+    "tx_pa_code": 17,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": 6,
+    "nominal_rx_input_dbm": -84,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -84.48,
+      "min": -86,
+      "max": -83,
+      "stdev": 0.6531972647421809,
+      "median": -84,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 23.53252,
+      "min": 23.428,
+      "max": 23.621,
+      "stdev": 0.06883017749020633,
+      "median": 23.563,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.00816,
+      "min": 0.007,
+      "max": 0.009,
+      "stdev": 0.000553774924194538,
+      "median": 0.008,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 5,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604389.515631082,
+    "last_rx_monotonic_s": 604394.342076827,
+    "tx_pa_code": 21,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": 8,
+    "nominal_rx_input_dbm": -82,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79.8,
+      "min": -81,
+      "max": -79,
+      "stdev": 0.5773502691896257,
+      "median": -80,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 23.18604,
+      "min": 23.074,
+      "max": 23.302,
+      "stdev": 0.0718084721092615,
+      "median": 23.182,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.00836,
+      "min": 0.008,
+      "max": 0.009,
+      "stdev": 0.0004898979485566352,
+      "median": 0.008,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604398.763422233,
+    "last_rx_monotonic_s": 604403.587513068,
+    "tx_pa_code": 29,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": 10,
+    "nominal_rx_input_dbm": -80,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79.12,
+      "min": -80,
+      "max": -78,
+      "stdev": 0.5259911279353167,
+      "median": -79,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.56612,
+      "min": 22.307,
+      "max": 22.727,
+      "stdev": 0.11562702971191492,
+      "median": 22.609,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.0094,
+      "min": 0.009,
+      "max": 0.01,
+      "stdev": 0.0005000000000000004,
+      "median": 0.009,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604408.009507278,
+    "last_rx_monotonic_s": 604412.831308534,
+    "tx_pa_code": 31,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": 12,
+    "nominal_rx_input_dbm": -78,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79,
+      "min": -80,
+      "max": -78,
+      "stdev": 0.408248290463863,
+      "median": -79,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.56392,
+      "min": 22.395,
+      "max": 22.755,
+      "stdev": 0.11307332429298535,
+      "median": 22.538,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.00868,
+      "min": 0.007,
+      "max": 0.01,
+      "stdev": 0.0009451631252505216,
+      "median": 0.009,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604417.255676765,
+    "last_rx_monotonic_s": 604422.077225969,
+    "tx_pa_code": 31,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  },
+  {
+    "rx_rate_hz": 4000000,
+    "tx_power_dbm": 14,
+    "nominal_rx_input_dbm": -76,
+    "packets": 25,
+    "rssi_dbm": {
+      "mean": -79.04,
+      "min": -80,
+      "max": -78,
+      "stdev": 0.4546060565661952,
+      "median": -79,
+      "n": 25
+    },
+    "sinad_db": {
+      "mean": 22.49852,
+      "min": 22.3,
+      "max": 22.599,
+      "stdev": 0.10337033746035024,
+      "median": 22.543,
+      "n": 25
+    },
+    "noise_rms": {
+      "mean": 0.00928,
+      "min": 0.008,
+      "max": 0.01,
+      "stdev": 0.0005416025603090643,
+      "median": 0.009,
+      "n": 25
+    },
+    "sinad_valid_fraction": 1.0,
+    "gate_open_fraction": 1.0,
+    "tx_actual_power_dbm": 8,
+    "tx_actual_frequency_hz": 430099999.739,
+    "tx_driver_underruns_max": 0,
+    "rx_errors": {
+      "iq_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "audio_drops": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "alsa_underruns": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "write_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      },
+      "read_errors": {
+        "start": 0,
+        "end": 0,
+        "delta": 0
+      }
+    },
+    "analysis_window_s": 5.0,
+    "first_rx_monotonic_s": 604426.701899332,
+    "last_rx_monotonic_s": 604431.525598006,
+    "tx_pa_code": 31,
+    "wide_sinad_range": false,
+    "tx_queue_drops_max": 0,
+    "tx_writer_errors_max": 0
+  }
+]
