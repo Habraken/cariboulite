@@ -9,7 +9,7 @@
 typedef struct nbfm_demod audio_demod_t;
 typedef enum { AUDIO_DEMOD_NBFM = 0, AUDIO_DEMOD_WBFM = 1 } audio_demod_mode_t;
 typedef struct {
-    unsigned rf_rate;       // exactly 1000000, 2000000 or 4000000 Hz
+    unsigned rf_rate;       // native 4 MHz/divider rate label; see radio_rates.h
     unsigned audio_rate;    // exactly 48000 Hz
     float deemph_tau;       // seconds; zero bypasses de-emphasis
     float pcm_gain;         // scale filtered audio to signed-16-bit PCM

@@ -105,7 +105,7 @@ static void usage(FILE *out, const char *program)
         "  --rx-sinad                enable 1 kHz NBFM SINAD estimate (300-3000 Hz)\n"
         "  --rx-start                start reception after initialization\n"
         "  --rx-frequency HZ         default 430125000\n"
-        "  --rx-sample-rate HZ       1000000, 2000000 or 4000000 (default 1000000)\n"
+        "  --rx-sample-rate HZ       400000/500000/666667/800000/1000000/1333333/2000000/4000000\n"
         "  --rx-mode nbfm|wbfm       default nbfm; WBFM is mono\n"
         "  --rx-deviation HZ         NBFM audio normalization 1..24000 (default %.0f)\n"
         "  --rx-playback DEVICE      default plughw:Loopback,0,0\n"
@@ -218,10 +218,10 @@ static int parse_options(int argc, char **argv, options_t *o)
             if (number(optarg, &o->frequency, 1e6, 6e9)) return -1;
             break;
         case RATE:
-            if (number(optarg, &value, 1e6, 4e6)
+            if (number(optarg, &value, 4e5, 4e6)
                 || value != (unsigned)value
                 || radio_profile_rx(o->rx.mode, (unsigned)value, &profile)) return -1;
-            o->rx.fs_rf = (float)value; break;
+            o->rx.fs_rf = (float)profile.sample_rate_hz; break;
         case MODE:
             if (!strcmp(optarg, "nbfm")) o->rx.mode = AUDIO_DEMOD_NBFM;
             else if (!strcmp(optarg, "wbfm")) o->rx.mode = AUDIO_DEMOD_WBFM;
@@ -1076,7 +1076,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         else if (o->rx_requested) code = "RX_RUNNING";
         else {
             if (o->rx.fs_rf != request->sample_rate_hz) {
-                o->rx.fs_rf = (float)request->sample_rate_hz; changed = true;
+                o->rx.fs_rf = (float)profile.sample_rate_hz; changed = true;
             }
             if (both && o->tx.rf_fs != request->sample_rate_hz) {
                 o->tx.rf_fs = request->sample_rate_hz;

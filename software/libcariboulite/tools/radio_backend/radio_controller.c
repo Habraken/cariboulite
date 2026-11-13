@@ -4,6 +4,7 @@
 #define _GNU_SOURCE
 #endif
 #include "command_protocol.h"
+#include "radio_rates.h"
 
 #include <errno.h>
 #include <getopt.h>
@@ -30,7 +31,7 @@ typedef struct {
 } controller_t;
 
 typedef enum { UI_REQUEST, UI_STATUS, UI_HELP, UI_QUIT,
-               UI_NOISE, UI_CARRIER, UI_LEVELS } ui_kind_t;
+               UI_NOISE, UI_CARRIER, UI_LEVELS, UI_RATE_MENU } ui_kind_t;
 
 typedef struct {
     ui_kind_t kind;
@@ -75,14 +76,16 @@ static void command_help(void)
          "  rx start | rx stop    start/stop reception\n"
          "  rx frequency MHz      saved RX frequency, for example 430.125\n"
          "  rx mode nbfm|wbfm     WBFM is mono\n"
-         "  rx rate 1|2|4         saved RX sample rate in MS/s\n"
+         "  rx rate [MS/s]       no value opens divider menu; RX: .4/.5/.666667/.8/1/1.333333/2/4\n"
+         "  rx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
+         "  tx divider KEY       TX divider key (currently 1/2/4)\n"
          "  squelch noise on|off  noise squelch enable\n"
          "  squelch carrier on|off  carrier squelch enable\n"
          "  squelch levels OPEN CLOSE  noise RMS thresholds: 0 < OPEN < CLOSE <= 8\n"
          "  tx start | tx stop    key/unkey NBFM TX; keep this controller connected\n"
          "  tx frequency MHz      saved TX frequency, for example 430.125\n"
          "  tx power DBM          integer -14..14; backend applies channel limits\n"
-         "  tx rate 1|2|4         saved TX sample rate in MS/s\n"
+         "  tx rate [MS/s]       no value opens divider menu; TX: 1/2/4\n"
          "  tx source mic|tone    saved TX audio source\n"
          "  tx tone HZ AMP        0 < HZ <= 3000, 0 < AMP <= 1\n"
          "  fpga program          load firmware/top.bin, as test_app menu 3 does\n"
@@ -159,7 +162,7 @@ static int parse_command(const char *input, ui_command_t *command)
         if (strcmp(name, "start") && strcmp(name, "stop")
             && strcmp(name, "frequency") && strcmp(name, "freq")
             && strcmp(name, "mode") && strcmp(name, "rate")
-            && strcmp(name, "sample-rate") && strcmp(name, "squelch")) return -1;
+            && strcmp(name, "sample-rate") && strcmp(name, "divider") && strcmp(name, "squelch")) return -1;
     }
     if (!strcmp(name, "squelch")) {
         if (count < 2) return -1;
@@ -194,12 +197,22 @@ static int parse_command(const char *input, ui_command_t *command)
                (!strcmp(tokens[1], "nbfm") || !strcmp(tokens[1], "wbfm"))) {
         command->request.command = rx_only ? CONTROL_MODE : CONTROL_BOTH_MODE;
         command->request.wbfm = !strcmp(tokens[1], "wbfm");
+    } else if(count==1 && (!strcmp(name,"rate")||!strcmp(name,"sample-rate"))){
+        command->kind=UI_RATE_MENU;
+        command->request.command=rx_only?CONTROL_SAMPLE_RATE:CONTROL_BOTH_SAMPLE_RATE;
+    } else if(count==2 && !strcmp(name,"divider")){
+        unsigned hz=tokens[1][0]&&!tokens[1][1]?radio_rate_for_key(tokens[1][0]):0;
+        if(!hz||(!rx_only&&!radio_tx_rate_supported(hz)))return -1;
+        command->request.command=rx_only?CONTROL_SAMPLE_RATE:CONTROL_BOTH_SAMPLE_RATE;
+        command->request.sample_rate_hz=hz;
     } else if (count == 2 && (!strcmp(name, "rate") || !strcmp(name, "sample-rate"))) {
         double rate;
-        if (parse_number(tokens[1], &rate) || (rate != 1 && rate != 2 && rate != 4))
-            return -1;
+        if(parse_number(tokens[1],&rate)||rate<.4||rate>4)return -1;
+        unsigned hz=(unsigned)lround(rate*1000000);
+        unsigned divider=radio_rate_divider(hz);
+        if(!divider||fabs(rate*1000000-hz)>.5||(!rx_only&&!radio_tx_rate_supported(hz)))return -1;
         command->request.command = rx_only ? CONTROL_SAMPLE_RATE : CONTROL_BOTH_SAMPLE_RATE;
-        command->request.sample_rate_hz = (unsigned)rate * 1000000;
+        command->request.sample_rate_hz=radio_rate_label(divider);
     } else if (count == 2 && (!strcmp(name, "noise") || !strcmp(name, "carrier")) &&
                (!strcmp(tokens[1], "on") || !strcmp(tokens[1], "off"))) {
         command->kind = !strcmp(name, "noise") ? UI_NOISE : UI_CARRIER;
@@ -230,6 +243,12 @@ static int parse_command(const char *input, ui_command_t *command)
         if (parse_number(tokens[2], &power) || power < -14 || power > 14) return -1;
         command->request.command = CONTROL_TX_POWER;
         command->request.tx_power_dbm = (int)power;
+    } else if(count==2 && !strcmp(name,"tx") && (!strcmp(tokens[1],"rate")||!strcmp(tokens[1],"sample-rate"))){
+        command->kind=UI_RATE_MENU;command->request.command=CONTROL_TX_SAMPLE_RATE;
+    } else if(count==3 && !strcmp(name,"tx") && !strcmp(tokens[1],"divider")){
+        unsigned hz=tokens[2][0]&&!tokens[2][1]?radio_rate_for_key(tokens[2][0]):0;
+        if(!hz||!radio_tx_rate_supported(hz))return -1;
+        command->request.command=CONTROL_TX_SAMPLE_RATE;command->request.tx_sample_rate_hz=hz;
     } else if (count == 3 && !strcmp(name, "tx") &&
                (!strcmp(tokens[1], "rate") || !strcmp(tokens[1], "sample-rate"))) {
         double rate;
@@ -441,7 +460,7 @@ static void print_state(const controller_t *controller)
          "  Receive");
     printf("    %-16s %.6f MHz\n"
            "    %-16s %s\n"
-           "    %-16s %.0f MS/s\n"
+           "    %-16s %.7g MS/s\n"
            "    %-16s %s\n"
            "    %-16s %s\n",
            "Frequency", state->requested_frequency_hz / 1e6,
@@ -456,7 +475,7 @@ static void print_state(const controller_t *controller)
         printf("    %-16s %.6f MHz\n"
                "    %-16s %d dBm\n"
                "    %-16s NBFM\n"
-               "    %-16s %.0f MS/s\n"
+               "    %-16s %.7g MS/s\n"
                "    %-16s %s\n",
                "Frequency", state->tx_requested_frequency_hz / 1e6,
                "Power", state->tx_requested_power_dbm,
@@ -479,8 +498,29 @@ static int refresh_state(controller_t *controller)
     return exchange(controller, &request);
 }
 
+static int select_rate(ui_command_t *command)
+{
+    bool rx_only=command->request.command==CONTROL_SAMPLE_RATE;
+    puts("Sample rate: choose hexadecimal modem divider (4 MS/s divided by key)");
+    const char keys[]="1234568A";
+    for(unsigned k=0;keys[k];++k){
+        unsigned hz=radio_rate_for_key(keys[k]);
+        if(rx_only||radio_tx_rate_supported(hz))printf("  [%c] %.7g MS/s\n",keys[k],radio_rate_exact(hz)/1e6);
+    }
+    fputs("  [Q] Cancel\nRate key: ",stdout);fflush(stdout);
+    char line[128],key[16],extra;
+    if(!fgets(line,sizeof(line),stdin)||sscanf(line,"%15s %c",key,&extra)!=1)return -1;
+    if(!strcmp(key,"q")||!strcmp(key,"Q"))return 1;
+    unsigned hz=key[0]&&!key[1]?radio_rate_for_key(key[0]):0;
+    if(!hz||(!rx_only&&!radio_tx_rate_supported(hz))){fputs("Invalid rate key; settings retained.\n",stderr);return -1;}
+    if(command->request.command==CONTROL_TX_SAMPLE_RATE)command->request.tx_sample_rate_hz=hz;
+    else command->request.sample_rate_hz=hz;
+    command->kind=UI_REQUEST;return 0;
+}
+
 static int execute_command(controller_t *controller, ui_command_t *command)
 {
+    if(command->kind==UI_RATE_MENU){int selected=select_rate(command);if(selected)return selected<0?-1:0;}
     if (command->kind == UI_HELP) { command_help(); return 0; }
     if (command->kind == UI_QUIT) return 0;
     if (command->kind == UI_STATUS) {
@@ -551,6 +591,7 @@ int main(int argc, char **argv)
     if (once) {
         int result = parse_command(once, &initial_command);
         if (result) { fprintf(stderr, "Invalid command. Use --help for supported commands.\n"); return 2; }
+        if(initial_command.kind==UI_RATE_MENU){fputs("Rate menus require an interactive session; use rx/tx divider KEY for a one-shot command.\n",stderr);return 2;}
         if (initial_command.kind == UI_HELP) { command_help(); return 0; }
         if (initial_command.kind == UI_QUIT) return 0;
         if (initial_command.request.command == CONTROL_TX_START) {

@@ -2,6 +2,7 @@
 #define _POSIX_C_SOURCE 200809L
 #endif
 #include "radio_profile.h"
+#include "radio_rates.h"
 #include "cariboulite_setup.h"
 
 #include <math.h>
@@ -19,16 +20,12 @@ bool radio_profile_finite(double value)
 static int profile_rate(unsigned hz, radio_profile_t* out)
 {
     if (!out) return -1;
-    cariboulite_radio_sample_rate_en rate;
-    switch (hz) {
-        case 1000000: rate = cariboulite_radio_rx_sample_rate_1000khz; break;
-        case 2000000: rate = cariboulite_radio_rx_sample_rate_2000khz; break;
-        case 4000000: rate = cariboulite_radio_rx_sample_rate_4000khz; break;
-        default: return -1;
-    }
-    *out = (radio_profile_t){.sample_rate_hz = hz, .rate = rate,
-        .cutoff = cariboulite_radio_rx_f_cut_0_25_half_fs,
-        .digital_cutoff_hz = hz / 8, .tx_sample_gap = 4000000 / hz - 1};
+    unsigned divider=radio_rate_divider(hz);
+    if(!divider)return -1;
+    *out = (radio_profile_t){.sample_rate_hz=radio_rate_label(divider),
+        .rate=(cariboulite_radio_sample_rate_en)divider,
+        .cutoff=cariboulite_radio_rx_f_cut_0_25_half_fs,
+        .digital_cutoff_hz=(unsigned)(4000000.0/divider/8),.tx_sample_gap=divider-1};
     return 0;
 }
 
@@ -39,11 +36,20 @@ int radio_profile_rx(audio_demod_mode_t mode, unsigned hz, radio_profile_t* out)
     out->rx_bandwidth = mode == AUDIO_DEMOD_NBFM
         ? cariboulite_radio_rx_bw_160KHz : cariboulite_radio_rx_bw_250KHz;
     out->analog_bandwidth_hz = mode == AUDIO_DEMOD_NBFM ? 160000 : 250000;
+    if(mode==AUDIO_DEMOD_WBFM){
+        // Keep the +/-100 kHz software channel inside the modem passband.
+        const double fractions[]={.125,.1875,.25,.375,.5};
+        unsigned cut=0;double fs=radio_rate_exact(hz);
+        while(cut<4 && fs*fractions[cut]<100000)++cut;
+        out->cutoff=(cariboulite_radio_f_cut_en)cut;
+        out->digital_cutoff_hz=(unsigned)(fs*fractions[cut]);
+    }
     return 0;
 }
 
 int radio_profile_tx(unsigned hz, radio_profile_t* out)
 {
+    if (!radio_tx_rate_supported(hz)) return -1;
     if (profile_rate(hz, out)) return -1;
     out->tx_bandwidth = cariboulite_radio_tx_cut_off_80khz;
     out->analog_bandwidth_hz = 80000;

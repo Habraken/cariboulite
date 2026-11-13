@@ -48,8 +48,7 @@ int nb_demod_set_deviation(nbfm_demod_t* dsp, float deviation_hz)
 }
 nbfm_demod_t* nb_demod_create(const nbfm_demod_config_t* config)
 {
-    if (!config || (config->rf_rate != 1000000 && config->rf_rate != 2000000 &&
-        config->rf_rate != 4000000) ||
+    if (!config || !radio_rate_divider(config->rf_rate) ||
         config->audio_rate != 48000 || !isfinite(config->deemph_tau) ||
         config->deemph_tau < 0 || !isfinite(config->pcm_gain) || config->pcm_gain < 0) {
         errno = EINVAL;

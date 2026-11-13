@@ -103,7 +103,12 @@ unsigned alsa_sink_channels(const audio_sink_t* sink)
 
 audio_sink_t* alsa_sink_open(const char* device, unsigned sample_rate)
 {
-    if (sample_rate != 48000) { errno = EINVAL; return NULL; }
+    return alsa_sink_open_buffered(device, sample_rate, 2400);
+}
+
+audio_sink_t* alsa_sink_open_buffered(const char* device, unsigned sample_rate, unsigned buffer_frames)
+{
+    if (sample_rate != 48000 || buffer_frames < 960 || buffer_frames > 48000) { errno = EINVAL; return NULL; }
     alsa_sink_t* s = calloc(1, sizeof(*s));
     if (!s) return NULL;
     init_stats(s);
@@ -126,7 +131,7 @@ audio_sink_t* alsa_sink_open(const char* device, unsigned sample_rate)
         s->channels = 2;
         CHECK(snd_pcm_hw_params_set_channels(s->pcm, hw, 2));
     }
-    snd_pcm_uframes_t period = 480, buffer = 2400;
+    snd_pcm_uframes_t period = 480, buffer = buffer_frames;
     CHECK(snd_pcm_hw_params_set_period_size_near(s->pcm, hw, &period, NULL));
     CHECK(snd_pcm_hw_params_set_buffer_size_near(s->pcm, hw, &buffer));
     CHECK(snd_pcm_hw_params(s->pcm, hw));
@@ -140,7 +145,7 @@ audio_sink_t* alsa_sink_open(const char* device, unsigned sample_rate)
     snd_pcm_sw_params_free(sw);
     snd_pcm_hw_params_free(hw);
     s->base = (audio_sink_t){rate, &ops};
-    fprintf(stderr, "ALSA: opened %s, %uch, S16_LE, %u Hz\n", dev, s->channels, rate);
+    fprintf(stderr, "ALSA: opened %s, %uch, S16_LE, %u Hz, period %lu, buffer %lu frames\n", dev, s->channels, rate, (unsigned long)period, (unsigned long)buffer);
     return &s->base;
 fail:
     fprintf(stderr, "ALSA: playback(%s): %s\n", dev, snd_strerror(rc));

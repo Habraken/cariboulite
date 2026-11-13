@@ -5,6 +5,7 @@
 #include "pipeline_runtime.h"
 #include "alsa_sink.h"
 #include "noise_squelch.h"
+#include "radio_rates.h"
 #include "radio_profile.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -175,7 +176,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
 
     radio_profile_t profile;
     if (!radio_profile_finite(par->fs_rf) ||
-        (par->fs_rf != 1000000 && par->fs_rf != 2000000 && par->fs_rf != 4000000) ||
+        par->fs_rf<400000 || par->fs_rf>4000000 ||
+        (par->fs_rf!=(unsigned)par->fs_rf && par->fs_rf!=(float)radio_rate_exact((unsigned)par->fs_rf)) ||
         radio_profile_rx(par->mode, (unsigned)par->fs_rf, &profile) != 0 ||
         !radio_profile_finite(par->fs_audio) || par->fs_audio != 48000 ||
         !radio_profile_frequency_valid(radio->type, sys->board_info.numeric_product_id,
@@ -208,7 +210,16 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     if (!p->rxq.q || !p->afifo.q) goto fail;
 
     // Open ALSA playback
-    p->demod.sink = alsa_sink_open(par->pcm_dev, 48000);
+    // Kernel RX DMA publishes one quarter of the native batch at a time.
+    // Cover two bursts plus 30 ms, retaining at least the original 50 ms.
+    // A fixed 50 ms buffer underruns at 800 kS/s (41 ms between bursts).
+    size_t native = caribou_smi_get_native_batch_samples(&sys->smi);
+    uint64_t burst_audio = ((uint64_t)(native / 4) * 48000 *
+        radio_rate_divider(profile.sample_rate_hz) + 3999999) / 4000000;
+    unsigned playback_buffer = (unsigned)(2 * burst_audio + 1440);
+    if (playback_buffer < 2400) playback_buffer = 2400;
+    if (playback_buffer > 48000) goto fail;
+    p->demod.sink = alsa_sink_open_buffered(par->pcm_dev, 48000, playback_buffer);
     if (!p->demod.sink) {
         error = -2;
         goto fail;

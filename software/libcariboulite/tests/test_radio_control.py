@@ -106,7 +106,7 @@ class RadioControlTests(unittest.TestCase):
         cls.binary = Path(cls.build.name) / "cariboulite_radio_controller"
         subprocess.run([
             "cc", "-D_GNU_SOURCE", "-D_POSIX_C_SOURCE=200809L", "-std=c11",
-            "-O2", "-Wall", "-Wextra", "-Werror", "-I", str(SOURCE),
+            "-O2", "-Wall", "-Wextra", "-Werror", "-I", str(SOURCE), "-I", str(ROOT/"software/libcariboulite/src"),
             str(SOURCE / "radio_controller.c"), str(SOURCE / "command_protocol.c"),
             "-lm", "-o", str(cls.binary),
         ], check=True)
@@ -471,6 +471,28 @@ class RadioControlTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("Reply unavailable", result.stderr)
         self.assertEqual(len(owner.packets), 1)
+
+    def test_hex_divider_keys_and_explicit_mhz_are_distinct(self):
+        owner=self.owner()
+        for key,hz in [("1",4000000),("2",2000000),("3",1333333),("4",1000000),
+                       ("5",800000),("6",666667),("8",500000),("A",400000),("a",400000)]:
+            result=self.once("rx divider "+key)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertEqual(owner.packets[-1][2:],["sample_rate",str(hz)])
+        result=self.once("rx rate 1")
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertEqual(owner.packets[-1][2:],["sample_rate","1000000"])
+        for key in ["0","7","9","B","11"]:
+            self.assertEqual(self.once("rx divider "+key).returncode,2)
+
+    def test_interactive_rx_rate_menu_accepts_hex_key_and_cancel(self):
+        owner=self.owner()
+        result=subprocess.run([str(self.binary),"--socket",str(self.path),"--timeout",".5"],
+                              input="rx rate\nA\nrx rate\nQ\nq\n",text=True,capture_output=True,timeout=3)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertIn("[A] 0.4 MS/s",result.stdout)
+        requests=[p[2:] for p in owner.packets]
+        self.assertEqual(requests.count(["sample_rate","400000"]),1)
 
     def test_help_and_quit_need_no_backend(self):
         for command in ("help", "quit"):

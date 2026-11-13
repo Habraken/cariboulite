@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 #endif
 #include "command_protocol.h"
+#include "radio_rates.h"
 
 #include <errno.h>
 #include <float.h>
@@ -187,9 +188,9 @@ static int parse_rate(const char *token, unsigned *rate)
 {
     uint64_t value;
     if (parse_uint64(token, &value) < 0 ||
-        (value != 1000000 && value != 2000000 && value != 4000000))
+        (value>UINT32_MAX || !radio_rate_divider((unsigned)value)))
         return -1;
-    *rate = (unsigned)value;
+    *rate = radio_rate_label(radio_rate_divider((unsigned)value));
     return 0;
 }
 

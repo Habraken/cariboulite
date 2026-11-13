@@ -37,10 +37,10 @@ int __wrap_audio_demod_set_nbfm_deviation(audio_demod_t* dsp, float deviation_hz
     deviation_configured=result==0;
     return result;
 }
-audio_sink_t* __real_alsa_sink_open(const char*, unsigned);
-audio_sink_t* __wrap_alsa_sink_open(const char* device, unsigned rate) {
+audio_sink_t* __real_alsa_sink_open_buffered(const char*, unsigned, unsigned);
+audio_sink_t* __wrap_alsa_sink_open_buffered(const char* device, unsigned rate, unsigned buffer) {
     ++alsa_sink_opens;
-    return __real_alsa_sink_open(device,rate);
+    return __real_alsa_sink_open_buffered(device,rate,buffer);
 }
 static size_t fail_calloc_count;
 static void* metadata_allocation;

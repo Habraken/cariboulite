@@ -1,5 +1,7 @@
 #pragma once
 #include "iq16.h"
+#include "radio_rates.h"
+#include "rf_resampler.h"
 #include "nbfm_channel_coeffs.h"
 #include <stdint.h>
 #include <string.h>
@@ -8,6 +10,8 @@
 // decimate-by-4 -> 50 kS/s. Identical real coefficients filter I and Q before
 // limiting. The FIR passes +/-6 kHz and reaches its stopband at +/-9 kHz.
 typedef struct {
+    bool rational;
+    rf_resampler_t frontend;
     unsigned decimation, cic_count, fir_count, pos;
     float cic_scale;
     uint32_t integrator_i[3], integrator_q[3];
@@ -18,21 +22,23 @@ typedef struct {
 
 static inline void nbfm_channel_filter_reset(nbfm_channel_filter_t* s)
 {
-    // Retain only the immutable rate configuration; clear all signal history
-    // and decimator phases so reset is equivalent to a new filter instance.
-    unsigned decimation = s->decimation;
-    float scale = s->cic_scale;
-    memset(s, 0, sizeof(*s));
-    s->decimation = decimation;
-    s->cic_scale = scale;
+    s->cic_count=s->fir_count=s->pos=0;
+    memset(s->integrator_i,0,sizeof(s->integrator_i));memset(s->integrator_q,0,sizeof(s->integrator_q));
+    memset(s->comb_i,0,sizeof(s->comb_i));memset(s->comb_q,0,sizeof(s->comb_q));
+    memset(s->history_i,0,sizeof(s->history_i));memset(s->history_q,0,sizeof(s->history_q));
+    if(s->rational)rf_resampler_reset(&s->frontend);
 }
 
 static inline void nbfm_channel_filter_init(nbfm_channel_filter_t* s,
                                             unsigned rf_rate)
 {
     memset(s, 0, sizeof(*s));
-    // The demodulator validates the supported 1/2/4 MS/s rates at creation.
-    s->decimation = rf_rate / 200000;
+    // The demodulator validates the supported native rates at creation.
+    unsigned divider=radio_rate_divider(rf_rate);
+    if(!divider)return;
+    s->rational=20%divider!=0;
+    if(s->rational){rf_resampler_init(&s->frontend,divider,20,80000);return;}
+    s->decimation = 20/divider;
     unsigned d = s->decimation;
     s->cic_scale = 1.0f / (float)(d * d * d);
 }
@@ -51,6 +57,10 @@ static inline float nbfm_cic_signed(uint32_t value)
 static inline int nbfm_channel_filter_push(nbfm_channel_filter_t* s,
     iq16_t sample, float* i, float* q)
 {
+    float fi,fq;
+    if(s->rational){
+        if(!rf_resampler_push(&s->frontend,sample.i,sample.q,&fi,&fq))return 0;
+    }else{
     s->integrator_i[0] += (uint32_t)(int32_t)sample.i;
     s->integrator_q[0] += (uint32_t)(int32_t)sample.q;
     s->integrator_i[1] += s->integrator_i[0];
@@ -68,8 +78,9 @@ static inline int nbfm_channel_filter_push(nbfm_channel_filter_t* s,
         s->comb_q[stage] = cq;
         ci = di; cq = dq;
     }
-    float fi = nbfm_cic_signed(ci) * s->cic_scale;
-    float fq = nbfm_cic_signed(cq) * s->cic_scale;
+    fi = nbfm_cic_signed(ci) * s->cic_scale;
+    fq = nbfm_cic_signed(cq) * s->cic_scale;
+    }
     unsigned p = s->pos;
     s->history_i[p] = s->history_i[p + NBFM_CHANNEL_TAPS] = fi;
     s->history_q[p] = s->history_q[p + NBFM_CHANNEL_TAPS] = fq;

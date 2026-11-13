@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "modem_snapshot.h"
+#include "radio_profile.h"
 
 static pthread_mutex_t hardware_mutex = PTHREAD_MUTEX_INITIALIZER;
 static uint16_t expected_base;
@@ -235,8 +236,21 @@ static void check_invalid_arguments_and_bounds(void)
     assert(strstr(storage, "\"PLL\":null") != NULL);
 }
 
+static void check_native_rates(void)
+{
+    const unsigned rates[]={4000000,2000000,1333333,1000000,800000,666667,500000,400000};
+    const unsigned codes[]={1,2,3,4,5,6,8,10};
+    for(unsigned k=0;k<8;++k){radio_profile_t p;
+        assert(!radio_profile_rx(AUDIO_DEMOD_NBFM,rates[k],&p));
+        assert((unsigned)p.rate==codes[k]&&p.sample_rate_hz==rates[k]);
+        assert(!radio_profile_rx(AUDIO_DEMOD_WBFM,rates[k],&p)&&p.digital_cutoff_hz>=100000);
+        assert(radio_profile_tx(rates[k],&p)==((rates[k]==1000000||rates[k]==2000000||rates[k]==4000000)?0:-1));
+    }
+}
+
 int main(void)
 {
+    check_native_rates();
     check_channel(at86rf215_rf_channel_2400mhz);
     check_channel(at86rf215_rf_channel_900mhz);
     check_tx_analog_cutoff();

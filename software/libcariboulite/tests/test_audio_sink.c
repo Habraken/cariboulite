@@ -59,6 +59,17 @@ static void* stress_writer(void* arg) {
     atomic_store_explicit(&stress_done,true,memory_order_release);
     return NULL;
 }
+static unsigned requested_buffer, requested_start;
+int __real_snd_pcm_hw_params_set_buffer_size_near(snd_pcm_t*,snd_pcm_hw_params_t*,snd_pcm_uframes_t*);
+int __wrap_snd_pcm_hw_params_set_buffer_size_near(snd_pcm_t* p,snd_pcm_hw_params_t* h,snd_pcm_uframes_t* n) {
+    requested_buffer=*n;
+    return __real_snd_pcm_hw_params_set_buffer_size_near(p,h,n);
+}
+int __real_snd_pcm_sw_params_set_start_threshold(snd_pcm_t*,snd_pcm_sw_params_t*,snd_pcm_uframes_t);
+int __wrap_snd_pcm_sw_params_set_start_threshold(snd_pcm_t* p,snd_pcm_sw_params_t* sw,snd_pcm_uframes_t n) {
+    requested_start=n;
+    return __real_snd_pcm_sw_params_set_start_threshold(p,sw,n);
+}
 int main(void) {
     audio_sink_stats_t stats;
     const audio_sink_ops_t unsupported_ops={0};
@@ -68,6 +79,11 @@ int main(void) {
     assert(!audio_sink_get_stats(&unsupported,&stats) && stats.write_calls==0);
     assert(!audio_sink_get_stats(&unsupported,NULL));
     assert(!alsa_sink_open("null",44100) && errno==EINVAL && opens==0);
+    assert(!alsa_sink_open_buffered("null",48000,0) && errno==EINVAL);
+    assert(!alsa_sink_open_buffered("null",48000,48001) && errno==EINVAL);
+    audio_sink_t* buffered=alsa_sink_open_buffered("null",48000,9600);assert(buffered);
+    assert(requested_buffer==9600 && requested_start==9120);
+    audio_sink_destroy(buffered);
     int16_t samples[960];
     for(int i=0;i<960;++i) samples[i]=(int16_t)(i*67-32768);
     for(stereo=0;stereo<=1;++stereo) {

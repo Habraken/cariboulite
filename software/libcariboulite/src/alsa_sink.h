@@ -6,3 +6,6 @@
 // audio_sink_get_stats() exposes atomic lifetime write/recovery counters.
 audio_sink_t* alsa_sink_open(const char* device, unsigned sample_rate);
 unsigned alsa_sink_channels(const audio_sink_t* sink);
+
+// Buffer includes startup prefill; use enough frames for burst-delivered RF.
+audio_sink_t* alsa_sink_open_buffered(const char* device, unsigned sample_rate, unsigned buffer_frames);

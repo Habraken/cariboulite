@@ -361,6 +361,17 @@ int main(int argc, char **argv) {
                                         capture_output=True, timeout=3)
                 self.assertEqual(result.returncode, 0, result.stderr.decode())
 
+    def test_all_native_rx_rates_and_wbfm_cutoff_headroom(self):
+        for mode in ["nbfm","wbfm"]:
+            for rate in [400000,500000,666667,800000,1000000,1333333,2000000,4000000]:
+                with self.subTest(mode=mode,rate=rate):
+                    process=self.start_backend("--rx-mode",mode,"--rx-sample-rate",str(rate),seconds=".7")
+                    snap=self.once();profile=snap["config"]["profile"]["rx"]
+                    self.assertEqual(profile["sample_rate_hz"],rate)
+                    if mode=="wbfm":self.assertGreaterEqual(profile["digital_cutoff_hz"],100000)
+                    process.communicate(timeout=3)
+                    self.assertEqual(process.returncode,0)
+
     def test_sinad_dry_run_is_unavailable_even_when_enabled(self):
         self.start_backend("--rx-sinad")
         snapshot = self.once()

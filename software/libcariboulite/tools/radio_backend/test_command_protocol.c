@@ -22,6 +22,10 @@ static void test_requests(void)
         control_command_t command;
     } good[] = {
         { "v1 1 get", CONTROL_GET },
+        { "v1 31 sample_rate 400000", CONTROL_SAMPLE_RATE },
+        { "v1 32 sample_rate 500000", CONTROL_SAMPLE_RATE },
+        { "v2 33 sample_rate 666667", CONTROL_SAMPLE_RATE },
+        { "v2 34 sample_rate 1333333", CONTROL_SAMPLE_RATE },
         { "v1 18446744073709551615 start\n", CONTROL_START },
         { "\t v1\r 9\nstop\f", CONTROL_STOP },
         { "v1 12 frequency 5999999999", CONTROL_FREQUENCY },
@@ -69,7 +73,7 @@ static void test_requests(void)
         "v1 1 frequency 1e999", "v1 1 frequency 1e-999",
         "v1 1 frequency .", "v1 1 frequency 1e+", "v1 1 frequency 1 2",
         "v1 1 mode fm", "v1 1 mode WBFM", "v1 1 mode nbfm extra",
-        "v1 1 sample_rate 500000", "v1 1 sample_rate -1000000",
+        "v1 1 sample_rate 700000", "v1 1 sample_rate -1000000",
         "v1 1 sample_rate 1000000.0", "v1 1 sample_rate 4294967296",
         "v1 1 sample_rate 1000000 extra", "v1 1 squelch 1 0 .2",
         "v1 1 squelch yes 0 .2 .3", "v1 1 squelch 1 2 .2 .3",
@@ -185,7 +189,7 @@ static void test_combined_requests(void)
         "v2 1 both_mode", "v2 1 both_mode nbfm extra",
         "v2 1 both_mode fm", "v2 1 both_mode WBFM",
         "v2 1 both_sample_rate", "v2 1 both_sample_rate 1000000 extra",
-        "v2 1 both_sample_rate 0", "v2 1 both_sample_rate 500000",
+        "v2 1 both_sample_rate 0", "v2 1 both_sample_rate 700000",
         "v2 1 both_sample_rate 3000000", "v2 1 both_sample_rate -1000000",
         "v2 1 both_sample_rate +1000000", "v2 1 both_sample_rate 1000000.0",
         "v2 1 both_sample_rate 4294967296",
@@ -324,7 +328,7 @@ static void test_replies(void)
         "v1 1 OK OK 2 3 simulated RX RFXX 430125000 430125000 1000000 nbfm 1 0 .2 .3",
         "v1 1 OK OK 2 3 simulated RX RF24 NaN 430125000 1000000 nbfm 1 0 .2 .3",
         "v1 1 OK OK 2 3 simulated RX RF24 430125000 inf 1000000 nbfm 1 0 .2 .3",
-        "v1 1 OK OK 2 3 simulated RX RF24 430125000 430125000 500000 nbfm 1 0 .2 .3",
+        "v1 1 OK OK 2 3 simulated RX RF24 430125000 430125000 700000 nbfm 1 0 .2 .3",
         "v1 1 OK OK 2 3 simulated RX RF24 430125000 430125000 1000000 fm 1 0 .2 .3",
         "v1 1 OK OK 2 3 simulated RX RF24 430125000 430125000 1000000 nbfm 2 0 .2 .3"
     };

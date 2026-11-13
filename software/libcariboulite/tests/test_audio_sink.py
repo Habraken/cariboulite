@@ -10,7 +10,8 @@ a = app.index('int write_audio_exact(')
 b = app.index('void* audio_writer_thread(', a)
 helper = app[a:b].replace('int write_audio_exact(', 'int test_write_exact(')
 wraps = ['snd_pcm_open', 'snd_pcm_close', 'snd_pcm_hw_params_set_channels',
-         'snd_pcm_sw_params', 'snd_pcm_prepare', 'snd_pcm_writei']
+         'snd_pcm_sw_params', 'snd_pcm_prepare', 'snd_pcm_writei',
+         'snd_pcm_hw_params_set_buffer_size_near','snd_pcm_sw_params_set_start_threshold']
 with tempfile.TemporaryDirectory(prefix='audio-sink-') as directory:
     binary = Path(directory) / 'test'
     test = Path(directory) / 'test.c'

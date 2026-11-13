@@ -1,5 +1,7 @@
 #include "fm_demod_internal.h"
 #include "fm_audio.h"
+#include "radio_rates.h"
+#include "rf_resampler.h"
 #include "fm_discriminator.h"
 #include "math_compat.h"
 #include <errno.h>
@@ -30,6 +32,8 @@ typedef struct wb_state {
     wbfm_state_t wide;
     nbfm_demod_config_t config;
     int D1;
+    bool rational;
+    rf_resampler_t frontend;
     float K_norm;
     fm_audio_state_t audio;
     double phase48;
@@ -46,8 +50,7 @@ int wb_demod_set_audio(nbfm_demod_t* dsp, float tau, float gain)
 }
 static nbfm_demod_t* allocate_state(const nbfm_demod_config_t* config)
 {
-    if (!config || (config->rf_rate != 1000000 && config->rf_rate != 2000000 &&
-        config->rf_rate != 4000000) ||
+    if (!config || !radio_rate_divider(config->rf_rate) ||
         config->audio_rate != 48000 || !isfinite(config->deemph_tau) ||
         config->deemph_tau < 0 || !isfinite(config->pcm_gain) || config->pcm_gain < 0) {
         errno = EINVAL;
@@ -77,9 +80,13 @@ nbfm_demod_t* wb_demod_create(const nbfm_demod_config_t* config)
 {
     wb_state_t* s = (wb_state_t*)allocate_state(config);
     if (!s) return NULL;
-    s->D1 = config->rf_rate / 250000;
-    s->wide.rf_taps = 40*s->D1 + 1;
-    fir_design(s->wide.rf_coeff, s->wide.rf_taps, 100000, config->rf_rate);
+    unsigned divider=radio_rate_divider(config->rf_rate);
+    s->rational=16%divider!=0;
+    if(s->rational){if(!rf_resampler_init(&s->frontend,divider,16,100000)){free(s);return NULL;}}
+    else{
+        s->D1=16/divider;s->wide.rf_taps=40*s->D1+1;
+        fir_design(s->wide.rf_coeff,s->wide.rf_taps,100000,(float)radio_rate_exact(config->rf_rate));
+    }
     // Preserve mono audio through 15 kHz; reject the 19 kHz pilot and stereo
     // subchannel before reducing the discriminator output from 250 to 50 kHz.
     fir_design(s->wide.audio_coeff, WBFM_AUDIO_TAPS, 17000, 250000);
@@ -114,14 +121,18 @@ static float fir_symmetric(const float* h, const float* x, int n)
 static int wbfm_sample(wb_state_t* s, iq16_t sample, float* value)
 {
     wbfm_state_t* w = &s->wide;
-    int n = w->rf_taps, p = w->rf_pos;
+    int p;float i,q;
+    if(s->rational){if(!rf_resampler_push(&s->frontend,sample.i,sample.q,&i,&q))return 0;}
+    else{
+    int n = w->rf_taps; p = w->rf_pos;
     w->ri[p] = w->ri[p+n] = sample.i;
     w->rq[p] = w->rq[p+n] = sample.q;
     w->rf_pos = (p+1 == n) ? 0 : p+1;
     if (++w->rf_count != s->D1) return 0;
     w->rf_count = 0;
-    float i = fir_symmetric(w->rf_coeff, w->ri+w->rf_pos, n);
-    float q = fir_symmetric(w->rf_coeff, w->rq+w->rf_pos, n);
+    i = fir_symmetric(w->rf_coeff, w->ri+w->rf_pos, n);
+    q = fir_symmetric(w->rf_coeff, w->rq+w->rf_pos, n);
+    }
     float v = 0;
     if (w->have_prev) {
         float re, im;
@@ -152,6 +163,7 @@ void wb_demod_reset(nbfm_demod_t* dsp)
         memset(w->resample, 0, sizeof(w->resample));
         w->resample_pos = 0;
     }
+    if(s->rational)rf_resampler_reset(&s->frontend);
     fm_audio_reset(&s->audio);
     s->phase48 = 0.0;
 }
