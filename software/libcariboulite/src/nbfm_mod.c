@@ -1,5 +1,6 @@
 #include "nbfm_mod.h"
 #include "audio_mod.h"
+#include "am_dac_shaper.h"
 #include <stdbool.h>
 #include "radio_rates.h"
 #include <stdint.h>
@@ -37,7 +38,8 @@ struct nbfm_mod {
     float  out_scale; int lin;
     double phase, dphi_cur, dphi_next, interp_step, interp_acc;
     preemph_t pe;
-    bool am; float am_depth; am_tx_biquad_t voice[3];
+    bool am, am_dac_shaping; float am_depth; am_tx_biquad_t voice[3];
+    am_dac_shaper_t am_shaper;
     float* afifo; size_t cap, head, tail, cnt;
     
     //new
@@ -96,6 +98,7 @@ void nbfm_reset(nbfm_mod_t* m)
     if (!m) return;
     m->head=m->tail=m->cnt=0;
     m->phase=m->dphi_cur=m->dphi_next=0; m->lm_phase=0;
+    memset(&m->am_shaper, 0, sizeof(m->am_shaper));
     m->interp_step=0; m->interp_acc=1;
     m->pe.x1=0;
     for(unsigned k=0;k<3;k++)m->voice[k].z1=m->voice[k].z2=0;
@@ -176,7 +179,11 @@ static size_t generate_iq(nbfm_mod_t* m, iq16_t* dst, size_t N, size_t* held)
         double dphi = m->dphi_cur + (m->dphi_next - m->dphi_cur) * frac;
 
         if (m->am) {
-            dst[out++]=(iq16_t){(int16_t)lrintf(m->out_scale*.5f*(1+(float)dphi)),0};
+            float envelope=m->out_scale*.5f*(1+(float)dphi);
+            int16_t value=m->am_dac_shaping
+                ? am_dac_shaper_process(&m->am_shaper,envelope,m->divider)
+                : (int16_t)lrintf(envelope);
+            dst[out++]=(iq16_t){value,0};
             continue;
         }
         // Integrate to phase with robust wrap
@@ -215,6 +222,17 @@ nbfm_result_t nbfm_process(nbfm_mod_t* m, const audio_f32_t* audio, size_t frame
     result.consumed = enqueue_audio(m, audio, frames);
     result.produced = generate_iq(m, output, capacity, &result.held_audio);
     return result;
+}
+
+int audio_mod_set_am_dac_shaping(audio_mod_t* m, bool enabled)
+{
+    if (!m || !m->am || (enabled && m->out_scale > 4032)) {
+        errno=EINVAL;
+        return -1;
+    }
+    m->am_dac_shaping=enabled;
+    memset(&m->am_shaper,0,sizeof(m->am_shaper));
+    return 0;
 }
 
 audio_mod_t* audio_mod_create(audio_mod_mode_t mode,const nbfm_cfg_t* config,float depth)

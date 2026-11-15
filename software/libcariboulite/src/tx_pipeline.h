@@ -93,6 +93,7 @@ typedef struct {
     audio_mod_mode_t mode; // zero/default NBFM; AM voice also supported
     float am_backoff_db; // additional AM IQ envelope backoff, 0..18 dB
     float am_depth; // AM modulation at unit filtered audio; 0..1
+    bool am_dac_shaping; // opt-in AM DAC error feedback; NBFM is unaffected
 
     // Baseband source for audio modulation
     bool   tone_mode;           // true => synth audio

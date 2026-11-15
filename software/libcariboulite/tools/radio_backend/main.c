@@ -124,6 +124,7 @@ static void usage(FILE *out, const char *program)
         "  --tx-frequency HZ         default 430125000\n"
         "  --tx-power DBM            default -12; RF24 -12..14, RF09 -14..14\n"
         "  --tx-mode nbfm|am         NBFM or 300-3000 Hz AM voice, default nbfm\n"
+        "  --tx-am-dac-shaping on|off  experimental AM DAC error feedback, default off\n"
         "  --tx-am-backoff DB       extra AM IQ backoff: 0..18 dB, default 6\n"
         "  --tx-am-depth DEPTH      modulation at unit audio: 0..1, default 0.8\n"
         "  --tx-deviation HZ         nominal NBFM deviation 0..24000 (default %.0f)\n"
@@ -168,7 +169,7 @@ static int parse_options(int argc, char **argv, options_t *o)
     enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
-        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH, TX_AM_BACKOFF, AM_RX_OFFSET };
+        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH, TX_AM_BACKOFF, AM_RX_OFFSET, TX_AM_DAC_SHAPING };
     static const struct option long_options[] = {
         {"channel", required_argument, NULL, CHANNEL},
         {"rx-sinad", no_argument, NULL, SINAD},
@@ -192,6 +193,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         {"tx-frequency", required_argument, NULL, TX_FREQ},
         {"tx-power", required_argument, NULL, TX_POWER},
         {"tx-am-backoff", required_argument, NULL, TX_AM_BACKOFF},
+        {"tx-am-dac-shaping", required_argument, NULL, TX_AM_DAC_SHAPING},
         {"tx-am-depth", required_argument, NULL, TX_AM_DEPTH},
         {"tx-mode", required_argument, NULL, TX_MODE},
         {"tx-deviation", required_argument, NULL, TX_DEVIATION},
@@ -261,6 +263,11 @@ static int parse_options(int argc, char **argv, options_t *o)
         case TX_MODE:
             if (!strcmp(optarg,"nbfm")) o->tx.mode=AUDIO_MOD_NBFM;
             else if (!strcmp(optarg,"am")) o->tx.mode=AUDIO_MOD_AM;
+            else return -1;
+            break;
+        case TX_AM_DAC_SHAPING:
+            if(!strcmp(optarg,"on"))o->tx.am_dac_shaping=true;
+            else if(!strcmp(optarg,"off"))o->tx.am_dac_shaping=false;
             else return -1;
             break;
         case TX_AM_BACKOFF:
@@ -1634,7 +1641,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"playback\":%s,\"pcm_gain\":%.3f,\"deemphasis_us\":%.3f,\"am_offset_tuning_enabled\":%s,\"am_agc_enabled\":%s,\"am_rf_gain_db\":%u,\"am_voice_low_hz\":300,\"am_voice_high_hz\":3000,\"rx_deviation_hz\":%.3f,"
         "\"tx_frequency_hz\":%.3f,\"tx_actual_frequency_hz\":%s,\"tx_power_dbm\":%d,"
         "\"tx_actual_power_dbm\":%s,\"tx_sample_rate_hz\":%u,\"tx_source\":\"%s\","
-        "\"tx_mode\":\"%s\",\"tx_am_depth\":%.3f,\"tx_am_backoff_db\":%.3f,\"tx_am_carrier_fraction\":0.5,\"tx_tone_hz\":%.3f,\"tx_tone_amp\":%.3f,\"tx_deviation_hz\":%.3f,"
+        "\"tx_mode\":\"%s\",\"tx_am_depth\":%.3f,\"tx_am_backoff_db\":%.3f,\"tx_am_dac_shaping\":%s,\"tx_am_carrier_fraction\":0.5,\"tx_tone_hz\":%.3f,\"tx_tone_amp\":%.3f,\"tx_deviation_hz\":%.3f,"
         "\"profile\":%s,\"observed\":%s},"
         "\"rx\":{\"running\":%s,\"queue\":%s,\"noise_enabled\":%s,\"carrier_enabled\":%s,"
         "\"gate_open\":%s,\"noise\":{\"valid\":%s,\"detector_open\":%s,\"rms\":%s,"
@@ -1662,7 +1669,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         63 - o->rx.am_rf_attenuation_db,
         (double)(o->rx.nbfm_deviation_hz != 0 ? o->rx.nbfm_deviation_hz : NBFM_DEFAULT_DEVIATION_HZ),
         o->tx.freq_hz, tx_actual_freq, o->tx.tx_power_dbm, tx_actual_power,
-        o->tx.rf_fs, o->tx.tone_mode ? "tone" : "mic", audio_mod_mode_name(o->tx.mode), (double)o->tx.am_depth, (double)o->tx.am_backoff_db, (double)o->tx.tone_hz,
+        o->tx.rf_fs, o->tx.tone_mode ? "tone" : "mic", audio_mod_mode_name(o->tx.mode), (double)o->tx.am_depth, (double)o->tx.am_backoff_db, o->tx.am_dac_shaping ? "true" : "false", (double)o->tx.tone_hz,
         (double)o->tx.tone_amp, (double)o->tx.f_dev_hz,
         desired_profile, observed_profile,
         live && rx_pipeline_running(pipeline) ? "true" : "false", queue,

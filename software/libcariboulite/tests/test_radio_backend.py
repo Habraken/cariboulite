@@ -135,7 +135,13 @@ class RadioBackendTests(unittest.TestCase):
         self.assertEqual(snap['config']['tx_mode'],'am')
         self.assertEqual(snap['config']['tx_am_backoff_db'],6)
         self.assertEqual(snap['config']['tx_am_depth'],.8)
+        self.assertFalse(snap['config']['tx_am_dac_shaping'])
         self.assertFalse(snap['tx']['running'])
+        self.stop_backend(process)
+
+    def test_am_dac_shaping_startup_option_is_published(self):
+        process=self.start_backend("--tx-mode","am","--tx-am-dac-shaping","on")
+        self.assertTrue(self.once()['config']['tx_am_dac_shaping'])
         self.stop_backend(process)
 
     def test_am_cli_manual_gain_and_effective_audio_settings(self):
@@ -810,6 +816,7 @@ int main(void) {
             ("--rx-frequency", "6000000000"), ("--tx-frequency", "6000000000"),
             ("--tx-frequency", "nan"), ("--tx-frequency", "inf"),
             ("--rx-sample-rate", "1000000.5"), ("--tx-sample-rate", "1000000.5"),
+            ("--tx-am-dac-shaping", "invalid"),
             ("--tx-sample-rate", "3000000"), ("--tx-sample-rate", "nan"),
             ("--tx-power", "-13"), ("--tx-power", "15"), ("--tx-power", "-12.5"),
             ("--channel", "RF09", "--tx-power", "-15"),

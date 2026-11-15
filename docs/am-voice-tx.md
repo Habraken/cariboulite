@@ -135,3 +135,35 @@ The subsequent [70 dB link investigation](am70-residual-distortion-2026-11-15.md
 verified changing digital words and demonstrated repeatable coarse amplitude
 plateaus in the RF path. It also measured the emission penalty of a temporary
 frequency-shifted diagnostic. No further production waveform change is deployed.
+
+## AM DAC shaping option
+
+`--tx-am-dac-shaping on` enables second-order envelope error feedback on a
+64-code grid, updated at exactly 40 kHz and held between updates. The update
+clock follows the native 4 MHz/divider timing at every supported TX rate.
+The option defaults to **off**; `off` retains the unshaped AM envelope. It is a
+startup setting, exposed as `config.tx_am_dac_shaping` and shown by the monitor.
+It affects AM only and is retained when selecting TX modes. It does not apply
+speech compression, AGC, microphone gain, or frequency shifting.
+
+The 70 dB link comparison found that this approach removes the large static
+amplitude plateaus and the operator's distinctive quiet-speech roughness in
+the tested profile. It moves quantization error to higher frequencies and can
+raise out-of-band noise; it is not an increase in the physical DAC resolution.
+A calibrated shifted-IQ diagnostic produced slightly better measured fidelity,
+but required I/Q calibration and its LO leakage changed across starts.
+
+For the tested 430.100 MHz profile, add these arguments to the headset launch:
+
+```sh
+--tx-mode am --tx-source mic --tx-am-depth 0.8 \
+--tx-am-dac-shaping on --tx-am-backoff 0 --tx-power 6
+```
+
+The shaper bounds output to nonnegative 13-bit I levels 0..4032, with Q=0,
+and resets its feedback at a rail to prevent windup. At depth 1, individual
+quantized peaks can exceed the nominal `out_scale` by a fraction of one DAC
+step; this option does not certify maximum RF modulation depth. The default
+0.8 depth reserves margin. The low-level modulator API retains raw AM creation;
+`audio_mod_set_am_dac_shaping()` opts in before processing, requires AM and
+`out_scale <= 4032`, and its selection survives `nbfm_reset()`.

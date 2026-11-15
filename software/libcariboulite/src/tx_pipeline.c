@@ -528,6 +528,8 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
         .linear_interp = 1,
     };
     p->tx_ctrl.fm   = audio_mod_create(par->mode,&cfg,par->am_depth);
+    if (p->tx_ctrl.fm && par->mode==AUDIO_MOD_AM && par->am_dac_shaping &&
+        audio_mod_set_am_dac_shaping(p->tx_ctrl.fm,true)) goto fail;
     p->tx_ctrl.a48k = (float*) calloc(480,    sizeof(float));
     p->tx_ctrl.iq_rf = (iq16_t*)calloc(p->tx_ctrl.frame_samples,  sizeof(iq16_t));
     if (!p->tx_ctrl.fm || !p->tx_ctrl.a48k || !p->tx_ctrl.iq_rf) {

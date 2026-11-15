@@ -311,6 +311,7 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
     tx_settings = (f"  TX sample rate={_formatted(config.get('tx_sample_rate_hz'), ',.0f')} S/s"
                    f" TX source={_label(config.get('tx_source'))}"
                    + (f" TX mode=am AM depth={_formatted(config.get('tx_am_depth'), '.2f')}"
+                      + f" DAC shaping={'on' if config.get('tx_am_dac_shaping') else 'off'}"
                       f" backoff={_formatted(config.get('tx_am_backoff_db'), '.1f')} dB"
                       if config.get("tx_mode")=="am" else
                       f" TX deviation=+/-{_formatted(config.get('tx_deviation_hz'), 'g')} Hz"

@@ -1,5 +1,6 @@
 #pragma once
 #include "nbfm_mod.h"
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,6 +18,9 @@ static inline const char* audio_mod_mode_name(audio_mod_mode_t mode)
 // depth is nominal modulation at unit audio (0..1); default chosen by caller.
 // Samples are bounded before/after voice filtering to prevent overmodulation.
 audio_mod_t* audio_mod_create(audio_mod_mode_t, const nbfm_cfg_t*, float depth);
+// AM only. Configure while stopped, before processing; reset retains selection.
+// Experimental 40 kHz DAC error feedback, limited to out_scale <= 4032.
+int audio_mod_set_am_dac_shaping(audio_mod_t*, bool enabled);
 
 #ifdef __cplusplus
 }
