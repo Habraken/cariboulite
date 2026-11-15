@@ -1,0 +1,89 @@
+# Narrow-voice AM transmission
+
+AM TX uses a conventional carrier-present double-sideband envelope. It shares
+the existing TX capture, clock adaptation, fractional native-rate packetizer,
+SMI pacing, start/stop and half-duplex ownership logic with NBFM. All eight
+native rates from 400 kS/s to 4 MS/s are supported.
+
+## Operation
+
+Launch with `--tx-mode am --tx-am-depth 0.8`, or use the controller while TX is
+stopped:
+
+```text
+tx frequency 430.1
+tx mode am
+tx am-depth 0.8
+tx source tone
+tx tone 1000 0.5
+tx power -12
+tx start
+```
+
+Keep the controller connected while keyed. `tx stop`, controller disconnect,
+or backend exit releases TX using the existing shutdown logic. Mode/depth
+changes while keyed return `TX_RUNNING`. Changes rebuild retained TX resources
+before the next start; they do not silently change an active waveform.
+
+Use `tx source mic` for voice. Audio is clipped to ±1, then passes a second-order
+300 Hz high-pass and fourth-order 3 kHz low-pass at 48 kHz. The filtered signal
+is bounded again before modulation. There is no FM pre-emphasis in AM. Depth
+is the modulation fraction at unit filtered audio, between 0 and 1 inclusive;
+0 emits an unmodulated carrier. Default depth 0.8 reserves modulation margin.
+Microphone gain and tone amplitude determine how much of this maximum is used.
+A 0.5-amplitude, 1 kHz tone at depth 0.8 produces approximately 39.8% modulation
+after voice filtering and linear interpolation to the RF sample clock.
+
+The IQ envelope is `out_scale / 2 * (1 + depth * filtered_audio)`, with constant
+phase. It cannot become negative or exceed `out_scale`; peak bounding prevents
+overmodulation, but excessive microphone audio can still sound distorted.
+On audio underflow the modulator reports held ticks, falls back toward an
+unmodulated carrier, and the real-time producer's existing underflow check fails
+the stream. Missing audio is not treated as a successful voice frame.
+
+## Power reference
+
+`out_scale` is the maximum envelope at 100% modulation, not the carrier
+amplitude. With the same 4000 IQ scale and RF power register setting, AM's
+2000-IQ carrier is nominally 6 dB below the former constant-envelope NBFM
+reference. At 100% modulation the theoretical peak-envelope power reaches that
+reference. For smaller modulation depth the actual peaks are lower. Hardware
+compression, calibration and frequency response can change these relationships.
+
+The backend RF power value/estimate is not a calibrated AM carrier-power or
+peak-envelope measurement. Use external RF instrumentation for those quantities.
+The minimum 80 kHz analog/Fs÷8 digital TX frontend is shared with NBFM; voice
+selectivity comes from the baseband filtering, not a dedicated analog AM filter.
+Software tests do not certify radiated occupied bandwidth or transmitter purity.
+
+## Controls and status
+
+- `tx mode nbfm|am` selects saved TX modulation.
+- `tx am-depth VALUE` selects saved AM modulation depth (0..1).
+- `--tx-mode` and `--tx-am-depth` set startup defaults.
+- `config.tx_mode` and `config.tx_am_depth` expose settings to the passive monitor.
+- v2 requests are `tx_mode am|nbfm` and `tx_am_depth VALUE`.
+
+Existing control reply layouts are retained. Controller acknowledgements report
+the selected TX mode/depth; the passive monitor reports the saved settings.
+`rx mode` and the existing bare mode command continue to select RX only. Use
+explicit `tx mode am` to select AM transmission. WBFM TX, USB and LSB remain
+unsupported. NBFM deviation settings are retained but have no effect in AM.
+
+## Validation and hardware connection
+
+`tests/test_am_mod.py` uses a strict measurement oracle with strict/production
+DSP builds. It verifies carrier/envelope, tone depth, voice filtering,
+overmodulation bounds, all native sample clocks and real TX packet marker
+packing, split/reset continuity, invalid input and carrier underflow fallback.
+Existing NBFM reference waveforms, TX pacing/lifecycle, capture and ownership
+checks remain in place. Integration tests check mode/depth saving and reject
+changes during keyed TX. No device is opened by these software checks.
+
+The operator confirmed the 90 dB attenuated direct RF24/HiF link before AM
+hardware testing. pi4g-trixie is the transmitter and pi4f-trixie the receiver.
+Tests use 430.1 MHz, beginning at the RF24 minimum power setting. AM reception
+uses the calibrated RX playback stage; the NBFM-only SINAD estimator is not
+used to assess AM.
+
+Hardware AM link validation is pending; results will be recorded separately.

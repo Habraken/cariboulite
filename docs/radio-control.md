@@ -967,3 +967,9 @@ mutes playback. `rx volume 0` restores the calibrated default. The passive
 monitor reports the setting, 100 ms RMS/peak in dBFS and clipped-sample count.
 See [RX audio calibration and metering](rx-audio-levels.md) for the common
 modulation reference, headroom, startup options and measurement scope.
+
+## AM voice TX
+
+Use `tx mode am` and `tx am-depth 0.8` while TX is stopped. `tx mode nbfm`
+restores FM transmission. The passive monitor reports TX mode and AM depth.
+See [AM voice TX](am-voice-tx.md) for filtering, power reference and validation.

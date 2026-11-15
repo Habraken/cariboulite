@@ -1070,6 +1070,13 @@ class PassiveClientTests(unittest.TestCase):
         self.assertIn("peak=-6.5 dBFS",text)
         self.assertIn("clipped=7",text)
 
+    def test_am_tx_display_uses_modulation_depth(self):
+        value=snapshot(config={"tx_sample_rate_hz":1000000,"tx_source":"tone",
+                               "tx_mode":"am","tx_am_depth":.8,"tx_deviation_hz":2500})
+        text="\n".join(client.format_snapshot(value))
+        self.assertIn("TX mode=am AM depth=0.80",text)
+        self.assertNotIn("TX deviation=",text)
+
     def test_am_voice_status_explains_gain_and_fm_bypass(self):
         value=snapshot(rx_mode="AM voice",config={"am_agc_enabled":True,"pcm_gain":8000},
                        rx={"noise_enabled":False,"noise":{"valid":False},"sinad":{"db":None}})

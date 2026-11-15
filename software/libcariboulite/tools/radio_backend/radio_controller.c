@@ -84,10 +84,12 @@ static void command_help(void)
          "  squelch noise on|off  noise squelch enable\n"
          "  squelch carrier on|off  carrier squelch enable\n"
          "  squelch levels OPEN CLOSE  noise RMS thresholds: 0 < OPEN < CLOSE <= 8\n"
-         "  tx start | tx stop    key/unkey NBFM TX; keep this controller connected\n"
+         "  tx start | tx stop    key/unkey selected TX mode; keep this controller connected\n"
          "  tx frequency MHz      saved TX frequency, for example 430.125\n"
          "  tx power DBM          integer -14..14; backend applies channel limits\n"
          "  tx rate [MS/s]       no value opens divider menu; TX: .4/.5/.666667/.8/1/1.333333/2/4\n"
+         "  tx mode nbfm|am       saved TX modulation (change while TX is stopped)\n"
+         "  tx am-depth VALUE     nominal AM modulation 0..1, default 0.8\n"
          "  tx source mic|tone    saved TX audio source\n"
          "  tx tone HZ AMP        0 < HZ <= 3000, 0 < AMP <= 1\n"
          "  fpga program          load firmware/top.bin, as test_app menu 3 does\n"
@@ -267,6 +269,14 @@ static int parse_command(const char *input, ui_command_t *command)
         if (!divider || fabs(rate * 1000000 - hz) > .5) return -1;
         command->request.command = CONTROL_TX_SAMPLE_RATE;
         command->request.tx_sample_rate_hz = radio_rate_label(divider);
+    } else if (count==3 && !strcmp(name,"tx") && !strcmp(tokens[1],"mode") &&
+               (!strcmp(tokens[2],"nbfm") || !strcmp(tokens[2],"am"))) {
+        command->request.command=CONTROL_TX_MODE;
+        command->request.tx_mode=!strcmp(tokens[2],"am") ? AUDIO_MOD_AM : AUDIO_MOD_NBFM;
+    } else if (count==3 && !strcmp(name,"tx") && !strcmp(tokens[1],"am-depth")) {
+        double depth;
+        if(parse_number(tokens[2],&depth) || depth<0 || depth>1)return -1;
+        command->request.command=CONTROL_TX_AM_DEPTH;command->request.tx_am_depth=(float)depth;
     } else if (count == 3 && !strcmp(name, "tx") && !strcmp(tokens[1], "source") &&
                (!strcmp(tokens[2], "mic") || !strcmp(tokens[2], "tone"))) {
         command->request.command = CONTROL_TX_SOURCE;
@@ -570,6 +580,10 @@ static int execute_command(controller_t *controller, ui_command_t *command)
     int result = exchange(controller, &command->request);
     if (!result && command->request.command==CONTROL_RX_VOLUME)
         printf("RX volume: %s%.1f dB\n",command->request.volume_db==-120 ? "muted; " : "",(double)command->request.volume_db);
+    if(!result && command->request.command==CONTROL_TX_MODE)
+        printf("TX mode: %s\n",audio_mod_mode_name(command->request.tx_mode));
+    if(!result && command->request.command==CONTROL_TX_AM_DEPTH)
+        printf("TX AM depth: %.3f\n",(double)command->request.tx_am_depth);
     print_state(controller);
     return result;
 }

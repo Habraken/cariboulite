@@ -870,6 +870,13 @@ static void test_config_validation_before_side_effects(void)
     verify_deviation_wiring=true;
     for (unsigned channel=0;channel<2;++channel) {
         cariboulite_radio_state_st* radio=channel ? &sys.radio_high : &sys.radio_low;
+        tx_params_t invalid_am=tx_defaults;
+        invalid_am.mode=(audio_mod_mode_t)9;
+        assert_invalid_tx_config(&sys,radio,&invalid_am);
+        invalid_am.mode=AUDIO_MOD_AM;invalid_am.am_depth=NAN;
+        assert_invalid_tx_config(&sys,radio,&invalid_am);
+        invalid_am.am_depth=1.01f;
+        assert_invalid_tx_config(&sys,radio,&invalid_am);
         rx_pipeline_t rx_control={.sys=&sys,.radio=radio,.running=true};
         tx_pipeline_t tx_control={.sys=&sys,.radio=radio};
         rx_control.demod.pcm_gain=rx_defaults.pcm_gain;
@@ -1144,6 +1151,8 @@ int main(void) {
         unsigned fs=monitor_rates[rate].fs;
         forced_tx_gap=monitor_rates[rate].tx_gap;
         tp.rf_fs=fs;
+        for(unsigned mode=0;mode<2;mode++) {
+        tp.mode=(audio_mod_mode_t)mode;tp.am_depth=.8f;
         assert(tx_pipeline_init(&tx,&sys,&radio,&tp)==0);
         assert(tx.tx_ctrl.frame_samples==monitor_rates[rate].frame_samples);
         assert(tx.tx_ctrl.tail_padding_frames==monitor_tail_padding[rate]);
@@ -1151,8 +1160,12 @@ int main(void) {
         float audio[480]={0};
         nbfm_push_audio(tx.tx_ctrl.fm,audio,480);
         assert(nbfm_pull_iq(tx.tx_ctrl.fm,tx.tx_ctrl.iq_rf,fs/100)==fs/100);
+        assert(tx.tx_ctrl.iq_rf[fs/100-1].i==(mode==AUDIO_MOD_AM ? 2000 : 4000));
+        assert(tx.tx_ctrl.iq_rf[fs/100-1].q==0);
         tx_pipeline_destroy(&tx);
+        }
     }
+    tp.mode=AUDIO_MOD_NBFM;
     // Tail padding accounts for the kernel FIFO and cyclic DMA, and falls back
     // conservatively when old drivers cannot report valid buffer information.
     forced_tx_gap=-1;

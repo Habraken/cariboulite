@@ -5,8 +5,8 @@ The initial profile is **300–3000 Hz voice audio**, supporting all eight nativ
 RF rates from 400 kS/s through 4 MS/s and 48 kHz mono playback. Broadcast AM
 reception with a wider audio/channel profile is future work.
 
-AM TX, USB and LSB are not implemented by this step. The transmitter remains
-NBFM. The initial live receive check on pi4f-trixie at 119.050 MHz
+[AM voice TX](am-voice-tx.md) is now available alongside NBFM. USB and LSB
+remain future work. The initial live receive check on pi4f-trixie at 119.050 MHz
 produced intelligible speech; the operator reported good speech quality on
 strong signals and noise on weaker ones. No physical AM TX validation has
 been performed.

@@ -434,7 +434,9 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
 
     unsigned rf_fs = par->rf_fs ? par->rf_fs : 4000000;
     radio_profile_t profile;
-    if (radio_profile_tx(rf_fs, &profile) != 0 ||
+    if ((par->mode!=AUDIO_MOD_NBFM && par->mode!=AUDIO_MOD_AM) ||
+        !radio_profile_finite(par->am_depth) || par->am_depth<0 || par->am_depth>1 ||
+        radio_profile_tx(rf_fs, &profile) != 0 ||
         !radio_profile_frequency_valid(radio->type, sys->board_info.numeric_product_id,
                                        par->freq_hz) ||
         !radio_profile_tx_power_valid(radio->type, par->tx_power_dbm) ||
@@ -524,7 +526,7 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
         .out_scale     = par->out_scale,    // 4000.0
         .linear_interp = 1,
     };
-    p->tx_ctrl.fm   = nbfm_create(&cfg);
+    p->tx_ctrl.fm   = audio_mod_create(par->mode,&cfg,par->am_depth);
     p->tx_ctrl.a48k = (float*) calloc(480,    sizeof(float));
     p->tx_ctrl.iq_rf = (iq16_t*)calloc(p->tx_ctrl.frame_samples,  sizeof(iq16_t));
     if (!p->tx_ctrl.fm || !p->tx_ctrl.a48k || !p->tx_ctrl.iq_rf) {

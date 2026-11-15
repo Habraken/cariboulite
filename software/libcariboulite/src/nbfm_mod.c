@@ -1,4 +1,6 @@
 #include "nbfm_mod.h"
+#include "audio_mod.h"
+#include <stdbool.h>
 #include "radio_rates.h"
 #include <stdint.h>
 #include <string.h>
@@ -17,11 +19,25 @@ static inline float preemph_run(preemph_t* p,float x){
     float y=(float)p->a0*x+(float)p->a1*p->x1; p->x1=x; return y;
 }
 
+typedef struct { double b0,b1,b2,a1,a2,z1,z2; } am_tx_biquad_t;
+static void am_tx_filter_init(am_tx_biquad_t* b,double hz,double q,int high)
+{
+    double w=2*M_PI*hz/48000,a=sin(w)/(2*q),d=1+a,sign=high?1:-1;
+    *b=(am_tx_biquad_t){.b0=(1+sign*cos(w))/(2*d),.b1=-sign*(1+sign*cos(w))/d,
+        .b2=(1+sign*cos(w))/(2*d),.a1=-2*cos(w)/d,.a2=(1-a)/d};
+}
+static float am_tx_filter(am_tx_biquad_t* b,float x)
+{
+    double y=b->b0*x+b->z1;
+    b->z1=b->b1*x-b->a1*y+b->z2;b->z2=b->b2*x-b->a2*y;
+    return (float)y;
+}
 struct nbfm_mod {
     double fs_a, fs_rf, f_dev, R, a_to_rf, k;
     float  out_scale; int lin;
     double phase, dphi_cur, dphi_next, interp_step, interp_acc;
     preemph_t pe;
+    bool am; float am_depth; am_tx_biquad_t voice[3];
     float* afifo; size_t cap, head, tail, cnt;
     
     //new
@@ -29,6 +45,16 @@ struct nbfm_mod {
     int use_lin;
 };
 
+static int finite_double(double x)
+{
+    uint64_t bits;memcpy(&bits,&x,sizeof(bits));
+    return (bits&UINT64_C(0x7ff0000000000000))!=UINT64_C(0x7ff0000000000000);
+}
+static int finite_float(float x)
+{
+    uint32_t bits;memcpy(&bits,&x,sizeof(bits));
+    return (bits&0x7f800000u)!=0x7f800000u;
+}
 static unsigned native_divider(double hz)
 {
     uint64_t bits;memcpy(&bits,&hz,sizeof(bits));
@@ -39,11 +65,11 @@ static unsigned native_divider(double hz)
 }
 static int valid_config(const nbfm_cfg_t* c)
 {
-    return c->audio_fs == 48000 &&
+    return finite_double(c->audio_fs) && c->audio_fs == 48000 &&
         native_divider(c->rf_fs) &&
-        isfinite(c->f_dev_hz) && c->f_dev_hz >= 0 && c->f_dev_hz <= 24000 &&
-        isfinite(c->preemph_tau_s) && c->preemph_tau_s >= 0 &&
-        isfinite(c->out_scale) && c->out_scale >= 0 && c->out_scale <= 32767 &&
+        finite_double(c->f_dev_hz) && c->f_dev_hz >= 0 && c->f_dev_hz <= 24000 &&
+        finite_double(c->preemph_tau_s) && c->preemph_tau_s >= 0 &&
+        finite_float(c->out_scale) && c->out_scale >= 0 && c->out_scale <= 32767 &&
         (c->linear_interp == 0 || c->linear_interp == 1);
 }
 nbfm_mod_t* nbfm_create(const nbfm_cfg_t* config)
@@ -72,12 +98,13 @@ void nbfm_reset(nbfm_mod_t* m)
     m->phase=m->dphi_cur=m->dphi_next=0; m->lm_phase=0;
     m->interp_step=0; m->interp_acc=1;
     m->pe.x1=0;
+    for(unsigned k=0;k<3;k++)m->voice[k].z1=m->voice[k].z2=0;
 }
 size_t nbfm_buffered_audio(const nbfm_mod_t* m) { return m ? m->cnt : 0; }
 static int valid_audio(const float* audio, size_t frames)
 {
     if (!audio && frames) return 0;
-    for (size_t n=0; n<frames; ++n) if (!isfinite(audio[n])) return 0;
+    for (size_t n=0; n<frames; ++n) if (!finite_float(audio[n])) return 0;
     return 1;
 }
 
@@ -112,6 +139,12 @@ static int fetch_audio(nbfm_mod_t* m) {
     if (x>1) x=1; 
     else if (x<-1) x=-1;
     
+    if(m->am) {
+        x=am_tx_filter(&m->voice[0],x);
+        x=am_tx_filter(&m->voice[2],am_tx_filter(&m->voice[1],x));
+        m->dphi_next=m->am_depth*fmaxf(-1,fminf(1,x));
+        return 1;
+    }
     float xp=preemph_run(&m->pe,x); 
     m->dphi_next=m->k*(double)xp; 
     return 1;
@@ -134,7 +167,7 @@ static size_t generate_iq(nbfm_mod_t* m, iq16_t* dst, size_t N, size_t* held)
             if (!fetch_audio(m)) {
                 // Preserve frequency hold, but report the underrun to explicit callers.
                 if (held) ++*held;
-                m->dphi_next = m->dphi_cur;
+                m->dphi_next = m->am ? 0 : m->dphi_cur;
             }
         }
 
@@ -142,6 +175,10 @@ static size_t generate_iq(nbfm_mod_t* m, iq16_t* dst, size_t N, size_t* held)
         double frac = m->use_lin ? (double)m->lm_phase / (double)L : 0.0;
         double dphi = m->dphi_cur + (m->dphi_next - m->dphi_cur) * frac;
 
+        if (m->am) {
+            dst[out++]=(iq16_t){(int16_t)lrintf(m->out_scale*.5f*(1+(float)dphi)),0};
+            continue;
+        }
         // Integrate to phase with robust wrap
         m->phase += dphi;
         if (m->phase >  M_PI) m->phase -= 2.0 * M_PI;
@@ -178,4 +215,22 @@ nbfm_result_t nbfm_process(nbfm_mod_t* m, const audio_f32_t* audio, size_t frame
     result.consumed = enqueue_audio(m, audio, frames);
     result.produced = generate_iq(m, output, capacity, &result.held_audio);
     return result;
+}
+
+audio_mod_t* audio_mod_create(audio_mod_mode_t mode,const nbfm_cfg_t* config,float depth)
+{
+    uint32_t bits;memcpy(&bits,&depth,sizeof(bits));
+    if ((mode!=AUDIO_MOD_NBFM && mode!=AUDIO_MOD_AM) ||
+        (bits&0x7f800000u)==0x7f800000u || depth<0 || depth>1 ||
+        (mode==AUDIO_MOD_AM && (!config || config->preemph_tau_s!=0))) {
+        errno=EINVAL;return NULL;
+    }
+    nbfm_mod_t* m=nbfm_create(config);
+    if (m && mode==AUDIO_MOD_AM) {
+        m->am=true;m->am_depth=depth;
+        am_tx_filter_init(&m->voice[0],300,.7071067811865476,1);
+        am_tx_filter_init(&m->voice[1],3000,.541196100146197,0);
+        am_tx_filter_init(&m->voice[2],3000,1.306562964876377,0);
+    }
+    return m;
 }

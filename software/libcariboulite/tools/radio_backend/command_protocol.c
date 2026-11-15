@@ -265,6 +265,13 @@ int control_request_parse(const char *packet, size_t bytes,
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "tx_sample_rate") && count == 4 &&
              !parse_rate(tokens[3], &request->tx_sample_rate_hz))
         request->command = CONTROL_TX_SAMPLE_RATE;
+    else if (request->protocol_version==2 && !strcmp(tokens[2],"tx_mode") && count==4 &&
+             (!strcmp(tokens[3],"nbfm") || !strcmp(tokens[3],"am"))) {
+        request->command=CONTROL_TX_MODE;
+        request->tx_mode=!strcmp(tokens[3],"am") ? AUDIO_MOD_AM : AUDIO_MOD_NBFM;
+    } else if (request->protocol_version==2 && !strcmp(tokens[2],"tx_am_depth") && count==4 &&
+               !parse_float(tokens[3],&request->tx_am_depth) && request->tx_am_depth>=0 && request->tx_am_depth<=1)
+        request->command=CONTROL_TX_AM_DEPTH;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "tx_source") && count == 4 &&
              (!strcmp(tokens[3], "mic") || !strcmp(tokens[3], "tone"))) {
         request->command = CONTROL_TX_SOURCE;
@@ -463,6 +470,14 @@ int control_request_format(const control_request_t *request,
     case CONTROL_TX_SAMPLE_RATE:
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " tx_sample_rate %u\n",
                          version, request->id, request->tx_sample_rate_hz);
+        break;
+    case CONTROL_TX_MODE:
+        if(version!=2)break;
+        bytes=snprintf(packet,capacity,"v2 %" PRIu64 " tx_mode %s\n",request->id,audio_mod_mode_name(request->tx_mode));
+        break;
+    case CONTROL_TX_AM_DEPTH:
+        if(version!=2)break;
+        bytes=snprintf(packet,capacity,"v2 %" PRIu64 " tx_am_depth %.9g\n",request->id,(double)request->tx_am_depth);
         break;
     case CONTROL_TX_SOURCE:
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " tx_source %s\n",

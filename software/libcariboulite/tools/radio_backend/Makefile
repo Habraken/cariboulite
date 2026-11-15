@@ -72,6 +72,7 @@ test: all $(OUT)/test_sinad $(OUT)/test_status_publisher $(OUT)/test_modem_snaps
 	python3 "$(ROOT)/software/libcariboulite/tests/test_rx_audio_output.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_rx_rates.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_tx_rates.py"
+	python3 "$(ROOT)/software/libcariboulite/tests/test_am_mod.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_radio_backend.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_rx_control_backend.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_radio_control.py"

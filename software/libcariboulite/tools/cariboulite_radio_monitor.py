@@ -310,7 +310,10 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
     effective_register_view = ("tx" if tx_active else "rx") if register_view == "auto" else register_view
     tx_settings = (f"  TX sample rate={_formatted(config.get('tx_sample_rate_hz'), ',.0f')} S/s"
                    f" TX source={_label(config.get('tx_source'))}"
-                   f" TX deviation=+/-{_formatted(config.get('tx_deviation_hz'), 'g')} Hz") if (
+                   + (f" TX mode=am AM depth={_formatted(config.get('tx_am_depth'), '.2f')}"
+                      if config.get("tx_mode")=="am" else
+                      f" TX deviation=+/-{_formatted(config.get('tx_deviation_hz'), 'g')} Hz"
+                      + (f" TX mode={_label(config.get('tx_mode'))}" if "tx_mode" in config else ""))) if (
                        "tx_sample_rate_hz" in config) else ""
     tx_actual = config.get("tx_actual_frequency_hz")
     tx_frequency = _frequency(config.get("tx_frequency_hz"))

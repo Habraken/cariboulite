@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "audio_demod.h"
+#include "audio_mod.h"
 #include <stddef.h>
 #include <stdint.h>
 
@@ -23,6 +24,8 @@ typedef enum control_command {
     CONTROL_TX_POWER,
     CONTROL_TX_SAMPLE_RATE,
     CONTROL_TX_SOURCE,
+    CONTROL_TX_MODE,
+    CONTROL_TX_AM_DEPTH,
     CONTROL_TX_TONE,
     CONTROL_FPGA_PROGRAM,
     CONTROL_FPGA_SOFT_RESET,
@@ -52,6 +55,8 @@ typedef struct control_request {
     int tx_power_dbm;
     unsigned tx_sample_rate_hz;
     bool tx_tone_mode;
+    audio_mod_mode_t tx_mode;
+    float tx_am_depth;
     float tx_tone_hz;
     float tx_tone_amp;
 } control_request_t;

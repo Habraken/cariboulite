@@ -812,7 +812,7 @@ int main(void) {
             ("--rx-noise-open", "0.3001", "--rx-noise-close", "0.3002"),
             ("--rx-deemphasis-us", "60"), ("--rx-playback", ""),
             ("--rx-frequency",), ("--tx-microphone",), ("--tx-microphone", ""),
-            ("--tx-mode", "wbfm"), ("--tx-mode", "am"), ("--tx-mode", "NBFM"),
+            ("--tx-mode", "wbfm"), ("--tx-mode", "usb"), ("--tx-mode", "NBFM"),
             ("--tx-mode", ""), ("--tx-mode",),
             ("unexpected-positional-argument",),
         )
@@ -825,6 +825,8 @@ int main(void) {
                          for value in ("0", "-1", "0.5", "24000.1", "nan", "inf", "-inf",
                                        "1e-50", "1e-9999", "2500Hz", ""))
         invalid += tuple(("--rx-am-rf-attenuation", value) for value in ("-3","64","1","3.5","nan","inf"))
+        invalid += tuple(("--tx-am-depth",value) for value in ("-0.1","1.01","nan","inf","1e-999"))
+        invalid += (("--tx-am-depth",),)
         invalid += (("--rx-deviation",),("--rx-am-agc","invalid"),("--rx-am-agc",))
         for index, arguments in enumerate(invalid):
             with self.subTest(arguments=arguments):

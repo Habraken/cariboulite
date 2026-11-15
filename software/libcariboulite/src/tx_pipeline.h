@@ -4,6 +4,7 @@
 #include "pipeline_transport.h"
 #include "audio_source.h"
 #include "nbfm_mod.h"
+#include "audio_mod.h"
 #include "alsa_source.h"
 #include "pipeline_runtime.h"
 #include "tx_audio_buffer.h"
@@ -89,7 +90,10 @@ typedef struct {
     int    tx_power_dbm;        // e.g., -3
     unsigned rf_fs;            // 1, 2 or 4 MS/s; 0 defaults to 4 MS/s
 
-    // Baseband source for NBFM mod
+    audio_mod_mode_t mode; // zero/default NBFM; AM voice also supported
+    float am_depth; // AM modulation at unit filtered audio; 0..1
+
+    // Baseband source for audio modulation
     bool   tone_mode;           // true => synth audio
     float  tone_hz;             // default 600.0f
     float  tone_amp;            // 0..1 (e.g., 0.4f)

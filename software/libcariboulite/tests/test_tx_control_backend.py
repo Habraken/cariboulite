@@ -71,6 +71,27 @@ class TxControlBackendTests(unittest.TestCase):
         self.assertEqual(reply["result"], "OK" if code in ("OK", "ACCEPTED") else "ERROR")
         return reply
 
+    def test_am_mode_and_depth_are_saved_and_locked_during_tx(self):
+        self.start_backend("--tx-mode","am","--tx-am-depth","0.7")
+        peer=self.controller();status=self.connect(self.status_path)
+        initial=self.snapshot_matching(status)
+        self.assertEqual(initial['config']['tx_mode'],'am')
+        self.assertAlmostEqual(initial['config']['tx_am_depth'],.7)
+        self.command(peer,"tx_mode nbfm")
+        self.command(peer,"tx_mode am")
+        self.command(peer,"tx_am_depth 0.8")
+        self.command(peer,"tx_source tone")
+        self.command(peer,"tx_start",code="ACCEPTED");self.wait_state(peer,"TX")
+        self.command(peer,"tx_mode nbfm",code="TX_RUNNING")
+        self.command(peer,"tx_am_depth 0.5",code="TX_RUNNING")
+        current=self.snapshot_matching(status,lambda s:s['control']['state']=='TX')
+        self.assertEqual(current['config']['tx_mode'],'am')
+        self.assertEqual(current['config']['tx_am_depth'],.8)
+        self.command(peer,"tx_stop",code="ACCEPTED");self.wait_state(peer,"RX")
+        self.command(peer,"tx_mode nbfm")
+        current=self.snapshot_matching(status,lambda s:s['config']['tx_mode']=='nbfm')
+        self.assertEqual(current['rx_mode'],initial['rx_mode'])
+
     @staticmethod
     def settings(reply):
         return {key: value for key, value in reply.items()

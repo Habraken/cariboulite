@@ -122,7 +122,8 @@ static void usage(FILE *out, const char *program)
         "Transmit options:\n"
         "  --tx-frequency HZ         default 430125000\n"
         "  --tx-power DBM            default -12; RF24 -12..14, RF09 -14..14\n"
-        "  --tx-mode nbfm            only supported TX mode (default nbfm)\n"
+        "  --tx-mode nbfm|am         NBFM or 300-3000 Hz AM voice, default nbfm\n"
+        "  --tx-am-depth DEPTH      modulation at unit audio: 0..1, default 0.8\n"
         "  --tx-deviation HZ         nominal NBFM deviation 0..24000 (default %.0f)\n"
         "  --tx-sample-rate HZ       native 400000..4000000 (default 1000000)\n"
         "  --tx-source mic|tone      default mic; tone 600 Hz, amplitude 0.4\n"
@@ -152,7 +153,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         .start_stopped = true,
         .frequency = 430125000, .status_hz = 5, .config_generation = 1,
         .tx = {.freq_hz = 430125000, .tx_power_dbm = -12, .rf_fs = 1000000,
-            .tone_hz = 600, .tone_amp = .4f, .out_scale = 4000,
+            .tone_hz = 600, .tone_amp = .4f, .out_scale = 4000, .am_depth=.8f,
             .f_dev_hz = NBFM_DEFAULT_DEVIATION_HZ, .verify_start_profile = true,
             .pacing_mode = TX_PACING_HARDWARE_REQUIRED},
         .rx = {.freq_hz = 430125000, .fs_rf = 1000000, .fs_audio = 48000,
@@ -165,7 +166,7 @@ static int parse_options(int argc, char **argv, options_t *o)
     enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
-        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME };
+        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH };
     static const struct option long_options[] = {
         {"channel", required_argument, NULL, CHANNEL},
         {"rx-sinad", no_argument, NULL, SINAD},
@@ -187,6 +188,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         {"tx-microphone", required_argument, NULL, MICROPHONE},
         {"tx-frequency", required_argument, NULL, TX_FREQ},
         {"tx-power", required_argument, NULL, TX_POWER},
+        {"tx-am-depth", required_argument, NULL, TX_AM_DEPTH},
         {"tx-mode", required_argument, NULL, TX_MODE},
         {"tx-deviation", required_argument, NULL, TX_DEVIATION},
         {"tx-sample-rate", required_argument, NULL, TX_RATE},
@@ -253,7 +255,13 @@ static int parse_options(int argc, char **argv, options_t *o)
             if (number(optarg, &value, -14, 14) || floor(value) != value) return -1;
             o->tx.tx_power_dbm = (int)value; break;
         case TX_MODE:
-            if (strcmp(optarg, "nbfm")) return -1;
+            if (!strcmp(optarg,"nbfm")) o->tx.mode=AUDIO_MOD_NBFM;
+            else if (!strcmp(optarg,"am")) o->tx.mode=AUDIO_MOD_AM;
+            else return -1;
+            break;
+        case TX_AM_DEPTH:
+            if(number(optarg,&value,0,1))return -1;
+            o->tx.am_depth=(float)value;
             break;
         case TX_DEVIATION:
             if (number(optarg, &value, 0, 24000)) return -1;
@@ -1093,7 +1101,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         break;
     case CONTROL_MODE:
     case CONTROL_BOTH_MODE: {
-        /* Receive-only mode selection leaves TX at NBFM. */
+        /* RX mode selection leaves the saved TX mode unchanged. */
         audio_demod_mode_t mode = request->mode;
         if (radio_profile_rx(mode, (unsigned)o->rx.fs_rf, &profile)) code = "INVALID";
         else if (o->rx_requested) code = "RX_RUNNING";
@@ -1194,6 +1202,18 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         else if (o->tx.rf_fs != request->tx_sample_rate_hz) {
             o->tx.rf_fs = profile.sample_rate_hz;
             c->tx_configuration_dirty = true; changed = true;
+        }
+        break;
+    case CONTROL_TX_MODE:
+        if(request->tx_mode!=AUDIO_MOD_NBFM && request->tx_mode!=AUDIO_MOD_AM)code="INVALID";
+        else if(o->tx.mode!=request->tx_mode) {
+            o->tx.mode=request->tx_mode;c->tx_configuration_dirty=true;changed=true;
+        }
+        break;
+    case CONTROL_TX_AM_DEPTH:
+        if(!radio_profile_finite(request->tx_am_depth) || request->tx_am_depth<0 || request->tx_am_depth>1)code="INVALID";
+        else if(o->tx.am_depth!=request->tx_am_depth) {
+            o->tx.am_depth=request->tx_am_depth;c->tx_configuration_dirty=true;changed=true;
         }
         break;
     case CONTROL_TX_SOURCE:
@@ -1588,7 +1608,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"playback\":%s,\"pcm_gain\":%.3f,\"deemphasis_us\":%.3f,\"am_agc_enabled\":%s,\"am_rf_gain_db\":%u,\"am_voice_low_hz\":300,\"am_voice_high_hz\":3000,\"rx_deviation_hz\":%.3f,"
         "\"tx_frequency_hz\":%.3f,\"tx_actual_frequency_hz\":%s,\"tx_power_dbm\":%d,"
         "\"tx_actual_power_dbm\":%s,\"tx_sample_rate_hz\":%u,\"tx_source\":\"%s\","
-        "\"tx_tone_hz\":%.3f,\"tx_tone_amp\":%.3f,\"tx_deviation_hz\":%.3f,"
+        "\"tx_mode\":\"%s\",\"tx_am_depth\":%.3f,\"tx_am_carrier_fraction\":0.5,\"tx_tone_hz\":%.3f,\"tx_tone_amp\":%.3f,\"tx_deviation_hz\":%.3f,"
         "\"profile\":%s,\"observed\":%s},"
         "\"rx\":{\"running\":%s,\"queue\":%s,\"noise_enabled\":%s,\"carrier_enabled\":%s,"
         "\"gate_open\":%s,\"noise\":{\"valid\":%s,\"detector_open\":%s,\"rms\":%s,"
@@ -1615,7 +1635,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         63 - o->rx.am_rf_attenuation_db,
         (double)(o->rx.nbfm_deviation_hz != 0 ? o->rx.nbfm_deviation_hz : NBFM_DEFAULT_DEVIATION_HZ),
         o->tx.freq_hz, tx_actual_freq, o->tx.tx_power_dbm, tx_actual_power,
-        o->tx.rf_fs, o->tx.tone_mode ? "tone" : "mic", (double)o->tx.tone_hz,
+        o->tx.rf_fs, o->tx.tone_mode ? "tone" : "mic", audio_mod_mode_name(o->tx.mode), (double)o->tx.am_depth, (double)o->tx.tone_hz,
         (double)o->tx.tone_amp, (double)o->tx.f_dev_hz,
         desired_profile, observed_profile,
         live && rx_pipeline_running(pipeline) ? "true" : "false", queue,

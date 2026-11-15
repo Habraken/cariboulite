@@ -1,0 +1,241 @@
+{
+  "scope": "AM voice TX software validation; hardware tests pending",
+  "rf_link_confirmation": "Operator confirmed 90 dB direct link before any AM RF transmission",
+  "checks": {
+    "waveform": "PASS strict and production DSP with independent strict measurement oracle",
+    "native_rates": "PASS all eight clocks, fractional TX frames and real marker packing",
+    "signal": "PASS carrier, filtered modulation depth, bounded envelope and voice filtering",
+    "stream_contract": "PASS fragmented input/output, exact reset and underflow carrier fallback",
+    "legacy_nbfm": "PASS legacy IQ within one count, continuous phase and chunking",
+    "lifecycle": "PASS both NBFM/AM pipeline creation at every native rate; invalid AM settings rejected before side effects",
+    "backend_suite": "PASS 104 backend/controller tests, plus C suites, decoder and native-rate DSP checks",
+    "passive_monitor": "PASS 64 tests",
+    "build": "PASS backend and CMake applications"
+  },
+  "measurements": [
+    {
+      "rate_hz": 4000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397802,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 2000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397814,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 1333333,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397802,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397813,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 800000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397798,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 666667,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397814,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 500000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397821,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 400000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397811,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.0,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.0,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 1.0,
+      "input_amplitude": 1.0,
+      "tone_hz": 1000,
+      "measured_modulation": 0.994498,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397813,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 100,
+      "measured_modulation": 0.044154,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 8000,
+      "measured_modulation": 0.005149,
+      "carrier_mean_error_fraction": 8e-06
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 1.0,
+      "input_amplitude": 100.0,
+      "tone_hz": 1000,
+      "measured_modulation": 1.072841,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 4000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397802,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 2000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397814,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 1333333,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397802,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397813,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 800000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397798,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 666667,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397814,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 500000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397821,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 400000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397811,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.0,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.0,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 1.0,
+      "input_amplitude": 1.0,
+      "tone_hz": 1000,
+      "measured_modulation": 0.994498,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 1000,
+      "measured_modulation": 0.397813,
+      "carrier_mean_error_fraction": -0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 100,
+      "measured_modulation": 0.044154,
+      "carrier_mean_error_fraction": 0.0
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 0.8,
+      "input_amplitude": 0.5,
+      "tone_hz": 8000,
+      "measured_modulation": 0.005149,
+      "carrier_mean_error_fraction": 8e-06
+    },
+    {
+      "rate_hz": 1000000,
+      "depth": 1.0,
+      "input_amplitude": 100.0,
+      "tone_hz": 1000,
+      "measured_modulation": 1.072841,
+      "carrier_mean_error_fraction": -0.0
+    }
+  ]
+}
