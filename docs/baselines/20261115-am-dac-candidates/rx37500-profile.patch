@@ -1,0 +1,11 @@
+--- a/rx40-profile.c
++++ b/rx40-profile.c
+@@ -142,7 +142,7 @@
+     const int sign=channel==cariboulite_channel_hif && requested>=CARIBOULITE_2G4_MIN ? -1 : 1;
+     // HiF decoding swaps I/Q. Below the bypass band the external mixer also reverses
+     // RF frequency sense; the two inversions cancel. S1G is not swapped.
+-    const int offsets[]={12500,-12500};
++    const int offsets[]={37500,-37500};
+     for(unsigned k=0;k<2;k++) {
+         double candidate=requested+offsets[k];
+         if(radio_profile_frequency_valid(channel,product_id,candidate) &&

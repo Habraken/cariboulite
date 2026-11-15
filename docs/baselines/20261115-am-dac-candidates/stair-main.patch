@@ -1,0 +1,11 @@
+--- a/stair-main.c
++++ b/stair-main.c
+@@ -1691,7 +1691,7 @@
+  FILE*f=fopen(path,"r");if(!f)return;
+  unsigned long long epoch;int mode,ci,cq;double gain,phase,di,dq,offset;
+  int fields=fscanf(f,"%llu %d %d %d %lf %lf %lf %lf %lf",&epoch,&mode,&ci,&cq,&gain,&phase,&di,&dq,&offset);fclose(f);
+- if(fields!=9||epoch==last||mode<0||mode>6||ci< -1||ci>63||cq< -1||cq>63||gain<.5||gain>1.5||fabs(phase)>.5||fabs(di)>512||fabs(dq)>512||offset<10000||offset>200000)return;
++ if(fields!=9||epoch==last||mode<0||mode>8||ci< -1||ci>63||cq< -1||cq>63||gain<.5||gain>1.5||fabs(phase)>.5||fabs(di)>512||fabs(dq)>512||offset<10000||offset>200000)return;
+  HW_LOCK();
+  int error=0;uint8_t actual[2]={0};
+  if(ci>=0&&cq>=0){uint8_t values[2]={ci,cq};error=at86rf215_write_buffer(&sys->modem,REG_RF24_TXCI,values,2);}

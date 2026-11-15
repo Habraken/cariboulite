@@ -1,0 +1,28 @@
+[
+  {
+    "host": "pi4g-trixie",
+    "implementation_commit": "83b2f6d",
+    "HEAD": "83b2f6d18302595387be9dea1bae424916706b88",
+    "files": {
+      "build/radio-backend/cariboulite_radio_backend": "25a9b8cf2c764fc4945e2fc5facb4b1143bf3bad9b7d606abc997cc4d3e390b9",
+      "build/radio-backend/cariboulite_radio_controller": "b7746466445bc8699fc2cc9b80f66b9ed4bcc3a9303c4312cc660c6ea30cfa73",
+      "build/libcariboulite.so": "eac60b5076c4d846d1bcb00134183cc1af3b9fb5cd639a652fc136f510a24190",
+      "build/cariboulite_test_app": "ef2b60777615ddf75b1d30a9efcb5f4dc29781b615fb25fb738f8105d58a5262",
+      "firmware/top.bin": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6"
+    },
+    "new_backend_option_present": true
+  },
+  {
+    "host": "pi4f-trixie",
+    "implementation_commit": "83b2f6d",
+    "HEAD": "83b2f6d18302595387be9dea1bae424916706b88",
+    "files": {
+      "build/radio-backend/cariboulite_radio_backend": "25a9b8cf2c764fc4945e2fc5facb4b1143bf3bad9b7d606abc997cc4d3e390b9",
+      "build/radio-backend/cariboulite_radio_controller": "b7746466445bc8699fc2cc9b80f66b9ed4bcc3a9303c4312cc660c6ea30cfa73",
+      "build/libcariboulite.so": "eac60b5076c4d846d1bcb00134183cc1af3b9fb5cd639a652fc136f510a24190",
+      "build/cariboulite_test_app": "ef2b60777615ddf75b1d30a9efcb5f4dc29781b615fb25fb738f8105d58a5262",
+      "firmware/top.bin": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6"
+    },
+    "new_backend_option_present": true
+  }
+]

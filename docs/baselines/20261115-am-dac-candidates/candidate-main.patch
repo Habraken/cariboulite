@@ -1,0 +1,43 @@
+--- a/main.c
++++ b/main.c
+@@ -3,6 +3,7 @@
+ #define _GNU_SOURCE
+ #endif
+ #include "cariboulite_setup.h"
++#include "diag.h"
+ #include "rx_pipeline.h"
+ #include "rx_audio_output.h"
+ #include "tx_pipeline.h"
+@@ -1683,6 +1684,24 @@
+     return result < 0 || (size_t)result >= capacity ? -1 : result;
+ }
+ 
++static void diagnostic_apply(sys_st *sys)
++{
++ static unsigned long long last;
++ const char *path=getenv("AM_DIAG_CONTROL");if(!path)return;
++ FILE*f=fopen(path,"r");if(!f)return;
++ unsigned long long epoch;int mode,ci,cq;double gain,phase,di,dq,offset;
++ int fields=fscanf(f,"%llu %d %d %d %lf %lf %lf %lf %lf",&epoch,&mode,&ci,&cq,&gain,&phase,&di,&dq,&offset);fclose(f);
++ if(fields!=9||epoch==last||mode<0||mode>6||ci< -1||ci>63||cq< -1||cq>63||gain<.5||gain>1.5||fabs(phase)>.5||fabs(di)>512||fabs(dq)>512||offset<10000||offset>200000)return;
++ HW_LOCK();
++ int error=0;uint8_t actual[2]={0};
++ if(ci>=0&&cq>=0){uint8_t values[2]={ci,cq};error=at86rf215_write_buffer(&sys->modem,REG_RF24_TXCI,values,2);}
++ error|=at86rf215_read_buffer(&sys->modem,REG_RF24_TXCI,actual,2);
++ HW_UNLOCK();
++ if(error||(ci>=0&&(actual[0]&63)!=ci)||(cq>=0&&(actual[1]&63)!=cq))return;
++ atomic_store(&am_diag_gain,gain);atomic_store(&am_diag_phase,phase);atomic_store(&am_diag_di,di);atomic_store(&am_diag_dq,dq);atomic_store(&am_diag_offset,offset);atomic_store(&am_diag_mode,mode);
++ char ack[512];snprintf(ack,sizeof(ack),"%s.ack",path);char temp[550];snprintf(temp,sizeof(temp),"%s.tmp",ack);f=fopen(temp,"w");if(f){fprintf(f,"%llu %u %u\n",epoch,actual[0]&63,actual[1]&63);fclose(f);if(!rename(temp,ack))last=epoch;}
++}
++
+ int main(int argc, char **argv)
+ {
+     options_t options;
+@@ -1809,6 +1828,7 @@
+             && backend_tx_recheck(&control, now) != 0) { result = 1; break; }
+         if (options.config_generation != published_config_generation) next_update = now;
+         if (now >= next_update) {
++            if(!options.dry_run && options.tx_requested && !control.lifecycle_active && !strcmp(options.channel,"RF24"))diagnostic_apply(&sys);
+             const char *state = options.dry_run ? "DRY_RUN" : backend_control_state(&options);
+             rx_pipeline_stats_t stats = {0};
+             tx_pipeline_stats_t txstats = {0};

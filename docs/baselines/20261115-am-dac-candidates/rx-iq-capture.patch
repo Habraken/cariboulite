@@ -1,0 +1,21 @@
+--- a/rx.c
++++ b/rx.c
+@@ -79,6 +79,8 @@
+     atomic_store_explicit(&ctrl->alive, true, memory_order_relaxed);
+     pthread_cleanup_push(worker_exited, &ctrl->alive);
+ 
++    FILE* diagnostic=NULL;size_t diagnostic_left=0;unsigned long long diagnostic_epoch=0;
++    const char *diagnostic_control=getenv("AM_IQ_CONTROL");char diagnostic_path[512]={0};
+     const size_t want = ctrl->rx_buffer_size; // Selected rate * 10 ms
+     cariboulite_sample_complex_int16* buf = ctrl->rx_buffer;
+     cariboulite_sample_meta* meta = malloc(sizeof(*meta) * want);
+@@ -107,6 +109,9 @@
+         }
+ 
+         if (have == want) {
++            if(diagnostic_control && !diagnostic){FILE*f=fopen(diagnostic_control,"r");if(f){unsigned long long epoch;size_t count;char path[512];int n=fscanf(f,"%llu %zu %511s",&epoch,&count,path);fclose(f);if(n==3&&epoch!=diagnostic_epoch&&count>0&&count<=2000000){diagnostic=fopen(path,"wb");if(!diagnostic)abort();diagnostic_epoch=epoch;diagnostic_left=count;snprintf(diagnostic_path,sizeof(diagnostic_path),"%s",path);}}}
++            if(diagnostic){size_t count=want<diagnostic_left?want:diagnostic_left;if(fwrite(buf,sizeof(*buf),count,diagnostic)!=count)abort();diagnostic_left-=count;if(!diagnostic_left){fclose(diagnostic);diagnostic=NULL;char done[550];snprintf(done,sizeof(done),"%s.done",diagnostic_path);FILE*f=fopen(done,"w");if(!f)abort();fprintf(f,"%llu\n",diagnostic_epoch);fclose(f);}}
++
+             rf10_frame_t frm;
+             frm.rssi_valid = false;
+             frm.rssi_dbm = 127;

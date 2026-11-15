@@ -1,0 +1,16 @@
+{
+  "implementation_commit": "83b2f6d",
+  "low_I_bit_fix_commit": "368dd5d",
+  "full_backend_make_test": "PASS after duration correction",
+  "python_integration_tests": 108,
+  "shaper_oracle": "PASS 48 rate/input cases under strict and production compilation; 96 runs total; disabled/raw, setup validation, bounds, carrier, fundamental, partitioning, reset",
+  "CMake_all_applications_both_hosts": "PASS",
+  "standalone_backends_both_hosts": "PASS rebuilt; new option available",
+  "production_RF_final_weighted_captures": 28,
+  "production_RF_pre_weighting_captures": 53,
+  "silent_carrier_captures": 4,
+  "measured_stream_error_deltas": 0,
+  "ADC_rail_samples": 0,
+  "production_option_default": "off",
+  "scope": "430.100 MHz, pi4g TX/pi4f RX, 70 dB wired link; no aviation-inspired processing or SSB"
+}

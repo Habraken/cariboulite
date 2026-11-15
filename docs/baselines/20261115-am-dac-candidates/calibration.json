@@ -1,0 +1,82 @@
+{
+  "parameters": {
+    "mode": 1,
+    "ci": 35,
+    "cq": 27,
+    "gain": 1.016,
+    "phase": -0.009000000000000001,
+    "di": -4.0,
+    "dq": -12.0
+  },
+  "initial": {
+    "samples": 200000,
+    "carrier_if_hz": -12465.0,
+    "carrier_rms_codes": 1052.7416671002838,
+    "modulation_fraction": 0.07730268875269374,
+    "second_third_harmonic_percent": 0.5528784392233103,
+    "inband_tone_residual_db": 35.396278511243516,
+    "outside_3p5_to_60k_dbc": -24.4280815171842,
+    "outside_3p5_to_60k_excluding_RX_DC_dbc": -24.491791543239625,
+    "offset_200hz_band_dbc": {
+      "-50400": -58.56254913719474,
+      "-25200": -52.224742176337955,
+      "25200": -25.572156801332557,
+      "50400": -42.0216175287207
+    },
+    "adc_rail_samples": 0
+  },
+  "final": [
+    {
+      "samples": 200000,
+      "carrier_if_hz": -12495.0,
+      "carrier_rms_codes": 941.9707389313036,
+      "modulation_fraction": 0.07740390862297993,
+      "second_third_harmonic_percent": 0.1885921993272726,
+      "inband_tone_residual_db": 35.64726397895192,
+      "outside_3p5_to_60k_dbc": -30.08389480400443,
+      "outside_3p5_to_60k_excluding_RX_DC_dbc": -30.271398317352084,
+      "offset_200hz_band_dbc": {
+        "-50400": -59.71186957097288,
+        "-25200": -51.37885324923093,
+        "25200": -57.17335507873116,
+        "50400": -59.7928981060224
+      },
+      "adc_rail_samples": 0
+    },
+    {
+      "samples": 200000,
+      "carrier_if_hz": -12495.0,
+      "carrier_rms_codes": 941.863945918843,
+      "modulation_fraction": 0.07736230389995602,
+      "second_third_harmonic_percent": 0.18559153157938232,
+      "inband_tone_residual_db": 35.01497352426465,
+      "outside_3p5_to_60k_dbc": -29.982550190029357,
+      "outside_3p5_to_60k_excluding_RX_DC_dbc": -30.17127883977114,
+      "offset_200hz_band_dbc": {
+        "-50400": -60.60865629001292,
+        "-25200": -50.84564444248503,
+        "25200": -54.340432116444845,
+        "50400": -60.15170656395657
+      },
+      "adc_rail_samples": 0
+    },
+    {
+      "samples": 200000,
+      "carrier_if_hz": -12495.0,
+      "carrier_rms_codes": 941.3504034916682,
+      "modulation_fraction": 0.07746730595083974,
+      "second_third_harmonic_percent": 0.2717125452192068,
+      "inband_tone_residual_db": 35.760137451365146,
+      "outside_3p5_to_60k_dbc": -30.07701235024247,
+      "outside_3p5_to_60k_excluding_RX_DC_dbc": -30.27139820422694,
+      "offset_200hz_band_dbc": {
+        "-50400": -62.58809115361241,
+        "-25200": -50.53204951591845,
+        "25200": -54.98231848502062,
+        "50400": -61.63721881137345
+      },
+      "adc_rail_samples": 0
+    }
+  ],
+  "run": "am-candidates-calibration-20261115-224656"
+}

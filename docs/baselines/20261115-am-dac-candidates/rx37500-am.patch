@@ -1,0 +1,15 @@
+--- a/rx37500-am.c
++++ b/rx37500-am.c
+@@ -62,9 +62,10 @@
+ }
+ int audio_demod_set_am_offset(audio_demod_t* dsp,int hz)
+ {
+-    if(!dsp || dsp->mode!=AUDIO_DEMOD_AM || (hz!=0 && hz!=12500 && hz!=-12500))return -EINVAL;
++    if(!dsp || dsp->mode!=AUDIO_DEMOD_AM || (hz!=0 && hz!=12500 && hz!=-12500 && hz!=37500 && hz!=-37500))return -EINVAL;
+     am_state_t* s=(am_state_t*)dsp;
+-    s->mix_step=hz==0 ? 0 : hz>0 ? s->rf_divider : 320-s->rf_divider;
++    unsigned step=(unsigned)(abs(hz)/12500)*s->rf_divider;
++    s->mix_step=hz==0 ? 0 : hz>0 ? step : 320-step;
+     s->mix_phase=0;
+     return 0;
+ }

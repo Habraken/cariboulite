@@ -1,0 +1,423 @@
+make: Entering directory '/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend'
+"/home/pi/src/cariboulite/build/radio-backend/test_sinad"
+SINAD tests passed: distortion 20.718 dB (expected 20.716), +1 Hz 24.432 dB
+"/home/pi/src/cariboulite/build/radio-backend/test_status_publisher"
+status publisher: delivery, passive clients, limits, slow clients, permissions and inode cleanup passed
+"/home/pi/src/cariboulite/build/radio-backend/test_modem_snapshot"
+modem snapshot tests passed (mock SPI, no hardware access)
+"/home/pi/src/cariboulite/build/radio-backend/test_command_protocol"
+command protocol: strict packets, numeric limits and roundtrips passed
+"/home/pi/src/cariboulite/build/radio-backend/test_control_server"
+control server: exclusive ownership, bounded dispatch, malformed packets, slow clients and secure cleanup passed
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_smi_rx_stream.py"
+PASS: RX byte phases, real false locks, fragmented input/output, genuine counts, channel mapping, ambiguity, corruption and recovery
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_smi_tx_wire.py"
+PASS: actual TX wire bytes preserve all 8192 signed I/Q codes, SOF first
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_am_demod.py"
+Testing AM strict
+PASS AM 4000000 (4000000.000000 actual): 95999 audio samples, depth 0.596437, SNR 65.17 dB, manual 0.074620, chunk/reset exact
+PASS AM 2000000 (2000000.000000 actual): 95999 audio samples, depth 0.596430, SNR 65.48 dB, manual 0.074619, chunk/reset exact
+PASS AM 1333333 (1333333.333333 actual): 95999 audio samples, depth 0.596473, SNR 65.41 dB, manual 0.074629, chunk/reset exact
+PASS AM 1000000 (1000000.000000 actual): 95999 audio samples, depth 0.596422, SNR 65.43 dB, manual 0.074617, chunk/reset exact
+PASS AM 800000 (800000.000000 actual): 95999 audio samples, depth 0.596396, SNR 65.26 dB, manual 0.074615, chunk/reset exact
+PASS AM 666667 (666666.666667 actual): 95999 audio samples, depth 0.596469, SNR 65.46 dB, manual 0.074629, chunk/reset exact
+PASS AM 500000 (500000.000000 actual): 95999 audio samples, depth 0.596491, SNR 65.27 dB, manual 0.074629, chunk/reset exact
+PASS AM 400000 (400000.000000 actual): 95999 audio samples, depth 0.596415, SNR 65.07 dB, manual 0.074619, chunk/reset exact
+PASS AM offset RX 4000000 mix 12500 Hz: depth 0.397735, fit SNR 66.95 dB, fixed-spur leakage -122.85 dBc; split/reset exact
+PASS AM offset RX 2000000 mix -12500 Hz: depth 0.397735, fit SNR 67.12 dB, fixed-spur leakage -113.28 dBc; split/reset exact
+PASS AM offset RX 1333333 mix 12500 Hz: depth 0.397757, fit SNR 67.25 dB, fixed-spur leakage -117.96 dBc; split/reset exact
+PASS AM offset RX 1000000 mix -12500 Hz: depth 0.397733, fit SNR 67.31 dB, fixed-spur leakage -110.31 dBc; split/reset exact
+PASS AM offset RX 800000 mix 12500 Hz: depth 0.397737, fit SNR 66.84 dB, fixed-spur leakage -116.03 dBc; split/reset exact
+PASS AM offset RX 666667 mix -12500 Hz: depth 0.397758, fit SNR 67.27 dB, fixed-spur leakage -110.39 dBc; split/reset exact
+PASS AM offset RX 500000 mix 12500 Hz: depth 0.397758, fit SNR 67.44 dB, fixed-spur leakage -125.98 dBc; split/reset exact
+PASS AM offset RX 400000 mix -12500 Hz: depth 0.397743, fit SNR 67.03 dB, fixed-spur leakage -116.00 dBc; split/reset exact
+PASS AM filtering: 100 Hz -19.10 dB, 8 kHz -163.60 dB, adjacent 2.3 kHz leakage -95.52 dBc; invalid input/capacity checks
+PASS: narrow voice AM envelope, AGC/manual gain, all native clocks, channel/audio filtering and contracts
+Testing AM production
+PASS AM 4000000 (4000000.000000 actual): 95999 audio samples, depth 0.596437, SNR 65.17 dB, manual 0.074620, chunk/reset exact
+PASS AM 2000000 (2000000.000000 actual): 95999 audio samples, depth 0.596430, SNR 65.49 dB, manual 0.074619, chunk/reset exact
+PASS AM 1333333 (1333333.333333 actual): 95999 audio samples, depth 0.596473, SNR 65.41 dB, manual 0.074629, chunk/reset exact
+PASS AM 1000000 (1000000.000000 actual): 95999 audio samples, depth 0.596422, SNR 65.43 dB, manual 0.074617, chunk/reset exact
+PASS AM 800000 (800000.000000 actual): 95999 audio samples, depth 0.596396, SNR 65.26 dB, manual 0.074615, chunk/reset exact
+PASS AM 666667 (666666.666667 actual): 95999 audio samples, depth 0.596469, SNR 65.46 dB, manual 0.074629, chunk/reset exact
+PASS AM 500000 (500000.000000 actual): 95999 audio samples, depth 0.596491, SNR 65.27 dB, manual 0.074629, chunk/reset exact
+PASS AM 400000 (400000.000000 actual): 95999 audio samples, depth 0.596415, SNR 65.07 dB, manual 0.074619, chunk/reset exact
+PASS AM offset RX 4000000 mix 12500 Hz: depth 0.397735, fit SNR 66.94 dB, fixed-spur leakage -122.78 dBc; split/reset exact
+PASS AM offset RX 2000000 mix -12500 Hz: depth 0.397735, fit SNR 67.12 dB, fixed-spur leakage -113.27 dBc; split/reset exact
+PASS AM offset RX 1333333 mix 12500 Hz: depth 0.397757, fit SNR 67.25 dB, fixed-spur leakage -117.94 dBc; split/reset exact
+PASS AM offset RX 1000000 mix -12500 Hz: depth 0.397733, fit SNR 67.31 dB, fixed-spur leakage -110.28 dBc; split/reset exact
+PASS AM offset RX 800000 mix 12500 Hz: depth 0.397737, fit SNR 66.84 dB, fixed-spur leakage -115.85 dBc; split/reset exact
+PASS AM offset RX 666667 mix -12500 Hz: depth 0.397758, fit SNR 67.27 dB, fixed-spur leakage -110.43 dBc; split/reset exact
+PASS AM offset RX 500000 mix 12500 Hz: depth 0.397758, fit SNR 67.44 dB, fixed-spur leakage -125.34 dBc; split/reset exact
+PASS AM offset RX 400000 mix -12500 Hz: depth 0.397743, fit SNR 67.03 dB, fixed-spur leakage -115.95 dBc; split/reset exact
+PASS AM filtering: 100 Hz -19.10 dB, 8 kHz -163.11 dB, adjacent 2.3 kHz leakage -95.53 dBc; invalid input/capacity checks
+PASS: narrow voice AM envelope, AGC/manual gain, all native clocks, channel/audio filtering and contracts
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_rx_audio_output.py"
+Testing calibrated RX output strict
+PASS volume bounds, 20 ms ramps, mute, gate, silence meter and clipping counts
+PASS nbfm 4000000 tau 50 us deviation 2500: RMS -12.021 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 2000000 tau 50 us deviation 2500: RMS -12.021 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 1333333 tau 50 us deviation 2500: RMS -12.017 dBFS, peak -9.018 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 1000000 tau 50 us deviation 2500: RMS -12.021 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 800000 tau 50 us deviation 2500: RMS -12.021 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 666667 tau 50 us deviation 2500: RMS -12.017 dBFS, peak -9.018 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 500000 tau 50 us deviation 2500: RMS -12.017 dBFS, peak -9.018 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 400000 tau 50 us deviation 2500: RMS -12.020 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 1000000 tau 75 us deviation 5000: RMS -12.021 dBFS, peak -9.011 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 1000000 tau 0 us deviation 2500: RMS -12.020 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 4000000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.003 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 2000000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.003 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 1333333 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.004 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 1000000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.001 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 800000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.004 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 666667 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.004 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 500000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -8.999 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 400000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.004 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 1000000 tau 75 us deviation 5000: RMS -12.000 dBFS, peak -9.000 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 1000000 tau 0 us deviation 2500: RMS -12.000 dBFS, peak -8.994 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 4000000 tau 50 us deviation 2500: RMS -12.069 dBFS, peak -9.044 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 2000000 tau 50 us deviation 2500: RMS -12.069 dBFS, peak -9.044 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 1333333 tau 50 us deviation 2500: RMS -12.068 dBFS, peak -9.039 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 1000000 tau 50 us deviation 2500: RMS -12.069 dBFS, peak -9.043 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 800000 tau 50 us deviation 2500: RMS -12.069 dBFS, peak -9.043 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 666667 tau 50 us deviation 2500: RMS -12.068 dBFS, peak -9.039 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 500000 tau 50 us deviation 2500: RMS -12.068 dBFS, peak -9.039 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 400000 tau 50 us deviation 2500: RMS -12.068 dBFS, peak -9.042 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 1000000 tau 75 us deviation 5000: RMS -12.069 dBFS, peak -9.043 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 1000000 tau 0 us deviation 2500: RMS -12.069 dBFS, peak -9.043 dBFS; pre-PCM tap avoids legacy clipping
+PASS calibrated output across all modes/native rates, de-emphasis settings and NBFM deviation
+Testing calibrated RX output production
+PASS volume bounds, 20 ms ramps, mute, gate, silence meter and clipping counts
+PASS nbfm 4000000 tau 50 us deviation 2500: RMS -12.021 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 2000000 tau 50 us deviation 2500: RMS -12.021 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 1333333 tau 50 us deviation 2500: RMS -12.017 dBFS, peak -9.018 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 1000000 tau 50 us deviation 2500: RMS -12.021 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 800000 tau 50 us deviation 2500: RMS -12.021 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 666667 tau 50 us deviation 2500: RMS -12.017 dBFS, peak -9.018 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 500000 tau 50 us deviation 2500: RMS -12.017 dBFS, peak -9.018 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 400000 tau 50 us deviation 2500: RMS -12.020 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 1000000 tau 75 us deviation 5000: RMS -12.021 dBFS, peak -9.011 dBFS; pre-PCM tap avoids legacy clipping
+PASS nbfm 1000000 tau 0 us deviation 2500: RMS -12.020 dBFS, peak -9.012 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 4000000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.003 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 2000000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.003 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 1333333 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.004 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 1000000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.001 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 800000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.004 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 666667 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.004 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 500000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -8.999 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 400000 tau 50 us deviation 2500: RMS -12.000 dBFS, peak -9.004 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 1000000 tau 75 us deviation 5000: RMS -12.000 dBFS, peak -9.000 dBFS; pre-PCM tap avoids legacy clipping
+PASS wbfm 1000000 tau 0 us deviation 2500: RMS -12.000 dBFS, peak -8.994 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 4000000 tau 50 us deviation 2500: RMS -12.069 dBFS, peak -9.044 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 2000000 tau 50 us deviation 2500: RMS -12.069 dBFS, peak -9.044 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 1333333 tau 50 us deviation 2500: RMS -12.068 dBFS, peak -9.039 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 1000000 tau 50 us deviation 2500: RMS -12.069 dBFS, peak -9.043 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 800000 tau 50 us deviation 2500: RMS -12.069 dBFS, peak -9.043 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 666667 tau 50 us deviation 2500: RMS -12.068 dBFS, peak -9.039 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 500000 tau 50 us deviation 2500: RMS -12.068 dBFS, peak -9.039 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 400000 tau 50 us deviation 2500: RMS -12.068 dBFS, peak -9.042 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 1000000 tau 75 us deviation 5000: RMS -12.069 dBFS, peak -9.043 dBFS; pre-PCM tap avoids legacy clipping
+PASS am 1000000 tau 0 us deviation 2500: RMS -12.069 dBFS, peak -9.043 dBFS; pre-PCM tap avoids legacy clipping
+PASS calibrated output across all modes/native rates, de-emphasis settings and NBFM deviation
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_rx_rates.py"
+RF polyphase div=3 target=20 residual=4.73e-09
+RF polyphase div=3 target=16 residual=1.16e-09
+RF polyphase div=5 target=16 residual=1.53e-11
+RF polyphase div=6 target=20 residual=3.11e-09
+RF polyphase div=6 target=16 residual=2.8e-09
+RF polyphase div=8 target=20 residual=-2.66e-09
+RF polyphase div=10 target=16 residual=-3.91e-10
+NBFM 400000 label (400000.000000 actual): 7199 samples, tone amplitude 0.399056 fit SNR 54.24 dB, chunk/reset exact
+NBFM 500000 label (500000.000000 actual): 7199 samples, tone amplitude 0.399235 fit SNR 54.53 dB, chunk/reset exact
+NBFM 666667 label (666666.666667 actual): 7199 samples, tone amplitude 0.399236 fit SNR 54.56 dB, chunk/reset exact
+NBFM 800000 label (800000.000000 actual): 7199 samples, tone amplitude 0.399047 fit SNR 54.24 dB, chunk/reset exact
+NBFM 1000000 label (1000000.000000 actual): 7199 samples, tone amplitude 0.399047 fit SNR 54.24 dB, chunk/reset exact
+NBFM 1333333 label (1333333.333333 actual): 7199 samples, tone amplitude 0.399236 fit SNR 54.56 dB, chunk/reset exact
+NBFM 2000000 label (2000000.000000 actual): 7199 samples, tone amplitude 0.399046 fit SNR 54.25 dB, chunk/reset exact
+NBFM 4000000 label (4000000.000000 actual): 7199 samples, tone amplitude 0.399045 fit SNR 54.25 dB, chunk/reset exact
+WBFM 400000 label (400000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.28 dB, chunk/reset exact
+WBFM 500000 label (500000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.31 dB, chunk/reset exact
+WBFM 666667 label (666666.666667 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.38 dB, chunk/reset exact
+WBFM 800000 label (800000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.37 dB, chunk/reset exact
+WBFM 1000000 label (1000000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.40 dB, chunk/reset exact
+WBFM 1333333 label (1333333.333333 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.37 dB, chunk/reset exact
+WBFM 2000000 label (2000000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.40 dB, chunk/reset exact
+WBFM 4000000 label (4000000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.37 dB, chunk/reset exact
+PASS: all eight RX rates, rational timing/phase, NBFM/WBFM tones, block invariance and reset
+RF polyphase div=3 target=20 residual=1.61e-08
+RF polyphase div=3 target=16 residual=-3.28e-09
+RF polyphase div=5 target=16 residual=8.46e-09
+RF polyphase div=6 target=20 residual=3.05e-08
+RF polyphase div=6 target=16 residual=-4.91e-09
+RF polyphase div=8 target=20 residual=3.09e-08
+RF polyphase div=10 target=16 residual=6.68e-09
+NBFM 400000 label (400000.000000 actual): 7199 samples, tone amplitude 0.399056 fit SNR 54.24 dB, chunk/reset exact
+NBFM 500000 label (500000.000000 actual): 7199 samples, tone amplitude 0.399235 fit SNR 54.53 dB, chunk/reset exact
+NBFM 666667 label (666666.666667 actual): 7199 samples, tone amplitude 0.399236 fit SNR 54.56 dB, chunk/reset exact
+NBFM 800000 label (800000.000000 actual): 7199 samples, tone amplitude 0.399047 fit SNR 54.24 dB, chunk/reset exact
+NBFM 1000000 label (1000000.000000 actual): 7199 samples, tone amplitude 0.399047 fit SNR 54.24 dB, chunk/reset exact
+NBFM 1333333 label (1333333.333333 actual): 7199 samples, tone amplitude 0.399236 fit SNR 54.56 dB, chunk/reset exact
+NBFM 2000000 label (2000000.000000 actual): 7199 samples, tone amplitude 0.399046 fit SNR 54.25 dB, chunk/reset exact
+NBFM 4000000 label (4000000.000000 actual): 7199 samples, tone amplitude 0.399045 fit SNR 54.25 dB, chunk/reset exact
+WBFM 400000 label (400000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.27 dB, chunk/reset exact
+WBFM 500000 label (500000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.31 dB, chunk/reset exact
+WBFM 666667 label (666666.666667 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.39 dB, chunk/reset exact
+WBFM 800000 label (800000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.36 dB, chunk/reset exact
+WBFM 1000000 label (1000000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.40 dB, chunk/reset exact
+WBFM 1333333 label (1333333.333333 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.37 dB, chunk/reset exact
+WBFM 2000000 label (2000000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.39 dB, chunk/reset exact
+WBFM 4000000 label (4000000.000000 actual): 7199 samples, tone amplitude 0.999974 fit SNR 94.38 dB, chunk/reset exact
+PASS: all eight RX rates, rational timing/phase, NBFM/WBFM tones, block invariance and reset
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_tx_rates.py"
+PASS TX 4000000 (4000000.000000 actual): 300 fractional frames, 12000000 pairs, deviation residual 21.5535 Hz, split/reset exact
+PASS TX 2000000 (2000000.000000 actual): 300 fractional frames, 6000000 pairs, deviation residual 10.8448 Hz, split/reset exact
+PASS TX 1333333 (1333333.333333 actual): 300 fractional frames, 4000000 pairs, deviation residual 7.1457 Hz, split/reset exact
+PASS TX 1000000 (1000000.000000 actual): 300 fractional frames, 3000000 pairs, deviation residual 5.4728 Hz, split/reset exact
+PASS TX 800000 (800000.000000 actual): 300 fractional frames, 2400000 pairs, deviation residual 4.5077 Hz, split/reset exact
+PASS TX 666667 (666666.666667 actual): 300 fractional frames, 2000000 pairs, deviation residual 3.5713 Hz, split/reset exact
+PASS TX 500000 (500000.000000 actual): 300 fractional frames, 1500000 pairs, deviation residual 2.8448 Hz, split/reset exact
+PASS TX 400000 (400000.000000 actual): 300 fractional frames, 1200000 pairs, deviation residual 2.1260 Hz, split/reset exact
+PASS: all native TX clocks, fractional frame counts, continuous audio, IQ markers and modulation
+PASS TX 4000000 (4000000.000000 actual): 300 fractional frames, 12000000 pairs, deviation residual 21.5535 Hz, split/reset exact
+PASS TX 2000000 (2000000.000000 actual): 300 fractional frames, 6000000 pairs, deviation residual 10.8448 Hz, split/reset exact
+PASS TX 1333333 (1333333.333333 actual): 300 fractional frames, 4000000 pairs, deviation residual 7.1457 Hz, split/reset exact
+PASS TX 1000000 (1000000.000000 actual): 300 fractional frames, 3000000 pairs, deviation residual 5.4728 Hz, split/reset exact
+PASS TX 800000 (800000.000000 actual): 300 fractional frames, 2400000 pairs, deviation residual 4.5077 Hz, split/reset exact
+PASS TX 666667 (666666.666667 actual): 300 fractional frames, 2000000 pairs, deviation residual 3.5713 Hz, split/reset exact
+PASS TX 500000 (500000.000000 actual): 300 fractional frames, 1500000 pairs, deviation residual 2.8448 Hz, split/reset exact
+PASS TX 400000 (400000.000000 actual): 300 fractional frames, 1200000 pairs, deviation residual 2.1260 Hz, split/reset exact
+PASS: all native TX clocks, fractional frame counts, continuous audio, IQ markers and modulation
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_am_mod.py"
+Testing AM TX strict
+PASS AM TX 4000000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397802, carrier error -0.000000, split/reset exact
+PASS AM TX 2000000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397814, carrier error -0.000000, split/reset exact
+PASS AM TX 1333333 depth 0.80 input 0.50 tone 1000: measured modulation 0.397802, carrier error 0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397813, carrier error -0.000000, split/reset exact
+PASS AM TX 800000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397798, carrier error 0.000000, split/reset exact
+PASS AM TX 666667 depth 0.80 input 0.50 tone 1000: measured modulation 0.397814, carrier error 0.000000, split/reset exact
+PASS AM TX 500000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397821, carrier error 0.000000, split/reset exact
+PASS AM TX 400000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397811, carrier error -0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.00 input 0.50 tone 1000: measured modulation 0.000000, carrier error 0.000000, split/reset exact
+PASS AM TX 1000000 depth 1.00 input 1.00 tone 1000: measured modulation 0.994498, carrier error -0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397813, carrier error -0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.80 input 0.50 tone 100: measured modulation 0.044154, carrier error 0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.80 input 0.50 tone 8000: measured modulation 0.005149, carrier error 0.000008, split/reset exact
+PASS AM TX 1000000 depth 1.00 input 100.00 tone 1000: measured modulation 1.072841, carrier error -0.000000, split/reset exact
+PASS AM TX: native rates/packets, carrier/depth, bounded envelope, voice filtering, fractional clocks, queue contracts, reset and underflow
+Testing AM TX production
+PASS AM TX 4000000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397802, carrier error -0.000000, split/reset exact
+PASS AM TX 2000000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397814, carrier error -0.000000, split/reset exact
+PASS AM TX 1333333 depth 0.80 input 0.50 tone 1000: measured modulation 0.397802, carrier error 0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397813, carrier error -0.000000, split/reset exact
+PASS AM TX 800000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397798, carrier error 0.000000, split/reset exact
+PASS AM TX 666667 depth 0.80 input 0.50 tone 1000: measured modulation 0.397814, carrier error 0.000000, split/reset exact
+PASS AM TX 500000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397821, carrier error 0.000000, split/reset exact
+PASS AM TX 400000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397811, carrier error -0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.00 input 0.50 tone 1000: measured modulation 0.000000, carrier error 0.000000, split/reset exact
+PASS AM TX 1000000 depth 1.00 input 1.00 tone 1000: measured modulation 0.994498, carrier error -0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.80 input 0.50 tone 1000: measured modulation 0.397813, carrier error -0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.80 input 0.50 tone 100: measured modulation 0.044154, carrier error 0.000000, split/reset exact
+PASS AM TX 1000000 depth 0.80 input 0.50 tone 8000: measured modulation 0.005149, carrier error 0.000008, split/reset exact
+PASS AM TX 1000000 depth 1.00 input 100.00 tone 1000: measured modulation 1.072841, carrier error -0.000000, split/reset exact
+PASS AM TX: native rates/packets, carrier/depth, bounded envelope, voice filtering, fractional clocks, queue contracts, reset and underflow
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_am_dac_shaping.py"
+Testing AM DAC shaping strict
+PASS rate=4000000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=0.001 modulation=0.000795 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=0.01 modulation=0.007946 mean=0.0000013; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=0.1 modulation=0.079481 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=1 modulation=0.794832 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=100 modulation=1.070684 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=0.001 modulation=0.000795 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=0.01 modulation=0.007946 mean=0.0000013; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=0.1 modulation=0.079481 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=1 modulation=0.794832 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=100 modulation=1.070685 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=0.001 modulation=0.000795 mean=0.0000007; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=0.01 modulation=0.007950 mean=-0.0000001; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=0.1 modulation=0.079486 mean=-0.0000009; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=1 modulation=0.794814 mean=-0.0000008; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=100 modulation=1.071337 mean=0.0000400; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=0.001 modulation=0.000795 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=0.01 modulation=0.007946 mean=0.0000013; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=0.1 modulation=0.079481 mean=0.0000001; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=1 modulation=0.794833 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=100 modulation=1.070686 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=0.001 modulation=0.000795 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=0.01 modulation=0.007946 mean=0.0000013; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=0.1 modulation=0.079482 mean=0.0000001; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=1 modulation=0.794833 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=100 modulation=1.070687 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=0.001 modulation=0.000798 mean=-0.0000005; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=0.01 modulation=0.007946 mean=-0.0000002; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=0.1 modulation=0.079487 mean=0.0000006; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=1 modulation=0.794806 mean=0.0000006; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=100 modulation=1.070730 mean=0.0001760; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=0.001 modulation=0.000798 mean=-0.0000010; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=0.01 modulation=0.007947 mean=0.0000010; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=0.1 modulation=0.079480 mean=0.0000001; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=1 modulation=0.794801 mean=0.0000005; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=100 modulation=1.070736 mean=-0.0002560; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=0.001 modulation=0.000795 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=0.01 modulation=0.007946 mean=0.0000012; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=0.1 modulation=0.079482 mean=0.0000001; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=1 modulation=0.794840 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=100 modulation=1.070695 mean=-0.0000000; grid/bounds, chunking and reset exact
+Testing AM DAC shaping production
+PASS rate=4000000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=0.001 modulation=0.000788 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=0.01 modulation=0.007985 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=0.1 modulation=0.079484 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=1 modulation=0.794831 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=4000000 amplitude=100 modulation=1.070684 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=0.001 modulation=0.000788 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=0.01 modulation=0.007985 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=0.1 modulation=0.079484 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=1 modulation=0.794832 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=2000000 amplitude=100 modulation=1.070685 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=0.001 modulation=0.000794 mean=-0.0000003; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=0.01 modulation=0.007948 mean=-0.0000002; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=0.1 modulation=0.079481 mean=-0.0000005; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=1 modulation=0.794816 mean=-0.0000001; grid/bounds, chunking and reset exact
+PASS rate=1333333 amplitude=100 modulation=1.071337 mean=0.0000400; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=0.001 modulation=0.000788 mean=0.0000001; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=0.01 modulation=0.007985 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=0.1 modulation=0.079484 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=1 modulation=0.794833 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=1000000 amplitude=100 modulation=1.070686 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=0.001 modulation=0.000788 mean=0.0000001; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=0.01 modulation=0.007985 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=0.1 modulation=0.079484 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=1 modulation=0.794833 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=800000 amplitude=100 modulation=1.070687 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=0.001 modulation=0.000791 mean=0.0000004; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=0.01 modulation=0.007949 mean=-0.0000024; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=0.1 modulation=0.079474 mean=0.0000004; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=1 modulation=0.794810 mean=-0.0000008; grid/bounds, chunking and reset exact
+PASS rate=666667 amplitude=100 modulation=1.070730 mean=0.0001760; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=0.001 modulation=0.000793 mean=0.0000016; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=0.01 modulation=0.007952 mean=-0.0000004; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=0.1 modulation=0.079485 mean=-0.0000011; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=1 modulation=0.794807 mean=0.0000001; grid/bounds, chunking and reset exact
+PASS rate=500000 amplitude=100 modulation=1.070736 mean=-0.0002560; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=0 modulation=0.000000 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=0.001 modulation=0.000788 mean=0.0000001; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=0.01 modulation=0.007985 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=0.1 modulation=0.079485 mean=0.0000000; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=1 modulation=0.794840 mean=-0.0000000; grid/bounds, chunking and reset exact
+PASS rate=400000 amplitude=100 modulation=1.070695 mean=-0.0000000; grid/bounds, chunking and reset exact
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_radio_backend.py"
+test_all_native_rx_rates_and_wbfm_cutoff_headroom (__main__.RadioBackendTests.test_all_native_rx_rates_and_wbfm_cutoff_headroom) ... ok
+test_all_native_tx_cli_profiles (__main__.RadioBackendTests.test_all_native_tx_cli_profiles) ... ok
+test_am_cli_manual_gain_and_effective_audio_settings (__main__.RadioBackendTests.test_am_cli_manual_gain_and_effective_audio_settings) ... ok
+test_am_dac_shaping_startup_option_is_published (__main__.RadioBackendTests.test_am_dac_shaping_startup_option_is_published) ... ok
+test_am_transmit_default_backoff_and_depth (__main__.RadioBackendTests.test_am_transmit_default_backoff_and_depth) ... ok
+test_backend_help_advertises_canonical_radio_options (__main__.RadioBackendTests.test_backend_help_advertises_canonical_radio_options) ... ok
+test_default_dry_run_connects_to_real_monitor_and_expires_cleanly (__main__.RadioBackendTests.test_default_dry_run_connects_to_real_monitor_and_expires_cleanly) ... ok
+test_desired_profiles_follow_independent_rates_and_receive_mode (__main__.RadioBackendTests.test_desired_profiles_follow_independent_rates_and_receive_mode) ... ok
+test_existing_unknown_socket_is_preserved_and_stays_usable (__main__.RadioBackendTests.test_existing_unknown_socket_is_preserved_and_stays_usable) ... ok
+test_explicit_rx_start_requests_reception_without_dry_run_hardware (__main__.RadioBackendTests.test_explicit_rx_start_requests_reception_without_dry_run_hardware) ... ok
+test_invalid_cli_fails_before_creating_status_directory (__main__.RadioBackendTests.test_invalid_cli_fails_before_creating_status_directory) ... ok
+test_legacy_rx_aliases_match_canonical_launch_configuration (__main__.RadioBackendTests.test_legacy_rx_aliases_match_canonical_launch_configuration) ... ok
+test_legacy_stop_options_override_explicit_rx_start (__main__.RadioBackendTests.test_legacy_stop_options_override_explicit_rx_start) ... ok
+test_live_serializer_preserves_counters_errors_and_actual_scheduling (__main__.RadioBackendTests.test_live_serializer_preserves_counters_errors_and_actual_scheduling) ... ok
+test_maximum_escaped_device_name_fits_packet_limit_with_instrumentation (__main__.RadioBackendTests.test_maximum_escaped_device_name_fits_packet_limit_with_instrumentation) ... ok
+test_microphone_option_and_legacy_alias_bind_the_capture_device (__main__.RadioBackendTests.test_microphone_option_and_legacy_alias_bind_the_capture_device) ... ok
+test_monitor_quit_disconnect_and_reconnect_leave_backend_running (__main__.RadioBackendTests.test_monitor_quit_disconnect_and_reconnect_leave_backend_running) ... ok
+test_named_application_help_identifies_backend_and_monitor (__main__.RadioBackendTests.test_named_application_help_identifies_backend_and_monitor) ... ok
+test_named_monitor_launcher_reads_dry_run_snapshot (__main__.RadioBackendTests.test_named_monitor_launcher_reads_dry_run_snapshot) ... ok
+test_nbfm_transmit_deviation_publishes_exact_supported_values (__main__.RadioBackendTests.test_nbfm_transmit_deviation_publishes_exact_supported_values) ... ok
+test_receive_deviation_is_independent_of_transmit_and_keeps_nbfm_bandwidth (__main__.RadioBackendTests.test_receive_deviation_is_independent_of_transmit_and_keeps_nbfm_bandwidth) ... ok
+test_rf09_settings_and_escaped_playback_survive_transport (__main__.RadioBackendTests.test_rf09_settings_and_escaped_playback_survive_transport) ... ok
+test_sigterm_stops_publisher_normally_and_removes_only_owned_socket (__main__.RadioBackendTests.test_sigterm_stops_publisher_normally_and_removes_only_owned_socket) ... ok
+test_sinad_dry_run_is_unavailable_even_when_enabled (__main__.RadioBackendTests.test_sinad_dry_run_is_unavailable_even_when_enabled) ... ok
+test_unavailable_audio_and_worker_counters_remain_explicit_in_monitor (__main__.RadioBackendTests.test_unavailable_audio_and_worker_counters_remain_explicit_in_monitor) ... ok
+test_wbfm_selection_has_no_fake_reception_or_noise_measurements (__main__.RadioBackendTests.test_wbfm_selection_has_no_fake_reception_or_noise_measurements) ... ok
+
+----------------------------------------------------------------------
+Ran 26 tests in 30.376s
+
+OK
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_rx_control_backend.py"
+test_all_supported_rates_and_rf24_frequency_boundaries (__main__.RxControlBackendTests.test_all_supported_rates_and_rf24_frequency_boundaries) ... ok
+test_am_mode_receive_only_frequency_and_noise_policy (__main__.RxControlBackendTests.test_am_mode_receive_only_frequency_and_noise_policy) ... ok
+test_built_controller_canonical_rx_commands_change_real_dry_run_status (__main__.RxControlBackendTests.test_built_controller_canonical_rx_commands_change_real_dry_run_status) ... ok
+test_connected_monitor_tracks_control_changes_without_becoming_controller (__main__.RxControlBackendTests.test_connected_monitor_tracks_control_changes_without_becoming_controller) ... ok
+test_custom_control_path_and_sigterm_remove_both_owned_sockets (__main__.RxControlBackendTests.test_custom_control_path_and_sigterm_remove_both_owned_sockets) ... ok
+test_frequency_mode_and_rate_changes_require_stopped_rx (__main__.RxControlBackendTests.test_frequency_mode_and_rate_changes_require_stopped_rx) ... ok
+test_live_handler_faults_preserve_settings_and_release_failed_pipeline (__main__.RxControlBackendTests.test_live_handler_faults_preserve_settings_and_release_failed_pipeline) ... ok
+test_live_squelch_updates_are_atomic_and_invalid_levels_preserve_settings (__main__.RxControlBackendTests.test_live_squelch_updates_are_atomic_and_invalid_levels_preserve_settings) ... ok
+test_live_volume_keeps_pipeline_and_reports_truthful_meter_state (__main__.RxControlBackendTests.test_live_volume_keeps_pipeline_and_reports_truthful_meter_state) ... ok
+test_malformed_packets_are_rejected_without_configuration_changes (__main__.RxControlBackendTests.test_malformed_packets_are_rejected_without_configuration_changes) ... ok
+test_one_controller_disconnect_and_reconnect_leave_intent_intact (__main__.RxControlBackendTests.test_one_controller_disconnect_and_reconnect_leave_intent_intact) ... ok
+test_requested_rx_start_permissions_and_timed_cleanup (__main__.RxControlBackendTests.test_requested_rx_start_permissions_and_timed_cleanup) ... ok
+test_rf09_band_edges_and_gap_are_validated_before_mutation (__main__.RxControlBackendTests.test_rf09_band_edges_and_gap_are_validated_before_mutation) ... ok
+test_rx_deviation_survives_wbfm_and_nbfm_pipeline_restarts (__main__.RxControlBackendTests.test_rx_deviation_survives_wbfm_and_nbfm_pipeline_restarts) ... ok
+test_start_stop_are_idempotent_and_identify_new_pipeline_lifetimes (__main__.RxControlBackendTests.test_start_stop_are_idempotent_and_identify_new_pipeline_lifetimes) ... ok
+test_wbfm_disables_noise_detection_and_restores_nbfm_preference (__main__.RxControlBackendTests.test_wbfm_disables_noise_detection_and_restores_nbfm_preference) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 13.901s
+
+OK
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_radio_control.py"
+.....................................
+----------------------------------------------------------------------
+Ran 37 tests in 13.832s
+
+OK
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_tx_control_backend.py"
+test_am_mode_and_depth_are_saved_and_locked_during_tx (__main__.TxControlBackendTests.test_am_mode_and_depth_are_saved_and_locked_during_tx) ... ok
+test_built_controller_joint_commands_update_real_dry_run_settings (__main__.TxControlBackendTests.test_built_controller_joint_commands_update_real_dry_run_settings) ... ok
+test_built_interactive_controller_starts_stops_and_releases_owned_tx (__main__.TxControlBackendTests.test_built_interactive_controller_starts_stops_and_releases_owned_tx) ... ok
+test_controller_disconnect_during_opening_transition_resumes_rx (__main__.TxControlBackendTests.test_controller_disconnect_during_opening_transition_resumes_rx) ... ok
+test_controller_disconnect_stops_tx_and_resumes_previous_rx (__main__.TxControlBackendTests.test_controller_disconnect_stops_tx_and_resumes_previous_rx) ... ok
+test_every_tx_session_uses_fresh_generation_with_saved_settings (__main__.TxControlBackendTests.test_every_tx_session_uses_fresh_generation_with_saved_settings) ... ok
+test_invalid_tx_settings_preserve_configuration (__main__.TxControlBackendTests.test_invalid_tx_settings_preserve_configuration) ... ok
+test_joint_commands_require_both_rx_and_tx_stopped (__main__.TxControlBackendTests.test_joint_commands_require_both_rx_and_tx_stopped) ... ok
+test_joint_frequency_rejection_preserves_rx_and_tx_at_rf09_band_gaps (__main__.TxControlBackendTests.test_joint_frequency_rejection_preserves_rx_and_tx_at_rf09_band_gaps) ... ok
+test_joint_settings_change_both_saved_paths_once_and_are_idempotent (__main__.TxControlBackendTests.test_joint_settings_change_both_saved_paths_once_and_are_idempotent) ... ok
+test_passive_monitor_survives_half_duplex_transition_with_truthful_simulation (__main__.TxControlBackendTests.test_passive_monitor_survives_half_duplex_transition_with_truthful_simulation) ... ok
+test_rf09_power_range_and_supported_tx_rate_endpoints (__main__.TxControlBackendTests.test_rf09_power_range_and_supported_tx_rate_endpoints) ... ok
+test_saved_tx_settings_can_change_during_rx_without_restarting_it (__main__.TxControlBackendTests.test_saved_tx_settings_can_change_during_rx_without_restarting_it) ... ok
+test_sigterm_during_tx_clears_intent_and_cleans_owned_sockets (__main__.TxControlBackendTests.test_sigterm_during_tx_clears_intent_and_cleans_owned_sockets) ... ok
+test_stop_queued_during_opening_transition_completes_rx_handoff (__main__.TxControlBackendTests.test_stop_queued_during_opening_transition_completes_rx_handoff) ... ok
+test_tx_from_idle_returns_to_idle_and_transitions_reject_edits (__main__.TxControlBackendTests.test_tx_from_idle_returns_to_idle_and_transitions_reject_edits) ... ok
+test_tx_from_rx_restores_saved_receiver_with_fresh_pipeline (__main__.TxControlBackendTests.test_tx_from_rx_restores_saved_receiver_with_fresh_pipeline) ... ok
+test_v2_defaults_and_legacy_v1_reply_remain_available (__main__.TxControlBackendTests.test_v2_defaults_and_legacy_v1_reply_remain_available) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 11.709s
+
+OK
+python3 "/home/pi/src/cariboulite/software/libcariboulite/tests/test_fpga_control_backend.py"
+test_active_transition_refuses_programming (__main__.FpgaControlBackendTests.test_active_transition_refuses_programming) ... ok
+test_built_controller_one_shot_programming_completes_after_exit (__main__.FpgaControlBackendTests.test_built_controller_one_shot_programming_completes_after_exit) ... ok
+test_built_controller_one_shot_reset_commands (__main__.FpgaControlBackendTests.test_built_controller_one_shot_reset_commands) ... ok
+test_programming_publishes_transition_then_idle_without_hardware (__main__.FpgaControlBackendTests.test_programming_publishes_transition_then_idle_without_hardware) ... ok
+test_programming_survives_controller_disconnect_and_leaves_rx_stopped (__main__.FpgaControlBackendTests.test_programming_survives_controller_disconnect_and_leaves_rx_stopped) ... ok
+test_reset_survives_disconnect_without_restarting_rx_or_tx (__main__.FpgaControlBackendTests.test_reset_survives_disconnect_without_restarting_rx_or_tx) ... ok
+test_running_rx_refuses_programming_and_resets_without_changing_configuration (__main__.FpgaControlBackendTests.test_running_rx_refuses_programming_and_resets_without_changing_configuration) ... ok
+test_running_tx_refuses_programming_then_idle_allows_it (__main__.FpgaControlBackendTests.test_running_tx_refuses_programming_then_idle_allows_it) ... ok
+test_soft_reset_preserves_configuration_without_loading_firmware (__main__.FpgaControlBackendTests.test_soft_reset_preserves_configuration_without_loading_firmware) ... ok
+test_soft_then_hard_reset_requires_programming_before_radio_mutations (__main__.FpgaControlBackendTests.test_soft_then_hard_reset_requires_programming_before_radio_mutations) ... ok
+test_v1_and_firmware_path_packets_remain_protocol_errors (__main__.FpgaControlBackendTests.test_v1_and_firmware_path_packets_remain_protocol_errors) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 5.195s
+
+OK
+make: Leaving directory '/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend'

@@ -1,0 +1,90 @@
+{
+  "initial": {
+    "run": "am-candidates-initial-20261115-224301",
+    "captures": 20,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "continuation": {
+    "run": "am-candidates-continuation-20261115-224510",
+    "captures": 8,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "calibration": {
+    "run": "am-candidates-calibration-20261115-224656",
+    "captures": 94,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "shaper-clock": {
+    "run": "am-candidates-shaper-clock-20261115-225128",
+    "captures": 18,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "comparison": {
+    "run": "am-candidates-comparison-20261115-225509",
+    "captures": 36,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "meter-gain42": {
+    "run": "am-candidates-meter-gain42-20261115-230708",
+    "captures": 6,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "meter-if37p5": {
+    "run": "am-candidates-meter-if37p5-20261115-230854",
+    "captures": 6,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "wide": {
+    "run": "am-candidates-meter-wide-20261115-233541",
+    "captures": 6,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "stair": {
+    "run": "am-candidates-stair-20261115-230922",
+    "captures": 4,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "production-unweighted": {
+    "run": "am-shaping-production-20261115-231625",
+    "captures": 53,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "production-weighted": {
+    "run": "am-shaping-weighted-20261115-232836",
+    "captures": 28,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "silence-off": {
+    "run": "am-shaping-silence-off-20261115-233116",
+    "captures": 2,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "silence-on": {
+    "run": "am-shaping-silence-on-20261115-233131",
+    "captures": 2,
+    "error_counter_deltas": 0,
+    "adc_rail_samples": 0
+  },
+  "listening": {
+    "runs": [
+      "am-candidates-speech-raw-20261115-230050",
+      "am-candidates-speech-if-20261115-230148",
+      "am-candidates-speech-ns-20261115-230239"
+    ],
+    "operator_comparison": "Both improve similarly",
+    "operator_residual_roughness": "No distinctive roughness noticed",
+    "source": "Approved private H650e recording; not included"
+  }
+}

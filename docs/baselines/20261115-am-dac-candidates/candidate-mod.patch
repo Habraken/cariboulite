@@ -1,0 +1,59 @@
+--- a/mod.c
++++ b/mod.c
+@@ -1,4 +1,7 @@
+ #include "nbfm_mod.h"
++#include "diag.h"
++_Atomic int am_diag_mode=0;
++_Atomic double am_diag_gain=1,am_diag_phase=0,am_diag_di=0,am_diag_dq=0,am_diag_offset=25200;
+ #include "audio_mod.h"
+ #include <stdbool.h>
+ #include "radio_rates.h"
+@@ -37,6 +40,7 @@
+     float  out_scale; int lin;
+     double phase, dphi_cur, dphi_next, interp_step, interp_acc;
+     preemph_t pe;
++    double diag_e1,diag_e2,diag_hold,diag_clock,diag_previous_dither; unsigned diag_rng; int diag_last_mode;
+     bool am; float am_depth; am_tx_biquad_t voice[3];
+     float* afifo; size_t cap, head, tail, cnt;
+     
+@@ -96,6 +100,7 @@
+     if (!m) return;
+     m->head=m->tail=m->cnt=0;
+     m->phase=m->dphi_cur=m->dphi_next=0; m->lm_phase=0;
++    m->diag_e1=m->diag_e2=m->diag_hold=m->diag_clock=m->diag_previous_dither=0;m->diag_rng=1;m->diag_last_mode=0;
+     m->interp_step=0; m->interp_acc=1;
+     m->pe.x1=0;
+     for(unsigned k=0;k<3;k++)m->voice[k].z1=m->voice[k].z2=0;
+@@ -155,6 +160,9 @@
+     const uint32_t L = 4000000;
+     const uint32_t M = 48000 * m->divider;
+     size_t out = 0;
++    int dm=atomic_load(&am_diag_mode);
++    double dg=atomic_load(&am_diag_gain),dp=atomic_load(&am_diag_phase),di=atomic_load(&am_diag_di),dq=atomic_load(&am_diag_dq),df=atomic_load(&am_diag_offset);
++    if(dm!=m->diag_last_mode){m->diag_e1=m->diag_e2=m->diag_hold=m->diag_clock=m->diag_previous_dither=0;m->diag_rng=1;m->phase=0;m->diag_last_mode=dm;}
+ 
+     while (out < N) {
+         // Advance audio time using the configured input/output rates.
+@@ -176,7 +184,21 @@
+         double dphi = m->dphi_cur + (m->dphi_next - m->dphi_cur) * frac;
+ 
+         if (m->am) {
+-            dst[out++]=(iq16_t){(int16_t)lrintf(m->out_scale*.5f*(1+(float)dphi)),0};
++            double a=m->out_scale*.5f*(1+(float)dphi),ii=a,qq=0;
++            if(dm==1){m->phase+=2*M_PI*df/m->fs_rf;if(m->phase>=2*M_PI)m->phase-=2*M_PI;ii=a*cos(m->phase)+di;qq=dg*a*sin(m->phase+dp)+dq;}
++            else if(dm>=2 && dm<=6){
++                int update=1;if(dm==5 || dm==6){m->diag_clock+=df;update=m->diag_clock>=m->fs_rf;if(update)m->diag_clock-=m->fs_rf;}
++                if(update){
++                    double corrected=a+m->diag_e1;
++                    if(dm==3 || dm==6)corrected=a+2*m->diag_e1-m->diag_e2;
++                    if(dm==4){m->diag_rng^=m->diag_rng<<13;m->diag_rng^=m->diag_rng>>17;m->diag_rng^=m->diag_rng<<5;double d=((double)m->diag_rng/4294967296.-.5)*128;corrected=a+d-m->diag_previous_dither;m->diag_previous_dither=d;}
++                    double quant=64*nearbyint(corrected/64);int saturated=quant<0||quant>4032;quant=fmax(0,fmin(4032,quant));
++                    m->diag_e2=saturated?0:m->diag_e1;m->diag_e1=saturated?0:corrected-quant;m->diag_hold=quant;
++                }
++                ii=m->diag_hold;
++            }
++            ii=fmax(-4096,fmin(4095,ii));qq=fmax(-4096,fmin(4095,qq));
++            dst[out++]=(iq16_t){(int16_t)lrint(ii),(int16_t)lrint(qq)};
+             continue;
+         }
+         // Integrate to phase with robust wrap

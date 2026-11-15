@@ -151,3 +151,6 @@ compensated tuning. Both used power setting 6 dBm, backoff 0 dB, depth 0.8,
 **less noise/roughness in B**. This confirms an audible improvement, not complete
 elimination. It does not remove the measured LO/image emission penalty or
 qualify the diagnostic for deployment. Both passes stopped normally.
+
+The subsequent [candidate comparison and opt-in DAC shaping implementation](am-dac-candidates-2026-11-15.md)
+compares calibrated shifted IQ with noise-shaped AM and records the final tests.

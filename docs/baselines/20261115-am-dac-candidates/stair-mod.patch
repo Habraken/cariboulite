@@ -1,0 +1,23 @@
+--- a/stair-mod.c
++++ b/stair-mod.c
+@@ -185,13 +185,15 @@
+ 
+         if (m->am) {
+             double a=m->out_scale*.5f*(1+(float)dphi),ii=a,qq=0;
+-            if(dm==1){m->phase+=2*M_PI*df/m->fs_rf;if(m->phase>=2*M_PI)m->phase-=2*M_PI;ii=a*cos(m->phase)+di;qq=dg*a*sin(m->phase+dp)+dq;}
+-            else if(dm>=2 && dm<=6){
+-                int update=1;if(dm==5 || dm==6){m->diag_clock+=df;update=m->diag_clock>=m->fs_rf;if(update)m->diag_clock-=m->fs_rf;}
++            int work_mode=dm;
++            if(dm==7||dm==8){unsigned n=(unsigned)m->phase,block=n/2000;m->phase=(n+1)%424000;a=(block&1)?1891+2*(block/2):2001;ii=a;qq=0;work_mode=dm==7?6:0;}
++            if(work_mode==1){m->phase+=2*M_PI*df/m->fs_rf;if(m->phase>=2*M_PI)m->phase-=2*M_PI;ii=a*cos(m->phase)+di;qq=dg*a*sin(m->phase+dp)+dq;}
++            else if(work_mode>=2 && work_mode<=6){
++                int update=1;if(work_mode==5 || work_mode==6){m->diag_clock+=df;update=m->diag_clock>=m->fs_rf;if(update)m->diag_clock-=m->fs_rf;}
+                 if(update){
+                     double corrected=a+m->diag_e1;
+-                    if(dm==3 || dm==6)corrected=a+2*m->diag_e1-m->diag_e2;
+-                    if(dm==4){m->diag_rng^=m->diag_rng<<13;m->diag_rng^=m->diag_rng>>17;m->diag_rng^=m->diag_rng<<5;double d=((double)m->diag_rng/4294967296.-.5)*128;corrected=a+d-m->diag_previous_dither;m->diag_previous_dither=d;}
++                    if(work_mode==3 || work_mode==6)corrected=a+2*m->diag_e1-m->diag_e2;
++                    if(work_mode==4){m->diag_rng^=m->diag_rng<<13;m->diag_rng^=m->diag_rng>>17;m->diag_rng^=m->diag_rng<<5;double d=((double)m->diag_rng/4294967296.-.5)*128;corrected=a+d-m->diag_previous_dither;m->diag_previous_dither=d;}
+                     double quant=64*nearbyint(corrected/64);int saturated=quant<0||quant>4032;quant=fmax(0,fmin(4032,quant));
+                     m->diag_e2=saturated?0:m->diag_e1;m->diag_e1=saturated?0:corrected-quant;m->diag_hold=quant;
+                 }

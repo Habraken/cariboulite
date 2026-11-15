@@ -167,3 +167,6 @@ step; this option does not certify maximum RF modulation depth. The default
 0.8 depth reserves margin. The low-level modulator API retains raw AM creation;
 `audio_mod_set_am_dac_shaping()` opts in before processing, requires AM and
 `out_scale <= 4032`, and its selection survives `nbfm_reset()`.
+
+The subsequent [candidate comparison and opt-in DAC shaping implementation](am-dac-candidates-2026-11-15.md)
+compares calibrated shifted IQ with noise-shaped AM and records the final tests.
