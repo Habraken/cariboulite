@@ -26,7 +26,7 @@ is always TX and pi4f-trixie RX. The native rate keys are divisors of 4 MHz:
 - `run_linearity_test.py`: optional additional-backoff diagnostic using the
   current nominal frequency. Historical backoff results preceded the offset RX
   correction and are not directly interchangeable with this runner.
-- `make_voice_reference.py` and `run_voice_test.py`: optional synthesized speech
+- `make_voice_reference.py` and `run_voice_test.py`: human speech from the Open Speech Repository
   through the TX microphone/capture path; create the reference on pi4g first.
 - `analyze.py`: NumPy PCM analysis; no NumPy dependency in the backend itself.
 
@@ -57,3 +57,11 @@ errors, clipping or low-level windows. Low depth cases measured 25.44% and
 they are retained as a qualification limitation, not marked as linearity passes.
 The 6 dB backoff comparison and raw IQ diagnostic described in the report
 preceded the final correction; final metrics do not reuse their counter checks.
+
+Speech listening failed after the original tone validation: source-versus-AM
+comparison found distortion in recovered speech, and the independent RSP2pro
+also sounded bad. See `speech-followup.json`. Historical speech results above
+used synthesized speech and are transport checks only. `make_voice_reference.py`
+now prepares a human-read Harvard-sentence sample, credits Open Speech Repository,
+and verifies the original file hash. This replacement source must be auditioned
+before a new RF speech qualification; no replacement RF pass is claimed here.

@@ -68,7 +68,10 @@ policy at supported band/conversion boundaries.
 TX power settings are not calibrated AM carrier power or peak envelope power.
 RF occupied bandwidth, calibrated AM depth and RF distortion remain unmeasured.
 Speech was injected through the backend microphone/capture path and recovered
-through AM RX; subjective speech assessment is recorded separately when available.
+through AM RX. Subjective speech validation FAILED: the operator described it as
+overmodulated/distorted. A direct source-versus-recovered comparison established
+that the source sounds natural and the recovered AM is distorted. The clean-tone
+and stream-counter checks do not qualify speech quality. Investigation continues.
 
 ## Software checks
 
@@ -79,3 +82,15 @@ both AM RX offset signs, split/reset continuity and injected interference.
 CMake application builds passed. Historical software summaries are retained in
 this baseline directory. Temporary diagnostic IQ/IF builds were not deployed as
 production binaries.
+
+## Speech follow-up
+
+After the failed listening comparison, ten-second speech captures at 0, 3, 6
+and 9 dB TX digital backoff completed without stream-counter increments, TX
+audio-buffer underflow/overflow or capture overruns/read errors. These checks
+do not establish clean speech at any setting. A 45-second independent-receiver
+comparison was run; the operator reported that both receivers sounded bad.
+This does not support an RX-only fault conclusion. A human-read Harvard sentence
+recording from the [Open Speech Repository](https://www.voiptroubleshooter.com/open_speech/american.html)
+was selected for a new source audition before further speech qualification. Production defaults have not
+been changed on the basis of these transport checks.

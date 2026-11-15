@@ -1,0 +1,89 @@
+{
+  "run": "am-speech-backoff-20261115-174502",
+  "subjective_source_comparison": "A original sounds natural; B recovered AM distorted",
+  "backoff_checks": [
+    {
+      "backoff_db": 0,
+      "stream_error_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      },
+      "tx_audio_buffer_underflows": 0,
+      "tx_audio_buffer_overflows": 0,
+      "capture_overruns": 0,
+      "capture_read_errors": 0
+    },
+    {
+      "backoff_db": 3,
+      "stream_error_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      },
+      "tx_audio_buffer_underflows": 0,
+      "tx_audio_buffer_overflows": 0,
+      "capture_overruns": 0,
+      "capture_read_errors": 0
+    },
+    {
+      "backoff_db": 6,
+      "stream_error_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      },
+      "tx_audio_buffer_underflows": 0,
+      "tx_audio_buffer_overflows": 0,
+      "capture_overruns": 0,
+      "capture_read_errors": 0
+    },
+    {
+      "backoff_db": 9,
+      "stream_error_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      },
+      "tx_audio_buffer_underflows": 0,
+      "tx_audio_buffer_overflows": 0,
+      "capture_overruns": 0,
+      "capture_read_errors": 0
+    }
+  ],
+  "scope": "Transport diagnostics only; no speech-quality pass or TX/RX fault localization established",
+  "independent_receiver_comparison": "Operator reports both RSP2pro and CaribouLite/Jabra sounded bad. This excludes an RX-only conclusion but does not independently prove the distortion source. Operator requested a real human source before further qualification.",
+  "replacement_source": {
+    "title": "Open Speech Repository \u2014 American English, female Harvard sentences",
+    "url": "https://www.voiptroubleshooter.com/open_speech/american/OSR_us_000_0010_8k.wav",
+    "catalog_url": "https://www.voiptroubleshooter.com/open_speech/american.html",
+    "sha256": "a4bf9becd046d7aedb6d05b6e12347a6294a44f74d263089c636fb0a2b1e6561",
+    "format": "Original 8 kHz 16-bit mono PCM; first 15 seconds resampled to 48 kHz for direct source audition",
+    "attribution": "Open Speech Repository",
+    "subjective_assessment": "Pending source audition"
+  }
+}

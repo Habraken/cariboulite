@@ -513,7 +513,7 @@
       "read_errors": 0,
       "last_error": 0
     },
-    "subjective_assessment": "Offset tone: operator confirmed clean, artifact gone. Recovered speech audition feedback pending."
+    "subjective_assessment": "FAIL: operator reports recovered speech distorted/overmodulated. Direct A/B: original synthesized source sounds natural, recovered AM distorted. Zero PCM clipping/stream errors do not establish speech quality."
   },
   "release": {
     "both_radios_idle": true,
