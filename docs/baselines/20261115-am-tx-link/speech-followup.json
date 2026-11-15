@@ -75,7 +75,7 @@
       "capture_read_errors": 0
     }
   ],
-  "scope": "Transport diagnostics only; no speech-quality pass or TX/RX fault localization established",
+  "scope": "Historical transport diagnostics and final subjective speech PASS with operator-supplied recording at 430.100 MHz; low-modulation RF linearity remains unqualified",
   "independent_receiver_comparison": "Operator reports both RSP2pro and CaribouLite/Jabra sounded bad. This excludes an RX-only conclusion but does not independently prove the distortion source. Operator requested a real human source before further qualification.",
   "replacement_source": {
     "title": "Open Speech Repository \u2014 American English, female Harvard sentences",
@@ -103,22 +103,37 @@
     "direct_Jabra_audition": "PASS: operator confirmed suitable",
     "rf_reference": "Fixed +14.53 dB gain to 0.8 peak; no compression or limiting",
     "live_run": "am-live-speech-20261115-183934",
-    "live_result": "pending listening feedback",
+    "live_result": "PASS: operator confirmed both CaribouLite/Jabra and independent RSP2pro sound clear in separate listening passes",
     "capture_run": "am-tx-voice-20261115-184043",
     "counter_window_s": {
-        "rx": 11.033975085010752,
-        "tx": 11.230033330997685
+      "rx": 11.033975085010752,
+      "tx": 11.230033330997685
     },
     "error_counter_deltas": {
-        "rx_iq_drops": 0,
-        "rx_audio_drops": 0,
-        "rx_read_errors": 0,
-        "rx_alignment_failures": 0,
-        "rx_invalid_iq": 0,
-        "rx_audio_underruns": 0,
-        "rx_audio_write_errors": 0,
-        "tx_writer_errors": 0,
-        "tx_underruns": 0
+      "rx_iq_drops": 0,
+      "rx_audio_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "rx_invalid_iq": 0,
+      "rx_audio_underruns": 0,
+      "rx_audio_write_errors": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "comparison_runs": {
+      "CaribouLite_Jabra": "am-live-speech-20261115-184452",
+      "RSP2pro_Jabra_silent": "am-live-speech-20261115-184604"
+    },
+    "settings": {
+      "rf_frequency_hz": 430100000,
+      "tx_sample_rate_hz": 1000000,
+      "rx_sample_rate_hz": 1000000,
+      "tx_power_setting_dbm": 14,
+      "tx_am_depth": 0.8,
+      "tx_am_backoff_db": 6,
+      "rx_am_offset_enabled": true,
+      "rx_volume_db": -6,
+      "wired_attenuation_db": 90
     }
   }
 }

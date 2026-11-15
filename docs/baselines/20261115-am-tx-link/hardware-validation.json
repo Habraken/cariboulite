@@ -521,5 +521,10 @@
     "all_playback_closed": true,
     "loaded_and_installed_driver_srcversion": "5AD373CAE4DBC118FE6E425",
     "receiver_preexisting_documentation_diff": "unchanged (binary patch comparison PASS)"
+  },
+  "speech_followup": {
+    "result": "PASS with operator-supplied recording: both receivers sound clear",
+    "details": "speech-followup.json",
+    "scope": "Subjective speech check at 430.100 MHz, 1 MS/s TX and RX; earlier synthesized-speech audition remains historical failure; low-modulation distortion measurements remain open"
   }
 }

@@ -68,10 +68,11 @@ policy at supported band/conversion boundaries.
 TX power settings are not calibrated AM carrier power or peak envelope power.
 RF occupied bandwidth, calibrated AM depth and RF distortion remain unmeasured.
 Speech was injected through the backend microphone/capture path and recovered
-through AM RX. Subjective speech validation FAILED: the operator described it as
+through AM RX. The initial synthesized-speech audition failed: the operator described it as
 overmodulated/distorted. A direct source-versus-recovered comparison established
 that the source sounds natural and the recovered AM is distorted. The clean-tone
-and stream-counter checks do not qualify speech quality. Investigation continues.
+and stream-counter checks alone do not qualify speech quality. The later
+operator-supplied speech test passed, as described below.
 
 ## Software checks
 
@@ -94,3 +95,18 @@ This does not support an RX-only fault conclusion. A human-read Harvard sentence
 recording from the [Open Speech Repository](https://www.voiptroubleshooter.com/open_speech/american.html)
 was selected for a new source audition before further speech qualification. Production defaults have not
 been changed on the basis of these transport checks.
+
+The operator rejected the Harvard-sentence source and supplied
+`New-Recording.m4a`. Its direct Jabra audition passed. The 29.23-second recording
+was decoded to 48 kHz mono PCM, with fixed +14.53 dB gain to a peak of 0.8; no
+compression or limiting was used. A ten-second AM capture completed with zero
+stream-counter increments.
+
+Two separate 45-second listening passes then used pi4g TX at 430.100 MHz,
+1 MS/s, power setting 14 dBm, AM depth 0.8 and backoff 6 dB. The first pass used
+pi4f AM RX at 1 MS/s with offset tuning and Jabra playback at -6 dB volume.
+The second pass left Jabra silent for independent RSP2pro assessment. The
+operator confirmed **both sound clear**. Subjective AM speech validation therefore
+passes for this source and configuration. This does not resolve or invalidate
+the small-modulation distortion measured in the earlier tone sweep. The user
+recording is not included in the committed baseline.

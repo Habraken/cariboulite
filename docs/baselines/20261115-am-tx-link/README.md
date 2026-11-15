@@ -65,3 +65,9 @@ used synthesized speech and are transport checks only. `make_voice_reference.py`
 now prepares a human-read Harvard-sentence sample, credits Open Speech Repository,
 and verifies the original file hash. This replacement source must be auditioned
 before a new RF speech qualification; no replacement RF pass is claimed here.
+
+Final subjective speech result: **PASS** with the operator-supplied recording,
+in separate CaribouLite/Jabra and RSP2pro passes at 430.100 MHz and 1 MS/s.
+See `speech-followup.json` for exact settings and run identifiers. Earlier
+source/audition failures remain historical results; low-modulation RF linearity
+is still a qualification limitation.
