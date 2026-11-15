@@ -113,3 +113,8 @@ unqualified. The existing defaults are retained.
 [Baseline artifacts](baselines/20261115-smi-tx-wire-fix/README.md) retain the
 before/after bit traces, exact settings, regression CSVs and diagnostic observer.
 Both radios were released idle after the tests.
+
+The subsequent [70 dB link investigation](am70-residual-distortion-2026-11-15.md)
+verified changing digital words and demonstrated repeatable coarse amplitude
+plateaus in the RF path. It also measured the emission penalty of a temporary
+frequency-shifted diagnostic. No further production waveform change is deployed.

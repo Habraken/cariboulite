@@ -1,0 +1,43 @@
+{
+  "source_commit": "81a0f08",
+  "link_attenuation_db": 70,
+  "wanted_frequency_hz": 430100000,
+  "production_changes": "None; temporary diagnostic images/binaries only",
+  "software_envelope": {
+    "cases": 12,
+    "settled_samples_per_case": 1000000,
+    "actual_production_modulator_and_frame_packetizer": true,
+    "legacy_I_low_bit_forced_one": "Observed and measured; not changed"
+  },
+  "digital_sequence": {
+    "unique_codes_per_channel": 8192,
+    "verified_transitions_per_observation_point": 8191,
+    "clean": "PASS collector and modem return",
+    "negative_control": "PASS: deliberate Q-bit fault detected at both points",
+    "RX_repeat_policy": "Identical repeated words ignored; exact hold counts not verified",
+    "normal_fpga_restoration": "PASS receipt retained"
+  },
+  "rf_cases": {
+    "main": 16,
+    "reduced_RX_gain": 8,
+    "frequency_shift": 8,
+    "constant_phase": 8,
+    "raw_IQ_direct_offset": 4,
+    "slow_carrier_sweep_inconclusive": 12,
+    "interleaved_carrier_repeats": 2
+  },
+  "interleaved_transfer": {
+    "target_codes": "1891..2101 odd codes, Q=0",
+    "reference_code": 2001,
+    "hold_ms": 2,
+    "repeated_captures": 2,
+    "finding": "Repeatable amplitude plateaus with transition regions about 64 input codes apart",
+    "limitation": "Fixed-phase Q=0 test; not a universal DAC-resolution specification"
+  },
+  "listening": {
+    "requested": true,
+    "Jabra_attention_beep_played": true,
+    "result": "Readiness reply pending; no listening pass or subjective result claimed"
+  },
+  "interpretation": "Residual post-interface amplitude quantization demonstrated. Exact internal modem block not observed; shifted-IQ diagnostic improves weak modulation but has LO/image components and is not deployed."
+}

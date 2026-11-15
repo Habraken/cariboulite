@@ -1,0 +1,20 @@
+{
+  "started_utc": "2026-11-15T20:53:20.613063+00:00",
+  "operation": "load",
+  "command": [
+    "/home/pi/src/cariboulite/build/u25-clock-probe-20261106/load_checked",
+    "/tmp/am70-sequence-fpga/sequence.bin",
+    "/home/pi/src/cariboulite/firmware/top.bin"
+  ],
+  "input_sha256": "41d9effb16feffaf05d9638340d35f5a389224410c90f32230989fd7dada4cf7",
+  "rollback_sha256": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6",
+  "loader_sha256": "49a9f5ad5d7f118ee89beca9e8a4e056b63f9e18a7ddb75a067410ce4cb9662e",
+  "library_sha256": "eac60b5076c4d846d1bcb00134183cc1af3b9fb5cd639a652fc136f510a24190",
+  "rf_tested": false,
+  "hardware_accessed": true,
+  "exit_code": 0,
+  "candidate_programmed": true,
+  "rollback_restored": false,
+  "finished_utc": "2026-11-15T20:53:22.286040+00:00",
+  "log_sha256": "87522d1eba4620157609ac24f569e4c5fd92eb060ca1fdd6ce60982e795c1a97"
+}

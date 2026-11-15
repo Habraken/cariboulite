@@ -1,0 +1,19 @@
+--- a/rx_pipeline.c
++++ b/rx_pipeline.c
+@@ -79,6 +79,8 @@
+     atomic_store_explicit(&ctrl->alive, true, memory_order_relaxed);
+     pthread_cleanup_push(worker_exited, &ctrl->alive);
+ 
++    FILE* diagnostic=getenv("AM_IQ_PATH") ? fopen(getenv("AM_IQ_PATH"),"wb") : NULL;
++    size_t diagnostic_left=2000000;
+     const size_t want = ctrl->rx_buffer_size; // Selected rate * 10 ms
+     cariboulite_sample_complex_int16* buf = ctrl->rx_buffer;
+     cariboulite_sample_meta* meta = malloc(sizeof(*meta) * want);
+@@ -107,6 +109,7 @@
+         }
+ 
+         if (have == want) {
++            if(diagnostic) {size_t count=want<diagnostic_left?want:diagnostic_left; if(fwrite(buf,sizeof(*buf),count,diagnostic)!=count)abort();diagnostic_left-=count; if(!diagnostic_left){fclose(diagnostic);diagnostic=NULL;}}
+             rf10_frame_t frm;
+             frm.rssi_valid = false;
+             frm.rssi_dbm = 127;

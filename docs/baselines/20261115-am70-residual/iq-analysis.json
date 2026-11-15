@@ -1,0 +1,70 @@
+[
+  {
+    "run": "am70-iq-direct-20261115-220017",
+    "file": "amp_0.01.iq16",
+    "carrier_if_hz": -12471.0,
+    "fitted_tone_hz": 999.999950400965,
+    "modulation_fraction": 0.0015198541585097172,
+    "second_third_harmonic_percent": 133.38066828825603,
+    "tone_to_residual_db": -8.244398837376428,
+    "adc_rail_samples": 0,
+    "relative_offset_band_power_dbc": {
+      "-50400": -68.73443016797553,
+      "-25200": -67.70701284600196,
+      "25200": -66.52651595695733,
+      "50400": -66.47310793744091
+    },
+    "spectral_bandwidth_hz": 60
+  },
+  {
+    "run": "am70-iq-direct-20261115-220017",
+    "file": "amp_0.03.iq16",
+    "carrier_if_hz": -12470.0,
+    "fitted_tone_hz": 999.9995747569362,
+    "modulation_fraction": 0.021791128588602115,
+    "second_third_harmonic_percent": 12.532720423710487,
+    "tone_to_residual_db": 8.118797817731826,
+    "adc_rail_samples": 0,
+    "relative_offset_band_power_dbc": {
+      "-50400": -68.71271334425485,
+      "-25200": -68.54983371072574,
+      "25200": -68.11175359767927,
+      "50400": -66.4797079314586
+    },
+    "spectral_bandwidth_hz": 60
+  },
+  {
+    "run": "am70-iq-offset-20261115-220040",
+    "file": "amp_0.01.iq16",
+    "carrier_if_hz": -12475.0,
+    "fitted_tone_hz": 1000.0009323448257,
+    "modulation_fraction": 0.008155185638778506,
+    "second_third_harmonic_percent": 6.675795994625573,
+    "tone_to_residual_db": 9.6460177118542,
+    "adc_rail_samples": 0,
+    "relative_offset_band_power_dbc": {
+      "-50400": -59.22514526990113,
+      "-25200": -52.72099415346693,
+      "25200": -25.19274961969581,
+      "50400": -41.44662896683201
+    },
+    "spectral_bandwidth_hz": 60
+  },
+  {
+    "run": "am70-iq-offset-20261115-220040",
+    "file": "amp_0.03.iq16",
+    "carrier_if_hz": -12473.0,
+    "fitted_tone_hz": 999.9991740772919,
+    "modulation_fraction": 0.022619898308563546,
+    "second_third_harmonic_percent": 3.6700462251478836,
+    "tone_to_residual_db": 19.23398999673878,
+    "adc_rail_samples": 0,
+    "relative_offset_band_power_dbc": {
+      "-50400": -60.44765797834633,
+      "-25200": -52.3182610263232,
+      "25200": -25.232349720462782,
+      "50400": -41.134938945805686
+    },
+    "spectral_bandwidth_hz": 60
+  }
+]

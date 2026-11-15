@@ -110,3 +110,8 @@ All 78 hardware IQ patterns now reach the modem exactly. See the
 quantizer-like response was partly explained by exchanged low I/Q byte fields;
 it was not proof of missing FPGA/DAC input bits. Residual RF AM distortion
 remains after correcting the digital transport.
+
+The subsequent [70 dB link investigation](am70-residual-distortion-2026-11-15.md)
+verified changing digital words and demonstrated repeatable coarse amplitude
+plateaus in the RF path. It also measured the emission penalty of a temporary
+frequency-shifted diagnostic. No further production waveform change is deployed.

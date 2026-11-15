@@ -1,0 +1,194 @@
+[
+  {
+    "case": "step_0_backoff_0",
+    "backoff_db": 0,
+    "intended_carrier_code": 2000.0,
+    "tagged_carrier_code": 2001,
+    "received_carrier_rms_codes": 1089.76453297473,
+    "relative_received_db": 0,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_1_backoff_0p02",
+    "backoff_db": 0.02,
+    "intended_carrier_code": 1995.4001276451065,
+    "tagged_carrier_code": 1995,
+    "received_carrier_rms_codes": 1073.1182437620505,
+    "relative_received_db": -0.13370182375637352,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_2_backoff_0p04",
+    "backoff_db": 0.04,
+    "intended_carrier_code": 1990.810834703054,
+    "tagged_carrier_code": 1991,
+    "received_carrier_rms_codes": 1063.0230789405296,
+    "relative_received_db": -0.2157995196198435,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_3_backoff_0p06",
+    "backoff_db": 0.06,
+    "intended_carrier_code": 1986.2320968418676,
+    "tagged_carrier_code": 1987,
+    "received_carrier_rms_codes": 1055.2102107843004,
+    "relative_received_db": -0.279873688058707,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_4_backoff_0p08",
+    "backoff_db": 0.08,
+    "intended_carrier_code": 1981.6638897855353,
+    "tagged_carrier_code": 1983,
+    "received_carrier_rms_codes": 1050.647851244354,
+    "relative_received_db": -0.3175098556329041,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_5_backoff_0p1",
+    "backoff_db": 0.1,
+    "intended_carrier_code": 1977.1061893138776,
+    "tagged_carrier_code": 1977,
+    "received_carrier_rms_codes": 1044.6890898975337,
+    "relative_received_db": -0.3669122041983081,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_6_backoff_0p14",
+    "backoff_db": 0.14,
+    "intended_carrier_code": 1968.0222115222675,
+    "tagged_carrier_code": 1969,
+    "received_carrier_rms_codes": 1041.4144932814568,
+    "relative_received_db": -0.3941810401343399,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_7_backoff_0p18",
+    "backoff_db": 0.18,
+    "intended_carrier_code": 1958.9799708173978,
+    "tagged_carrier_code": 1959,
+    "received_carrier_rms_codes": 1038.5207680145572,
+    "relative_received_db": -0.4183496717217789,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_8_backoff_0p22",
+    "backoff_db": 0.22,
+    "intended_carrier_code": 1949.979275434774,
+    "tagged_carrier_code": 1951,
+    "received_carrier_rms_codes": 993.5126388369071,
+    "relative_received_db": -0.8031854626021502,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_9_backoff_0p26",
+    "backoff_db": 0.26,
+    "intended_carrier_code": 1941.0199344909793,
+    "tagged_carrier_code": 1941,
+    "received_carrier_rms_codes": 999.0547149389248,
+    "relative_received_db": -0.7548679134568724,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_10_backoff_0p3",
+    "backoff_db": 0.3,
+    "intended_carrier_code": 1932.1017579796267,
+    "tagged_carrier_code": 1933,
+    "received_carrier_rms_codes": 995.3271551743547,
+    "relative_received_db": -0.7873363297821383,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  },
+  {
+    "case": "step_11_backoff_0",
+    "backoff_db": 0,
+    "intended_carrier_code": 2000.0,
+    "tagged_carrier_code": 2001,
+    "received_carrier_rms_codes": 1027.077983902767,
+    "relative_received_db": -0.5145849900106539,
+    "error_counters": {
+      "rx_iq_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "adc_rail_samples": 0
+  }
+]

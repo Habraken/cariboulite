@@ -1,0 +1,131 @@
+--- a/top.v
++++ b/top.v
+@@ -1,3 +1,4 @@
++`include "sequence_check.v"
+ `include "spi_if.v"
+ `include "sys_ctrl.v"
+ `include "io_ctrl.v"
+@@ -202,6 +203,8 @@
+   sys_ctrl sys_ctrl_ins (
+       .i_rst_b(i_rst_b),
+       .i_sys_clk(w_clock_sys),
++      .i_observed_rx(rx_check_status),
++      .i_observed_tx(tx_check_status),
+       .i_ioc(w_ioc),
+       .i_data_in(w_rx_data),
+       .o_data_out(w_tx_data_sys),
+@@ -423,6 +426,11 @@
+   wire w_rx_24_fifo_write_clk;
+   wire w_rx_24_fifo_push;
+   wire [31:0] w_rx_24_fifo_data;
++  wire [31:0] w_observed_rx24;
++wire rx_observed_valid;
++wire [25:0] tx_check_status,rx_check_status;
++sequence_check txcheck(.clk(w_clock_sys),.rst_b(i_rst_b),.valid(w_tx_fifo_push),.data({w_tx_fifo_data[29:17],w_tx_fifo_data[13:1]}),.status(tx_check_status));
++sequence_check #(.ALLOW_HOLD(1)) rxcheck(.clk(lvds_clock_buf),.rst_b(i_rst_b),.valid(rx_observed_valid),.data({w_observed_rx24[29:17],w_observed_rx24[13:1]}),.status(rx_check_status));
+ 
+   lvds_rx lvds_rx_09_inst (
+       .i_rst_b  (i_rst_b),
+@@ -448,6 +456,8 @@
+       .o_fifo_push(w_rx_24_fifo_push),
+ 
+       .o_fifo_data  (w_rx_24_fifo_data),
++      .o_observed_word(w_observed_rx24),
++      .o_observed_valid(rx_observed_valid),
+       .i_sync_input (w_rx_sync_input_24),
+       .o_debug_state()
+   );
+@@ -460,23 +470,11 @@
+   wire w_rx_fifo_full;
+   wire w_rx_fifo_empty;
+ 
+-  complex_fifo  #(
+-      .ADDR_WIDTH(10),   // 1024 samples
+-      .DATA_WIDTH(16)  // 2x16 for I and Q 
+-  ) rx_fifo (
+-      .wr_rst_b_i(i_rst_b),
+-      .wr_clk_i(w_rx_fifo_write_clk),
+-      .wr_en_i(w_rx_fifo_push),
+-      .wr_data_i(w_rx_fifo_data),
+-
+-      .rd_rst_b_i(i_rst_b),
+-      .rd_clk_i(w_clock_sys),
+-      .rd_en_i(w_rx_fifo_pull),
+-      .rd_data_o(w_rx_fifo_pulled_data),
+-
+-      .full_o(w_rx_fifo_full),
+-      .empty_o(w_rx_fifo_empty)
+-  );
++  // Diagnostic image only: SMI RX is unused. Observe decoded modem
++  // loopback words over SPI even while the normal RX FIFO would be full.
++  assign w_rx_fifo_full = 1'b1;
++  assign w_rx_fifo_pulled_data = 32'b0;
++  assign w_rx_fifo_empty = 1'b1;
+   
+   //=========================================================================
+   // LVDS TX SIGNAL TO MODEM
+--- a/lvds_rx.v
++++ b/lvds_rx.v
+@@ -7,6 +7,8 @@
+     output            o_fifo_write_clk,
+     output reg        o_fifo_push, // 'reg' added as o_fifo_push is assigned in an always block
+     output reg [31:0] o_fifo_data,
++    output reg [31:0] o_observed_word,
++    output reg o_observed_valid,
+     input             i_sync_input,
+     output     [ 1:0] o_debug_state
+ );
+@@ -42,6 +44,7 @@
+     if (i_rst_b == 1'b0) begin
+       r_state_if <= state_idle;
+       o_fifo_push <= 1'b0;
++      o_observed_word <= 0; o_observed_valid <= 0;
+       r_phase_count <= 3'b111;
+       r_sync_input <= 1'b0;
+       r_test_cnt <= 5'b00000; // For fixed-data-frame testing purposes only
+@@ -60,6 +63,7 @@
+           //o_fifo_push <= 1'b0;
+       //end
+     end else begin
++      o_observed_valid <= 0;
+       case (r_state_if)
+         state_idle: begin
+           if (i_ddr_data == modem_i_sync) begin
+@@ -89,6 +93,8 @@
+         state_q_phase: begin
+           if (r_phase_count == 3'b000) begin
+             o_fifo_push <= ~i_fifo_full;
++            o_observed_word <= {o_fifo_data[29:0], i_ddr_data[1], r_sync_input};
++            o_observed_valid <= 1;
+             r_state_if  <= state_idle;
+             o_fifo_data <= {o_fifo_data[29:0], i_ddr_data[1], r_sync_input};
+           end else begin
+--- a/sys_ctrl.v
++++ b/sys_ctrl.v
+@@ -3,6 +3,8 @@
+         input               i_rst_b,
+         input               i_sys_clk,        // FPGA Clock
+ 
++        input [25:0]        i_observed_rx,
++        input [25:0]        i_observed_tx,
+         input [4:0]         i_ioc,
+         input [7:0]         i_data_in,
+         output reg [7:0]    o_data_out,
+@@ -108,6 +110,17 @@
+             //=============================================
+             if (i_fetch_cmd == 1'b1) begin
+                 case (i_ioc)
++                    // Diagnostic only: hold the source pattern constant long
++                    // before reading; no atomic changing-data/CDC contract.
++                    5'd8: o_data_out <= 8'ha6;
++                    5'd9: o_data_out <= i_observed_rx[7:0];
++                    5'd10: o_data_out <= i_observed_rx[15:8];
++                    5'd11: o_data_out <= i_observed_rx[23:16];
++                    5'd12: o_data_out <= {6'b0,i_observed_rx[25:24]};
++                    5'd13: o_data_out <= i_observed_tx[7:0];
++                    5'd14: o_data_out <= i_observed_tx[15:8];
++                    5'd15: o_data_out <= i_observed_tx[23:16];
++                    5'd16: o_data_out <= {6'b0,i_observed_tx[25:24]};
+                     ioc_module_version: o_data_out <= module_version;
+                     ioc_system_version: o_data_out <= system_version;
+                     ioc_manu_id: o_data_out <= manu_id;

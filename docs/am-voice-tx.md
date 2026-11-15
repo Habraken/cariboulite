@@ -130,3 +130,8 @@ from the controller only after confirming the attenuated connection):
   --tx-source mic --tx-mode am --tx-am-depth 0.8 \
   --tx-am-backoff 0 --tx-power 6
 ```
+
+The subsequent [70 dB link investigation](am70-residual-distortion-2026-11-15.md)
+verified changing digital words and demonstrated repeatable coarse amplitude
+plateaus in the RF path. It also measured the emission penalty of a temporary
+frequency-shifted diagnostic. No further production waveform change is deployed.
