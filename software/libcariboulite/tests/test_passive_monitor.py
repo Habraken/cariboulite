@@ -1061,6 +1061,15 @@ class PassiveClientTests(unittest.TestCase):
                          tx={"generation": 2, "queue": {"puts": 1, "gets": 0}})
         self.assertEqual(client.queue_rates(new, reset), {})
 
+    def test_rx_audio_meter_and_volume_display(self):
+        value=snapshot(rx={"audio_output":{"volume_db":-3,"muted":False,"valid":True,
+                            "rms_dbfs":-18.25,"peak_dbfs":-6.5,"clipped_samples":7}})
+        text="\n".join(client.format_snapshot(value))
+        self.assertIn("volume=-3.0 dB",text)
+        self.assertIn("RMS=-18.2 dBFS",text)
+        self.assertIn("peak=-6.5 dBFS",text)
+        self.assertIn("clipped=7",text)
+
     def test_am_voice_status_explains_gain_and_fm_bypass(self):
         value=snapshot(rx_mode="AM voice",config={"am_agc_enabled":True,"pcm_gain":8000},
                        rx={"noise_enabled":False,"noise":{"valid":False},"sinad":{"db":None}})

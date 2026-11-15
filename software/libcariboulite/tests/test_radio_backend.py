@@ -803,7 +803,7 @@ int main(void) {
             ("--tx-sample-rate", "3000000"), ("--tx-sample-rate", "nan"),
             ("--tx-power", "-13"), ("--tx-power", "15"), ("--tx-power", "-12.5"),
             ("--channel", "RF09", "--tx-power", "-15"),
-            ("--rx-mode", "usb"), ("--status-hz", "nan"),
+            ("--rx-volume", "nan"), ("--rx-volume", "13"), ("--rx-volume", "-61"), ("--rx-volume",), ("--rx-mode", "usb"), ("--status-hz", "nan"),
             ("--status-hz", "0"), ("--status-hz", "21"),
             ("--seconds", "inf"), ("--seconds", "0"),
             ("--rx-gain", "nan"), ("--rx-gain", "-1"),

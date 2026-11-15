@@ -40,6 +40,10 @@ static void test_requests(void)
         { "v1 14 sample_rate 4000000", CONTROL_SAMPLE_RATE },
         { "v1 15 squelch 1 0 .20 0.30", CONTROL_SQUELCH },
         { "v2 16 get", CONTROL_GET },
+        { "v2 16 rx_volume -6.25", CONTROL_RX_VOLUME },
+        { "v2 16 rx_volume 12", CONTROL_RX_VOLUME },
+        { "v2 16 rx_volume -60", CONTROL_RX_VOLUME },
+        { "v2 16 rx_volume -120", CONTROL_RX_VOLUME },
         { "v2 17 tx_start", CONTROL_TX_START },
         { "v2 18 tx_stop", CONTROL_TX_STOP },
         { "v2 19 tx_frequency 430125000", CONTROL_TX_FREQUENCY },
@@ -66,6 +70,8 @@ static void test_requests(void)
         { "v2 33 sample_rate 2000000", CONTROL_SAMPLE_RATE }
     };
     static const char *const bad[] = {
+        "v1 1 rx_volume 0", "v2 1 rx_volume nan", "v2 1 rx_volume inf",
+        "v2 1 rx_volume -61", "v2 1 rx_volume 12.01", "v2 1 rx_volume 0 extra",
         "", "v1", "v1 1", "v3 1 get", "v1 0 get", "v1 -1 get",
         "v1 +1 get", "v1 1.0 get", "v1 18446744073709551616 get",
         "v1 999999999999999999999999999999 get", "v1 1 GET",
@@ -110,6 +116,7 @@ static void test_requests(void)
         CHECK(decoded.frequency_hz == request.frequency_hz);
         CHECK(decoded.sample_rate_hz == request.sample_rate_hz);
         CHECK(decoded.mode == request.mode);
+        CHECK(decoded.volume_db == request.volume_db);
         CHECK(decoded.noise_enabled == request.noise_enabled);
         CHECK(decoded.carrier_enabled == request.carrier_enabled);
         CHECK(decoded.noise_open_rms == request.noise_open_rms);

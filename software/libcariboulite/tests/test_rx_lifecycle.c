@@ -772,6 +772,12 @@ static void test_noise_level_controls(void) {
     assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0 && !status.valid);
     assert(fabsf(status.open_rms-.20f)<1e-6f && fabsf(status.close_rms-.30f)<1e-6f);
     assert(rx_pipeline_start(&rx)==0);
+    assert(!rx_pipeline_set_volume(&rx,-6.25f));
+    assert(atomic_load(&rx.demod.volume_millidb)==-6250);
+    assert(rx_pipeline_set_volume(&rx,NAN)<0 && rx_pipeline_set_volume(&rx,13)<0);
+    assert(atomic_load(&rx.demod.volume_millidb)==-6250);
+    assert(!rx_pipeline_set_volume(&rx,-120));
+    assert(atomic_load(&rx.demod.volume_millidb)==-120000);
     audio_demod_t* dsp=rx.demod.dsp;
     rx.demod.reset=false;
     before=creates;

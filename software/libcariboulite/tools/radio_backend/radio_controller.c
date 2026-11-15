@@ -4,6 +4,7 @@
 #define _GNU_SOURCE
 #endif
 #include "command_protocol.h"
+#include "rx_audio_output.h"
 #include "radio_rates.h"
 
 #include <errno.h>
@@ -76,6 +77,7 @@ static void command_help(void)
          "  rx start | rx stop    start/stop reception\n"
          "  rx frequency MHz      saved RX frequency, for example 430.125\n"
          "  rx mode nbfm|wbfm|am     WBFM is mono\n"
+         "  rx volume DB|mute    live playback volume: -60..+12 dB; 0 = calibrated default\n"
          "  rx rate [MS/s]       no value opens divider menu; RX: .4/.5/.666667/.8/1/1.333333/2/4\n"
          "  rx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
          "  tx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
@@ -162,7 +164,7 @@ static int parse_command(const char *input, ui_command_t *command)
         if (strcmp(name, "start") && strcmp(name, "stop")
             && strcmp(name, "frequency") && strcmp(name, "freq")
             && strcmp(name, "mode") && strcmp(name, "rate")
-            && strcmp(name, "sample-rate") && strcmp(name, "divider") && strcmp(name, "squelch")) return -1;
+            && strcmp(name, "volume") && strcmp(name, "sample-rate") && strcmp(name, "divider") && strcmp(name, "squelch")) return -1;
     }
     if (!strcmp(name, "squelch")) {
         if (count < 2) return -1;
@@ -187,6 +189,12 @@ static int parse_command(const char *input, ui_command_t *command)
                (!strcmp(tokens[1], "soft") || !strcmp(tokens[1], "hard"))) {
         command->request.command = !strcmp(tokens[1], "soft") ? CONTROL_FPGA_SOFT_RESET
                                                               : CONTROL_FPGA_HARD_RESET;
+    } else if (rx_only && count==2 && !strcmp(name,"volume")) {
+        double db=-120;
+        if (strcmp(tokens[1],"mute") && parse_number(tokens[1],&db)) return -1;
+        if (!isfinite(db) || !rx_audio_volume_valid((float)db)) return -1;
+        command->request.command=CONTROL_RX_VOLUME;
+        command->request.volume_db=(float)db;
     } else if (count == 2 && (!strcmp(name, "frequency") || !strcmp(name, "freq"))) {
         double value;
         if (parse_number(tokens[1], &value) || value <= 0 ||
@@ -560,6 +568,8 @@ static int execute_command(controller_t *controller, ui_command_t *command)
         }
     }
     int result = exchange(controller, &command->request);
+    if (!result && command->request.command==CONTROL_RX_VOLUME)
+        printf("RX volume: %s%.1f dB\n",command->request.volume_db==-120 ? "muted; " : "",(double)command->request.volume_db);
     print_state(controller);
     return result;
 }

@@ -1,0 +1,512 @@
+{
+  "scope": "Hardware-free calibrated playback validation; physical AM RX check recorded separately",
+  "reference": {
+    "frequency_hz": 1000,
+    "nominal_modulation_fraction": 0.5,
+    "rms_dbfs": -12,
+    "volume_db": 0,
+    "pcm_trim": 8000
+  },
+  "builds": [
+    "strict",
+    "production -ffast-math"
+  ],
+  "reference_measurements": [
+    {
+      "mode": "nbfm",
+      "rate_hz": 4000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 2000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 1333333,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.017,
+      "peak_dbfs": -9.018
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 800000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 666667,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.017,
+      "peak_dbfs": -9.018
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 500000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.017,
+      "peak_dbfs": -9.018
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 400000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.02,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 75,
+      "rx_deviation_hz": 5000,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.011
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 0,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.02,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 4000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.003
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 2000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.003
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 1333333,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.004
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.001
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 800000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.004
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 666667,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.004
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 500000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -8.999
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 400000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.004
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 75,
+      "rx_deviation_hz": 5000,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.0
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 0,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -8.994
+    },
+    {
+      "mode": "am",
+      "rate_hz": 4000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.044
+    },
+    {
+      "mode": "am",
+      "rate_hz": 2000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.044
+    },
+    {
+      "mode": "am",
+      "rate_hz": 1333333,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.068,
+      "peak_dbfs": -9.039
+    },
+    {
+      "mode": "am",
+      "rate_hz": 1000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.043
+    },
+    {
+      "mode": "am",
+      "rate_hz": 800000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.043
+    },
+    {
+      "mode": "am",
+      "rate_hz": 666667,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.068,
+      "peak_dbfs": -9.039
+    },
+    {
+      "mode": "am",
+      "rate_hz": 500000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.068,
+      "peak_dbfs": -9.039
+    },
+    {
+      "mode": "am",
+      "rate_hz": 400000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.068,
+      "peak_dbfs": -9.042
+    },
+    {
+      "mode": "am",
+      "rate_hz": 1000000,
+      "deemphasis_us": 75,
+      "rx_deviation_hz": 5000,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.043
+    },
+    {
+      "mode": "am",
+      "rate_hz": 1000000,
+      "deemphasis_us": 0,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.043
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 4000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 2000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 1333333,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.017,
+      "peak_dbfs": -9.018
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 800000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 666667,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.017,
+      "peak_dbfs": -9.018
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 500000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.017,
+      "peak_dbfs": -9.018
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 400000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.02,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 75,
+      "rx_deviation_hz": 5000,
+      "rms_dbfs": -12.021,
+      "peak_dbfs": -9.011
+    },
+    {
+      "mode": "nbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 0,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.02,
+      "peak_dbfs": -9.012
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 4000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.003
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 2000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.003
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 1333333,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.004
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.001
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 800000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.004
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 666667,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.004
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 500000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -8.999
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 400000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.004
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 75,
+      "rx_deviation_hz": 5000,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -9.0
+    },
+    {
+      "mode": "wbfm",
+      "rate_hz": 1000000,
+      "deemphasis_us": 0,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.0,
+      "peak_dbfs": -8.994
+    },
+    {
+      "mode": "am",
+      "rate_hz": 4000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.044
+    },
+    {
+      "mode": "am",
+      "rate_hz": 2000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.044
+    },
+    {
+      "mode": "am",
+      "rate_hz": 1333333,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.068,
+      "peak_dbfs": -9.039
+    },
+    {
+      "mode": "am",
+      "rate_hz": 1000000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.043
+    },
+    {
+      "mode": "am",
+      "rate_hz": 800000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.043
+    },
+    {
+      "mode": "am",
+      "rate_hz": 666667,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.068,
+      "peak_dbfs": -9.039
+    },
+    {
+      "mode": "am",
+      "rate_hz": 500000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.068,
+      "peak_dbfs": -9.039
+    },
+    {
+      "mode": "am",
+      "rate_hz": 400000,
+      "deemphasis_us": 50,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.068,
+      "peak_dbfs": -9.042
+    },
+    {
+      "mode": "am",
+      "rate_hz": 1000000,
+      "deemphasis_us": 75,
+      "rx_deviation_hz": 5000,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.043
+    },
+    {
+      "mode": "am",
+      "rate_hz": 1000000,
+      "deemphasis_us": 0,
+      "rx_deviation_hz": 2500,
+      "rms_dbfs": -12.069,
+      "peak_dbfs": -9.043
+    }
+  ],
+  "checks": {
+    "dsp": "PASS: 60 IQ reference cases, all modes/eight native rates, 0/50/75 us de-emphasis and NBFM deviation; <0.1 dB reference error; meter accuracy within 0.002 dB",
+    "output_controls": "PASS: bounds, 20 ms ramps, mute, closed gate, silence floor and clipped-sample counts",
+    "legacy": "PASS: NBFM/WBFM waveform regressions and memory runner",
+    "lifecycle": "PASS: atomic live volume, invalid-setting preservation, existing mode/rate/squelch checks",
+    "passive_monitor": "PASS: 63 tests",
+    "backend_suite": "PASS: complete make test target including 103 backend/controller tests"
+  },
+  "test_commands": [
+    "make -C software/libcariboulite/tools/radio_backend test",
+    "python3 software/libcariboulite/tests/test_rx_lifecycle.py",
+    "python3 software/libcariboulite/tests/test_passive_monitor.py",
+    "python3 software/libcariboulite/tests/test_nbfm_demod.py",
+    "python3 software/libcariboulite/tests/test_wbfm_demod.py",
+    "python3 software/libcariboulite/tests/test_memory_audio.py"
+  ]
+}

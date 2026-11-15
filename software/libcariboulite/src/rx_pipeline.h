@@ -41,6 +41,8 @@ typedef struct {
     float  pcm_gain;            // e.g., 8000.0f
 
     unsigned am_rf_attenuation_db; // AM fixed RF gain = 63 dB minus this (0..63, steps of 3)
+    bool calibrated_output; // shared calibrated playback stage (backend default)
+    float volume_db; // 0 dB default; -60..12 or -120=mute
     bool am_agc_disabled; // AM: manual IQ/4096 scaling when true; RX gain still applies
     bool sinad_enabled; // optional 1 kHz NBFM link-quality estimate
     bool noise_squelch_disabled; // zero/default enables noise squelch
@@ -140,3 +142,6 @@ bool rx_pipeline_squelch_open(const rx_pipeline_t*);
 // require 0 < open < close <= 8.0 after rounding. PCM volume is independent.
 int rx_pipeline_set_noise_squelch_levels(rx_pipeline_t*, float open_rms, float close_rms);
 int rx_pipeline_get_noise_squelch_status(const rx_pipeline_t*, rx_noise_squelch_status_t*);
+
+// Live volume; thread-safe atomic handoff with 20 ms worker ramp.
+int rx_pipeline_set_volume(rx_pipeline_t*, float db);

@@ -124,6 +124,7 @@ audio_demod_result_t am_demod_process_with_raw(nbfm_demod_t* dsp,
             v=biquad_run(&s->hp,v);
             v=biquad_run(&s->lp[1],biquad_run(&s->lp[0],v));
             if(raw)raw[result.produced]=v;
+            if(s->base.filtered_audio)s->base.filtered_audio[result.produced]=v;
             float pcm=fmaxf(-32768.f,fminf(32767.f,v*s->gain));
             output[result.produced++]=(int16_t)lrintf(pcm);s->phase-=1;
         }

@@ -284,6 +284,13 @@ int rx_pipeline_init(rx_pipeline_t *pipeline, sys_st *sys,
     return 0;
 }
 
+int rx_pipeline_set_volume(rx_pipeline_t *pipeline, float db)
+{
+    assert(pipeline && pipeline->inited && rx_audio_volume_valid(db));
+    atomic_store(&pipeline->demod.volume_millidb,(int)lroundf(db*1000));
+    return 0;
+}
+
 int rx_pipeline_set_freq(rx_pipeline_t *pipeline, double frequency)
 {
     if (fail_frequency) return -1;

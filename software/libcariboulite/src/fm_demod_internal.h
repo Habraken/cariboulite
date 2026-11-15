@@ -2,7 +2,7 @@
 #include "nbfm_demod.h"
 // Private common handle; each mode embeds it first in its own allocation.
 // Backend entry points are internal; callers use nbfm_demod.h.
-struct nbfm_demod { fm_demod_mode_t mode; };
+struct nbfm_demod { fm_demod_mode_t mode; float* filtered_audio; };
 nbfm_demod_t* nb_demod_create(const nbfm_demod_config_t* config);
 void nb_demod_reset(nbfm_demod_t* dsp);
 int nb_demod_set_audio(nbfm_demod_t* dsp, float tau, float gain);

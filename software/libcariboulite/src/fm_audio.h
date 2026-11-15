@@ -37,7 +37,7 @@ static inline float fm_deemph_48k(float x, float *z, float tau_s)
 // NBFM selects the 3.2 kHz low-pass; WBFM retains its upstream FIR bandwidth.
 // Gain maps normalized audio to S16 units. Clipping and lrintf are unchanged.
 static inline int16_t fm_audio_process(fm_audio_state_t* s, float sample,
-                                      float tau, float gain, int narrow)
+                                      float tau, float gain, int narrow, float* filtered)
 {
     // === 48k audio chain ===
     float x = sample;
@@ -52,6 +52,7 @@ static inline int16_t fm_audio_process(fm_audio_state_t* s, float sample,
     float ya = narrow ? s->lpf_y : yd;
     if (fabsf(s->lpf_y) < 1e-20f) s->lpf_y = 0.0f;
 
+    if (filtered) *filtered = ya;
     float pcm = ya * gain;
     if (pcm >  32767.f) pcm =  32767.f;
     if (pcm < -32768.f) pcm = -32768.f;

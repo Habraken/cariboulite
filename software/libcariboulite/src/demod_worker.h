@@ -13,6 +13,10 @@ typedef struct aud10_fifo_s aud10_fifo_t;
 
 // Thread control owned by the RX pipeline; audio output is mono at 48 kHz.
 typedef struct {
+    bool calibrated_output; // immutable during worker lifetime
+    atomic_int volume_millidb; // -60000..12000; -120000 is mute
+    atomic_uint_fast64_t audio_levels; // packed 100 ms post-volume/gate PCM levels
+    atomic_uint_fast64_t audio_clipped; // cumulative clipped samples since reset
     atomic_bool alive; // worker lifetime, including cancellation/error exit
     atomic_int last_error;
     pipeline_thread_diagnostics_t scheduling;

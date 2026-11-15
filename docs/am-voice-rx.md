@@ -6,7 +6,10 @@ RF rates from 400 kS/s through 4 MS/s and 48 kHz mono playback. Broadcast AM
 reception with a wider audio/channel profile is future work.
 
 AM TX, USB and LSB are not implemented by this step. The transmitter remains
-NBFM. No physical RX or TX validation has been performed for AM yet.
+NBFM. The initial live receive check on pi4f-trixie at 119.050 MHz
+produced intelligible speech; the operator reported good speech quality on
+strong signals and noise on weaker ones. No physical AM TX validation has
+been performed.
 
 ## Operation
 
@@ -58,8 +61,9 @@ For manual audio gain, start with:
 --rx-am-agc off --rx-gain 8000
 ```
 
-Manual mode uses a fixed envelope reference of 4096 IQ units; `--rx-gain`
-sets normalized audio-to-PCM gain. This option controls software audio
+Manual mode uses a fixed envelope reference of 4096 IQ units. The backend
+now applies [calibrated RX playback](rx-audio-levels.md): use `rx volume DB`
+for live volume, with `--rx-gain 8000` as unity legacy trim. This option controls software audio
 normalization. AM disables the modem's fast RF AGC, whose continuous gain
 updates would alter the AM envelope. RF gain stays fixed at 63 dB by default;
 `--rx-am-rf-attenuation 12`, for example, selects 51 dB. This launch option
@@ -111,6 +115,7 @@ keeps its v1/v2 wire layouts and represents mode as an enum internally.
 
 These software tests do not establish RF reception quality, measured receiver
 sensitivity, audio intelligibility or performance on live airport traffic.
-The requested antenna-connected listening test is pending user confirmation.
+The initial antenna-connected listening check has been performed as described
+above. It does not establish calibrated sensitivity or weak-signal performance.
 
 Hardware gain policy follows the [AT86RF215 datasheet, section 6.2.3](https://ww1.microchip.com/downloads/en/devicedoc/atmel-42415-wireless-at86rf215_datasheet.pdf).

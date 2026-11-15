@@ -67,3 +67,14 @@ audio_demod_result_t audio_demod_process_with_raw(audio_demod_t* s,
 audio_demod_result_t audio_demod_process(audio_demod_t* s,
     const iq16_t* input, size_t count, int16_t* output, size_t capacity, double correction)
 { return audio_demod_process_with_raw(s,input,count,output,NULL,capacity,correction); }
+
+audio_demod_result_t audio_demod_process_with_taps(audio_demod_t* s,
+    const iq16_t* input, size_t count, int16_t* output, float* raw,
+    float* filtered, size_t capacity, double correction)
+{
+    if (!s) return (audio_demod_result_t){.error=-EINVAL};
+    s->filtered_audio = filtered;
+    audio_demod_result_t result = audio_demod_process_with_raw(s,input,count,output,raw,capacity,correction);
+    s->filtered_audio = NULL;
+    return result;
+}

@@ -4,6 +4,7 @@
 #endif
 #include "cariboulite_setup.h"
 #include "rx_pipeline.h"
+#include "rx_audio_output.h"
 #include "tx_pipeline.h"
 #include "nbfm_mod.h"
 #include "pipeline_runtime.h"
@@ -113,7 +114,8 @@ static void usage(FILE *out, const char *program)
         "  --rx-carrier-squelch       enable carrier squelch (default off)\n"
         "  --rx-noise-open RMS        default %.2f\n"
         "  --rx-noise-close RMS       default %.2f\n"
-        "  --rx-gain GAIN            PCM gain, default 8000\n"
+        "  --rx-volume DB|mute       calibrated playback volume (-60..12 dB), default 0\n"
+        "  --rx-gain GAIN            legacy trim (8000 = unity), default 8000\n"
         "  --rx-am-rf-attenuation dB  AM fixed RF gain: 63 minus dB (0..63, steps of 3)\n"
         "  --rx-am-agc on|off        AM carrier normalization (default on); off uses fixed audio scaling\n"
         "  --rx-deemphasis-us US      50 or 75, default 50\n"
@@ -155,7 +157,7 @@ static int parse_options(int argc, char **argv, options_t *o)
             .pacing_mode = TX_PACING_HARDWARE_REQUIRED},
         .rx = {.freq_hz = 430125000, .fs_rf = 1000000, .fs_audio = 48000,
             .nbfm_deviation_hz = NBFM_DEFAULT_DEVIATION_HZ,
-            .deemph_tau_s = 50e-6f, .pcm_gain = 8000,
+            .deemph_tau_s = 50e-6f, .pcm_gain = 8000, .calibrated_output=true,
             .noise_squelch_open_rms = NOISE_SQUELCH_OPEN_RMS,
             .noise_squelch_close_rms = NOISE_SQUELCH_CLOSE_RMS,
             .mode = AUDIO_DEMOD_NBFM},
@@ -163,10 +165,11 @@ static int parse_options(int argc, char **argv, options_t *o)
     enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
-        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION };
+        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME };
     static const struct option long_options[] = {
         {"channel", required_argument, NULL, CHANNEL},
         {"rx-sinad", no_argument, NULL, SINAD},
+        {"rx-volume", required_argument, NULL, RX_VOLUME},
         {"rx-am-agc", required_argument, NULL, AM_AGC},
         {"rx-am-rf-attenuation", required_argument, NULL, AM_RF_ATTENUATION},
         {"rx-start", no_argument, NULL, RX_START},
@@ -276,6 +279,13 @@ static int parse_options(int argc, char **argv, options_t *o)
             if (number(optarg, &o->status_hz, 0.5, 20)) return -1;
             break;
         case SINAD: o->rx.sinad_enabled = true; break;
+        case RX_VOLUME:
+            if (!strcmp(optarg,"mute")) o->rx.volume_db=-120;
+            else {
+                if (number(optarg,&value,-60,12)) return -1;
+                o->rx.volume_db=(float)value;
+            }
+            break;
         case AM_RF_ATTENUATION:
             if (number(optarg, &value, 0, 63) || value != (unsigned)value || (unsigned)value % 3) return -1;
             o->rx.am_rf_attenuation_db = (unsigned)value;
@@ -1002,12 +1012,19 @@ static void backend_control_command(void *opaque, const control_request_t *reque
              && request->command != CONTROL_FPGA_HARD_RESET) code = "FAULT";
     else if (o->tx_requested && request->command != CONTROL_GET
              && request->command != CONTROL_TX_START && request->command != CONTROL_TX_STOP
-             && request->command != CONTROL_SQUELCH) code = "TX_RUNNING";
+             && request->command != CONTROL_RX_VOLUME && request->command != CONTROL_SQUELCH) code = "TX_RUNNING";
     else if (both && (o->rx_requested || (!o->dry_run && c->pipeline->running)))
         code = "RX_RUNNING";
     else if (both && !o->dry_run && c->tx_pipeline && c->tx_pipeline->running)
         code = "TX_RUNNING";
     else switch (request->command) {
+    case CONTROL_RX_VOLUME:
+        if (!rx_audio_volume_valid(request->volume_db)) code="INVALID";
+        else if (o->rx.volume_db!=request->volume_db) {
+            if (!o->dry_run && c->pipeline->inited && rx_pipeline_set_volume(c->pipeline,request->volume_db)) code="HARDWARE";
+            else { o->rx.volume_db=request->volume_db; changed=true; }
+        }
+        break;
     case CONTROL_GET: break;
     case CONTROL_FPGA_PROGRAM:
     case CONTROL_FPGA_SOFT_RESET:
@@ -1545,6 +1562,22 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         snprintf(tx_bandwidth, sizeof(tx_bandwidth), "%d", tx_analog_cutoff_hz);
     if (o->actual_tx_frequency > 0) snprintf(tx_actual_freq, sizeof(tx_actual_freq), "%.3f", o->actual_tx_frequency);
     if (o->actual_tx_power != INT_MIN) snprintf(tx_actual_power, sizeof(tx_actual_power), "%d", o->actual_tx_power);
+    char output_audio[384], audio_rms[32]="null", audio_peak[32]="null";
+    uint64_t audio_levels=0, audio_clipped=0;
+    if (live && !o->transition && pipeline->running) {
+        audio_levels=atomic_load(&pipeline->demod.audio_levels);
+        audio_clipped=atomic_load(&pipeline->demod.audio_clipped);
+    }
+    if (audio_levels>>63) {
+        snprintf(audio_rms,sizeof(audio_rms),"%.3f",((int)(audio_levels&0x1ffff)-120000)/1000.);
+        snprintf(audio_peak,sizeof(audio_peak),"%.3f",((int)((audio_levels>>17)&0x1ffff)-120000)/1000.);
+    }
+    snprintf(output_audio,sizeof(output_audio),
+        "{\"calibrated\":true,\"volume_db\":%.3f,\"muted\":%s,\"valid\":%s,"
+        "\"rms_dbfs\":%s,\"peak_dbfs\":%s,\"clipped_samples\":%" PRIu64 ","
+        "\"window_ms\":100,\"reference_hz\":1000,\"reference_modulation\":0.5,\"reference_rms_dbfs\":-12}",
+        (double)o->rx.volume_db,o->rx.volume_db==-120 ? "true":"false",
+        audio_levels>>63 ? "true":"false",audio_rms,audio_peak,audio_clipped);
     int result = snprintf(out, capacity,
         "{\"version\":1,\"session\":\"%s\",\"sequence\":%" PRIu64 ","
         "\"monotonic_s\":%.9f,\"realtime_s\":%.6f,\"hardware_monotonic_s\":%.9f,"
@@ -1562,7 +1595,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"open_rms\":%.3f,\"close_rms\":%.3f},"
         "\"alignment\":%s,"
         "\"sinad\":{\"enabled\":%s,\"db\":%s,\"tone_hz\":1000,\"low_hz\":300,\"high_hz\":3000},"
-        "\"audio_queue\":%s,\"playback\":%s,\"reader\":%s,"
+        "\"audio_output\":%s,\"audio_queue\":%s,\"playback\":%s,\"reader\":%s,"
         "\"workers\":{\"reader\":%s,\"demod\":%s,\"audio\":%s}},"
         "\"tx\":%s,\"hardware\":%s,"
         "\"loopback\":{\"armed\":false,\"active\":false,\"samples\":0,\"timeouts\":0},"
@@ -1590,7 +1623,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         live ? (rx_pipeline_squelch_open(pipeline) ? "true" : "false") : "null",
         noise.valid ? "true" : "false", noise.valid ? (noise.detector_open ? "true" : "false") : "null",
         rms, (double)noise.open_rms, (double)noise.close_rms,
-        alignment, o->rx.sinad_enabled ? "true" : "false", sinad_db, audio_queue, playback_stats, reader,
+        alignment, o->rx.sinad_enabled ? "true" : "false", sinad_db, output_audio, audio_queue, playback_stats, reader,
         reader_worker, demod_worker, audio_worker,
         tx_json, hardware, o->config_generation, o->pipeline_generation,
         o->rx_requested ? "true" : "false", backend_control_state(o),

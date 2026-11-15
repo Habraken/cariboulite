@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 #endif
 #include "command_protocol.h"
+#include "rx_audio_output.h"
 #include "radio_rates.h"
 
 #include <errno.h>
@@ -214,6 +215,9 @@ int control_request_parse(const char *packet, size_t bytes,
         return protocol_error();
     if (!strcmp(tokens[2], "get") && count == 3)
         request->command = CONTROL_GET;
+    else if (request->protocol_version==2 && !strcmp(tokens[2], "rx_volume") && count==4 &&
+             !parse_float(tokens[3], &request->volume_db) && rx_audio_volume_valid(request->volume_db))
+        request->command=CONTROL_RX_VOLUME;
     else if (!strcmp(tokens[2], "start") && count == 3)
         request->command = CONTROL_START;
     else if (!strcmp(tokens[2], "stop") && count == 3)
@@ -401,6 +405,10 @@ int control_request_format(const control_request_t *request,
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " %s\n", version, request->id,
                          request->command == CONTROL_GET ? "get" :
                          request->command == CONTROL_START ? "start" : "stop");
+        break;
+    case CONTROL_RX_VOLUME:
+        if (version!=2 || !rx_audio_volume_valid(request->volume_db)) break;
+        bytes=snprintf(packet,capacity,"v2 %" PRIu64 " rx_volume %.9g\n",request->id,(double)request->volume_db);
         break;
     case CONTROL_FREQUENCY:
     case CONTROL_BOTH_FREQUENCY:

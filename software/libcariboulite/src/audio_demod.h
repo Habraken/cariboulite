@@ -50,6 +50,11 @@ int audio_demod_set_nbfm_deviation(audio_demod_t* dsp, float deviation_hz);
 audio_demod_result_t audio_demod_process(audio_demod_t* dsp,
     const iq16_t* input, size_t count, audio_s16_t* output, size_t capacity,
     double correction);
+// Optional post-filter, pre-gain floating-point tap, separate from raw metrics.
+// The returned samples match PCM output counts; buffer is never retained.
+audio_demod_result_t audio_demod_process_with_taps(audio_demod_t* dsp,
+    const iq16_t* input, size_t count, audio_s16_t* output, float* raw_audio,
+    float* filtered_audio, size_t capacity, double correction);
 void audio_demod_destroy(audio_demod_t* dsp);
 // AM only: slow carrier normalization (default on). Off uses IQ/4096 scaling;
 // pcm_gain remains the manual audio gain. Settings survive reset.

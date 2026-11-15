@@ -132,9 +132,11 @@ nbfm_demod_result_t nb_demod_process_with_raw(nbfm_demod_t* dsp,
 
             if (raw_audio) raw_audio[result.produced] = y_lin;
 
-            output[result.produced++] = fm_audio_process(&s->audio,
+            output[result.produced] = fm_audio_process(&s->audio,
                 y_lin * s->audio_deviation_scale,
-                s->config.deemph_tau, s->config.pcm_gain, 1);
+                s->config.deemph_tau, s->config.pcm_gain, 1,
+                s->base.filtered_audio ? s->base.filtered_audio + result.produced : NULL);
+            ++result.produced;
 
             // Keep fractional remainder, including across process calls.
             s->phase48 -= 1.0;

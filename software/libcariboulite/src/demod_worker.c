@@ -4,6 +4,7 @@
 #include "demod_worker.h"
 #include "noise_squelch.h"
 #include "sinad.h"
+#include "rx_audio_output.h"
 #include "carrier_squelch.h"
 #include "pipeline_transport.h"
 #include "pipeline_runtime.h"
@@ -34,7 +35,9 @@ void* audio_demod_thread(void* arg)
     int primed = 0;
     size_t nout = 0;
     aud10_frame_t audio;
-    float raw[480];
+    float raw[480], filtered[480];
+    rx_audio_output_t output = {0};
+    uint64_t levels = 0;
     noise_squelch_t noise = {0};
     sinad_t sinad;
     carrier_squelch_t carrier = {0};
@@ -49,6 +52,10 @@ void* audio_demod_thread(void* arg)
     while (c->active) {
         if (c->reset) {
             audio_demod_reset(c->dsp);
+            output = (rx_audio_output_t){0};
+            levels=0;
+            atomic_store(&c->audio_levels, 0);
+            atomic_store(&c->audio_clipped, 0);
             sinad_reset(&sinad);
             atomic_store(&c->sinad_db_milli, 0);
             noise_squelch_reset(&noise);
@@ -132,8 +139,14 @@ void* audio_demod_thread(void* arg)
                 atomic_store_explicit(&c->last_error, -EINVAL, memory_order_relaxed);
                 goto done;
             }
-            audio_demod_result_t result = audio_demod_process_with_raw(c->dsp,
-                frm.data + offset, count, audio.pcm + nout, raw, 480 - nout, corr48);
+            const int volume = atomic_load(&c->volume_millidb);
+            if (c->calibrated_output) {
+                float scale=rx_audio_calibration(c->mode,c->deemph_tau)*(c->pcm_gain/8000.f);
+                rx_audio_set_gain(&output, volume == -120000 ? 0 : scale*powf(10.f,volume/20000.f));
+            }
+            audio_demod_result_t result = audio_demod_process_with_taps(c->dsp,
+                frm.data + offset, count, audio.pcm + nout, raw,
+                c->calibrated_output ? filtered : NULL, 480 - nout, corr48);
             if (result.error || !result.consumed) {
                 fprintf(stderr, "DEMOD: processing failed (%d)\n", result.error);
                 atomic_store_explicit(&c->last_error,
@@ -154,9 +167,15 @@ void* audio_demod_thread(void* arg)
                 if (!flags) gate_gain = 1.0f; // exact bypass for diagnostics
                 else if (open) gate_gain = fminf(1.0f, gate_gain + 1.0f/240);
                 else gate_gain = fmaxf(0.0f, gate_gain - 1.0f/240);
-                audio.pcm[nout+i] = (int16_t)lrintf(audio.pcm[nout+i] * gate_gain);
+                if (c->calibrated_output)
+                    audio.pcm[nout+i] = rx_audio_output_sample(&output,filtered[i],gate_gain,&levels);
+                else audio.pcm[nout+i] = (int16_t)lrintf(audio.pcm[nout+i] * gate_gain);
             }
-            if (result.produced) atomic_store(&c->squelch_open, open);
+            if (result.produced) {
+                atomic_store(&c->squelch_open, open);
+                atomic_store(&c->audio_levels, levels);
+                atomic_store(&c->audio_clipped, output.clipped);
+            }
             offset += result.consumed;
             nout += result.produced;
             if (nout == 480) {

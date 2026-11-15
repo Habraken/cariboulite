@@ -138,6 +138,24 @@ class RxControlBackendTests(unittest.TestCase):
                 return last
         self.fail(f"Status did not reflect the acknowledged configuration: {last!r}")
 
+    def test_live_volume_keeps_pipeline_and_reports_truthful_meter_state(self):
+        process=self.start_backend("--rx-mode","am","--rx-volume","-3")
+        status=self.connect(self.status_path)
+        initial=self.snapshot_matching(status)
+        generation=initial['control']['pipeline_generation']
+        for setting,expected in (("-6.25",-6.25),("mute",-120),("0",0),("12",12)):
+            result=subprocess.run([str(CONTROLLER),"--socket",str(self.control_path),"--command",f"rx volume {setting}"],capture_output=True,text=True,timeout=3)
+            self.assertEqual(result.returncode,0,result.stderr)
+            state=self.snapshot_matching(status,lambda s:s['rx']['audio_output']['volume_db']==expected)
+            output=state['rx']['audio_output']
+            self.assertTrue(output['calibrated']);self.assertFalse(output['valid'])
+            self.assertIsNone(output['rms_dbfs']);self.assertIsNone(output['peak_dbfs'])
+            self.assertEqual(output['muted'],expected==-120)
+            self.assertEqual(state['control']['pipeline_generation'],generation)
+            self.assertTrue(state['control']['rx_requested'])
+            self.assertFalse(state['tx']['requested'])
+        self.assertIsNone(process.poll())
+
     def assert_truthful_simulation(self, snapshot, reply):
         self.assertEqual(snapshot["state"], "DRY_RUN")
         self.assertEqual(snapshot["source"]["kind"], "simulated")

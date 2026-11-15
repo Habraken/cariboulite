@@ -350,6 +350,13 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
         lines.append(f"AM voice: 300–3000 Hz  carrier normalization={_on(config.get('am_agc_enabled'))}"
                      f"  fixed RF gain={_formatted(config.get('am_rf_gain_db'), '.0f')} dB"
                      f"  PCM gain={_formatted(config.get('pcm_gain'), '.0f')}  FM de-emphasis bypassed")
+    output = _mapping(rx.get("audio_output"))
+    if output:
+        lines.append(f"RX audio: volume={_formatted(output.get('volume_db'), '.1f')} dB"
+                     f"  mute={_on(output.get('muted'))}"
+                     f"  RMS={_formatted(output.get('rms_dbfs'), '.1f')} dBFS"
+                     f"  peak={_formatted(output.get('peak_dbfs'), '.1f')} dBFS"
+                     f"  clipped={_label(output.get('clipped_samples'))}")
     for name, pipeline in (("RX", rx), ("TX", tx)):
         queue = _mapping(pipeline.get("queue"))
         lines.append(

@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 #endif
 #include "rx_pipeline.h"
+#include "rx_audio_output.h"
 #include "pipeline_runtime.h"
 #include "alsa_sink.h"
 #include "noise_squelch.h"
@@ -183,6 +184,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
         !radio_profile_frequency_valid(radio->type, sys->board_info.numeric_product_id,
                                        par->freq_hz) ||
         (par->am_rf_attenuation_db > 63 || par->am_rf_attenuation_db % 3) ||
+        !rx_audio_volume_valid(par->volume_db) ||
         !radio_profile_finite(par->pcm_gain) || par->pcm_gain < 0 ||
         !radio_profile_finite(par->deemph_tau_s) || par->deemph_tau_s < 0) return -1;
 
@@ -239,6 +241,10 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     atomic_init(&p->demod.squelch_flags,
         (par->noise_squelch_disabled || !(audio_demod_mode_capabilities(par->mode) & AUDIO_DEMOD_CAP_NOISE_SQUELCH) ? 0u : RX_SQUELCH_NOISE) |
         (par->carrier_squelch_enabled ? RX_SQUELCH_CARRIER : 0u));
+    p->demod.calibrated_output = par->calibrated_output;
+    atomic_init(&p->demod.volume_millidb, (int)lroundf(par->volume_db*1000));
+    atomic_init(&p->demod.audio_levels, 0);
+    atomic_init(&p->demod.audio_clipped, 0);
     atomic_init(&p->demod.squelch_open, 0);
     atomic_init(&p->demod.noise_squelch_levels, noise_levels);
     p->demod.sinad_enabled = par->sinad_enabled;
@@ -596,4 +602,11 @@ float rx_pipeline_sinad_db(const rx_pipeline_t* p)
     if (!p || !p->inited || !p->running || !p->demod.sinad_enabled
         || p->demod.mode != AUDIO_DEMOD_NBFM || !atomic_load(&p->demod.alive)) return 0;
     return atomic_load(&p->demod.sinad_db_milli) / 1000.0f;
+}
+
+int rx_pipeline_set_volume(rx_pipeline_t* p, float db)
+{
+    if (!p || !p->inited || !rx_audio_volume_valid(db)) return -EINVAL;
+    atomic_store(&p->demod.volume_millidb, (int)lroundf(db*1000));
+    return 0;
 }

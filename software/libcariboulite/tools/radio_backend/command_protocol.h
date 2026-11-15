@@ -10,6 +10,7 @@
 
 typedef enum control_command {
     CONTROL_GET,
+    CONTROL_RX_VOLUME,
     CONTROL_START,
     CONTROL_STOP,
     CONTROL_FREQUENCY,
@@ -40,6 +41,7 @@ typedef struct control_request {
     uint64_t id;
     control_command_t command;
     double frequency_hz;
+    float volume_db;
     unsigned sample_rate_hz;
     audio_demod_mode_t mode;
     bool noise_enabled;

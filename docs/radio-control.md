@@ -959,3 +959,11 @@ default; `--rx-am-agc off --rx-gain GAIN` selects manual audio scaling.
 FM de-emphasis, FM noise-RMS squelch and NBFM SINAD do not apply to AM.
 TX remains NBFM. See [AM RX operation and validation](am-voice-rx.md) for
 settings, the receive-only 119.050 MHz test and its antenna-connection gate.
+
+## Calibrated RX playback
+
+`rx volume DB` changes playback volume live (−60..+12 dB), and `rx volume mute`
+mutes playback. `rx volume 0` restores the calibrated default. The passive
+monitor reports the setting, 100 ms RMS/peak in dBFS and clipped-sample count.
+See [RX audio calibration and metering](rx-audio-levels.md) for the common
+modulation reference, headroom, startup options and measurement scope.
