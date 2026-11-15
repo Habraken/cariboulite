@@ -91,6 +91,7 @@ typedef struct {
     unsigned rf_fs;            // 1, 2 or 4 MS/s; 0 defaults to 4 MS/s
 
     audio_mod_mode_t mode; // zero/default NBFM; AM voice also supported
+    float am_backoff_db; // additional AM IQ envelope backoff, 0..18 dB
     float am_depth; // AM modulation at unit filtered audio; 0..1
 
     // Baseband source for audio modulation

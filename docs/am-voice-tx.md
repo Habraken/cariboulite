@@ -34,7 +34,11 @@ Microphone gain and tone amplitude determine how much of this maximum is used.
 A 0.5-amplitude, 1 kHz tone at depth 0.8 produces approximately 39.8% modulation
 after voice filtering and linear interpolation to the RF sample clock.
 
-The IQ envelope is `out_scale / 2 * (1 + depth * filtered_audio)`, with constant
+Extra digital backoff can be set with `tx am-backoff DB` (0..18 dB), or
+`--tx-am-backoff DB` at launch. It changes only AM and requires stopped TX.
+The current baseline defaults to 0 dB pending the RF linearity comparison.
+
+The IQ envelope is `out_scale * 10^(-backoff/20) / 2 * (1 + depth * filtered_audio)`, with constant
 phase. It cannot become negative or exceed `out_scale`; peak bounding prevents
 overmodulation, but excessive microphone audio can still sound distorted.
 On audio underflow the modulator reports held ticks, falls back toward an
@@ -45,7 +49,7 @@ the stream. Missing audio is not treated as a successful voice frame.
 
 `out_scale` is the maximum envelope at 100% modulation, not the carrier
 amplitude. With the same 4000 IQ scale and RF power register setting, AM's
-2000-IQ carrier is nominally 6 dB below the former constant-envelope NBFM
+2000-IQ carrier before extra backoff is nominally 6 dB below the former constant-envelope NBFM
 reference. At 100% modulation the theoretical peak-envelope power reaches that
 reference. For smaller modulation depth the actual peaks are lower. Hardware
 compression, calibration and frequency response can change these relationships.
@@ -60,6 +64,7 @@ Software tests do not certify radiated occupied bandwidth or transmitter purity.
 
 - `tx mode nbfm|am` selects saved TX modulation.
 - `tx am-depth VALUE` selects saved AM modulation depth (0..1).
+- `tx am-backoff DB` selects additional AM IQ backoff (0..18 dB).
 - `--tx-mode` and `--tx-am-depth` set startup defaults.
 - `config.tx_mode` and `config.tx_am_depth` expose settings to the passive monitor.
 - v2 requests are `tx_mode am|nbfm` and `tx_am_depth VALUE`.

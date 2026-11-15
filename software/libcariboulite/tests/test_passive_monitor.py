@@ -1072,9 +1072,9 @@ class PassiveClientTests(unittest.TestCase):
 
     def test_am_tx_display_uses_modulation_depth(self):
         value=snapshot(config={"tx_sample_rate_hz":1000000,"tx_source":"tone",
-                               "tx_mode":"am","tx_am_depth":.8,"tx_deviation_hz":2500})
+                               "tx_mode":"am","tx_am_depth":.8,"tx_am_backoff_db":6,"tx_deviation_hz":2500})
         text="\n".join(client.format_snapshot(value))
-        self.assertIn("TX mode=am AM depth=0.80",text)
+        self.assertIn("TX mode=am AM depth=0.80 backoff=6.0 dB",text)
         self.assertNotIn("TX deviation=",text)
 
     def test_am_voice_status_explains_gain_and_fm_bypass(self):

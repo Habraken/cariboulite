@@ -50,6 +50,8 @@ static void test_requests(void)
         { "v2 17 tx_am_depth 0.8", CONTROL_TX_AM_DEPTH },
         { "v2 17 tx_am_depth 0", CONTROL_TX_AM_DEPTH },
         { "v2 17 tx_am_depth 1", CONTROL_TX_AM_DEPTH },
+        { "v2 17 tx_am_backoff 6", CONTROL_TX_AM_BACKOFF },
+        { "v2 17 tx_am_backoff 18", CONTROL_TX_AM_BACKOFF },
         { "v2 18 tx_stop", CONTROL_TX_STOP },
         { "v2 19 tx_frequency 430125000", CONTROL_TX_FREQUENCY },
         { "v2 20 tx_power -12", CONTROL_TX_POWER },
@@ -77,7 +79,7 @@ static void test_requests(void)
     static const char *const bad[] = {
         "v1 1 rx_volume 0", "v2 1 rx_volume nan", "v2 1 rx_volume inf",
         "v2 1 rx_volume -61", "v2 1 rx_volume 12.01", "v2 1 rx_volume 0 extra",
-        "v1 1 tx_mode am", "v2 1 tx_mode usb", "v2 1 tx_mode wbfm", "v2 1 tx_mode am extra",
+        "v1 1 tx_am_backoff 6", "v2 1 tx_am_backoff -1", "v2 1 tx_am_backoff 19", "v2 1 tx_am_backoff nan", "v1 1 tx_mode am", "v2 1 tx_mode usb", "v2 1 tx_mode wbfm", "v2 1 tx_mode am extra",
         "v2 1 tx_am_depth nan", "v2 1 tx_am_depth 1.01", "v2 1 tx_am_depth -0.1",
         "", "v1", "v1 1", "v3 1 get", "v1 0 get", "v1 -1 get",
         "v1 +1 get", "v1 1.0 get", "v1 18446744073709551616 get",
@@ -136,6 +138,7 @@ static void test_requests(void)
         CHECK(decoded.tx_tone_hz == request.tx_tone_hz);
         CHECK(decoded.tx_tone_amp == request.tx_tone_amp);
         CHECK(decoded.tx_mode == request.tx_mode && decoded.tx_am_depth == request.tx_am_depth);
+        CHECK(decoded.tx_am_backoff_db == request.tx_am_backoff_db);
     }
     for (i = 0; i < sizeof(bad) / sizeof(bad[0]); ++i)
         CHECK(control_request_parse(bad[i], strlen(bad[i]), &request) == -1);

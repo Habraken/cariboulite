@@ -242,6 +242,7 @@ class RadioControlTests(unittest.TestCase):
             ("rx mode am", ["mode", "am"]),
             ("tx mode am", ["tx_mode", "am"]),
             ("tx mode nbfm", ["tx_mode", "nbfm"]),
+            ("tx am-backoff 6", ["tx_am_backoff", "6"]),
             ("tx am-depth 0.8", ["tx_am_depth", "0.800000012"]),
             ("rx volume -6", ["rx_volume", "-6"]),
             ("rx volume 0", ["rx_volume", "0"]),

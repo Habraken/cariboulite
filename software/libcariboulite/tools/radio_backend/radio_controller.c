@@ -89,6 +89,7 @@ static void command_help(void)
          "  tx power DBM          integer -14..14; backend applies channel limits\n"
          "  tx rate [MS/s]       no value opens divider menu; TX: .4/.5/.666667/.8/1/1.333333/2/4\n"
          "  tx mode nbfm|am       saved TX modulation (change while TX is stopped)\n"
+         "  tx am-backoff DB      extra AM IQ backoff: 0..18 dB, TX stopped\n"
          "  tx am-depth VALUE     nominal AM modulation 0..1, default 0.8\n"
          "  tx source mic|tone    saved TX audio source\n"
          "  tx tone HZ AMP        0 < HZ <= 3000, 0 < AMP <= 1\n"
@@ -273,6 +274,10 @@ static int parse_command(const char *input, ui_command_t *command)
                (!strcmp(tokens[2],"nbfm") || !strcmp(tokens[2],"am"))) {
         command->request.command=CONTROL_TX_MODE;
         command->request.tx_mode=!strcmp(tokens[2],"am") ? AUDIO_MOD_AM : AUDIO_MOD_NBFM;
+    } else if (count==3 && !strcmp(name,"tx") && !strcmp(tokens[1],"am-backoff")) {
+        double backoff;
+        if(parse_number(tokens[2],&backoff) || backoff<0 || backoff>18)return -1;
+        command->request.command=CONTROL_TX_AM_BACKOFF;command->request.tx_am_backoff_db=(float)backoff;
     } else if (count==3 && !strcmp(name,"tx") && !strcmp(tokens[1],"am-depth")) {
         double depth;
         if(parse_number(tokens[2],&depth) || depth<0 || depth>1)return -1;
@@ -582,6 +587,8 @@ static int execute_command(controller_t *controller, ui_command_t *command)
         printf("RX volume: %s%.1f dB\n",command->request.volume_db==-120 ? "muted; " : "",(double)command->request.volume_db);
     if(!result && command->request.command==CONTROL_TX_MODE)
         printf("TX mode: %s\n",audio_mod_mode_name(command->request.tx_mode));
+    if(!result && command->request.command==CONTROL_TX_AM_BACKOFF)
+        printf("TX AM backoff: %.1f dB\n",(double)command->request.tx_am_backoff_db);
     if(!result && command->request.command==CONTROL_TX_AM_DEPTH)
         printf("TX AM depth: %.3f\n",(double)command->request.tx_am_depth);
     print_state(controller);

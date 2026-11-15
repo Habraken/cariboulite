@@ -272,6 +272,9 @@ int control_request_parse(const char *packet, size_t bytes,
     } else if (request->protocol_version==2 && !strcmp(tokens[2],"tx_am_depth") && count==4 &&
                !parse_float(tokens[3],&request->tx_am_depth) && request->tx_am_depth>=0 && request->tx_am_depth<=1)
         request->command=CONTROL_TX_AM_DEPTH;
+    else if (request->protocol_version==2 && !strcmp(tokens[2],"tx_am_backoff") && count==4 &&
+               !parse_float(tokens[3],&request->tx_am_backoff_db) && request->tx_am_backoff_db>=0 && request->tx_am_backoff_db<=18)
+        request->command=CONTROL_TX_AM_BACKOFF;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "tx_source") && count == 4 &&
              (!strcmp(tokens[3], "mic") || !strcmp(tokens[3], "tone"))) {
         request->command = CONTROL_TX_SOURCE;
@@ -478,6 +481,10 @@ int control_request_format(const control_request_t *request,
     case CONTROL_TX_AM_DEPTH:
         if(version!=2)break;
         bytes=snprintf(packet,capacity,"v2 %" PRIu64 " tx_am_depth %.9g\n",request->id,(double)request->tx_am_depth);
+        break;
+    case CONTROL_TX_AM_BACKOFF:
+        if(version!=2)break;
+        bytes=snprintf(packet,capacity,"v2 %" PRIu64 " tx_am_backoff %.9g\n",request->id,(double)request->tx_am_backoff_db);
         break;
     case CONTROL_TX_SOURCE:
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " tx_source %s\n",
