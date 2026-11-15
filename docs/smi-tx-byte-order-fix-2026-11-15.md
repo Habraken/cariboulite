@@ -102,10 +102,13 @@ CaribouLite/Jabra and independent RSP2pro.
 An additional eight-case gain-staging test used zero digital backoff and power
 settings 0 and 6 dBm. At power setting 6, amplitudes 0.1 and 0.5 measured
 2.05% and 0.87% second/third harmonic ratio respectively. The 0.03-amplitude
-case remained much weaker and measured 11.71%. In the repeated cued listening comparison, the operator confirmed normal and
-quiet speech clear on both CaribouLite/Jabra and RSP2pro at power setting 6 dBm,
-backoff 0 dB and depth 0.8. This qualifies that profile at 430.100 MHz, not every
-power/frequency/modulation level. The existing defaults are retained.
+case remained much weaker and measured 11.71%. In the repeated cued listening comparison at power setting 6 dBm, backoff 0 dB
+and depth 0.8, the operator initially described both receivers as clear, then
+clarified that the perceived quantization noise was substantially reduced. This
+confirms an audible improvement on CaribouLite/Jabra and RSP2pro at 430.100 MHz;
+it does not establish that residual noise or distortion is eliminated, nor locate
+its remaining physical cause. Other powers/frequencies/modulation levels remain
+unqualified. The existing defaults are retained.
 
 [Baseline artifacts](baselines/20261115-smi-tx-wire-fix/README.md) retain the
 before/after bit traces, exact settings, regression CSVs and diagnostic observer.

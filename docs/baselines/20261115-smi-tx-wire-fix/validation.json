@@ -80,7 +80,7 @@
       ]
     }
   },
-  "limitations": "Clear normal/quiet speech confirmed at 430.100 MHz, power setting 6 dBm and AM backoff 0 dB. This does not qualify every power, frequency or modulation level. Defaults and normal FPGA firmware are retained; temporary TX-offset experiment is not deployed.",
+  "limitations": "Operator clarified that perceived quantization noise is substantially reduced on both receivers at 430.100 MHz, power setting 6 dBm and AM backoff 0 dB; elimination of noise/distortion is not confirmed. Remaining physical cause and other power/frequency/modulation levels are unqualified. Defaults and normal FPGA firmware are retained; temporary TX-offset experiment is not deployed.",
   "driver_srcversion_both_hosts": "1AC65CD6AE81A1E2ED63F14",
   "listening": {
     "source": "Recorded H650e normal/quiet speech at corrected capture gain",
@@ -93,11 +93,11 @@
     "CaribouLite_Jabra_run": "am-gain-listen-jabra-20261115-210330",
     "RSP2pro_run": "am-gain-listen-rsp-20261115-210606",
     "settings": "430.100 MHz; TX/RX 1 MS/s; TX power setting 6 dBm; AM depth 0.8; backoff 0 dB",
-    "result": "PASS on repeated cued comparison at the stated profile",
+    "result": "IMPROVED: operator clarified that perceived quantization noise is substantially reduced, not confirmed eliminated",
     "repeat": {
       "CaribouLite_Jabra_run": "am-gain-listen-jabra-20261115-210801",
       "RSP2pro_run": "am-gain-listen-rsp-20261115-210907",
-      "result": "PASS: operator reports normal and quiet speech clear on both receivers"
+      "result": "Operator initially answered clear on both, then clarified: quantization noise is a lot less"
     }
   }
 }
