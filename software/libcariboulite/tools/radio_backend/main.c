@@ -123,7 +123,7 @@ static void usage(FILE *out, const char *program)
         "  --tx-frequency HZ         default 430125000\n"
         "  --tx-power DBM            default -12; RF24 -12..14, RF09 -14..14\n"
         "  --tx-mode nbfm|am         NBFM or 300-3000 Hz AM voice, default nbfm\n"
-        "  --tx-am-backoff DB       extra AM IQ backoff for RF linearity: 0..18 dB\n"
+        "  --tx-am-backoff DB       extra AM IQ backoff: 0..18 dB, default 6\n"
         "  --tx-am-depth DEPTH      modulation at unit audio: 0..1, default 0.8\n"
         "  --tx-deviation HZ         nominal NBFM deviation 0..24000 (default %.0f)\n"
         "  --tx-sample-rate HZ       native 400000..4000000 (default 1000000)\n"
@@ -154,7 +154,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         .start_stopped = true,
         .frequency = 430125000, .status_hz = 5, .config_generation = 1,
         .tx = {.freq_hz = 430125000, .tx_power_dbm = -12, .rf_fs = 1000000,
-            .tone_hz = 600, .tone_amp = .4f, .out_scale = 4000, .am_depth=.8f,
+            .tone_hz = 600, .tone_amp = .4f, .out_scale = 4000, .am_depth=.8f, .am_backoff_db=6,
             .f_dev_hz = NBFM_DEFAULT_DEVIATION_HZ, .verify_start_profile = true,
             .pacing_mode = TX_PACING_HARDWARE_REQUIRED},
         .rx = {.freq_hz = 430125000, .fs_rf = 1000000, .fs_audio = 48000,

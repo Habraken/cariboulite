@@ -36,7 +36,9 @@ after voice filtering and linear interpolation to the RF sample clock.
 
 Extra digital backoff can be set with `tx am-backoff DB` (0..18 dB), or
 `--tx-am-backoff DB` at launch. It changes only AM and requires stopped TX.
-The current baseline defaults to 0 dB pending the RF linearity comparison.
+The backend defaults to 6 dB after the attenuated-link linearity comparison.
+This is a measured operating choice for this setup; more backoff did not
+consistently improve distortion.
 
 The IQ envelope is `out_scale * 10^(-backoff/20) / 2 * (1 + depth * filtered_audio)`, with constant
 phase. It cannot become negative or exceed `out_scale`; peak bounding prevents
@@ -50,8 +52,9 @@ the stream. Missing audio is not treated as a successful voice frame.
 `out_scale` is the maximum envelope at 100% modulation, not the carrier
 amplitude. With the same 4000 IQ scale and RF power register setting, AM's
 2000-IQ carrier before extra backoff is nominally 6 dB below the former constant-envelope NBFM
-reference. At 100% modulation the theoretical peak-envelope power reaches that
-reference. For smaller modulation depth the actual peaks are lower. Hardware
+reference. At 100% modulation with no extra backoff the theoretical peak-envelope power
+reaches that reference. With the default extra 6 dB backoff, the carrier is
+nominally 12 dB and full-modulation peaks 6 dB below the NBFM reference. For smaller modulation depth the actual peaks are lower. Hardware
 compression, calibration and frequency response can change these relationships.
 
 The backend RF power value/estimate is not a calibrated AM carrier-power or

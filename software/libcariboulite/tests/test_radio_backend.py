@@ -129,6 +129,15 @@ class RadioBackendTests(unittest.TestCase):
         self.assertEqual(len(rows), 39)
         self.assertTrue(all("=0x--" in row for row in rows))
 
+    def test_am_transmit_default_backoff_and_depth(self):
+        process=self.start_backend("--tx-mode","am")
+        snap=self.once()
+        self.assertEqual(snap['config']['tx_mode'],'am')
+        self.assertEqual(snap['config']['tx_am_backoff_db'],6)
+        self.assertEqual(snap['config']['tx_am_depth'],.8)
+        self.assertFalse(snap['tx']['running'])
+        self.stop_backend(process)
+
     def test_am_cli_manual_gain_and_effective_audio_settings(self):
         process=self.start_backend("--rx-mode","am","--rx-frequency","119050000", "--rx-am-agc","off","--rx-am-rf-attenuation","12","--rx-gain","4000","--rx-deemphasis-us","75","--rx-sinad")
         snap=self.once();self.assertEqual(snap['rx_mode'],'AM voice')
