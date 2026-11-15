@@ -85,3 +85,11 @@ eight rates, 0/50/75 µs de-emphasis, configured NBFM deviation, the reference
 RMS/peak, floating-point tap headroom, meter values, ramping, mute, gate closure,
 invalid volume and clipping counts. Protocol/controller/backend tests exercise
 live volume without pipeline generation changes and truthful dry-run metering.
+
+The first live check on pi4f-trixie used AM at 119.050 MHz and 400 kS/s.
+Changing volume from −12 to −6 dB increased median background-audio RMS by
+6.17 dB; the changing RF signal was not a calibrated source. Mute reached the
+silence floor, volume edits retained the same pipeline generation, and no
+clipped samples, queue drops, alignment failures, read/write errors or underruns
+were observed during the check. TX stayed off. Playback was left at −6 dB.
+[Recorded software and live results](baselines/20261115-rx-audio-output/).

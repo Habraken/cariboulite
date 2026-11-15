@@ -1,0 +1,27 @@
+{
+  "commit": "d12d1ad",
+  "host": "pi4f-trixie",
+  "mode": "AM voice",
+  "frequency_hz": 119050000.0,
+  "sample_rate_hz": 400000,
+  "duration_s": 14.158903694944456,
+  "snapshots": 70,
+  "pipeline_restarted_during_volume_test": false,
+  "median_rms_at_minus12_db": -52.438,
+  "median_rms_at_minus6_db": -46.2715,
+  "observed_gain_change_db": 6.166499999999999,
+  "mute": "PASS: -120 dBFS RMS/peak floor",
+  "restored_volume_db": -6.0,
+  "clipped_samples": 0,
+  "error_counter_deltas": {
+    "queue.drops": 0,
+    "audio_queue.drops": 0,
+    "playback.underruns": 0,
+    "playback.write_errors": 0,
+    "reader.errors": 0,
+    "alignment.failures": 0,
+    "alignment.invalid_frames": 0
+  },
+  "tx_ever_running": false,
+  "scope": "Live AM receive playback/meters; ambient RF audio was not a calibrated modulation source."
+}
