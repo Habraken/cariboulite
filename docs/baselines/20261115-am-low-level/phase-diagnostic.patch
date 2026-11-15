@@ -1,0 +1,13 @@
+--- a/nbfm_mod.c
++++ b/nbfm_mod.c
+@@ -179 +179,9 @@
+-            dst[out++]=(iq16_t){(int16_t)lrintf(m->out_scale*.5f*(1+(float)dphi)),0};
++            static int diagnostic_phase=-1;
++            if(diagnostic_phase<0){const char* v=getenv("AM_DIAGNOSTIC_PHASE");diagnostic_phase=v?atoi(v):0;}
++            int16_t amplitude=(int16_t)lrintf(m->out_scale*.5f*(1+(float)dphi));
++            switch(diagnostic_phase){
++                case 90:dst[out++]=(iq16_t){0,amplitude};break;
++                case 180:dst[out++]=(iq16_t){-amplitude,0};break;
++                case 270:dst[out++]=(iq16_t){0,-amplitude};break;
++                default:dst[out++]=(iq16_t){amplitude,0};break;
++            }

@@ -110,3 +110,9 @@ operator confirmed **both sound clear**. Subjective AM speech validation therefo
 passes for this source and configuration. This does not resolve or invalidate
 the small-modulation distortion measured in the earlier tone sweep. The user
 recording is not included in the committed baseline.
+
+A subsequent [quiet-speech investigation](am-low-level-distortion-2026-11-15.md)
+reproduced severe low-level distortion with generated tones, found and corrected
+headset source clipping, and found evidence consistent with coarse amplitude
+quantization in the TX path. The earlier subjective speech pass applies only
+to the tested recording/configuration and does not establish quiet-speech fidelity.

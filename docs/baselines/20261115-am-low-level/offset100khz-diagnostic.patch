@@ -1,0 +1,8 @@
+--- a/nbfm_mod.c
++++ b/nbfm_mod.c
+@@ -179 +179,4 @@
+-            dst[out++]=(iq16_t){(int16_t)lrintf(m->out_scale*.5f*(1+(float)dphi)),0};
++            float amplitude=m->out_scale*.5f*(1+(float)dphi);
++            m->phase+=2*M_PI*100000/m->fs_rf;
++            if(m->phase>=2*M_PI)m->phase-=2*M_PI;
++            dst[out++]=(iq16_t){(int16_t)lrintf(amplitude*cosf((float)m->phase)),(int16_t)lrintf(amplitude*sinf((float)m->phase))};

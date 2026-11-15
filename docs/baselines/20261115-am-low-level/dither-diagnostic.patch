@@ -1,0 +1,8 @@
+--- a/nbfm_mod.c
++++ b/nbfm_mod.c
+@@ -179 +179,4 @@
+-            dst[out++]=(iq16_t){(int16_t)lrintf(m->out_scale*.5f*(1+(float)dphi)),0};
++            unsigned diagnostic_step=(unsigned)m->phase;
++            float diagnostic_dither=(float)((int)diagnostic_step*16-120);
++            m->phase=(diagnostic_step+1)%16;
++            dst[out++]=(iq16_t){(int16_t)lrintf(m->out_scale*.5f*(1+(float)dphi)+diagnostic_dither),0};

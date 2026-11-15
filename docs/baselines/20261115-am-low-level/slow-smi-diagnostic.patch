@@ -1,0 +1,7 @@
+--- a/tx_pipeline.c
++++ b/tx_pipeline.c
+@@ -341,2 +341,2 @@
+-    expected.write_strobe_time = 4;
+-    expected.write_hold_time = 2;
++    expected.write_strobe_time = 8;
++    expected.write_hold_time = 4;

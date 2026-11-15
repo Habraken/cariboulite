@@ -1,0 +1,59 @@
+{
+  "baseline": {
+    "cases": 20,
+    "all_stream_error_deltas": 0,
+    "pcm_clipped_samples": 0
+  },
+  "offset100khz": {
+    "cases": 8,
+    "all_stream_error_deltas": 0,
+    "pcm_clipped_samples": 0
+  },
+  "phase90": {
+    "cases": 4,
+    "all_stream_error_deltas": 0,
+    "pcm_clipped_samples": 0
+  },
+  "phase180": {
+    "cases": 4,
+    "all_stream_error_deltas": 0,
+    "pcm_clipped_samples": 0
+  },
+  "phase270": {
+    "cases": 4,
+    "all_stream_error_deltas": 0,
+    "pcm_clipped_samples": 0
+  },
+  "slow-smi": {
+    "cases": 3,
+    "all_stream_error_deltas": 0,
+    "pcm_clipped_samples": 0
+  },
+  "dither": {
+    "cases": 3,
+    "all_stream_error_deltas": 0,
+    "pcm_clipped_samples": 0
+  },
+  "software": {
+    "cases": 4,
+    "all_stream_error_deltas": 0,
+    "pcm_clipped_samples": 0
+  },
+  "microphone": {
+    "device": "H650e",
+    "AGC": "off",
+    "channels": "identical; no mono cancellation",
+    "first_uncued_capture": "Discarded: operator was waiting for an audible cue",
+    "original_capture_gain_setting": 44,
+    "original_capture_gain_db": 5,
+    "cued_capture_clipped_samples_per_channel": 244,
+    "quiet_speech_direct_Jabra": "PASS: operator said quiet speech sounds clear",
+    "reduced_capture_gain_setting": 38,
+    "reduced_capture_gain_db": -1,
+    "reduced_gain_peak_dbfs": -3.4243,
+    "reduced_gain_clipped_samples_per_channel": 0,
+    "gain_left_at_setting": 38,
+    "raw_recordings": "Kept in /tmp only; not included in repository"
+  },
+  "conclusion": "Low-level 1 kHz distortion is reproduced without a microphone. Behavior is consistent with coarse amplitude quantization after the floating-point modulator. Dither strongly improves quiet tones but is diagnostic only; exact failing stage and RF spectral effects remain unqualified."
+}
