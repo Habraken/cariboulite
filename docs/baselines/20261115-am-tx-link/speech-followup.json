@@ -84,6 +84,41 @@
     "sha256": "a4bf9becd046d7aedb6d05b6e12347a6294a44f74d263089c636fb0a2b1e6561",
     "format": "Original 8 kHz 16-bit mono PCM; first 15 seconds resampled to 48 kHz for direct source audition",
     "attribution": "Open Speech Repository",
-    "subjective_assessment": "Pending source audition"
+    "subjective_assessment": "Rejected: operator says the issue is the sample itself; no playback fault established.",
+    "playback_checks": {
+      "local_remote_sha256_match": true,
+      "converted_wav": "48 kHz mono signed 16-bit PCM; 15 seconds",
+      "Jabra_capability": "stereo S16_LE at 8, 16 or 48 kHz; plughw was converting mono to stereo",
+      "finding": "File matches and rate is supported; operator rejected source content and supplied their own recording."
+    }
+  },
+  "user_source": {
+    "file": "New-Recording.m4a",
+    "sha256": "1c120fa96dee1192f00b3a90439f51cec0624bc90f0f531637e25fb81b51287d",
+    "duration_s": 29.226667,
+    "decoded_format": "48 kHz mono signed 16-bit PCM",
+    "source_peak_dbfs": -16.47,
+    "source_rms_dbfs": -38.27,
+    "full_scale_samples": 0,
+    "direct_Jabra_audition": "PASS: operator confirmed suitable",
+    "rf_reference": "Fixed +14.53 dB gain to 0.8 peak; no compression or limiting",
+    "live_run": "am-live-speech-20261115-183934",
+    "live_result": "pending listening feedback",
+    "capture_run": "am-tx-voice-20261115-184043",
+    "counter_window_s": {
+        "rx": 11.033975085010752,
+        "tx": 11.230033330997685
+    },
+    "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+    }
   }
 }
