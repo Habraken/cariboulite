@@ -1,0 +1,525 @@
+{
+  "production_commit": "94ead44",
+  "tone_run": "am-tx-link-20261115-171134",
+  "voice_run": "am-tx-voice-20261115-171433",
+  "rf_frequency_hz": 430100000,
+  "wired_attenuation_db": 90,
+  "tone_cases": 25,
+  "native_rate_cases": 16,
+  "counter_check": "PASS; all deltas zero across each complete capture",
+  "case_counters": [
+    {
+      "case": "power_minus12",
+      "counter_window_s": {
+        "rx": 4.213458487065509,
+        "tx": 4.209705167013453
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "power_0",
+      "counter_window_s": {
+        "rx": 4.014925839030184,
+        "tx": 4.012770454981364
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "power_6",
+      "counter_window_s": {
+        "rx": 4.018096189014614,
+        "tx": 4.011219465988688
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "power_12",
+      "counter_window_s": {
+        "rx": 4.008375539095141,
+        "tx": 4.017064336017938
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "power_14",
+      "counter_window_s": {
+        "rx": 4.015337185002863,
+        "tx": 4.009868474997347
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "tx_rate_4000000",
+      "counter_window_s": {
+        "rx": 4.015539929037914,
+        "tx": 4.2116792329761665
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "tx_rate_2000000",
+      "counter_window_s": {
+        "rx": 4.015134883928113,
+        "tx": 4.219733678997727
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "tx_rate_1333333",
+      "counter_window_s": {
+        "rx": 4.2161796760046855,
+        "tx": 4.218022154993378
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "tx_rate_1000000",
+      "counter_window_s": {
+        "rx": 4.015387058956549,
+        "tx": 4.010196344985161
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "tx_rate_800000",
+      "counter_window_s": {
+        "rx": 4.015143845928833,
+        "tx": 4.0132711099868175
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "tx_rate_666667",
+      "counter_window_s": {
+        "rx": 4.015018056030385,
+        "tx": 4.0137139539874624
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "tx_rate_500000",
+      "counter_window_s": {
+        "rx": 4.215764482971281,
+        "tx": 4.013277885009302
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "tx_rate_400000",
+      "counter_window_s": {
+        "rx": 4.215965356095694,
+        "tx": 4.009248914022464
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "rx_rate_4000000",
+      "counter_window_s": {
+        "rx": 4.013286006986164,
+        "tx": 4.0093751570093445
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "rx_rate_2000000",
+      "counter_window_s": {
+        "rx": 4.014276108006015,
+        "tx": 4.0100675279973075
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "rx_rate_1333333",
+      "counter_window_s": {
+        "rx": 4.008433697046712,
+        "tx": 4.010583920986392
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "rx_rate_1000000",
+      "counter_window_s": {
+        "rx": 4.015187048004009,
+        "tx": 4.014519574004225
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "rx_rate_800000",
+      "counter_window_s": {
+        "rx": 4.017087932094,
+        "tx": 4.011523873981787
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "rx_rate_666667",
+      "counter_window_s": {
+        "rx": 4.014082795009017,
+        "tx": 4.209819056006381
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "rx_rate_500000",
+      "counter_window_s": {
+        "rx": 4.013957949005999,
+        "tx": 4.012556934991153
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "rx_rate_400000",
+      "counter_window_s": {
+        "rx": 4.015225620940328,
+        "tx": 4.009376515983604
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "depth_0p25",
+      "counter_window_s": {
+        "rx": 4.015476029948331,
+        "tx": 4.011107561993413
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "depth_0p5",
+      "counter_window_s": {
+        "rx": 4.015306240064092,
+        "tx": 4.020502476982074
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "depth_0p8",
+      "counter_window_s": {
+        "rx": 4.215977521962486,
+        "tx": 4.010824739001691
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    },
+    {
+      "case": "depth_1",
+      "counter_window_s": {
+        "rx": 4.015084309037775,
+        "tx": 4.012039990979247
+      },
+      "error_counter_deltas": {
+        "rx_iq_drops": 0,
+        "rx_audio_drops": 0,
+        "rx_read_errors": 0,
+        "rx_alignment_failures": 0,
+        "rx_invalid_iq": 0,
+        "rx_audio_underruns": 0,
+        "rx_audio_write_errors": 0,
+        "tx_writer_errors": 0,
+        "tx_underruns": 0
+      }
+    }
+  ],
+  "native_rate_ranges": {
+    "tone_hz": {
+      "min": 999.5000038990111,
+      "max": 999.6228040022131
+    },
+    "tone_to_residual_db": {
+      "min": 32.72664972772574,
+      "max": 33.86271329294607
+    },
+    "second_third_harmonic_percent": {
+      "min": 0.7343336046510865,
+      "max": 0.8437488796639137
+    },
+    "rms_dbfs": {
+      "min": -25.326143472235174,
+      "max": -25.30899229166286
+    },
+    "minimum_10ms_rms_fraction": {
+      "min": 0.9906238572037952,
+      "max": 0.9944415043360082
+    }
+  },
+  "native_rate_low_level_10ms_windows": 0,
+  "all_tone_pcm_clipped_samples": 0,
+  "voice": {
+    "frames": 480000,
+    "sample_rate_hz": 48000,
+    "pcm_clipped_samples": 0,
+    "counter_window_s": {
+      "rx": 11.042746850987896,
+      "tx": 11.242454743012786
+    },
+    "error_counter_deltas": {
+      "rx_iq_drops": 0,
+      "rx_audio_drops": 0,
+      "rx_read_errors": 0,
+      "rx_alignment_failures": 0,
+      "rx_invalid_iq": 0,
+      "rx_audio_underruns": 0,
+      "rx_audio_write_errors": 0,
+      "tx_writer_errors": 0,
+      "tx_underruns": 0
+    },
+    "tx_capture": {
+      "valid": true,
+      "read_calls": 12439,
+      "frames_read": 613632,
+      "overruns": 0,
+      "recovery_attempts": 0,
+      "recovery_successes": 0,
+      "recovery_failures": 0,
+      "read_errors": 0,
+      "last_error": 0
+    },
+    "subjective_assessment": "Offset tone: operator confirmed clean, artifact gone. Recovered speech audition feedback pending."
+  },
+  "release": {
+    "both_radios_idle": true,
+    "smi_open_fds": 0,
+    "all_playback_closed": true,
+    "loaded_and_installed_driver_srcversion": "5AD373CAE4DBC118FE6E425",
+    "receiver_preexisting_documentation_diff": "unchanged (binary patch comparison PASS)"
+  }
+}

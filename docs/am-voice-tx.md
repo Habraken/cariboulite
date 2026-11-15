@@ -68,7 +68,7 @@ Software tests do not certify radiated occupied bandwidth or transmitter purity.
 - `tx mode nbfm|am` selects saved TX modulation.
 - `tx am-depth VALUE` selects saved AM modulation depth (0..1).
 - `tx am-backoff DB` selects additional AM IQ backoff (0..18 dB).
-- `--tx-mode` and `--tx-am-depth` set startup defaults.
+- `--tx-mode`, `--tx-am-depth` and `--tx-am-backoff` set startup defaults.
 - `config.tx_mode` and `config.tx_am_depth` expose settings to the passive monitor.
 - v2 requests are `tx_mode am|nbfm` and `tx_am_depth VALUE`.
 
@@ -94,4 +94,5 @@ Tests use 430.1 MHz, beginning at the RF24 minimum power setting. AM reception
 uses the calibrated RX playback stage; the NBFM-only SINAD estimator is not
 used to assess AM.
 
-Hardware AM link validation is pending; results will be recorded separately.
+Hardware validation at 430.100 MHz, the audible-artifact correction and remaining
+linearity limits are documented in [the AM link report](am-voice-tx-validation-2026-11-15.md).

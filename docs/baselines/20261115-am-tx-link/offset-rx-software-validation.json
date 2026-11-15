@@ -1,5 +1,5 @@
 {
-  "scope": "AM offset tuning software validation; production RF validation follows",
+  "scope": "AM offset tuning software validation; hardware results are documented in README.md",
   "checks": {
     "native_clock_dsp": "PASS strict/production; both correction signs across all native rates; independent injected fixed spur/image; exact split/reset and zero-capacity contracts",
     "tuner_policy": "PASS supported band and conversion boundaries, full/ISM variants and invalid inputs",
