@@ -34,7 +34,7 @@ static void check_rate(unsigned label)
         assert(!memcmp(iq,other,n*sizeof(*iq)));
         assert(nbfm_buffered_audio(fm)<=1 && nbfm_buffered_audio(split)<=1);
         for(size_t j=0;j<n;++j){
-            assert(frame->data[j].i==(int16_t)(iq[j].i|1)&&frame->data[j].q==iq[j].q);
+            assert(frame->data[j].i==iq[j].i&&frame->data[j].q==iq[j].q);
             if(total>fs*.002){
                 double angle=atan2((double)iq[j].q*prev.i-(double)iq[j].i*prev.q,
                                    (double)iq[j].i*prev.i+(double)iq[j].q*prev.q);

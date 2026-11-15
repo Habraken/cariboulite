@@ -36,7 +36,7 @@ static double reference(unsigned rate,float depth,float amplitude,float hz,int s
         }
         for(unsigned j=0;j<count;j++,total++) {
             assert(iq[j].q==0 && iq[j].i>=0 && iq[j].i<=4000);
-            assert(frame->data[j].i==(int16_t)(iq[j].i|1) && frame->data[j].q==0);
+            assert(frame->data[j].i==iq[j].i && frame->data[j].q==0);
             if(total>=fs*.2) {
                 double y=iq[j].i/2000.-1,t=total/fs;
                 sum+=y;power+=y*y;ss+=y*sin(2*M_PI*hz*t);cc+=y*cos(2*M_PI*hz*t);n++;

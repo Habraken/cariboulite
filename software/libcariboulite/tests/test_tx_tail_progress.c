@@ -124,7 +124,7 @@ bool rf10_fifo_put(rf10_fifo_t* fifo, const rf10_frame_t* frame, int timeout)
     ++producer_puts;
     assert(frame->tx_sequence==17+producer_puts);
     for (size_t i=0; i<producer_tx->frame_samples; ++i) {
-        assert(frame->data[i].i==(producer_tx->iq_rf[i].i | 1));
+        assert(frame->data[i].i==producer_tx->iq_rf[i].i);
         assert(frame->data[i].q==producer_tx->iq_rf[i].q);
     }
     if (gate_enabled) {
