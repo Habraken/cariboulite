@@ -37,8 +37,10 @@ when the fundamental is nearly absent. The existing analyzer is
 
 RF captures remain in timestamped `/tmp/am70-*` directories on pi4f. Local copies
 are `/tmp/am70-*-recordings` on pi4g. No private speech or raw RF/audio recordings
-are committed. The requested listening comparison is pending operator readiness;
-no subjective pass is claimed.
+are committed. The operator subsequently compared two cued 45-second speech passes and
+reported less noise/roughness in the shifted diagnostic. Elimination is not
+claimed. `run_speech.py` retains the comparison fixture and `validation.json`
+the run identifiers and settings.
 
 ## Changing-word digital observer
 

@@ -35,9 +35,12 @@
     "limitation": "Fixed-phase Q=0 test; not a universal DAC-resolution specification"
   },
   "listening": {
-    "requested": true,
     "Jabra_attention_beep_played": true,
-    "result": "Readiness reply pending; no listening pass or subjective result claimed"
+    "source": "Previously approved H650e normal/quiet recording, unnormalized",
+    "direct_run": "am70-speech-direct-20261115-221908",
+    "offset_run": "am70-speech-offset-20261115-222019",
+    "settings": "70 dB link; wanted RF 430.100 MHz; TX/RX 1 MS/s; power 6 dBm; backoff 0 dB; depth 0.8; RX volume -6 dB",
+    "result": "Both cued 45-second passes completed; operator reports less noise/roughness during quiet speech in B (frequency-shifted diagnostic). Elimination is not claimed."
   },
   "interpretation": "Residual post-interface amplitude quantization demonstrated. Exact internal modem block not observed; shifted-IQ diagnostic improves weak modulation but has LO/image components and is not deployed."
 }

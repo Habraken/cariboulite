@@ -141,3 +141,13 @@ voice loudness alone would not resolve the measured transfer error.
 [Baseline artifacts](baselines/20261115-am70-residual/README.md) contain settings,
 analysis, temporary diagnostic source and FPGA restoration receipts. Private
 speech recordings and raw RF/audio captures remain outside the repository.
+
+## Subsequent listening comparison
+
+Two cued 45-second Jabra passes used the same approved H650e normal/quiet
+recording: A, unchanged production TX; B, temporary 25.2 kHz rotating IQ with
+compensated tuning. Both used power setting 6 dBm, backoff 0 dB, depth 0.8,
+1 MS/s TX/RX and RX volume -6 dB on the 70 dB link. The operator reported
+**less noise/roughness in B**. This confirms an audible improvement, not complete
+elimination. It does not remove the measured LO/image emission penalty or
+qualify the diagnostic for deployment. Both passes stopped normally.
