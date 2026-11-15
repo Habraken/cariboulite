@@ -29,11 +29,11 @@ initial begin
     if(!$value$plusargs("quiet_word=%h",quiet_word)) $fatal(1,"quiet_word missing");
     if($value$plusargs("raw_zero=%d",raw_zero));
     #100 rst=1;
-    // SMI packed words reach the collector with the protocol SOF byte first.
-    // This bench models that peripheral serialization, not host memory order.
+    // The Pi SMI peripheral emits the low byte of each packed DMA word first.
+    // Test actual memory/wire order; do not assume the protocol SOF is first.
     for(n=0;n<2048;n=n+1) begin
         if(raw_zero) data=8'd0;
-        else data=(quiet_word >> (24-8*(n%4))) & 8'hff;
+        else data=(quiet_word >> (8*(n%4))) & 8'hff;
         #64 swe=0; #64 swe=1; #64;
     end
     if(!raw_zero) begin

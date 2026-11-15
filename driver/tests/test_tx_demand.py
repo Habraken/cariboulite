@@ -126,13 +126,13 @@ static struct dma_async_tx_descriptor descriptor;
 static struct dma_async_tx_descriptor* stream_smi_dma_init_cyclic(struct bcm2835_smi_instance* p,int d,dma_async_tx_callback cb,void* arg) {
     (void)p;(void)cb;(void)arg;
     if(d==DMA_MEM_TO_DEV && inst->tx_fifo_limit_bytes) {
-        for(unsigned i=0;i<16;i++) assert(ring[i]==0x80000000U);
+        for(unsigned i=0;i<16;i++) assert(ring[i]==0x00000080U);
     }
     ++prepared; return fail_dma ? NULL:&descriptor;
 }
 static void dma_async_issue_pending(void* p) {
     (void)p; assert(prepared>starts); ++starts;
-    if(inst->tx_fifo_limit_bytes) for(unsigned i=0;i<16;i++) assert(ring[i]==0x80000000U);
+    if(inst->tx_fifo_limit_bytes) for(unsigned i=0;i<16;i++) assert(ring[i]==0x00000080U);
 }
 static void smi_enable_streaming(struct bcm2835_smi_instance* p,int d) {(void)p;(void)d;assert(starts>0);}
 static void write_smi_reg(struct bcm2835_smi_instance* p,u32 v,unsigned r) {(void)p;(void)v;(void)r;}
@@ -206,7 +206,7 @@ int main(void) {
     assert(configure(0,1,16,0)==-EBUSY);
     /* A stalled producer emits framed zero IQ rather than stale content. */
     stream_smi_write_dma_callback(inst);
-    for(unsigned i=8;i<12;i++) assert(ring[i]==0x80000000U);
+    for(unsigned i=8;i<12;i++) assert(ring[i]==0x00000080U);
     assert(inst->tx_underrun_periods==1);
     /* Partial user fault acknowledges only complete words, then pads a short period. */
     fifo_copy_fault=7;
@@ -215,7 +215,7 @@ int main(void) {
     fifo_copy_fault=-1;
     stream_smi_write_dma_callback(inst);
     assert(ring[12]==payload[0]);
-    for(unsigned i=13;i<16;i++) assert(ring[i]==0x80000000U);
+    for(unsigned i=13;i<16;i++) assert(ring[i]==0x00000080U);
     assert(inst->tx_accepted_bytes==36 && inst->tx_fifo_dequeued_bytes==36 && inst->tx_underrun_periods==2);
     struct smi_stream_tx_status status;
     inst->tx_session_generation=23;inst->transfer_thread_running=true;
@@ -240,7 +240,7 @@ int main(void) {
     assert(smi_stream_write_file(&file,(char*)payload,16,NULL)==4);
     fifo_publish_hook=NULL;fifo_copy_fault=-1;
     assert(kfifo_len(&inst->tx_fifo)==0 && ring[0]==payload[0]);
-    for(unsigned i=1;i<4;i++) assert(ring[i]==0x80000000U);
+    for(unsigned i=1;i<4;i++) assert(ring[i]==0x00000080U);
     assert(inst->tx_accepted_bytes==4 && inst->tx_fifo_dequeued_bytes==4);
     /* Legacy full-capacity admission and repeat policy stay unchanged. */
     reset(); assert(smi_stream_write_file(&file,(char*)payload,120,NULL)==120);

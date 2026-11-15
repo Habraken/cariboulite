@@ -190,7 +190,9 @@ static void smi_tx_fill_quiet(void *buffer, unsigned int bytes)
     unsigned int n;
 
     for (n = 0; n < bytes / sizeof(*words); n++)
-        words[n] = 0x80000000U;
+        /* Pi packed SMI emits the least-significant byte first: put SOF
+         * at the start of the wire frame, matching the SDK serializer. */
+        words[n] = 0x00000080U;
 }
 
 static long smi_tx_set_buffer_limit(unsigned long arg)

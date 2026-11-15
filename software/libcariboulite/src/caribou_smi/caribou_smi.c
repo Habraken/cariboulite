@@ -881,39 +881,23 @@ void print_binairy32(uint32_t value) {
     putchar('\n');
 }
 //=========================================================================
-static void caribou_smi_generate_data(caribou_smi_st* dev, uint8_t* data, size_t data_length, const caribou_smi_sample_complex_int16* sample_offset)
+static void caribou_smi_generate_data(caribou_smi_st* dev, uint8_t* data, size_t data_length, const caribou_smi_sample_complex_int16* samples)
 {
-    const caribou_smi_sample_complex_int16* cmplx_vec = sample_offset;  
-    uint32_t *samples = (uint32_t*)(data);
-    
-    // Sample Structure
-    // [                 BYTE 0      ] [           BYTE 1     ] [           BYTE 2        ] [          BYTE 3      ]
-    // [SOF TXC CTX I12 I11 I10 I9 I8] [0 I7 I6 I5 I4 I3 I2 I1] [0 I0 Q12 Q11 Q10 Q9 Q8 Q7] [0 Q6 Q5 Q4 Q3 Q2 Q1 Q0]
-	//   1  0/1 0/1
-    
-    for (unsigned int i = 0; i < (data_length / CARIBOU_SMI_BYTES_PER_SAMPLE); i++)
-    {                    
-        int32_t ii = cmplx_vec[i].i;
-        int32_t qq = cmplx_vec[i].q;
-        ii &= 0x1FFF;
-        qq &= 0x1FFF;
-		
-        uint32_t s = SMI_TX_SAMPLE_SOF | SMI_TX_SAMPLE_MODEM_TX_CTRL | SMI_TX_SAMPLE_COND_TX_CTRL; s <<= 5;
-        s |= (ii >> 8) & 0x1F; s <<= 8;
-        s |= (ii >> 1) & 0x7F; s <<= 2;
-        s |= (ii & 0x1); s <<= 6;
-        s |= (qq >> 7) & 0x3F; s <<= 8;
-        s |= (qq & 0x7F);
-        //s = 0x80000000; // we need only one bit to be correct...
-		
-		//if (i < 2) 
-        //{
-        //    printf("0x%08X   ", s);
-        //    print_binairy32(s);
-        //}  
-        
-        //samples[i] = __builtin_bswap32(s);
-        samples[i] = s; // like this we have 0 missed 'programmed write'.
+    (void)dev;
+    // The 8-bit SMI bus emits bytes in memory order. The FPGA collector needs
+    // SOF/I-high first, followed by I-low, I-bit0/Q-high, then Q-low. Storing
+    // this as a native uint32_t reversed the bytes on the Pi: after SOF resync,
+    // I-low and Q-low were exchanged and adjacent samples could be combined.
+    const uint8_t flags = (SMI_TX_SAMPLE_SOF | SMI_TX_SAMPLE_MODEM_TX_CTRL |
+                           SMI_TX_SAMPLE_COND_TX_CTRL) << 5;
+    for (size_t index = 0; index < data_length / CARIBOU_SMI_BYTES_PER_SAMPLE; ++index)
+    {
+        unsigned i = (uint16_t)samples[index].i & 0x1fff;
+        unsigned q = (uint16_t)samples[index].q & 0x1fff;
+        data[4 * index]     = flags | (i >> 8);
+        data[4 * index + 1] = (i >> 1) & 0x7f;
+        data[4 * index + 2] = ((i & 1) << 6) | (q >> 7);
+        data[4 * index + 3] = q & 0x7f;
     }
 }
 
