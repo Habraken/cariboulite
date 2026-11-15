@@ -85,3 +85,9 @@ gain invariance, pure tone, frequency offset, silence, noise-only input,
 non-finite input reset and initial window timing. Backend tests check live
 serialization with a fixture and unavailable measurements in dry-run mode.
 These checks do not constitute a two-radio hardware calibration.
+
+## Latest hardware sweep
+
+The [16 November NBFM retest](nbfm-post-wire-fix-sweep-2026-11-16.md) repeats
+all native RX/TX rate and TX-power curves after the TX wire corrections, with
+matched RSSI/SINAD comparisons against the historical run.

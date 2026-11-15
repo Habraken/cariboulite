@@ -1,0 +1,24 @@
+"""Verify active settings and transport counters in every retained snapshot."""
+import json,pathlib,sys
+root=pathlib.Path(sys.argv[1]);count=0
+dividers={4000000:1,2000000:2,1333333:3,1000000:4,800000:5,666667:6,500000:8,400000:10}
+for line in (root/'points.jsonl').open():
+ r=json.loads(line);rx=r['rx'];tx=r['tx'];c=tx['config'];q=rx['config']
+ assert c['tx_mode']=='nbfm' and c['tx_am_dac_shaping'] is False
+ assert c['tx_source']=='tone' and c['tx_deviation_hz']==2500 and c['tx_tone_hz']==1000 and c['tx_tone_amp']==.4
+ assert q['rx_deviation_hz']==2500 and q['deemphasis_us']==50 and q['pcm_gain']==8000
+ assert q['am_offset_tuning_enabled'] is False and q['requested_frequency_hz']==430100000
+ assert c['tx_frequency_hz']==430100000
+ assert q['sample_rate_hz']==r['rx_rate_hz'] and c['tx_sample_rate_hz']==r['tx_rate_hz']
+ assert abs(q['observed']['rx']['sample_rate_hz']-4000000/dividers[r['rx_rate_hz']])<.01
+ for path,key in [('queue','drops'),('audio_queue','drops'),('playback','underruns'),('playback','write_errors'),('reader','errors'),('alignment','failures'),('alignment','invalid_frames')]:assert rx['rx'][path][key]==0,(r['point'],path,key)
+ if r['tx_power_dbm'] is not None:
+  assert c['tx_power_dbm']==r['tx_power_dbm']
+  assert abs(c['observed']['tx']['sample_rate_hz']-4000000/dividers[r['tx_rate_hz']])<.01
+  assert q['observed']['rx']['analog_bandwidth_hz']==160000
+  assert c['observed']['tx']['analog_bandwidth_hz']==80000
+  assert abs(q['observed']['rx']['digital_cutoff_hz']-500000/dividers[r['rx_rate_hz']])<1
+  assert abs(c['observed']['tx']['digital_cutoff_hz']-500000/dividers[r['tx_rate_hz']])<1
+  for path,key in [('driver','underrun_periods'),('writer','errors'),('queue','drops')]:assert tx['tx'][path][key]==0,(r['point'],path,key)
+ count+=1
+print(json.dumps({'verified_snapshots':count,'nbfm_mode_tone_no_am_shaping_and_zero_transport_errors':True}))

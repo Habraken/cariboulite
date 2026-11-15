@@ -1,0 +1,9 @@
+{
+  "historical_implementation_commit": "1e4948c",
+  "current_implementation_commit": "3edde8e641cab46f93f4a2f981c6964ee56ff61d",
+  "estimator_file": "software/libcariboulite/src/sinad.h",
+  "historical_sha256": "5effe9bd1cdc9c97285832775fde7eeec682600b3a76d47298273c1084ff1a3e",
+  "current_sha256": "5effe9bd1cdc9c97285832775fde7eeec682600b3a76d47298273c1084ff1a3e",
+  "byte_identical": true,
+  "tap": "demod_worker.c raw discriminator before de-emphasis, calibrated output, gate and PCM volume"
+}
