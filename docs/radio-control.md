@@ -957,7 +957,7 @@ RX is stopped. This initial AM profile provides 300–3000 Hz mono voice audio
 at all eight native RF rates. Automatic carrier normalization is enabled by
 default; `--rx-am-agc off --rx-gain GAIN` selects manual audio scaling.
 FM de-emphasis, FM noise-RMS squelch and NBFM SINAD do not apply to AM.
-TX remains NBFM. See [AM RX operation and validation](am-voice-rx.md) for
+AM TX is available with `tx mode am`. See [AM RX operation and validation](am-voice-rx.md) for
 settings, the receive-only 119.050 MHz test and its antenna-connection gate.
 
 ## Calibrated RX playback
@@ -973,3 +973,6 @@ modulation reference, headroom, startup options and measurement scope.
 Use `tx mode am` and `tx am-depth 0.8` while TX is stopped. `tx mode nbfm`
 restores FM transmission. The passive monitor reports TX mode and AM depth.
 See [AM voice TX](am-voice-tx.md) for filtering, power reference and validation.
+
+AM RX uses offset tuning by default. Channel frequency commands and the reported
+RF frequency stay unchanged; `--rx-am-offset off` disables it for diagnostics.

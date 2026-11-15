@@ -93,6 +93,31 @@ The saved NBFM noise-squelch preference is retained when switching modes.
 Optional RSSI carrier squelch remains available, but the initial listening test
 leaves it off to avoid hiding weak transmissions.
 
+## Offset-tuned reception
+
+The backend now defaults to offset-tuned AM reception (`--rx-am-offset on`).
+The physical tuner is moved 12.5 kHz away from the requested channel, and an
+exact native-clock complex mixer restores the wanted signal before the existing
+channel filter. Receiver-fixed DC/image or leaked components are moved outside
+the voice channel instead of being converted to audible beats by the envelope
+detector. The selected RF band/conversion region is preserved at band edges.
+
+Requested and reported RF channel frequencies retain their original meaning;
+there is no need to add an offset to controller frequency commands. Register
+readback reflects the physical tuner. `--rx-am-offset off` is available for
+comparison/debugging. It is a launch setting, not a live controller command.
+Legacy standalone DSP callers default to no shift and can opt in with
+`audio_demod_set_am_offset` before processing. Pipeline callers opt in with
+`am_offset_tuning_enabled`.
+
+During the two-radio link test a separate component near 1.66 kHz was observed
+in raw RX IQ; it fell substantially with the transmitter off. The wanted
+carrier was only about 35 Hz from nominal. An earlier attempt to centre the
+extra component by moving RX 1.7 kHz was therefore incorrect and created a slow
+beat. Independent RSP2pro reception was clean; the offset-RX prototype removed
+the audible artifact on the Jabra. The source of the TX-associated extra
+component is not conclusively identified by that test.
+
 ## Software validation
 
 `tests/test_am_demod.py` builds an independent measurement harness and tests

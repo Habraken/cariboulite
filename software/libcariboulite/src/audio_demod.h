@@ -59,6 +59,9 @@ void audio_demod_destroy(audio_demod_t* dsp);
 // AM only: slow carrier normalization (default on). Off uses IQ/4096 scaling;
 // pcm_gain remains the manual audio gain. Settings survive reset.
 int audio_demod_set_am_agc(audio_demod_t* dsp, bool enabled);
+// AM only, configure before processing: digital shift 0 or +/-12500 Hz.
+// Reset retains the shift and restarts its exact native-clock phase.
+int audio_demod_set_am_offset(audio_demod_t* dsp, int hz);
 
 // Optional parallel 48 kHz discriminator tap, before DC/de-emphasis/low-pass
 // and PCM gain in NBFM; WBFM taps follow mono/anti-alias filtering.

@@ -142,6 +142,7 @@ class RadioBackendTests(unittest.TestCase):
         process=self.start_backend("--rx-mode","am","--rx-frequency","119050000", "--rx-am-agc","off","--rx-am-rf-attenuation","12","--rx-gain","4000","--rx-deemphasis-us","75","--rx-sinad")
         snap=self.once();self.assertEqual(snap['rx_mode'],'AM voice')
         self.assertFalse(snap['config']['am_agc_enabled'])
+        self.assertTrue(snap['config']['am_offset_tuning_enabled'])
         self.assertEqual(snap['config']['am_rf_gain_db'],51)
         self.assertEqual(snap['config']['pcm_gain'],4000)
         self.assertEqual(snap['config']['deemphasis_us'],0)
@@ -812,7 +813,7 @@ int main(void) {
             ("--tx-sample-rate", "3000000"), ("--tx-sample-rate", "nan"),
             ("--tx-power", "-13"), ("--tx-power", "15"), ("--tx-power", "-12.5"),
             ("--channel", "RF09", "--tx-power", "-15"),
-            ("--rx-volume", "nan"), ("--rx-volume", "13"), ("--rx-volume", "-61"), ("--rx-volume",), ("--rx-mode", "usb"), ("--status-hz", "nan"),
+            ("--rx-am-offset", "invalid"), ("--rx-am-offset",), ("--rx-volume", "nan"), ("--rx-volume", "13"), ("--rx-volume", "-61"), ("--rx-volume",), ("--rx-mode", "usb"), ("--status-hz", "nan"),
             ("--status-hz", "0"), ("--status-hz", "21"),
             ("--seconds", "inf"), ("--seconds", "0"),
             ("--rx-gain", "nan"), ("--rx-gain", "-1"),

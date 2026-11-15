@@ -128,3 +128,27 @@ double radio_profile_digital_cutoff_hz(int value)
     unsigned code = ((unsigned)value >> 5) & 7;
     return code < sizeof(fraction)/sizeof(fraction[0]) ? rate * fraction[code] : 0;
 }
+
+static unsigned am_rx_region(cariboulite_channel_en channel,int product_id,double hz)
+{
+    if(channel==cariboulite_channel_s1g)return hz<=CARIBOULITE_S1G_MAX1 ? 0 : 1;
+    if(product_id==system_type_cariboulite_ism)return 3;
+    return hz<CARIBOULITE_2G4_MIN ? 2 : hz<CARIBOULITE_2G4_MAX ? 3 : 4;
+}
+int radio_profile_am_rx_tuning(cariboulite_channel_en channel,int product_id,
+    double requested,double* tuner,int* mix)
+{
+    if(!tuner || !mix || !radio_profile_frequency_valid(channel,product_id,requested))return -1;
+    const int sign=channel==cariboulite_channel_hif && requested>=CARIBOULITE_2G4_MIN ? -1 : 1;
+    // HiF decoding swaps I/Q. Below the bypass band the external mixer also reverses
+    // RF frequency sense; the two inversions cancel. S1G is not swapped.
+    const int offsets[]={12500,-12500};
+    for(unsigned k=0;k<2;k++) {
+        double candidate=requested+offsets[k];
+        if(radio_profile_frequency_valid(channel,product_id,candidate) &&
+           am_rx_region(channel,product_id,candidate)==am_rx_region(channel,product_id,requested)) {
+            *tuner=candidate;*mix=sign*offsets[k];return 0;
+        }
+    }
+    return -1;
+}

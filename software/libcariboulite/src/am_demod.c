@@ -16,7 +16,8 @@ typedef struct {
     nbfm_demod_t base;
     nbfm_channel_filter_t frontend;
     float coeff[AM_CHANNEL_TAPS],i[2*AM_CHANNEL_TAPS],q[2*AM_CHANNEL_TAPS];
-    unsigned pos,bootstrap;
+    unsigned pos,bootstrap,mix_phase,mix_step,rf_divider;
+    float mix_cos[320],mix_sin[320];
     bool agc_disabled;
     float carrier,carrier_alpha,gain;
     am_biquad_t hp,lp[2];
@@ -59,11 +60,20 @@ int audio_demod_set_am_agc(audio_demod_t* dsp,bool enabled)
     if(!dsp||dsp->mode!=AUDIO_DEMOD_AM)return -EINVAL;
     ((am_state_t*)dsp)->agc_disabled=!enabled;return 0;
 }
+int audio_demod_set_am_offset(audio_demod_t* dsp,int hz)
+{
+    if(!dsp || dsp->mode!=AUDIO_DEMOD_AM || (hz!=0 && hz!=12500 && hz!=-12500))return -EINVAL;
+    am_state_t* s=(am_state_t*)dsp;
+    s->mix_step=hz==0 ? 0 : hz>0 ? s->rf_divider : 320-s->rf_divider;
+    s->mix_phase=0;
+    return 0;
+}
 void am_demod_reset(nbfm_demod_t* dsp)
 {
     am_state_t* s=(am_state_t*)dsp;if(!s)return;
     nbfm_channel_filter_reset(&s->frontend);
     memset(s->i,0,sizeof(s->i));memset(s->q,0,sizeof(s->q));
+    s->mix_phase=0;
     s->pos=0;s->carrier=0;s->bootstrap=AM_BOOTSTRAP_SAMPLES;
     s->previous=s->current=0;s->phase=0;
     s->hp.z1=s->hp.z2=0;
@@ -76,6 +86,11 @@ nbfm_demod_t* am_demod_create(const nbfm_demod_config_t* c)
        !finite_float(c->pcm_gain)||c->pcm_gain<0){errno=EINVAL;return NULL;}
     am_state_t* s=calloc(1,sizeof(*s));if(!s)return NULL;
     s->base.mode=AUDIO_DEMOD_AM;s->gain=c->pcm_gain;
+    s->rf_divider=radio_rate_divider(c->rf_rate);
+    for(unsigned k=0;k<320;k++){
+        s->mix_cos[k]=(float)cos(2*M_PI*k/320);
+        s->mix_sin[k]=(float)sin(2*M_PI*k/320);
+    }
     nbfm_channel_filter_init(&s->frontend,c->rf_rate);
     double sum=0;
     for(unsigned k=0;k<AM_CHANNEL_TAPS;++k){
@@ -98,7 +113,16 @@ audio_demod_result_t am_demod_process_with_raw(nbfm_demod_t* dsp,
     if(!s||(!input&&count)||(!output&&capacity)||!finite_double(correction)||fabs(correction)>.0005){result.error=-EINVAL;return result;}
     for(size_t k=0;k<count&&result.produced<capacity;++k){
         ++result.consumed;float i,q;
-        if(!nbfm_channel_filter_push(&s->frontend,input[k],&i,&q))continue;
+        iq16_t sample=input[k];
+        if(s->mix_step) {
+            unsigned phase=s->mix_phase;
+            float cs=s->mix_cos[phase],sn=s->mix_sin[phase];
+            float ri=sample.i*cs-sample.q*sn,rq=sample.i*sn+sample.q*cs;
+            sample.i=(int16_t)lrintf(fmaxf(-32768,fminf(32767,ri)));
+            sample.q=(int16_t)lrintf(fmaxf(-32768,fminf(32767,rq)));
+            phase+=s->mix_step;s->mix_phase=phase>=320 ? phase-320 : phase;
+        }
+        if(!nbfm_channel_filter_push(&s->frontend,sample,&i,&q))continue;
         unsigned p=s->pos;
         s->i[p]=s->i[p+AM_CHANNEL_TAPS]=i;s->q[p]=s->q[p+AM_CHANNEL_TAPS]=q;
         s->pos=p+1==AM_CHANNEL_TAPS?0:p+1;

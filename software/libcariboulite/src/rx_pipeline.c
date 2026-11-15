@@ -204,6 +204,12 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
         !noise_squelch_pack_levels(par->noise_squelch_open_rms,
                                   par->noise_squelch_close_rms, &noise_levels)) return -1;
 
+    double tuner_frequency=par->freq_hz;
+    if(par->mode==AUDIO_DEMOD_AM && par->am_offset_tuning_enabled &&
+       radio_profile_am_rx_tuning(radio->type,sys->board_info.numeric_product_id,
+                                 par->freq_hz,&tuner_frequency,&p->am_mix_hz))return -1;
+    p->am_tuner_offset_hz=tuner_frequency-par->freq_hz;
+
     // FIFOs
     rf10_fifo_init(&p->rxq,  /*cap=*/64, /*drop_oldest_on_full=*/true);
     aud10_fifo_init(&p->afifo, /*cap=*/24);
@@ -275,7 +281,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->demod.dsp = audio_demod_create(par->mode, &dsp_config);
     if (!p->demod.dsp) { error = -4; goto fail; }
     if (par->mode == AUDIO_DEMOD_AM &&
-        audio_demod_set_am_agc(p->demod.dsp, !par->am_agc_disabled) != 0) { error = -4; goto fail; }
+        (audio_demod_set_am_agc(p->demod.dsp, !par->am_agc_disabled) != 0 ||
+         audio_demod_set_am_offset(p->demod.dsp,p->am_mix_hz) != 0)) { error = -4; goto fail; }
     if (par->mode == AUDIO_DEMOD_NBFM &&
         audio_demod_set_nbfm_deviation(p->demod.dsp, deviation) != 0) {
         error = -4;
@@ -298,7 +305,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
 
     // Set radio frequency
     HW_LOCK();
-    double init_frequency = par->freq_hz;
+    double init_frequency = tuner_frequency;
     int tune_error = cariboulite_radio_set_frequency(radio, true, &init_frequency);
     int profile_error = tune_error ? -1 : configure_rx_modem(p);
     HW_UNLOCK();
@@ -495,10 +502,15 @@ int rx_pipeline_set_freq(rx_pipeline_t* p, double freq_hz)
     if (!p || !p->sys || !p->radio ||
         !radio_profile_frequency_valid(p->radio->type,
             p->sys->board_info.numeric_product_id, freq_hz)) return -1;
+    double tuner=freq_hz;int mix=0;
+    if(p->am_mix_hz && (radio_profile_am_rx_tuning(p->radio->type,
+        p->sys->board_info.numeric_product_id,freq_hz,&tuner,&mix) || mix!=p->am_mix_hz))return -1;
+    const double offset=tuner-freq_hz;
     HW_LOCK();
-    int rc = cariboulite_radio_set_frequency(p->radio, true, &freq_hz);
+    int rc = cariboulite_radio_set_frequency(p->radio, true, &tuner);
     HW_UNLOCK();
     if (rc != 0) return rc;
+    p->am_tuner_offset_hz=offset;
     
     // If running, gently reset demod so clicks/flicker are avoided post-retune
     if (p->running) {

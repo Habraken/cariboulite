@@ -40,6 +40,7 @@ typedef struct {
     float  deemph_tau_s;        // 50e-6 (EU) or 75e-6 (NA)
     float  pcm_gain;            // e.g., 8000.0f
 
+    bool am_offset_tuning_enabled; // backend default on, legacy callers opt in
     unsigned am_rf_attenuation_db; // AM fixed RF gain = 63 dB minus this (0..63, steps of 3)
     bool calibrated_output; // shared calibrated playback stage (backend default)
     float volume_db; // 0 dB default; -60..12 or -120=mute
@@ -77,7 +78,10 @@ typedef struct {
     // State
     bool inited;
     bool running;
+    bool am_offset_tuning_enabled; // backend default on, legacy callers opt in
     unsigned am_rf_attenuation_db;
+    double am_tuner_offset_hz;
+    int am_mix_hz;
 
     // Binding
     sys_st*                         sys;

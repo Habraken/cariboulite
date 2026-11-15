@@ -35,3 +35,8 @@ unsigned radio_profile_rx_bandwidth_hz(int rxbwc);
 unsigned radio_profile_tx_bandwidth_hz(int txcutc);
 double radio_profile_sample_rate_hz(int dfe);
 double radio_profile_digital_cutoff_hz(int dfe);
+
+// Offset-tuned AM RX, preserving the selected RF band/conversion region.
+// Returns physical tuner request and digital +/-12.5 kHz correction.
+int radio_profile_am_rx_tuning(cariboulite_channel_en channel,int product_id,
+    double requested_hz,double* tuner_hz,int* mix_hz);

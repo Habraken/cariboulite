@@ -10,6 +10,9 @@
 
 #include "modem_snapshot.h"
 #include "radio_profile.h"
+#include "cariboulite_setup.h"
+#include <math.h>
+#include <stdlib.h>
 
 static pthread_mutex_t hardware_mutex = PTHREAD_MUTEX_INITIALIZER;
 static uint16_t expected_base;
@@ -250,8 +253,32 @@ static void check_native_rates(void)
     }
 }
 
+static void check_am_tuning(void)
+{
+    const double high[]={1e6,119050000,430100000,CARIBOULITE_2G4_MIN-1,CARIBOULITE_2G4_MIN,CARIBOULITE_2G4_MAX-1,CARIBOULITE_2G4_MAX,CARIBOULITE_6G_MAX-1};
+    const double low[]={CARIBOULITE_S1G_MIN1,CARIBOULITE_S1G_MAX1,CARIBOULITE_S1G_MIN2,CARIBOULITE_S1G_MAX2};
+    for(unsigned channel=0;channel<2;channel++) {
+        const double* frequencies=channel ? high : low;
+        unsigned count=channel ? sizeof(high)/sizeof(*high) : sizeof(low)/sizeof(*low);
+        for(unsigned k=0;k<count;k++) {
+            cariboulite_channel_en ch=channel ? cariboulite_channel_hif : cariboulite_channel_s1g;
+            double tuner=0;int mix=0;
+            assert(!radio_profile_am_rx_tuning(ch,system_type_cariboulite_full,frequencies[k],&tuner,&mix));
+            assert(radio_profile_frequency_valid(ch,system_type_cariboulite_full,tuner));
+            assert(fabs(tuner-frequencies[k])==12500 && abs(mix)==12500);
+            int sign=channel && frequencies[k]>=CARIBOULITE_2G4_MIN ? -1 : 1;
+            assert(sign*(frequencies[k]-tuner)+mix==0);
+        }
+    }
+    double tuner=0;int mix=0;
+    assert(radio_profile_am_rx_tuning(cariboulite_channel_hif,system_type_cariboulite_full,NAN,&tuner,&mix)<0);
+    assert(!radio_profile_am_rx_tuning(cariboulite_channel_hif,system_type_cariboulite_ism,CARIBOULITE_2G4_MIN,&tuner,&mix));
+    assert(!radio_profile_am_rx_tuning(cariboulite_channel_hif,system_type_cariboulite_ism,CARIBOULITE_2G4_MAX,&tuner,&mix));
+    assert(radio_profile_am_rx_tuning(cariboulite_channel_s1g,system_type_cariboulite_full,600000000,&tuner,&mix)<0);
+}
 int main(void)
 {
+    check_am_tuning();
     check_native_rates();
     check_channel(at86rf215_rf_channel_2400mhz);
     check_channel(at86rf215_rf_channel_900mhz);

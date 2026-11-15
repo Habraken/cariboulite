@@ -1,0 +1,125 @@
+{
+  "scope": "AM offset tuning software validation; production RF validation follows",
+  "checks": {
+    "native_clock_dsp": "PASS strict/production; both correction signs across all native rates; independent injected fixed spur/image; exact split/reset and zero-capacity contracts",
+    "tuner_policy": "PASS supported band and conversion boundaries, full/ISM variants and invalid inputs",
+    "pipeline": "PASS offset applied before workers, fixed RF gain/profile readback, error cleanup and retained FM behavior",
+    "backend_suite": "PASS complete make test target, 105 backend/controller tests",
+    "monitor": "PASS 64 tests",
+    "build": "PASS CMake applications and backend"
+  },
+  "measurements": [
+    {
+      "rf_rate_hz": 4000000,
+      "digital_mix_hz": 12500,
+      "decoded_modulation": 0.397735,
+      "fit_snr_db": 66.95,
+      "synthetic_spur_leakage_dbc": -122.85
+    },
+    {
+      "rf_rate_hz": 2000000,
+      "digital_mix_hz": -12500,
+      "decoded_modulation": 0.397735,
+      "fit_snr_db": 67.12,
+      "synthetic_spur_leakage_dbc": -113.28
+    },
+    {
+      "rf_rate_hz": 1333333,
+      "digital_mix_hz": 12500,
+      "decoded_modulation": 0.397757,
+      "fit_snr_db": 67.25,
+      "synthetic_spur_leakage_dbc": -117.96
+    },
+    {
+      "rf_rate_hz": 1000000,
+      "digital_mix_hz": -12500,
+      "decoded_modulation": 0.397733,
+      "fit_snr_db": 67.31,
+      "synthetic_spur_leakage_dbc": -110.31
+    },
+    {
+      "rf_rate_hz": 800000,
+      "digital_mix_hz": 12500,
+      "decoded_modulation": 0.397737,
+      "fit_snr_db": 66.84,
+      "synthetic_spur_leakage_dbc": -116.03
+    },
+    {
+      "rf_rate_hz": 666667,
+      "digital_mix_hz": -12500,
+      "decoded_modulation": 0.397758,
+      "fit_snr_db": 67.27,
+      "synthetic_spur_leakage_dbc": -110.39
+    },
+    {
+      "rf_rate_hz": 500000,
+      "digital_mix_hz": 12500,
+      "decoded_modulation": 0.397758,
+      "fit_snr_db": 67.44,
+      "synthetic_spur_leakage_dbc": -125.98
+    },
+    {
+      "rf_rate_hz": 400000,
+      "digital_mix_hz": -12500,
+      "decoded_modulation": 0.397743,
+      "fit_snr_db": 67.03,
+      "synthetic_spur_leakage_dbc": -116.0
+    },
+    {
+      "rf_rate_hz": 4000000,
+      "digital_mix_hz": 12500,
+      "decoded_modulation": 0.397735,
+      "fit_snr_db": 66.94,
+      "synthetic_spur_leakage_dbc": -122.78
+    },
+    {
+      "rf_rate_hz": 2000000,
+      "digital_mix_hz": -12500,
+      "decoded_modulation": 0.397735,
+      "fit_snr_db": 67.12,
+      "synthetic_spur_leakage_dbc": -113.27
+    },
+    {
+      "rf_rate_hz": 1333333,
+      "digital_mix_hz": 12500,
+      "decoded_modulation": 0.397757,
+      "fit_snr_db": 67.25,
+      "synthetic_spur_leakage_dbc": -117.94
+    },
+    {
+      "rf_rate_hz": 1000000,
+      "digital_mix_hz": -12500,
+      "decoded_modulation": 0.397733,
+      "fit_snr_db": 67.31,
+      "synthetic_spur_leakage_dbc": -110.28
+    },
+    {
+      "rf_rate_hz": 800000,
+      "digital_mix_hz": 12500,
+      "decoded_modulation": 0.397737,
+      "fit_snr_db": 66.84,
+      "synthetic_spur_leakage_dbc": -115.85
+    },
+    {
+      "rf_rate_hz": 666667,
+      "digital_mix_hz": -12500,
+      "decoded_modulation": 0.397758,
+      "fit_snr_db": 67.27,
+      "synthetic_spur_leakage_dbc": -110.43
+    },
+    {
+      "rf_rate_hz": 500000,
+      "digital_mix_hz": 12500,
+      "decoded_modulation": 0.397758,
+      "fit_snr_db": 67.44,
+      "synthetic_spur_leakage_dbc": -125.34
+    },
+    {
+      "rf_rate_hz": 400000,
+      "digital_mix_hz": -12500,
+      "decoded_modulation": 0.397743,
+      "fit_snr_db": 67.03,
+      "synthetic_spur_leakage_dbc": -115.95
+    }
+  ]
+}

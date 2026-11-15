@@ -351,7 +351,7 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
         "",
     ]
     if snapshot.get("rx_mode") == "AM voice":
-        lines.append(f"AM voice: 300–3000 Hz  carrier normalization={_on(config.get('am_agc_enabled'))}"
+        lines.append(f"AM voice: 300–3000 Hz  offset tuning={_on(config.get('am_offset_tuning_enabled'))}  carrier normalization={_on(config.get('am_agc_enabled'))}"
                      f"  fixed RF gain={_formatted(config.get('am_rf_gain_db'), '.0f')} dB"
                      f"  PCM gain={_formatted(config.get('pcm_gain'), '.0f')}  FM de-emphasis bypassed")
     output = _mapping(rx.get("audio_output"))

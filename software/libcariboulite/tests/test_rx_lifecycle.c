@@ -570,7 +570,7 @@ static void test_modem_policy(void) {
         const uint8_t other_registers[]={0x26,0x61,0x62,0xf7};
         memcpy(modem_regs+other_filter,other_registers,sizeof(other_registers));
         for(unsigned rate=0;rate<sizeof(monitor_rates)/sizeof(*monitor_rates);++rate) {
-            rx_params_t par={.mode=AUDIO_DEMOD_NBFM,.freq_hz=430125000,.pcm_dev="null",
+            rx_params_t par={.mode=AUDIO_DEMOD_NBFM,.am_offset_tuning_enabled=true,.freq_hz=430125000,.pcm_dev="null",
                 .fs_rf=monitor_rates[rate].fs,.fs_audio=48000};
             rx_pipeline_t rx={0}; tx_pipeline_t tx={0}; monitor_loopback_t loopback={0};
             assert(rx_pipeline_init(&rx,&sys,radio,&par)==0);
@@ -600,6 +600,7 @@ static void test_modem_policy(void) {
             rx_pipeline_stop(&rx);
             assert(monitor_cycle_rx_mode(&tx,&rx,&loopback,&sys,&par)==0 && par.mode==AUDIO_DEMOD_AM);
             assert(agc_writes[channel]==before+1);assert(!audio_demod_capabilities(rx.demod.dsp));
+            assert(rx.am_mix_hz==12500 && rx.am_tuner_offset_hz==12500 && tuned_frequency==par.freq_hz+12500);
             assert(rx_pipeline_sinad_db(&rx)==0);
             assert(rx_pipeline_start(&rx)==0);assert_modem_profile(&rx);rx_pipeline_stop(&rx);
             before=agc_writes[channel];
@@ -615,7 +616,7 @@ static void test_modem_policy(void) {
         const audio_demod_mode_t modes[]={AUDIO_DEMOD_NBFM,AUDIO_DEMOD_WBFM,AUDIO_DEMOD_AM};
         for(unsigned mode=0;mode<sizeof(modes)/sizeof(*modes);++mode) {
             const bool nbfm=modes[mode]!=AUDIO_DEMOD_WBFM;
-            rx_params_t par={.mode=modes[mode],.am_rf_attenuation_db=12,.freq_hz=430125000,.pcm_dev="null",
+            rx_params_t par={.mode=modes[mode],.am_offset_tuning_enabled=true,.am_rf_attenuation_db=12,.freq_hz=430125000,.pcm_dev="null",
                 .fs_rf=1000000,.fs_audio=48000};
             rx_pipeline_t rx={0};
             const enum modem_fault last_fault=modes[mode]==AUDIO_DEMOD_AM ? MODEM_AM_GAIN_MISMATCH :

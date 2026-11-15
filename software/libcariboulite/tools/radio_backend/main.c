@@ -117,6 +117,7 @@ static void usage(FILE *out, const char *program)
         "  --rx-volume DB|mute       calibrated playback volume (-60..12 dB), default 0\n"
         "  --rx-gain GAIN            legacy trim (8000 = unity), default 8000\n"
         "  --rx-am-rf-attenuation dB  AM fixed RF gain: 63 minus dB (0..63, steps of 3)\n"
+        "  --rx-am-offset on|off     offset-tuned AM reception (default on)\n"
         "  --rx-am-agc on|off        AM carrier normalization (default on); off uses fixed audio scaling\n"
         "  --rx-deemphasis-us US      50 or 75, default 50\n"
         "Transmit options:\n"
@@ -162,16 +163,17 @@ static int parse_options(int argc, char **argv, options_t *o)
             .deemph_tau_s = 50e-6f, .pcm_gain = 8000, .calibrated_output=true,
             .noise_squelch_open_rms = NOISE_SQUELCH_OPEN_RMS,
             .noise_squelch_close_rms = NOISE_SQUELCH_CLOSE_RMS,
-            .mode = AUDIO_DEMOD_NBFM},
+            .mode = AUDIO_DEMOD_NBFM, .am_offset_tuning_enabled=true},
     };
     enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
-        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH, TX_AM_BACKOFF };
+        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH, TX_AM_BACKOFF, AM_RX_OFFSET };
     static const struct option long_options[] = {
         {"channel", required_argument, NULL, CHANNEL},
         {"rx-sinad", no_argument, NULL, SINAD},
         {"rx-volume", required_argument, NULL, RX_VOLUME},
+        {"rx-am-offset", required_argument, NULL, AM_RX_OFFSET},
         {"rx-am-agc", required_argument, NULL, AM_AGC},
         {"rx-am-rf-attenuation", required_argument, NULL, AM_RF_ATTENUATION},
         {"rx-start", no_argument, NULL, RX_START},
@@ -303,6 +305,11 @@ static int parse_options(int argc, char **argv, options_t *o)
         case AM_RF_ATTENUATION:
             if (number(optarg, &value, 0, 63) || value != (unsigned)value || (unsigned)value % 3) return -1;
             o->rx.am_rf_attenuation_db = (unsigned)value;
+            break;
+        case AM_RX_OFFSET:
+            if(!strcmp(optarg,"on"))o->rx.am_offset_tuning_enabled=true;
+            else if(!strcmp(optarg,"off"))o->rx.am_offset_tuning_enabled=false;
+            else return -1;
             break;
         case AM_AGC:
             if (!strcmp(optarg,"on")) o->rx.am_agc_disabled=false;
@@ -437,12 +444,17 @@ static int backend_force_idle(backend_control_t *c)
 static int backend_tune(backend_control_t *c, double hz)
 {
     if (c->options->dry_run) { c->options->actual_rx_frequency = hz; return 0; }
+    const double requested=hz;int mix=0;
+    if(c->options->rx.mode==AUDIO_DEMOD_AM && c->options->rx.am_offset_tuning_enabled &&
+       radio_profile_am_rx_tuning(c->radio->type,c->sys->board_info.numeric_product_id,
+                                 requested,&hz,&mix))return -1;
+    const double offset=hz-requested;
     HW_LOCK();
     int rc = cariboulite_radio_set_frequency(c->radio, true, &hz);
     HW_UNLOCK();
     /* Tuning must leave confirmed idle hardware even if the tuner failed. */
     int idle_rc = backend_force_idle(c);
-    if (!rc && !idle_rc) c->options->actual_rx_frequency = c->radio->actual_rf_frequency;
+    if (!rc && !idle_rc) c->options->actual_rx_frequency = c->radio->actual_rf_frequency-offset;
     return rc || idle_rc || !isfinite(hz) || hz <= 0 ? -1 : 0;
 }
 
@@ -472,7 +484,7 @@ static int backend_start(backend_control_t *c)
             || stats.demod_worker.last_error || stats.audio_worker.last_error) goto fail;
         if (stats.reader.samples && stats.reader_worker.alive
             && stats.demod_worker.alive && stats.audio_worker.alive) {
-            o->actual_rx_frequency = c->radio->actual_rf_frequency;
+            o->actual_rx_frequency = c->radio->actual_rf_frequency-c->pipeline->am_tuner_offset_hz;
             return 0;
         }
         if (stop_requested) goto fail;
@@ -1617,7 +1629,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"owner_pid\":%ld,\"channel\":\"%s\",\"state\":\"%s\",\"rx_mode\":\"%s\","
         "\"config\":{\"sample_rate_hz\":%.0f,\"rx_frequency_hz\":%.3f,"
         "\"requested_frequency_hz\":%.3f,\"rx_bandwidth_hz\":%.0f,\"tx_bandwidth_hz\":%s,"
-        "\"playback\":%s,\"pcm_gain\":%.3f,\"deemphasis_us\":%.3f,\"am_agc_enabled\":%s,\"am_rf_gain_db\":%u,\"am_voice_low_hz\":300,\"am_voice_high_hz\":3000,\"rx_deviation_hz\":%.3f,"
+        "\"playback\":%s,\"pcm_gain\":%.3f,\"deemphasis_us\":%.3f,\"am_offset_tuning_enabled\":%s,\"am_agc_enabled\":%s,\"am_rf_gain_db\":%u,\"am_voice_low_hz\":300,\"am_voice_high_hz\":3000,\"rx_deviation_hz\":%.3f,"
         "\"tx_frequency_hz\":%.3f,\"tx_actual_frequency_hz\":%s,\"tx_power_dbm\":%d,"
         "\"tx_actual_power_dbm\":%s,\"tx_sample_rate_hz\":%u,\"tx_source\":\"%s\","
         "\"tx_mode\":\"%s\",\"tx_am_depth\":%.3f,\"tx_am_backoff_db\":%.3f,\"tx_am_carrier_fraction\":0.5,\"tx_tone_hz\":%.3f,\"tx_tone_amp\":%.3f,\"tx_deviation_hz\":%.3f,"
@@ -1643,6 +1655,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         (long)getpid(), o->channel, state, audio_demod_mode_label(o->rx.mode),
         (double)o->rx.fs_rf, actual_freq, o->frequency, bandwidth, tx_bandwidth, playback,
         (double)o->rx.pcm_gain, o->rx.mode==AUDIO_DEMOD_AM ? 0.0 : o->rx.deemph_tau_s * 1e6,
+        o->rx.mode==AUDIO_DEMOD_AM && o->rx.am_offset_tuning_enabled ? "true":"false",
         o->rx.mode==AUDIO_DEMOD_AM && !o->rx.am_agc_disabled ? "true" : "false",
         63 - o->rx.am_rf_attenuation_db,
         (double)(o->rx.nbfm_deviation_hz != 0 ? o->rx.nbfm_deviation_hz : NBFM_DEFAULT_DEVIATION_HZ),

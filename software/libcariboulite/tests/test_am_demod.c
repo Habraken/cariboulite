@@ -102,9 +102,48 @@ static void filters_and_errors(void)
     printf("PASS AM filtering: 100 Hz %.2f dB, 8 kHz %.2f dB, adjacent 2.3 kHz leakage %.2f dBc; invalid input/capacity checks\n",20*log10(amps[0]/amps[1]),20*log10(amps[2]/amps[1]),20*log10(unwanted/wanted));
     audio_demod_destroy(d);free(iq);free(pcm);free(raw);
 }
+static void offset_case(unsigned rate,int mix)
+{
+    double fs=radio_rate_exact(rate);size_t n=(size_t)(fs*2);
+    iq16_t* iq=malloc(n*sizeof(*iq));int16_t* pcm=malloc(97000*sizeof(*pcm)),*other=malloc(97000*sizeof(*other));
+    float* raw=malloc(97000*sizeof(*raw)),*splitraw=malloc(97000*sizeof(*splitraw));assert(iq&&pcm&&other&&raw&&splitraw);
+    audio_demod_config_t config={rate,48000,0,8000};
+    audio_demod_t* d=audio_demod_create(AUDIO_DEMOD_AM,&config),*split=audio_demod_create(AUDIO_DEMOD_AM,&config);assert(d&&split);
+    assert(!audio_demod_set_am_offset(d,mix) && !audio_demod_set_am_offset(split,mix));
+    assert(audio_demod_set_am_offset(d,1000)==-EINVAL);
+    signal(iq,n,fs,2048,.4,1000,-mix+50,false);
+    for(size_t k=0;k<n;k++) {
+        double t=k/fs,spur=2*M_PI*1664*t,image=2*M_PI*(mix-50)*t;
+        iq[k].i+=(int16_t)lrint(128*cos(spur)+64*cos(image));
+        iq[k].q+=(int16_t)lrint(128*sin(spur)+64*sin(image));
+    }
+    audio_demod_result_t zero=audio_demod_process(d,iq,n,pcm,0,0);assert(!zero.error&&!zero.consumed);
+    size_t count=decode(d,iq,n,pcm,raw,false),other_count=decode(split,iq,n,other,splitraw,true);
+    assert(count==other_count && !memcmp(raw,splitraw,count*sizeof(*raw)) && !memcmp(pcm,other,count*sizeof(*pcm)));
+    double snr,wanted=amplitude(raw,72000,91200,1000,&snr);
+    // Remove the fitted 1 kHz component before measuring a non-bin-centred
+    // interferer; otherwise rectangular-window leakage masks real rejection.
+    double ss=0,cc=0,us=0,uc=0;const double length=91200-72000;
+    for(size_t k=72000;k<91200;k++) {
+        double phase=2*M_PI*1000*k/48000.;ss+=raw[k]*sin(phase);cc+=raw[k]*cos(phase);
+    }
+    ss*=2/length;cc*=2/length;
+    for(size_t k=72000;k<91200;k++) {
+        double t=k/48000.,residual=raw[k]-ss*sin(2*M_PI*1000*t)-cc*cos(2*M_PI*1000*t);
+        us+=residual*sin(2*M_PI*1614*t);uc+=residual*cos(2*M_PI*1614*t);
+    }
+    double unwanted=2*hypot(us,uc)/length;
+    assert(wanted>.39 && wanted<.405 && snr>45 && unwanted/wanted<.001);
+    audio_demod_reset(d);decode(d,iq,n,other,splitraw,true);
+    assert(!memcmp(raw,splitraw,count*sizeof(*raw)) && !memcmp(pcm,other,count*sizeof(*pcm)));
+    printf("PASS AM offset RX %u mix %d Hz: depth %.6f, fit SNR %.2f dB, fixed-spur leakage %.2f dBc; split/reset exact\n",rate,mix,wanted,snr,20*log10(fmax(unwanted/wanted,1e-15)));
+    audio_demod_destroy(d);audio_demod_destroy(split);free(iq);free(pcm);free(other);free(raw);free(splitraw);
+}
 int main(void)
 {
     const unsigned rates[]={4000000,2000000,1333333,1000000,800000,666667,500000,400000};
     for(unsigned k=0;k<8;++k)rate_case(rates[k]);
+    for(unsigned k=0;k<8;k++)offset_case(rates[k],k%2 ? -12500 : 12500);
+    assert(audio_demod_set_am_offset(NULL,12500)==-EINVAL);
     filters_and_errors();puts("PASS: narrow voice AM envelope, AGC/manual gain, all native clocks, channel/audio filtering and contracts");
 }
