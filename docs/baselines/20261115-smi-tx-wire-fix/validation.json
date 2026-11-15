@@ -1,0 +1,103 @@
+{
+  "fix_commit": "e458af2",
+  "wire_regression": "PASS all 8192 signed codes on both channels; regression failed on original serializer",
+  "digital_before": {
+    "test_patterns": 78,
+    "positive_controls": 1,
+    "failed_patterns": 61,
+    "reversed_memory_order_model_matches": 79
+  },
+  "digital_after": {
+    "test_patterns": 78,
+    "positive_controls": 1,
+    "failed_patterns": 0
+  },
+  "software_checks": {
+    "backend_make_test": "PASS complete target including 105 backend/controller Python tests and C/DSP tests",
+    "Soapy_and_timed_SMI": "PASS",
+    "driver": "PASS ownership, transitions, restarts, installer, demand and quiet RTL",
+    "CMake_applications_both_hosts": "PASS"
+  },
+  "rf": {
+    "levels": {
+      "cases": 20,
+      "stream_error_deltas": 0,
+      "pcm_clipped_samples": 0,
+      "tone_to_residual_range_db": [
+        -27.984086456690186,
+        30.541128248845702
+      ],
+      "second_third_harmonic_range_percent": [
+        0.17071473940374943,
+        75.85695868581605
+      ]
+    },
+    "am_native": {
+      "cases": 25,
+      "stream_error_deltas": 0,
+      "pcm_clipped_samples": 0,
+      "tone_to_residual_range_db": [
+        29.950020547314963,
+        30.821804548523062
+      ],
+      "second_third_harmonic_range_percent": [
+        2.0714910311309116,
+        2.3738923736430886
+      ]
+    },
+    "nbfm_native": {
+      "cases": 16,
+      "stream_error_deltas": 0,
+      "pcm_clipped_samples": 0,
+      "tone_to_residual_range_db": [
+        23.61078488495993,
+        24.316908632094368
+      ],
+      "second_third_harmonic_range_percent": [
+        0.6311654249749264,
+        0.9567251988271089
+      ]
+    },
+    "offset_diagnostic": {
+      "cases": 8,
+      "stream_error_deltas": 0,
+      "pcm_clipped_samples": 0,
+      "tone_to_residual_range_db": [
+        9.588196812485233,
+        29.748860067858867
+      ],
+      "second_third_harmonic_range_percent": [
+        1.8937537445519432,
+        10.59951597132461
+      ]
+    },
+    "gain_staging": {
+      "cases": 8,
+      "profile": "430.100 MHz; backoff 0 dB; power settings 0 and 6 dBm; amplitudes 0.03, 0.1, 0.25, 0.5",
+      "power6_second_third_harmonic_percent_at_amplitudes_0_1_and_0_5": [
+        2.05,
+        0.87
+      ]
+    }
+  },
+  "limitations": "Clear normal/quiet speech confirmed at 430.100 MHz, power setting 6 dBm and AM backoff 0 dB. This does not qualify every power, frequency or modulation level. Defaults and normal FPGA firmware are retained; temporary TX-offset experiment is not deployed.",
+  "driver_srcversion_both_hosts": "1AC65CD6AE81A1E2ED63F14",
+  "listening": {
+    "source": "Recorded H650e normal/quiet speech at corrected capture gain",
+    "CaribouLite_Jabra_run": "am-wire-listen-jabra-20261115-205337",
+    "RSP2pro_run": "am-wire-listen-rsp-20261115-205646",
+    "result": "FAIL: operator reports quiet speech still distorted on both receivers",
+    "settings": "430.100 MHz; TX/RX 1 MS/s; TX power setting 14 dBm; AM depth 0.8; backoff 6 dB; Jabra RX volume -6 dB"
+  },
+  "gain_staging_listening": {
+    "CaribouLite_Jabra_run": "am-gain-listen-jabra-20261115-210330",
+    "RSP2pro_run": "am-gain-listen-rsp-20261115-210606",
+    "settings": "430.100 MHz; TX/RX 1 MS/s; TX power setting 6 dBm; AM depth 0.8; backoff 0 dB",
+    "result": "PASS on repeated cued comparison at the stated profile",
+    "repeat": {
+      "CaribouLite_Jabra_run": "am-gain-listen-jabra-20261115-210801",
+      "RSP2pro_run": "am-gain-listen-rsp-20261115-210907",
+      "result": "PASS: operator reports normal and quiet speech clear on both receivers"
+    }
+  }
+}

@@ -101,3 +101,12 @@ permanent dither is justified by the present measurements.
 
 Exact measurements, source identities and temporary diagnostic patches are in
 [the baseline directory](baselines/20261115-am-low-level/README.md).
+
+## Subsequent digital finding
+
+The next investigation identified and corrected an SDK wire-byte-order error.
+All 78 hardware IQ patterns now reach the modem exactly. See the
+[byte-order correction report](smi-tx-byte-order-fix-2026-11-15.md). The earlier
+quantizer-like response was partly explained by exchanged low I/Q byte fields;
+it was not proof of missing FPGA/DAC input bits. Residual RF AM distortion
+remains after correcting the digital transport.

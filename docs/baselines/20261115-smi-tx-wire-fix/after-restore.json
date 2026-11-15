@@ -1,0 +1,20 @@
+{
+  "started_utc": "2026-11-15T19:16:49.708378+00:00",
+  "operation": "restore",
+  "command": [
+    "/home/pi/src/cariboulite/build/u25-clock-probe-20261106/load_checked",
+    "/home/pi/src/cariboulite/firmware/top.bin",
+    "/home/pi/src/cariboulite/firmware/top.bin"
+  ],
+  "input_sha256": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6",
+  "rollback_sha256": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6",
+  "loader_sha256": "49a9f5ad5d7f118ee89beca9e8a4e056b63f9e18a7ddb75a067410ce4cb9662e",
+  "library_sha256": "eac60b5076c4d846d1bcb00134183cc1af3b9fb5cd639a652fc136f510a24190",
+  "rf_tested": false,
+  "hardware_accessed": true,
+  "exit_code": 0,
+  "candidate_programmed": true,
+  "rollback_restored": false,
+  "finished_utc": "2026-11-15T19:16:51.330255+00:00",
+  "log_sha256": "c39d735b4da503981c32ecd533f2da4cb120b814efaaa780d9ba992caa09265e"
+}

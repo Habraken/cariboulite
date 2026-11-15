@@ -1,5 +1,7 @@
 # Native sample-rate and TX power sweeps after continuity fixes
 
+> Historical measurements: this sweep predates the [TX wire-byte-order correction](smi-tx-byte-order-fix-2026-11-15.md) on 15 November 2026. Preserve these data as recorded; they do not establish the corrected transmitter’s performance limits.
+
 The original CaribouLite on **pi4g-trixie** transmitted a 1 kHz NBFM tone
 through the user's wired connection with **90 dB nominal attenuation** to
 **pi4f-trixie**, at **430.100 MHz**. The Jabra USB speaker was used for playback.

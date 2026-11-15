@@ -65,3 +65,48 @@ runs are `/tmp/am-bittrace-20261115-200953` (before) and
 
 RF level/backoff/native-rate and listening qualification follows separately;
 this digital result does not by itself establish RF distortion or noise limits.
+
+## RF regression and remaining limits
+
+The normal production FPGA image and corrected SDK/driver completed all eight
+TX and eight RX native-rate cases in both AM and NBFM. The AM run had 25 cases
+including power/depth checks; the NBFM run had 16 native-rate cases. All had zero
+stream-counter increments and no PCM clipping. All CMake applications were
+rebuilt on both Pis, and both installed/loaded drivers report source version
+`1AC65CD6AE81A1E2ED63F14`.
+
+The corrected 20-case level/backoff sweep confirms that digital correctness does
+not remove every RF distortion mechanism. At power setting 14 dBm and backoff
+6 dB, the 0.1-amplitude tone's second/third harmonic ratio fell from 28.8% to
+6.8%, and the 0.25-amplitude case fell from 23.2% to 2.95%. At amplitude 0.5,
+the ratio changed from 0.84% to 2.11%; the corrupted waveform had not provided
+a valid RF calibration reference. At zero backoff, weak 0.1-amplitude modulation
+measured 0.17%, while the stronger 0.5-amplitude case measured 10.36%. There is
+no single backoff setting at that RF power that fixes the complete level range,
+so the default remains 6 dB.
+
+A fresh temporary 25.2 kHz TX-offset experiment with corrected wire order
+improved some weak cases but was not consistently distortion free. It is not
+deployed. The digital checks locate the byte-order fault conclusively; they
+do not yet locate the remaining RF nonlinearity within the modem's digital
+frontend, DAC, analog TX path or external converter. Further RF transfer/spectral
+measurements are needed before changing modulation architecture or adding dither.
+
+Native AM tone-to-residual ratio was 29.95–30.82 dB, with 2.07–2.37% second/third
+harmonic ratio. Native NBFM tone-to-residual ratio was 23.61–24.32 dB, with
+0.63–0.96% second/third harmonic ratio. These are fitted end-to-end PCM metrics,
+not calibrated SINAD or RF spectral purity measurements. Listening at power
+setting 14 dBm/backoff 6 dB confirmed quiet speech still distorted on both the
+CaribouLite/Jabra and independent RSP2pro.
+
+An additional eight-case gain-staging test used zero digital backoff and power
+settings 0 and 6 dBm. At power setting 6, amplitudes 0.1 and 0.5 measured
+2.05% and 0.87% second/third harmonic ratio respectively. The 0.03-amplitude
+case remained much weaker and measured 11.71%. In the repeated cued listening comparison, the operator confirmed normal and
+quiet speech clear on both CaribouLite/Jabra and RSP2pro at power setting 6 dBm,
+backoff 0 dB and depth 0.8. This qualifies that profile at 430.100 MHz, not every
+power/frequency/modulation level. The existing defaults are retained.
+
+[Baseline artifacts](baselines/20261115-smi-tx-wire-fix/README.md) retain the
+before/after bit traces, exact settings, regression CSVs and diagnostic observer.
+Both radios were released idle after the tests.

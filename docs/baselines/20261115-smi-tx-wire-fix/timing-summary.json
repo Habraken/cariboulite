@@ -1,0 +1,47 @@
+{
+  "fmax": {
+    "i_glob_clock$SB_IO_IN": {
+      "achieved": 463.6068420410156,
+      "constraint": 125
+    },
+    "i_sck$SB_IO_IN": {
+      "achieved": 221.77867126464844,
+      "constraint": 5
+    },
+    "lvds_clock_buf": {
+      "achieved": 68.11061096191406,
+      "constraint": 64
+    },
+    "r_counter": {
+      "achieved": 75.4944839477539,
+      "constraint": 62.5
+    }
+  },
+  "utilization": {
+    "ICESTORM_LC": {
+      "available": 1280,
+      "used": 790
+    },
+    "ICESTORM_PLL": {
+      "available": 1,
+      "used": 0
+    },
+    "ICESTORM_RAM": {
+      "available": 16,
+      "used": 8
+    },
+    "SB_GB": {
+      "available": 8,
+      "used": 1
+    },
+    "SB_IO": {
+      "available": 112,
+      "used": 51
+    },
+    "SB_WARMBOOT": {
+      "available": 1,
+      "used": 0
+    }
+  },
+  "full_report_sha256": "421bcdc8322593934affca88c110442920ce4084c0ddb0693bf630eefe271928"
+}
