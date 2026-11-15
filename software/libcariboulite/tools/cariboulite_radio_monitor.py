@@ -346,6 +346,10 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
         f"  hardware age={_age_label(_age(snapshot, 'hardware_monotonic_s', now))}",
         "",
     ]
+    if snapshot.get("rx_mode") == "AM voice":
+        lines.append(f"AM voice: 300–3000 Hz  carrier normalization={_on(config.get('am_agc_enabled'))}"
+                     f"  fixed RF gain={_formatted(config.get('am_rf_gain_db'), '.0f')} dB"
+                     f"  PCM gain={_formatted(config.get('pcm_gain'), '.0f')}  FM de-emphasis bypassed")
     for name, pipeline in (("RX", rx), ("TX", tx)):
         queue = _mapping(pipeline.get("queue"))
         lines.append(

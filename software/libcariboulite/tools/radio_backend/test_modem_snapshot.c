@@ -241,6 +241,7 @@ static void check_native_rates(void)
     const unsigned rates[]={4000000,2000000,1333333,1000000,800000,666667,500000,400000};
     const unsigned codes[]={1,2,3,4,5,6,8,10};
     for(unsigned k=0;k<8;++k){radio_profile_t p;
+        assert(!radio_profile_rx(AUDIO_DEMOD_AM,rates[k],&p) && p.analog_bandwidth_hz==160000);
         assert(!radio_profile_rx(AUDIO_DEMOD_NBFM,rates[k],&p));
         assert((unsigned)p.rate==codes[k]&&p.sample_rate_hz==rates[k]);
         assert(!radio_profile_rx(AUDIO_DEMOD_WBFM,rates[k],&p)&&p.digital_cutoff_hz>=100000);

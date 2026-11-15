@@ -106,7 +106,7 @@ static void usage(FILE *out, const char *program)
         "  --rx-start                start reception after initialization\n"
         "  --rx-frequency HZ         default 430125000\n"
         "  --rx-sample-rate HZ       400000/500000/666667/800000/1000000/1333333/2000000/4000000\n"
-        "  --rx-mode nbfm|wbfm       default nbfm; WBFM is mono\n"
+        "  --rx-mode nbfm|wbfm|am    default nbfm; AM is 300-3000 Hz voice\n"
         "  --rx-deviation HZ         NBFM audio normalization 1..24000 (default %.0f)\n"
         "  --rx-playback DEVICE      default plughw:Loopback,0,0\n"
         "  --rx-no-noise-squelch      bypass noise squelch\n"
@@ -114,6 +114,8 @@ static void usage(FILE *out, const char *program)
         "  --rx-noise-open RMS        default %.2f\n"
         "  --rx-noise-close RMS       default %.2f\n"
         "  --rx-gain GAIN            PCM gain, default 8000\n"
+        "  --rx-am-rf-attenuation dB  AM fixed RF gain: 63 minus dB (0..63, steps of 3)\n"
+        "  --rx-am-agc on|off        AM carrier normalization (default on); off uses fixed audio scaling\n"
         "  --rx-deemphasis-us US      50 or 75, default 50\n"
         "Transmit options:\n"
         "  --tx-frequency HZ         default 430125000\n"
@@ -161,10 +163,12 @@ static int parse_options(int argc, char **argv, options_t *o)
     enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
-        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD };
+        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION };
     static const struct option long_options[] = {
         {"channel", required_argument, NULL, CHANNEL},
         {"rx-sinad", no_argument, NULL, SINAD},
+        {"rx-am-agc", required_argument, NULL, AM_AGC},
+        {"rx-am-rf-attenuation", required_argument, NULL, AM_RF_ATTENUATION},
         {"rx-start", no_argument, NULL, RX_START},
         {"rx-frequency", required_argument, NULL, FREQ},
         {"rx-sample-rate", required_argument, NULL, RATE},
@@ -225,6 +229,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         case MODE:
             if (!strcmp(optarg, "nbfm")) o->rx.mode = AUDIO_DEMOD_NBFM;
             else if (!strcmp(optarg, "wbfm")) o->rx.mode = AUDIO_DEMOD_WBFM;
+            else if (!strcmp(optarg,"am")) o->rx.mode = AUDIO_DEMOD_AM;
             else return -1;
             break;
         case RX_DEVIATION:
@@ -271,6 +276,15 @@ static int parse_options(int argc, char **argv, options_t *o)
             if (number(optarg, &o->status_hz, 0.5, 20)) return -1;
             break;
         case SINAD: o->rx.sinad_enabled = true; break;
+        case AM_RF_ATTENUATION:
+            if (number(optarg, &value, 0, 63) || value != (unsigned)value || (unsigned)value % 3) return -1;
+            o->rx.am_rf_attenuation_db = (unsigned)value;
+            break;
+        case AM_AGC:
+            if (!strcmp(optarg,"on")) o->rx.am_agc_disabled=false;
+            else if (!strcmp(optarg,"off")) o->rx.am_agc_disabled=true;
+            else return -1;
+            break;
         case NO_NOISE: o->rx.noise_squelch_disabled = true; break;
         case CARRIER: o->rx.carrier_squelch_enabled = true; break;
         case NOISE_OPEN: case NOISE_CLOSE:
@@ -1062,8 +1076,8 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         break;
     case CONTROL_MODE:
     case CONTROL_BOTH_MODE: {
-        /* TX supports NBFM only; WBFM changes just the saved RX mode. */
-        audio_demod_mode_t mode = request->wbfm ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM;
+        /* Receive-only mode selection leaves TX at NBFM. */
+        audio_demod_mode_t mode = request->mode;
         if (radio_profile_rx(mode, (unsigned)o->rx.fs_rf, &profile)) code = "INVALID";
         else if (o->rx_requested) code = "RX_RUNNING";
         else if (mode != o->rx.mode) { o->rx.mode = mode; changed = true; }
@@ -1088,9 +1102,10 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         uint32_t levels;
         if (!noise_squelch_pack_levels(request->noise_open_rms, request->noise_close_rms, &levels))
             code = "INVALID";
-        else if (o->rx.mode == AUDIO_DEMOD_WBFM && request->noise_enabled) code = "WBFM_NOISE";
+        else if (o->rx.mode != AUDIO_DEMOD_NBFM && request->noise_enabled)
+            code = o->rx.mode==AUDIO_DEMOD_AM ? "AM_NOISE" : "WBFM_NOISE";
         else {
-            /* WBFM has no noise detector. Its disabled effective flag must
+            /* Non-FM modes and WBFM have no FM noise detector. The effective flag must
              * not discard the user's saved NBFM noise-squelch preference. */
             bool disabled = o->rx.mode == AUDIO_DEMOD_NBFM
                 ? !request->noise_enabled : o->rx.noise_squelch_disabled;
@@ -1189,7 +1204,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         .simulated = o->dry_run, .requested_frequency_hz = o->frequency,
         .actual_frequency_hz = o->actual_rx_frequency ? o->actual_rx_frequency
             : c->radio && !c->lifecycle_active ? c->radio->actual_rf_frequency : o->frequency,
-        .sample_rate_hz = (unsigned)o->rx.fs_rf, .wbfm = o->rx.mode == AUDIO_DEMOD_WBFM,
+        .sample_rate_hz = (unsigned)o->rx.fs_rf, .mode = o->rx.mode,
         .noise_enabled = o->rx.mode == AUDIO_DEMOD_NBFM && !o->rx.noise_squelch_disabled,
         .carrier_enabled = o->rx.carrier_squelch_enabled,
         .noise_open_rms = o->rx.noise_squelch_open_rms, .noise_close_rms = o->rx.noise_squelch_close_rms,
@@ -1537,7 +1552,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"owner_pid\":%ld,\"channel\":\"%s\",\"state\":\"%s\",\"rx_mode\":\"%s\","
         "\"config\":{\"sample_rate_hz\":%.0f,\"rx_frequency_hz\":%.3f,"
         "\"requested_frequency_hz\":%.3f,\"rx_bandwidth_hz\":%.0f,\"tx_bandwidth_hz\":%s,"
-        "\"playback\":%s,\"pcm_gain\":%.3f,\"deemphasis_us\":%.3f,\"rx_deviation_hz\":%.3f,"
+        "\"playback\":%s,\"pcm_gain\":%.3f,\"deemphasis_us\":%.3f,\"am_agc_enabled\":%s,\"am_rf_gain_db\":%u,\"am_voice_low_hz\":300,\"am_voice_high_hz\":3000,\"rx_deviation_hz\":%.3f,"
         "\"tx_frequency_hz\":%.3f,\"tx_actual_frequency_hz\":%s,\"tx_power_dbm\":%d,"
         "\"tx_actual_power_dbm\":%s,\"tx_sample_rate_hz\":%u,\"tx_source\":\"%s\","
         "\"tx_tone_hz\":%.3f,\"tx_tone_amp\":%.3f,\"tx_deviation_hz\":%.3f,"
@@ -1560,9 +1575,11 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"clients_rejected\":%" PRIu64 "}}",
         session, sequence, clock_seconds(CLOCK_MONOTONIC), clock_seconds(CLOCK_REALTIME),
         modem->monotonic_s, o->dry_run ? "simulated" : "live", o->dry_run ? " transport-only dry run" : "",
-        (long)getpid(), o->channel, state, o->rx.mode == AUDIO_DEMOD_NBFM ? "NBFM" : "WBFM mono",
+        (long)getpid(), o->channel, state, audio_demod_mode_label(o->rx.mode),
         (double)o->rx.fs_rf, actual_freq, o->frequency, bandwidth, tx_bandwidth, playback,
-        (double)o->rx.pcm_gain, o->rx.deemph_tau_s * 1e6,
+        (double)o->rx.pcm_gain, o->rx.mode==AUDIO_DEMOD_AM ? 0.0 : o->rx.deemph_tau_s * 1e6,
+        o->rx.mode==AUDIO_DEMOD_AM && !o->rx.am_agc_disabled ? "true" : "false",
+        63 - o->rx.am_rf_attenuation_db,
         (double)(o->rx.nbfm_deviation_hz != 0 ? o->rx.nbfm_deviation_hz : NBFM_DEFAULT_DEVIATION_HZ),
         o->tx.freq_hz, tx_actual_freq, o->tx.tx_power_dbm, tx_actual_power,
         o->tx.rf_fs, o->tx.tone_mode ? "tone" : "mic", (double)o->tx.tone_hz,
@@ -1678,7 +1695,7 @@ int main(int argc, char **argv)
     fprintf(stderr, "%s: %s %.6f MHz, %.0f S/s, %s. Ctrl+C stops the backend.\n",
         options.dry_run ? "SIMULATED TRANSPORT ONLY" : options.start_stopped ? "RX idle" : "RX started", options.channel,
         options.frequency / 1e6, (double)options.rx.fs_rf,
-        options.rx.mode == AUDIO_DEMOD_NBFM ? "NBFM" : "WBFM mono");
+        audio_demod_mode_label(options.rx.mode));
     result = 0;
     while (!stop_requested) {
         double now = clock_seconds(CLOCK_MONOTONIC);

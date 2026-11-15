@@ -949,3 +949,13 @@ See the handoff evidence (`build/radio-backend/tx-rx-handoff-zero-retry-20261014
 and final verification (`build/radio-backend/tx-hardware-paced-validation-20261014/verification-handoff.json`).
 Exact SWE sampling behavior and RF waveform/calibration remain unproven. See the
 [implementation trials](pi-zero-tx-queue-test-2026-10-15.md#hardware-paced-implementation-trials-2026-10-14).
+
+## Narrow-voice AM RX (development)
+
+The backend accepts `--rx-mode am`; the controller accepts `rx mode am` while
+RX is stopped. This initial AM profile provides 300–3000 Hz mono voice audio
+at all eight native RF rates. Automatic carrier normalization is enabled by
+default; `--rx-am-agc off --rx-gain GAIN` selects manual audio scaling.
+FM de-emphasis, FM noise-RMS squelch and NBFM SINAD do not apply to AM.
+TX remains NBFM. See [AM RX operation and validation](am-voice-rx.md) for
+settings, the receive-only 119.050 MHz test and its antenna-connection gate.

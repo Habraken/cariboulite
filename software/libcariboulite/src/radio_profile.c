@@ -31,11 +31,11 @@ static int profile_rate(unsigned hz, radio_profile_t* out)
 
 int radio_profile_rx(audio_demod_mode_t mode, unsigned hz, radio_profile_t* out)
 {
-    if (mode != AUDIO_DEMOD_NBFM && mode != AUDIO_DEMOD_WBFM) return -1;
+    if (mode != AUDIO_DEMOD_NBFM && mode != AUDIO_DEMOD_WBFM && mode != AUDIO_DEMOD_AM) return -1;
     if (profile_rate(hz, out)) return -1;
-    out->rx_bandwidth = mode == AUDIO_DEMOD_NBFM
+    out->rx_bandwidth = mode != AUDIO_DEMOD_WBFM
         ? cariboulite_radio_rx_bw_160KHz : cariboulite_radio_rx_bw_250KHz;
-    out->analog_bandwidth_hz = mode == AUDIO_DEMOD_NBFM ? 160000 : 250000;
+    out->analog_bandwidth_hz = mode != AUDIO_DEMOD_WBFM ? 160000 : 250000;
     if(mode==AUDIO_DEMOD_WBFM){
         // Keep the +/-100 kHz software channel inside the modem passband.
         const double fractions[]={.125,.1875,.25,.375,.5};

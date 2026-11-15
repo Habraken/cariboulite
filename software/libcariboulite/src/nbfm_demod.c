@@ -7,10 +7,12 @@ void nbfm_demod_destroy(nbfm_demod_t* s) { free(s); }
 void nbfm_demod_reset(nbfm_demod_t* s)
 {
     if (!s) return;
-    if (s->mode == FM_MODE_WBFM) wb_demod_reset(s); else nb_demod_reset(s);
+    if (s->mode == AUDIO_DEMOD_AM) am_demod_reset(s);
+    else if (s->mode == FM_MODE_WBFM) wb_demod_reset(s); else nb_demod_reset(s);
 }
 int nbfm_demod_set_audio(nbfm_demod_t* s, float tau, float gain)
 {
+    if (s && s->mode == AUDIO_DEMOD_AM) return am_demod_set_audio(s,tau,gain);
     return s && s->mode == FM_MODE_WBFM ? wb_demod_set_audio(s,tau,gain) : nb_demod_set_audio(s,tau,gain);
 }
 int nbfm_demod_set_deviation(nbfm_demod_t* s, float deviation_hz)
@@ -21,6 +23,7 @@ nbfm_demod_result_t nbfm_demod_process_with_raw(nbfm_demod_t* s,
     const iq16_t* input, size_t count, int16_t* output, float* raw,
     size_t capacity, double correction)
 {
+    if (s && s->mode == AUDIO_DEMOD_AM) return am_demod_process_with_raw(s,input,count,output,raw,capacity,correction);
     return s && s->mode == FM_MODE_WBFM
         ? wb_demod_process_with_raw(s,input,count,output,raw,capacity,correction)
         : nb_demod_process_with_raw(s,input,count,output,raw,capacity,correction);
@@ -39,6 +42,7 @@ audio_demod_t* audio_demod_create(audio_demod_mode_t mode, const audio_demod_con
     switch(mode) {
         case AUDIO_DEMOD_NBFM: return nbfm_demod_create(config);
         case AUDIO_DEMOD_WBFM: return wbfm_demod_create(config);
+        case AUDIO_DEMOD_AM: return am_demod_create(config);
         default: errno=EINVAL; return NULL;
     }
 }

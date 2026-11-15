@@ -2,6 +2,7 @@
 #define CARIBOULITE_COMMAND_PROTOCOL_H
 
 #include <stdbool.h>
+#include "audio_demod.h"
 #include <stddef.h>
 #include <stdint.h>
 
@@ -40,7 +41,7 @@ typedef struct control_request {
     control_command_t command;
     double frequency_hz;
     unsigned sample_rate_hz;
-    bool wbfm;
+    audio_demod_mode_t mode;
     bool noise_enabled;
     bool carrier_enabled;
     float noise_open_rms;
@@ -66,7 +67,7 @@ typedef struct control_reply {
     double requested_frequency_hz;
     double actual_frequency_hz;
     unsigned sample_rate_hz;
-    bool wbfm;
+    audio_demod_mode_t mode;
     bool noise_enabled;
     bool carrier_enabled;
     float noise_open_rms;
@@ -88,7 +89,7 @@ typedef struct control_reply {
 
 /* Strict ASCII protocol-v1/v2 packets. v1 carries RX commands/settings; v2
  * extends them with TX controls, combined RX/TX settings, FPGA programming and
- * transition states. Combined requests use frequency_hz, wbfm or sample_rate_hz
+ * transition states. Combined requests use frequency_hz, mode or sample_rate_hz
  * and require both RX and TX to be stopped. Parsers accept ASCII whitespace between
  * tokens, reject embedded NULs, nonfinite/overflowed numbers and trailing
  * tokens. They return 0 on success or -1 with errno on failure. A failed

@@ -150,7 +150,7 @@ set(SOURCES_TEST_MAIN
     src/modem_snapshot.c
     src/tone_source.c
     src/nbfm_mod.c
-    src/nbfm_demod.c src/nbfm_demod_dsp.c src/wbfm_demod.c
+    src/nbfm_demod.c src/nbfm_demod_dsp.c src/wbfm_demod.c src/am_demod.c
     src/demod_worker.c
     src/noise_squelch.c
     src/carrier_squelch.c
@@ -174,7 +174,7 @@ add_executable(cariboulite_util ${SOURCES_MAIN})
 # Hardware-free DSP example: no ALSA, radio, FIFO or worker dependencies.
 add_executable(nbfm_memory_demo
     tools/nbfm_memory_demo.c src/memory_audio.c src/tone_source.c
-    src/nbfm_mod.c src/nbfm_demod.c src/nbfm_demod_dsp.c src/wbfm_demod.c)
+    src/nbfm_mod.c src/nbfm_demod.c src/nbfm_demod_dsp.c src/wbfm_demod.c src/am_demod.c)
 target_include_directories(nbfm_memory_demo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(nbfm_memory_demo PRIVATE m)
 

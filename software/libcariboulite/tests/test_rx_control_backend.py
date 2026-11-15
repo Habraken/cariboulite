@@ -153,6 +153,25 @@ class RxControlBackendTests(unittest.TestCase):
         self.assertIsNone(snapshot["rx"]["audio_queue"])
         self.assertEqual(snapshot["hardware"]["register_poll"]["polls"], 0)
 
+    def test_am_mode_receive_only_frequency_and_noise_policy(self):
+        self.start_backend("--rx-sinad",start=False)
+        peer=self.controller();status=self.connect(self.status_path)
+        self.command(peer,"frequency 119050000")
+        result=self.command(peer,"mode am")
+        self.assertEqual(result["mode"],"am");self.assertFalse(result["noise"])
+        self.command(peer,"squelch 1 0 .2 .3",code="AM_NOISE")
+        self.command(peer,"squelch 0 0 .2 .3")
+        self.command(peer,"start")
+        self.command(peer,"mode nbfm",code="RX_RUNNING")
+        snap=self.snapshot_matching(status,lambda p:p['rx_mode']=='AM voice' and p['control']['rx_requested'])
+        self.assertEqual(snap['config']['rx_frequency_hz'],119050000)
+        self.assertTrue(snap['config']['am_agc_enabled'])
+        self.assertEqual(snap['config']['deemphasis_us'],0)
+        self.assertFalse(snap['rx']['noise_enabled']);self.assertIsNone(snap['rx']['sinad']['db'])
+        self.assertFalse(snap['control']['tx_requested'])
+        self.command(peer,"stop");back=self.command(peer,"mode nbfm")
+        self.assertTrue(back['noise'])
+
     def test_requested_rx_start_permissions_and_timed_cleanup(self):
         process = self.start_backend(seconds="1")
         reply = self.command(self.controller(), "get")
@@ -350,7 +369,7 @@ class RxControlBackendTests(unittest.TestCase):
             b"v3 40 start", b"v1 40 get surplus", b"v1 40", b"v1 40 transmit",
             b"v1 -1 get", b"v1 not-an-id start", b"v1 18446744073709551616 get",
             b"v1 40 start\x00stop", b"v1 40 frequency nan", b"v1 40 frequency inf",
-            b"v1 40 frequency 430125000x", b"v1 40 mode am",
+            b"v1 40 frequency 430125000x", b"v1 40 mode usb",
             b"v1 40 sample_rate 3000000", b"v1 40 sample_rate 1000001",
             b"v1 40 squelch 2 0 .20 .30", b"v1 40 squelch 1 0 nan .30",
             b"v1 40 squelch 1 0 .20 inf", b"v1 40 squelch 1 0 .20 .30 extra",

@@ -173,14 +173,12 @@ static int parse_int(const char *token, int *value)
     return 0;
 }
 
-static int parse_mode(const char *token, bool *wbfm)
+static int parse_mode(const char *token, audio_demod_mode_t *mode)
 {
-    if (!strcmp(token, "nbfm"))
-        *wbfm = false;
-    else if (!strcmp(token, "wbfm"))
-        *wbfm = true;
-    else
-        return -1;
+    if (!strcmp(token,"nbfm")) *mode=AUDIO_DEMOD_NBFM;
+    else if (!strcmp(token,"wbfm")) *mode=AUDIO_DEMOD_WBFM;
+    else if (!strcmp(token,"am")) *mode=AUDIO_DEMOD_AM;
+    else return -1;
     return 0;
 }
 
@@ -224,7 +222,7 @@ int control_request_parse(const char *packet, size_t bytes,
              parse_double(tokens[3], &request->frequency_hz) == 0)
         request->command = CONTROL_FREQUENCY;
     else if (!strcmp(tokens[2], "mode") && count == 4 &&
-             parse_mode(tokens[3], &request->wbfm) == 0)
+             parse_mode(tokens[3], &request->mode) == 0)
         request->command = CONTROL_MODE;
     else if (!strcmp(tokens[2], "sample_rate") && count == 4 &&
              parse_rate(tokens[3], &request->sample_rate_hz) == 0)
@@ -239,7 +237,7 @@ int control_request_parse(const char *packet, size_t bytes,
              !parse_double(tokens[3], &request->frequency_hz))
         request->command = CONTROL_BOTH_FREQUENCY;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "both_mode") && count == 4 &&
-             !parse_mode(tokens[3], &request->wbfm))
+             !parse_mode(tokens[3], &request->mode))
         request->command = CONTROL_BOTH_MODE;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "both_sample_rate") && count == 4 &&
              !parse_rate(tokens[3], &request->sample_rate_hz))
@@ -280,7 +278,7 @@ static int valid_code(const char *code)
 {
     static const char *const codes[] = {
         "OK", "BUSY", "PROTOCOL", "RX_RUNNING", "INVALID", "FREQ_RANGE",
-        "HARDWARE", "FAULT", "WBFM_NOISE", "ACCEPTED", "TRANSITION",
+        "HARDWARE", "FAULT", "WBFM_NOISE", "AM_NOISE", "ACCEPTED", "TRANSITION",
         "TX_RUNNING", "LOOPBACK", "TX_FAILED", "FIRMWARE_FILE", "FPGA_REQUIRED"
     };
     size_t i;
@@ -342,7 +340,7 @@ int control_reply_parse(const char *packet, size_t bytes, control_reply_t *reply
     if (parse_double(tokens[9], &reply->requested_frequency_hz) < 0 ||
         parse_double(tokens[10], &reply->actual_frequency_hz) < 0 ||
         parse_rate(tokens[11], &reply->sample_rate_hz) < 0 ||
-        parse_mode(tokens[12], &reply->wbfm) < 0 ||
+        parse_mode(tokens[12], &reply->mode) < 0 ||
         parse_bool(tokens[13], &reply->noise_enabled) < 0 ||
         parse_bool(tokens[14], &reply->carrier_enabled) < 0 ||
         parse_float(tokens[15], &reply->noise_open_rms) < 0 ||
@@ -416,7 +414,7 @@ int control_request_format(const control_request_t *request,
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " %s %s\n",
                          version, request->id,
                          request->command == CONTROL_BOTH_MODE ? "both_mode" : "mode",
-                         request->wbfm ? "wbfm" : "nbfm");
+                         audio_demod_mode_name(request->mode));
         break;
     case CONTROL_SAMPLE_RATE:
     case CONTROL_BOTH_SAMPLE_RATE:
@@ -509,7 +507,7 @@ int control_reply_format(const control_reply_t *reply,
                      reply->simulated ? "simulated" : "live", state,
                      reply->channel, reply->requested_frequency_hz,
                      reply->actual_frequency_hz, reply->sample_rate_hz,
-                     reply->wbfm ? "wbfm" : "nbfm",
+                     audio_demod_mode_name(reply->mode),
                      reply->noise_enabled ? 1U : 0U,
                      reply->carrier_enabled ? 1U : 0U,
                      (double)reply->noise_open_rms,

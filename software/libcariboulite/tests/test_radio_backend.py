@@ -129,6 +129,16 @@ class RadioBackendTests(unittest.TestCase):
         self.assertEqual(len(rows), 39)
         self.assertTrue(all("=0x--" in row for row in rows))
 
+    def test_am_cli_manual_gain_and_effective_audio_settings(self):
+        process=self.start_backend("--rx-mode","am","--rx-frequency","119050000", "--rx-am-agc","off","--rx-am-rf-attenuation","12","--rx-gain","4000","--rx-deemphasis-us","75","--rx-sinad")
+        snap=self.once();self.assertEqual(snap['rx_mode'],'AM voice')
+        self.assertFalse(snap['config']['am_agc_enabled'])
+        self.assertEqual(snap['config']['am_rf_gain_db'],51)
+        self.assertEqual(snap['config']['pcm_gain'],4000)
+        self.assertEqual(snap['config']['deemphasis_us'],0)
+        self.assertIsNone(snap['rx']['sinad']['db']);self.assertFalse(snap['rx']['noise_enabled'])
+        self.stop_backend(process)
+
     def test_all_native_tx_cli_profiles(self):
         for rate,divider in [(4000000,1),(2000000,2),(1333333,3),(1000000,4),
                              (800000,5),(666667,6),(500000,8),(400000,10)]:
@@ -374,7 +384,7 @@ int main(int argc, char **argv) {
                 self.assertEqual(result.returncode, 0, result.stderr.decode())
 
     def test_all_native_rx_rates_and_wbfm_cutoff_headroom(self):
-        for mode in ["nbfm","wbfm"]:
+        for mode in ["nbfm","wbfm","am"]:
             for rate in [400000,500000,666667,800000,1000000,1333333,2000000,4000000]:
                 with self.subTest(mode=mode,rate=rate):
                     process=self.start_backend("--rx-mode",mode,"--rx-sample-rate",str(rate),seconds=".7")
@@ -793,7 +803,7 @@ int main(void) {
             ("--tx-sample-rate", "3000000"), ("--tx-sample-rate", "nan"),
             ("--tx-power", "-13"), ("--tx-power", "15"), ("--tx-power", "-12.5"),
             ("--channel", "RF09", "--tx-power", "-15"),
-            ("--rx-mode", "am"), ("--status-hz", "nan"),
+            ("--rx-mode", "usb"), ("--status-hz", "nan"),
             ("--status-hz", "0"), ("--status-hz", "21"),
             ("--seconds", "inf"), ("--seconds", "0"),
             ("--rx-gain", "nan"), ("--rx-gain", "-1"),
@@ -814,7 +824,8 @@ int main(void) {
         invalid += tuple(("--rx-deviation", value)
                          for value in ("0", "-1", "0.5", "24000.1", "nan", "inf", "-inf",
                                        "1e-50", "1e-9999", "2500Hz", ""))
-        invalid += (("--rx-deviation",),)
+        invalid += tuple(("--rx-am-rf-attenuation", value) for value in ("-3","64","1","3.5","nan","inf"))
+        invalid += (("--rx-deviation",),("--rx-am-agc","invalid"),("--rx-am-agc",))
         for index, arguments in enumerate(invalid):
             with self.subTest(arguments=arguments):
                 path = Path(self.temporary.name) / f"invalid-{index}" / "status.sock"

@@ -32,6 +32,9 @@ static void test_requests(void)
         { "v1 12 frequency 4.30125e8", CONTROL_FREQUENCY },
         { "v1 13 mode nbfm", CONTROL_MODE },
         { "v1 13 mode wbfm", CONTROL_MODE },
+        { "v1 13 mode am", CONTROL_MODE },
+        { "v2 13 mode am", CONTROL_MODE },
+        { "v2 13 both_mode am", CONTROL_BOTH_MODE },
         { "v1 14 sample_rate 1000000", CONTROL_SAMPLE_RATE },
         { "v1 14 sample_rate 2000000", CONTROL_SAMPLE_RATE },
         { "v1 14 sample_rate 4000000", CONTROL_SAMPLE_RATE },
@@ -106,7 +109,7 @@ static void test_requests(void)
         CHECK(decoded.id == request.id && decoded.command == request.command);
         CHECK(decoded.frequency_hz == request.frequency_hz);
         CHECK(decoded.sample_rate_hz == request.sample_rate_hz);
-        CHECK(decoded.wbfm == request.wbfm);
+        CHECK(decoded.mode == request.mode);
         CHECK(decoded.noise_enabled == request.noise_enabled);
         CHECK(decoded.carrier_enabled == request.carrier_enabled);
         CHECK(decoded.noise_open_rms == request.noise_open_rms);
@@ -217,7 +220,7 @@ static void test_combined_requests(void)
                                       request.frequency_hz : 0));
         CHECK(decoded.sample_rate_hz == (request.command == CONTROL_BOTH_SAMPLE_RATE ?
                                         request.sample_rate_hz : 0));
-        CHECK(!decoded.wbfm);
+        CHECK(decoded.mode == AUDIO_DEMOD_NBFM);
     }
     for (size_t i = 0; i < sizeof(bad) / sizeof(bad[0]); ++i) {
         CHECK(control_request_parse(bad[i], strlen(bad[i]), &decoded) == -1);
@@ -244,10 +247,10 @@ static void test_combined_requests(void)
     request.sample_rate_hz = 3000000;
     CHECK(control_request_format(&request, packet, sizeof(packet)) == -1);
     request.command = CONTROL_BOTH_MODE;
-    request.wbfm = true;
+    request.mode = AUDIO_DEMOD_WBFM;
     bytes = control_request_format(&request, packet, sizeof(packet));
     CHECK(bytes > 0 && !strcmp(packet, "v2 1 both_mode wbfm\n"));
-    CHECK(!control_request_parse(packet, (size_t)bytes, &decoded) && decoded.wbfm);
+    CHECK(!control_request_parse(packet, (size_t)bytes, &decoded) && decoded.mode == AUDIO_DEMOD_WBFM);
 }
 
 static void test_v2_replies(void)
@@ -345,7 +348,7 @@ static void test_replies(void)
     CHECK(decoded.actual_frequency_hz == reply.actual_frequency_hz);
     CHECK(decoded.noise_open_rms == reply.noise_open_rms);
     CHECK(control_reply_parse(busy, sizeof(busy) - 1, &reply) == 0);
-    CHECK(!reply.id && !reply.ok && !reply.simulated && reply.wbfm);
+    CHECK(!reply.id && !reply.ok && !reply.simulated && reply.mode == AUDIO_DEMOD_WBFM);
     CHECK(control_reply_format(&reply, packet, sizeof(packet)) > 0);
     for (i = 0; i < sizeof(bad) / sizeof(bad[0]); ++i)
         CHECK(control_reply_parse(bad[i], strlen(bad[i]), &decoded) == -1);

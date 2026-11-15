@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-15",
+  "scope": "AM narrow-voice RX software validation; no physical radio test",
+  "profile": {
+    "audio_hz": [
+      300,
+      3000
+    ],
+    "audio_sample_rate_hz": 48000,
+    "rf_rate_labels_hz": [
+      4000000,
+      2000000,
+      1333333,
+      1000000,
+      800000,
+      666667,
+      500000,
+      400000
+    ],
+    "rf_gain_policy": "fixed 63 dB minus optional 0..63 dB attenuation in 3 dB steps; checked register readback",
+    "software_carrier_normalization": "default on; 250 ms mean, 20 ms bootstrap, strong-signal rise guard"
+  },
+  "checks": {
+    "am_dsp": "strict and production floating point; all eight rates; modulation depth, frequency offsets, manual scaling, channel/audio filtering, count/chunk/reset/correction/invalid-input contracts",
+    "rx_lifecycle": "PASS: both channels, mode transitions, manual RF gain readback and failure cleanup",
+    "legacy_waveforms": "PASS: NBFM, WBFM mono, NBFM TX",
+    "passive_monitor": "PASS: 62 tests",
+    "build": "PASS: CMake applications and backend",
+    "backend_suite": "PASS: 5 C suites, byte stream, AM DSP strict/production, native RX/TX clocks, 102 backend/controller tests"
+  },
+  "live_validation": {
+    "status": "pending user antenna confirmation",
+    "receiver": "pi4f-trixie",
+    "frequency_hz": 119050000,
+    "mode": "AM voice",
+    "playback": "Jabra USB speaker"
+  },
+  "transmit_testing": "No physical TX test performed. Wait for user confirmation of pi4g TX to pi4f RX through 90 dB attenuation before any later TX test."
+}

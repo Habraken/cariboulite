@@ -1061,6 +1061,15 @@ class PassiveClientTests(unittest.TestCase):
                          tx={"generation": 2, "queue": {"puts": 1, "gets": 0}})
         self.assertEqual(client.queue_rates(new, reset), {})
 
+    def test_am_voice_status_explains_gain_and_fm_bypass(self):
+        value=snapshot(rx_mode="AM voice",config={"am_agc_enabled":True,"pcm_gain":8000},
+                       rx={"noise_enabled":False,"noise":{"valid":False},"sinad":{"db":None}})
+        text="\n".join(client.format_snapshot(value))
+        self.assertIn("AM voice: 300–3000 Hz",text)
+        self.assertIn("carrier normalization=on",text)
+        self.assertIn("FM de-emphasis bypassed",text)
+        self.assertIn("RX SINAD: unavailable",text)
+
     def test_formatting_marks_stale_cache_and_safe_labels(self):
         value = snapshot(monotonic_s=10, hardware_monotonic_s=8, rx_mode="NBFM",
                          channel="HiF\x1b[2J\n", config={"sample_rate_hz": 1000000,

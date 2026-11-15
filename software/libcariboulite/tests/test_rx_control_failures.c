@@ -497,7 +497,7 @@ static control_reply_t command(backend_control_t *owner, control_request_t reque
     assert(reply.id == request.id && !strcmp(reply.code, code) && !strcmp(reply.state, state));
     assert(reply.ok == !strcmp(code, "OK") && !reply.simulated);
     assert(reply.requested_frequency_hz == accepted_frequency);
-    assert(reply.sample_rate_hz == 1000000 && !reply.wbfm);
+    assert(reply.sample_rate_hz == 1000000 && reply.mode == AUDIO_DEMOD_NBFM);
     assert(reply.noise_enabled && !reply.carrier_enabled);
     assert(reply.noise_open_rms == .20f && reply.noise_close_rms == .30f);
     return reply;
@@ -1110,7 +1110,7 @@ static void test_joint_settings(void)
             case 6: options.fpga_needs_programming = true; break;
             }
             reply = joint_command(&owner, (control_request_t){.command=edits[edit],
-                .frequency_hz=rejected_frequency, .wbfm=true, .sample_rate_hz=2000000},
+                .frequency_hz=rejected_frequency, .mode=AUDIO_DEMOD_WBFM, .sample_rate_hz=2000000},
                 codes[state], states[state]);
             assert(reply.config_generation == 7 && tune_calls == 0);
             assert(options.frequency == accepted_frequency && options.rx.freq_hz == accepted_frequency);

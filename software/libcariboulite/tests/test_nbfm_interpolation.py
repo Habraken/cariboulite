@@ -14,5 +14,5 @@ with tempfile.TemporaryDirectory(prefix='nbfm-interpolation-') as directory:
         subprocess.run(['cc', '-std=c11', '-O3', *flags, '-Wall', '-Wextra', '-Werror',
                         '-I'+str(src), str(here/'test_nbfm_interpolation.c'),
                         str(src/'nbfm_demod.c'), str(src/'nbfm_demod_dsp.c'),
-                        str(src/'wbfm_demod.c'), '-lm', '-o', str(binary)], check=True)
+                        str(src/'wbfm_demod.c'), str(src/'am_demod.c'), '-lm', '-o', str(binary)], check=True)
         subprocess.run([str(binary)], check=True, timeout=120)

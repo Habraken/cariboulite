@@ -182,6 +182,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
         !radio_profile_finite(par->fs_audio) || par->fs_audio != 48000 ||
         !radio_profile_frequency_valid(radio->type, sys->board_info.numeric_product_id,
                                        par->freq_hz) ||
+        (par->am_rf_attenuation_db > 63 || par->am_rf_attenuation_db % 3) ||
         !radio_profile_finite(par->pcm_gain) || par->pcm_gain < 0 ||
         !radio_profile_finite(par->deemph_tau_s) || par->deemph_tau_s < 0) return -1;
 
@@ -256,6 +257,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->demod.fs_rf             = par->fs_rf;
     p->demod.fs_audio          = par->fs_audio;   // 48e3
     p->demod.deemph_tau        = par->deemph_tau_s;
+    p->am_rf_attenuation_db = par->am_rf_attenuation_db;
     p->demod.pcm_gain          = par->pcm_gain;
     p->demod.pcm_total_frames  = 0;
     p->demod.pcm_channels      = alsa_sink_channels(p->demod.sink);
@@ -266,6 +268,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     };
     p->demod.dsp = audio_demod_create(par->mode, &dsp_config);
     if (!p->demod.dsp) { error = -4; goto fail; }
+    if (par->mode == AUDIO_DEMOD_AM &&
+        audio_demod_set_am_agc(p->demod.dsp, !par->am_agc_disabled) != 0) { error = -4; goto fail; }
     if (par->mode == AUDIO_DEMOD_NBFM &&
         audio_demod_set_nbfm_deviation(p->demod.dsp, deviation) != 0) {
         error = -4;
@@ -309,7 +313,7 @@ static int configure_rx_modem(rx_pipeline_t* p)
 {
     cariboulite_radio_state_st* radio = p->radio;
     at86rf215_st* modem = &p->sys->modem;
-    const bool nbfm = p->demod.mode == AUDIO_DEMOD_NBFM;
+    const bool narrow = p->demod.mode != AUDIO_DEMOD_WBFM;
     const bool s1g = radio->type == cariboulite_channel_s1g;
     radio_profile_t profile;
     if (radio_profile_rx(p->demod.mode, (unsigned)p->demod.fs_rf, &profile)) return -1;
@@ -338,17 +342,23 @@ static int configure_rx_modem(rx_pipeline_t* p)
         (filters[0] & 0x3f) != (0x10 | (unsigned)bw) ||
         (filters[1] & 0xef) != (((unsigned)cutoff << 5) | (unsigned)rate)) return -1;
 
-    if (nbfm) {
-        // AGCI=0: measure after modem filtering. EN=1, FRZC=0, AVGS=0
+    if (narrow) {
+        // NBFM: AGCI=0, EN=1, FRZC=0, AVGS=0 (filtered AGC).
         // (8 samples), TGT=0 (-21 dBFS), matching fresh modem initialization.
         // GCW is ignored with AGC enabled; RX entry resets automatic gain.
         // Use a checked write/read rather than the unchecked setup helper.
-        uint8_t agc[2] = {0x01, 0x00};
+        const bool am = p->demod.mode == AUDIO_DEMOD_AM;
+        // The chip updates AGC every few microseconds, which would track AM
+        // modulation. Hold RF gain fixed; normalize the carrier in software.
+        const uint8_t control = am ? 0 : 1;
+        const uint8_t gain = am ? (63 - p->am_rf_attenuation_db) / 3 : 0;
+        uint8_t agc[2] = {control, gain};
         const uint16_t reg = s1g ? REG_RF09_AGCC : REG_RF24_AGCC;
         if (at86rf215_write_buffer(modem, reg, agc, 2) != 0 ||
             at86rf215_read_buffer(modem, reg, agc, 2) != 0 ||
-            (agc[0] & 0x73) != 0x01 || (agc[1] & 0xe0) != 0) return -1;
-        radio->rx_agc_on = true;
+            (agc[0] & 0x73) != control || (agc[1] & 0xe0) != 0 ||
+            (am && (agc[1] & 0x1f) != gain)) return -1;
+        radio->rx_agc_on = !am;
         radio->rx_gain_value_db = (agc[1] & 0x1f) * 3;
     }
     return 0;

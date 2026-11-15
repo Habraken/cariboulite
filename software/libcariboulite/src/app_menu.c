@@ -1095,7 +1095,8 @@ static int monitor_cycle_rx_mode(tx_pipeline_t* tx, rx_pipeline_t* rx,
     if (tx_pipeline_running(tx) || rx_pipeline_running(rx) ||
         loopback->armed || loopback->active) return -EBUSY;
     rx_params_t next = *par;
-    next.mode = par->mode == AUDIO_DEMOD_NBFM ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM;
+    next.mode = par->mode == AUDIO_DEMOD_NBFM ? AUDIO_DEMOD_WBFM :
+        par->mode == AUDIO_DEMOD_WBFM ? AUDIO_DEMOD_AM : AUDIO_DEMOD_NBFM;
     cariboulite_radio_state_st* radio = rx->radio;
     rx_pipeline_destroy(rx);
     if (rx_pipeline_init(rx, sys, radio, &next) != 0) return -1;
@@ -1411,9 +1412,9 @@ void monitor_modem_status(sys_st *sys)
         if (srx.timeouts_get > 0)        printw("    NOTE: Demod timed out waiting for frames\n");
 
         printw("RX mode: %s  [M] cycle (TX/RX/loopback stopped); TX mode: NBFM\n",
-            rxpar.mode == AUDIO_DEMOD_WBFM ? "WBFM mono" : "NBFM");
+            audio_demod_mode_label(rxpar.mode));
         printw("Squelch: [N] noise %s  [C] carrier %s  audio %s\n",
-            rxpar.mode == AUDIO_DEMOD_WBFM ? "N/A (WBFM)" : rxpar.noise_squelch_disabled ? "OFF" : "ON",
+            rxpar.mode != AUDIO_DEMOD_NBFM ? "N/A" : rxpar.noise_squelch_disabled ? "OFF" : "ON",
             rxpar.carrier_squelch_enabled ? "ON" : "OFF",
             !rx_pipeline_running(&rxp) ? "IDLE" :
             rx_pipeline_squelch_open(&rxp) ? "OPEN" : "MUTED");
@@ -1458,7 +1459,7 @@ void monitor_modem_status(sys_st *sys)
             continue;
         }
         if (key == 'n' || key == 'N' || key == 'c' || key == 'C') {
-            if ((key == 'n' || key == 'N') && rxpar.mode == AUDIO_DEMOD_WBFM) {
+            if ((key == 'n' || key == 'N') && rxpar.mode != AUDIO_DEMOD_NBFM) {
                 rate_notice = "Noise squelch is available in NBFM only; [C] controls carrier squelch.";
                 continue;
             }

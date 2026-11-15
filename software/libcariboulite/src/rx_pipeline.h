@@ -40,6 +40,8 @@ typedef struct {
     float  deemph_tau_s;        // 50e-6 (EU) or 75e-6 (NA)
     float  pcm_gain;            // e.g., 8000.0f
 
+    unsigned am_rf_attenuation_db; // AM fixed RF gain = 63 dB minus this (0..63, steps of 3)
+    bool am_agc_disabled; // AM: manual IQ/4096 scaling when true; RX gain still applies
     bool sinad_enabled; // optional 1 kHz NBFM link-quality estimate
     bool noise_squelch_disabled; // zero/default enables noise squelch
     bool carrier_squelch_enabled; // zero/default disables carrier squelch
@@ -49,7 +51,7 @@ typedef struct {
     audio_demod_mode_t mode;       // zero/default is NBFM; selected at initialization
 
     // Supported rates
-    float  fs_rf;               // 1e6, 2e6 or 4e6
+    float  fs_rf;               // native 4 MHz/divider rate label
     float  fs_audio;            // 48e3
     float  nbfm_deviation_hz;   // audio normalization; zero selects the default
 } rx_params_t;
@@ -73,6 +75,7 @@ typedef struct {
     // State
     bool inited;
     bool running;
+    unsigned am_rf_attenuation_db;
 
     // Binding
     sys_st*                         sys;
@@ -109,7 +112,8 @@ float rx_pipeline_sinad_db(const rx_pipeline_t*);
 extern cariboulite_sample_complex_int16 latest_rx_sample;
 int rx_pipeline_init(rx_pipeline_t*, sys_st*, cariboulite_radio_state_st*, const rx_params_t*);
 // Each start verifies the modem profile: NBFM uses AGC and minimum RX analog
-// bandwidth/digital cutoff; WBFM restores the wide receive filters.
+// bandwidth/digital cutoff; AM uses fixed RF gain and narrow filters;
+// WBFM restores the wide receive filters.
 int rx_pipeline_start(rx_pipeline_t*);
 void rx_pipeline_stop(rx_pipeline_t*);
 void rx_pipeline_destroy(rx_pipeline_t*);

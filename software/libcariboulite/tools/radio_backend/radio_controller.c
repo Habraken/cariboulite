@@ -71,11 +71,11 @@ static void command_help(void)
     puts("Commands:\n"
          "  status | get          read current settings\n"
          "  frequency MHz         set RX and TX frequency while both are stopped\n"
-         "  mode nbfm|wbfm        set mode while both are stopped; TX stays NBFM\n"
+         "  mode nbfm|wbfm|am        set mode while both are stopped; TX stays NBFM\n"
          "  rate MS/s            set RX and TX native sample rate in MS/s while stopped\n"
          "  rx start | rx stop    start/stop reception\n"
          "  rx frequency MHz      saved RX frequency, for example 430.125\n"
-         "  rx mode nbfm|wbfm     WBFM is mono\n"
+         "  rx mode nbfm|wbfm|am     WBFM is mono\n"
          "  rx rate [MS/s]       no value opens divider menu; RX: .4/.5/.666667/.8/1/1.333333/2/4\n"
          "  rx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
          "  tx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
@@ -194,9 +194,10 @@ static int parse_command(const char *input, ui_command_t *command)
         command->request.command = rx_only ? CONTROL_FREQUENCY : CONTROL_BOTH_FREQUENCY;
         command->request.frequency_hz = value * 1e6;
     } else if (count == 2 && !strcmp(name, "mode") &&
-               (!strcmp(tokens[1], "nbfm") || !strcmp(tokens[1], "wbfm"))) {
+               (!strcmp(tokens[1], "nbfm") || !strcmp(tokens[1], "wbfm") || !strcmp(tokens[1], "am"))) {
         command->request.command = rx_only ? CONTROL_MODE : CONTROL_BOTH_MODE;
-        command->request.wbfm = !strcmp(tokens[1], "wbfm");
+        command->request.mode = !strcmp(tokens[1],"am") ? AUDIO_DEMOD_AM :
+            !strcmp(tokens[1],"wbfm") ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM;
     } else if(count==1 && (!strcmp(name,"rate")||!strcmp(name,"sample-rate"))){
         command->kind=UI_RATE_MENU;
         command->request.command=rx_only?CONTROL_SAMPLE_RATE:CONTROL_BOTH_SAMPLE_RATE;
@@ -435,6 +436,7 @@ static const char *radio_error(const control_reply_t *state)
             {"HARDWARE", "Hardware operation failed; check backend log"},
             {"FAULT", "Backend fault; check backend log"},
             {"WBFM_NOISE", "Noise squelch is not available in WBFM"},
+            {"AM_NOISE", "FM noise squelch is not available in AM; use carrier squelch or leave it off"},
             {"TRANSITION", "A change is already in progress"},
             {"LOOPBACK", "Disable digital loopback before transmitting"},
             {"TX_FAILED", "Transmit failed; check backend log"},
@@ -467,9 +469,9 @@ static void print_state(const controller_t *controller)
            "    %-16s %s\n"
            "    %-16s %s\n",
            "Frequency", state->requested_frequency_hz / 1e6,
-           "Mode", state->wbfm ? "WBFM (mono)" : "NBFM",
+           "Mode", state->mode == AUDIO_DEMOD_WBFM ? "WBFM (mono)" : audio_demod_mode_label(state->mode),
            "Sample rate", state->sample_rate_hz / 1e6,
-           "Noise squelch", state->wbfm ? "Not Applicable" :
+           "Noise squelch", state->mode != AUDIO_DEMOD_NBFM ? "Not Applicable" :
                              state->noise_enabled ? "On" : "Off",
            "Carrier squelch", state->carrier_enabled ? "On" : "Off");
 

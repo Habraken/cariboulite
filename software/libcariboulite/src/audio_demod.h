@@ -1,5 +1,6 @@
 #pragma once
 #include <stddef.h>
+#include <stdbool.h>
 #include "iq16.h"
 #include "audio_format.h"
 #include "nbfm_defaults.h"
@@ -7,7 +8,15 @@
 // Standalone DSP. No threads, device handles, queues or retained caller buffers.
 // NBFM audio defaults to NBFM_DEFAULT_DEVIATION_HZ normalization.
 typedef struct nbfm_demod audio_demod_t;
-typedef enum { AUDIO_DEMOD_NBFM = 0, AUDIO_DEMOD_WBFM = 1 } audio_demod_mode_t;
+typedef enum { AUDIO_DEMOD_NBFM = 0, AUDIO_DEMOD_WBFM = 1, AUDIO_DEMOD_AM = 2 } audio_demod_mode_t;
+static inline const char* audio_demod_mode_name(audio_demod_mode_t mode)
+{
+    switch(mode){case AUDIO_DEMOD_NBFM:return "nbfm";case AUDIO_DEMOD_WBFM:return "wbfm";case AUDIO_DEMOD_AM:return "am";default:return "unknown";}
+}
+static inline const char* audio_demod_mode_label(audio_demod_mode_t mode)
+{
+    switch(mode){case AUDIO_DEMOD_NBFM:return "NBFM";case AUDIO_DEMOD_WBFM:return "WBFM mono";case AUDIO_DEMOD_AM:return "AM voice";default:return "Unknown";}
+}
 typedef struct {
     unsigned rf_rate;       // native 4 MHz/divider rate label; see radio_rates.h
     unsigned audio_rate;    // exactly 48000 Hz
@@ -26,7 +35,7 @@ audio_demod_t* audio_demod_create(audio_demod_mode_t mode, const audio_demod_con
 #define AUDIO_DEMOD_CAP_NOISE_SQUELCH 1u
 unsigned audio_demod_mode_capabilities(audio_demod_mode_t mode);
 unsigned audio_demod_capabilities(const audio_demod_t* dsp);
-// Both modes clear all signal history, decimator phases, filters and resampling.
+// All modes clear all signal history, decimator phases, filters and resampling.
 void audio_demod_reset(audio_demod_t* dsp);
 // Update audio controls without resetting filter history.
 int audio_demod_set_audio(audio_demod_t* dsp, float deemph_tau, float pcm_gain);
@@ -42,6 +51,9 @@ audio_demod_result_t audio_demod_process(audio_demod_t* dsp,
     const iq16_t* input, size_t count, audio_s16_t* output, size_t capacity,
     double correction);
 void audio_demod_destroy(audio_demod_t* dsp);
+// AM only: slow carrier normalization (default on). Off uses IQ/4096 scaling;
+// pcm_gain remains the manual audio gain. Settings survive reset.
+int audio_demod_set_am_agc(audio_demod_t* dsp, bool enabled);
 
 // Optional parallel 48 kHz discriminator tap, before DC/de-emphasis/low-pass
 // and PCM gain in NBFM; WBFM taps follow mono/anti-alias filtering.
@@ -52,3 +64,6 @@ void audio_demod_destroy(audio_demod_t* dsp);
 audio_demod_result_t audio_demod_process_with_raw(audio_demod_t* dsp,
     const iq16_t* input, size_t count, audio_s16_t* output, float* raw_audio,
     size_t capacity, double correction);
+
+// AM raw tap is the filtered 300–3000 Hz voice signal before PCM gain;
+// it does not implement the NBFM noise-RMS or SINAD contract.

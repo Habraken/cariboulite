@@ -106,7 +106,7 @@ enum modem_fault {
     MODEM_OK, MODEM_DEACTIVATE, MODEM_STATE_READ, MODEM_STATE_MISMATCH,
     MODEM_BANDWIDTH_SET, MODEM_CUTOFF_SET, MODEM_FILTER_READ,
     MODEM_FILTER_MISMATCH, MODEM_AGC_WRITE, MODEM_AGC_READ,
-    MODEM_AGC_CONTROL_MISMATCH, MODEM_AGC_TARGET_MISMATCH
+    MODEM_AGC_CONTROL_MISMATCH, MODEM_AGC_TARGET_MISMATCH, MODEM_AM_GAIN_MISMATCH
 };
 static enum modem_fault modem_fault;
 static uint8_t filter_readback_byte, filter_readback_xor=1, agc_readback_xor=1;
@@ -135,8 +135,8 @@ int __wrap_cariboulite_radio_activate_channel(cariboulite_radio_state_st* r, car
         assert(modem_regs[bw+1]==(((uint8_t)r->rx_fcut<<5)|(uint8_t)r->rx_fs));
         if (r->rx_bw==cariboulite_radio_rx_bw_160KHz) {
             assert(r->rx_fcut==cariboulite_radio_rx_f_cut_0_25_half_fs);
-            assert((modem_regs[agc]&0x73)==1 && (modem_regs[agc+1]&0xe0)==0);
-            assert(r->rx_agc_on);
+            assert((modem_regs[agc]&0x73)==(r->rx_agc_on ? 1 : 0) && (modem_regs[agc+1]&0xe0)==0);
+            if (!r->rx_agc_on) assert((modem_regs[agc+1]&31)==r->rx_gain_value_db/3);
         } else {
             assert(r->rx_bw==cariboulite_radio_rx_bw_250KHz);
             assert(r->rx_fcut==cariboulite_radio_rx_f_cut_0_25_half_fs);
@@ -212,9 +212,10 @@ int __wrap_at86rf215_read_buffer(at86rf215_st* dev, uint16_t reg, uint8_t* value
     if(state && modem_fault==MODEM_STATE_MISMATCH) *value=at86rf215_radio_state_cmd_rx;
     if(filter && modem_fault==MODEM_FILTER_MISMATCH) value[filter_readback_byte]^=filter_readback_xor;
     if(agc) {
-        value[1]|=17; /* AGC owns the live GCW; target verification must ignore it. */
+        if (modem_regs[reg]&1) value[1]|=17; /* AGC owns the live GCW; target verification must ignore it. */
         if(modem_fault==MODEM_AGC_CONTROL_MISMATCH) *value^=agc_readback_xor;
         if(modem_fault==MODEM_AGC_TARGET_MISMATCH) value[1]^=0x20;
+        if(modem_fault==MODEM_AM_GAIN_MISMATCH) value[1]^=1;
     }
     return 0;
 }
@@ -224,7 +225,7 @@ int __wrap_at86rf215_write_buffer(at86rf215_st* dev, uint16_t reg, uint8_t* valu
     assert((reg==REG_RF09_AGCC || reg==REG_RF24_AGCC) && length==2);
     unsigned channel=reg==REG_RF09_AGCC ? 0 : 1;
     assert(modem_regs[REG_RF09_STATE+0x100*channel]==at86rf215_radio_state_cmd_trx_off);
-    assert(value[0]==1 && value[1]==0);
+    assert((value[0]==1 && value[1]==0) || (value[0]==0 && value[1]<=21));
     ++agc_writes[channel];
     if(modem_fault==MODEM_AGC_WRITE) return -1;
     memcpy(modem_regs+reg,value,length);
@@ -537,7 +538,7 @@ static void stale_nbfm_profile(cariboulite_radio_state_st* radio) {
 }
 static void assert_modem_profile(const rx_pipeline_t* p) {
     const cariboulite_radio_state_st* radio=p->radio;
-    bool nbfm=p->demod.mode==AUDIO_DEMOD_NBFM;
+    bool nbfm=p->demod.mode!=AUDIO_DEMOD_WBFM;
     cariboulite_radio_rx_bw_en bw=nbfm ? cariboulite_radio_rx_bw_160KHz : cariboulite_radio_rx_bw_250KHz;
     cariboulite_radio_f_cut_en cutoff=cariboulite_radio_rx_f_cut_0_25_half_fs;
     cariboulite_radio_sample_rate_en rate=p->demod.fs_rf==1000000 ? cariboulite_radio_rx_sample_rate_1000khz :
@@ -547,7 +548,10 @@ static void assert_modem_profile(const rx_pipeline_t* p) {
     assert(modem_regs[filter]==(0x10|(uint8_t)bw));
     assert(modem_regs[filter+1]==(((uint8_t)cutoff<<5)|(uint8_t)rate));
     assert(test_rx_rate==p->demod.fs_rf && rate_rx_radio==radio);
-    if(nbfm) {
+    if(p->demod.mode==AUDIO_DEMOD_AM) {
+        assert(modem_regs[agc]==0 && modem_regs[agc+1]==(63-p->am_rf_attenuation_db)/3);
+        assert(!radio->rx_agc_on && radio->rx_gain_value_db==63-(int)p->am_rf_attenuation_db);
+    } else if(nbfm) {
         assert(modem_regs[agc]==1 && modem_regs[agc+1]==0);
         assert(radio->rx_agc_on && radio->rx_gain_value_db==51);
     }
@@ -594,6 +598,11 @@ static void test_modem_policy(void) {
             assert(agc_writes[channel]==before && modem_regs[agc]==saved_agc &&
                    modem_regs[agc+1]==saved_gain && !radio->rx_agc_on);
             rx_pipeline_stop(&rx);
+            assert(monitor_cycle_rx_mode(&tx,&rx,&loopback,&sys,&par)==0 && par.mode==AUDIO_DEMOD_AM);
+            assert(agc_writes[channel]==before+1);assert(!audio_demod_capabilities(rx.demod.dsp));
+            assert(rx_pipeline_sinad_db(&rx)==0);
+            assert(rx_pipeline_start(&rx)==0);assert_modem_profile(&rx);rx_pipeline_stop(&rx);
+            before=agc_writes[channel];
             assert(monitor_cycle_rx_mode(&tx,&rx,&loopback,&sys,&par)==0 && par.mode==AUDIO_DEMOD_NBFM);
             assert(agc_writes[channel]==before+1);
             assert_modem_profile(&rx);
@@ -603,13 +612,14 @@ static void test_modem_policy(void) {
             assert(agc_writes[channel]==before+2);
             rx_pipeline_destroy(&rx); check_clean(&rx);
         }
-        const audio_demod_mode_t modes[]={AUDIO_DEMOD_NBFM,AUDIO_DEMOD_WBFM};
+        const audio_demod_mode_t modes[]={AUDIO_DEMOD_NBFM,AUDIO_DEMOD_WBFM,AUDIO_DEMOD_AM};
         for(unsigned mode=0;mode<sizeof(modes)/sizeof(*modes);++mode) {
-            const bool nbfm=modes[mode]==AUDIO_DEMOD_NBFM;
-            rx_params_t par={.mode=modes[mode],.freq_hz=430125000,.pcm_dev="null",
+            const bool nbfm=modes[mode]!=AUDIO_DEMOD_WBFM;
+            rx_params_t par={.mode=modes[mode],.am_rf_attenuation_db=12,.freq_hz=430125000,.pcm_dev="null",
                 .fs_rf=1000000,.fs_audio=48000};
             rx_pipeline_t rx={0};
-            const enum modem_fault last_fault=nbfm ? MODEM_AGC_TARGET_MISMATCH : MODEM_FILTER_MISMATCH;
+            const enum modem_fault last_fault=modes[mode]==AUDIO_DEMOD_AM ? MODEM_AM_GAIN_MISMATCH :
+                nbfm ? MODEM_AGC_TARGET_MISMATCH : MODEM_FILTER_MISMATCH;
             for(enum modem_fault fault=MODEM_DEACTIVATE;fault<=last_fault;++fault) {
                 stale_nbfm_profile(radio);
                 unsigned before_activations=rx_activations, before_streams=stream_activations;
@@ -793,6 +803,11 @@ static void test_noise_level_controls(void) {
         assert(par.mode==AUDIO_DEMOD_WBFM);
         assert(rx_pipeline_start(&rx)==0);
         atomic_store(&rx.demod.noise_squelch_valid,1); // WBFM still cannot expose noise RMS.
+        assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0 && !status.valid);
+        rx_pipeline_stop(&rx);
+        assert(monitor_cycle_rx_mode(&tx,&rx,&loopback,&sys,&par)==0);
+        assert(par.mode==AUDIO_DEMOD_AM);
+        assert(rx_pipeline_start(&rx)==0);
         assert(rx_pipeline_get_noise_squelch_status(&rx,&status)==0 && !status.valid);
         rx_pipeline_stop(&rx);
         assert(monitor_cycle_rx_mode(&tx,&rx,&loopback,&sys,&par)==0);
@@ -1233,6 +1248,12 @@ int main(void) {
         assert(p.rx_ctrl.rx_buffer_size==monitor_rates[rate].frame_samples);
         assert(test_rx_rate==monitor_rates[rate].fs && rate_rx_radio==&sys.radio_high);
         rx_pipeline_stop(&p);
+        assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)==0);
+        assert(par.mode==AUDIO_DEMOD_AM && p.demod.mode==AUDIO_DEMOD_AM && !p.running);
+        assert(!audio_demod_capabilities(p.demod.dsp));
+        assert(atomic_load(&p.demod.squelch_flags)==0);
+        assert(rx_pipeline_sinad_db(&p)==0);
+        assert(monitor_start_rx(&tx,&p,&par)==0);rx_pipeline_stop(&p);
         assert(monitor_cycle_rx_mode(&tx,&p,&loopback,&sys,&par)==0);
         assert(par.mode==FM_MODE_NBFM && p.demod.mode==FM_MODE_NBFM && !p.running);
         assert(p.radio==&sys.radio_high && p.rx_ctrl.radio==&sys.radio_high);
