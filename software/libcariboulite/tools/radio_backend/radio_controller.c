@@ -502,13 +502,19 @@ static void print_state(const controller_t *controller)
         puts("\n  Transmit");
         printf("    %-16s %.6f MHz\n"
                "    %-16s %d dBm\n"
-               "    %-16s NBFM\n"
+               "    %-16s %s\n"
                "    %-16s %.7g MS/s\n"
                "    %-16s %s\n",
                "Frequency", state->tx_requested_frequency_hz / 1e6,
                "Power", state->tx_requested_power_dbm,
-               "Mode", "Sample rate", state->tx_sample_rate_hz / 1e6,
+               "Mode", !state->tx_settings_valid ? "Unknown (older backend)" :
+                   state->tx_mode == AUDIO_MOD_AM ? "AM" : "NBFM",
+               "Sample rate", state->tx_sample_rate_hz / 1e6,
                "Audio source", state->tx_tone_mode ? "Tone" : "Microphone");
+        if (state->tx_settings_valid && state->tx_mode == AUDIO_MOD_AM)
+            printf("    %-16s %.0f%%\n    %-16s %.1f dB\n",
+                   "AM depth", 100.0 * state->tx_am_depth,
+                   "AM backoff", (double)state->tx_am_backoff_db);
         if (state->transition)
             puts("\n  Change in progress; type status to refresh.");
     }

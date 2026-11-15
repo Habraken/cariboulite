@@ -91,6 +91,10 @@ typedef struct control_reply {
     float tx_tone_hz;
     float tx_tone_amp;
     float tx_deviation_hz;
+    bool tx_settings_valid; /* False for legacy 30-token v2 replies. */
+    audio_mod_mode_t tx_mode;
+    float tx_am_depth;
+    float tx_am_backoff_db;
     bool tx_requested;
     bool rx_resume;
     bool transition;
@@ -98,7 +102,9 @@ typedef struct control_reply {
 
 /* Strict ASCII protocol-v1/v2 packets. v1 carries RX commands/settings; v2
  * extends them with TX controls, combined RX/TX settings, FPGA programming and
- * transition states. Combined requests use frequency_hz, mode or sample_rate_hz
+ * transition states. Current v2 replies append TX mode/depth/backoff; the
+ * parser also accepts legacy 30-field replies with tx_settings_valid=false.
+ * Combined requests use frequency_hz, mode or sample_rate_hz
  * and require both RX and TX to be stopped. Parsers accept ASCII whitespace between
  * tokens, reject embedded NULs, nonfinite/overflowed numbers and trailing
  * tokens. They return 0 on success or -1 with errno on failure. A failed

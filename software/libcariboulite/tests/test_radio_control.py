@@ -194,6 +194,22 @@ class RadioControlTests(unittest.TestCase):
         self.assert_field(result.stdout, "Audio source", "Microphone")
         self.assertNotRegex(result.stdout, r"(?m)^\s*Tone\s")
 
+    def test_tx_mode_and_am_levels_follow_backend_reply(self):
+        self.owner(lambda number, packet: reply(packet, version=2).rstrip() + b" am .8 0\n")
+        result = self.once("status")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        transmit = result.stdout.split("  Transmit\n", 1)[1]
+        self.assert_field(transmit, "Mode", "AM")
+        self.assert_field(transmit, "AM depth", "80%")
+        self.assert_field(transmit, "AM backoff", "0.0 dB")
+
+    def test_legacy_backend_does_not_guess_tx_mode(self):
+        self.owner(lambda number, packet: reply(packet, version=2))
+        result = self.once("status")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        transmit = result.stdout.split("  Transmit\n", 1)[1]
+        self.assert_field(transmit, "Mode", "Unknown (older backend)")
+
     def test_stopped_snapshot_shows_only_saved_frequency_and_power_settings(self):
         self.owner(lambda number, packet: reply(packet, version=2, state="IDLE", noise=0,
                                                 actual=430124998, tx_actual=430224999))

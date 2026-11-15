@@ -732,12 +732,17 @@ the unsolicited competing-controller `BUSY` reply also uses ID `0`.
 | `FIRMWARE_FILE` | `firmware/top.bin` is missing, unreadable, empty or not a regular file; no reset performed. |
 | `FPGA_REQUIRED` | Program the current firmware with `fpga program` before operating the radio or changing settings. |
 
-Version 2 retains the first 17 reply fields and appends 13 TX fields in this
+Version 2 retains the first 17 reply fields and appends 16 TX fields in this
 order:
 
 ```text
-TX_PIPELINE_GENERATION TX_REQUESTED_HZ TX_ACTUAL_HZ TX_RATE_HZ TX_REQUESTED_DBM TX_ACTUAL_DBM TX_TONE_MODE TX_TONE_HZ TX_TONE_AMP TX_DEVIATION_HZ TX_REQUESTED RX_RESUME TRANSITION
+TX_PIPELINE_GENERATION TX_REQUESTED_HZ TX_ACTUAL_HZ TX_RATE_HZ TX_REQUESTED_DBM TX_ACTUAL_DBM TX_TONE_MODE TX_TONE_HZ TX_TONE_AMP TX_DEVIATION_HZ TX_REQUESTED RX_RESUME TRANSITION TX_MODE TX_AM_DEPTH TX_AM_BACKOFF_DB
 ```
+
+TX_MODE is `nbfm` or `am`. The final three fields report saved modulation
+settings, including after rejection. Deploy backend and controller together;
+older controllers reject the extended reply. The updated controller accepts
+legacy 30-field replies but displays TX mode as unknown.
 
 Its first token is `v2`; all packets retain the 1024-byte limit. The new
 controller uses version 2. Version-1 receiver requests and 17-field replies

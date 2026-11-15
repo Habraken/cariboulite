@@ -337,7 +337,7 @@ class RadioBackendTests(unittest.TestCase):
                 peer.connect(str(self.path.with_name("control.sock")))
                 peer.sendall(b"v2 1 get")
                 fields = peer.recv(4096).decode("ascii").split()
-                self.assertEqual(len(fields), 30)
+                self.assertEqual(len(fields), 33)
                 self.assertEqual(fields[:4], ["v2", "1", "OK", "OK"])
                 self.assertEqual(float(fields[26]), float(value))
                 peer.close()

@@ -72,8 +72,10 @@ Software tests do not certify radiated occupied bandwidth or transmitter purity.
 - `config.tx_mode` and `config.tx_am_depth` expose settings to the passive monitor.
 - v2 requests are `tx_mode am|nbfm` and `tx_am_depth VALUE`.
 
-Existing control reply layouts are retained. Controller acknowledgements report
-the selected TX mode/depth; the passive monitor reports the saved settings.
+The v2 control reply now appends TX mode, AM depth and AM backoff. Update the
+backend and controller together: older controllers reject the extended reply.
+The updated controller accepts legacy replies but shows TX mode as unknown
+instead of assuming NBFM. The passive monitor also reports the saved settings.
 `rx mode` and the existing bare mode command continue to select RX only. Use
 explicit `tx mode am` to select AM transmission. WBFM TX, USB and LSB remain
 unsupported. NBFM deviation settings are retained but have no effect in AM.
@@ -96,3 +98,35 @@ used to assess AM.
 
 Hardware validation at 430.100 MHz, the audible-artifact correction and remaining
 linearity limits are documented in [the AM link report](am-voice-tx-validation-2026-11-15.md).
+
+## Headset test profile after the TX wire-order correction
+
+At 430.100 MHz on the 90 dB direct link, the operator reported substantially
+less perceived quantization noise using TX power setting 6 dBm, AM backoff
+0 dB and depth 0.8. This does not establish that remaining noise is eliminated.
+These settings are explicit; an ordinary launch still uses power -12 dBm and
+backoff 6 dB. Backoff changes digital RF amplitude, not nominal modulation depth.
+
+For the Logitech H650e on pi4g, use `plughw:CARD=H650e,DEV=0` for capture.
+The last measured hardware capture setting was 38 (-1 dB), AGC off: normal and
+quiet speech were clear in direct playback and no samples clipped. Setting 44
+(+5 dB) had clipped. Recheck current speech levels before increasing capture gain.
+
+A fresh cued ten-second H650e capture at the same setting measured -2.77 dBFS
+peak, -21.99 dBFS RMS and zero clipped samples; the two captured channels were
+identical. Offline application of the actual AM voice-filter coefficients at
+AM depth 0.8 yielded 62.24% peak and 4.15% RMS modulation. These are calculated
+baseband values, not measured RF envelope values. They support investigating
+speech compression/level control rather than a large fixed capture-gain increase.
+The private recording remains in `/tmp/am-headset-current-level.wav` on pi4g.
+
+To reproduce the improved link profile with this headset (start TX explicitly
+from the controller only after confirming the attenuated connection):
+
+```sh
+./build/radio-backend/cariboulite_radio_backend \
+  --rx-playback plughw:CARD=H650e,DEV=0 \
+  --tx-microphone plughw:CARD=H650e,DEV=0 \
+  --tx-source mic --tx-mode am --tx-am-depth 0.8 \
+  --tx-am-backoff 0 --tx-power 6
+```

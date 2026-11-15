@@ -1273,6 +1273,8 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         .tx_requested_frequency_hz = o->tx.freq_hz, .tx_actual_frequency_hz = o->actual_tx_frequency,
         .tx_sample_rate_hz = o->tx.rf_fs, .tx_requested_power_dbm = o->tx.tx_power_dbm,
         .tx_actual_power_dbm = o->actual_tx_power, .tx_tone_mode = o->tx.tone_mode,
+        .tx_settings_valid = true, .tx_mode = o->tx.mode,
+        .tx_am_depth = o->tx.am_depth, .tx_am_backoff_db = o->tx.am_backoff_db,
         .tx_tone_hz = o->tx.tone_hz, .tx_tone_amp = o->tx.tone_amp,
         .tx_deviation_hz = o->tx.f_dev_hz, .tx_requested = o->tx_requested,
         .rx_resume = o->rx_resume, .transition = c->lifecycle_active};

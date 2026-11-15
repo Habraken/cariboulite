@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_TOKENS 30
+#define MAX_TOKENS 33
 
 static int protocol_error(void)
 {
@@ -326,7 +326,7 @@ int control_reply_parse(const char *packet, size_t bytes, control_reply_t *reply
     if (!count || (strcmp(tokens[0], "v1") && strcmp(tokens[0], "v2")))
         return protocol_error();
     reply->protocol_version = !strcmp(tokens[0], "v2") ? 2 : 1;
-    if (count != (reply->protocol_version == 2 ? 30U : 17U) ||
+    if ((reply->protocol_version == 2 ? (count != 30U && count != 33U) : count != 17U) ||
         parse_uint64(tokens[1], &reply->id) < 0)
         return protocol_error();
     if (!strcmp(tokens[2], "OK"))
@@ -375,6 +375,17 @@ int control_reply_parse(const char *packet, size_t bytes, control_reply_t *reply
          parse_bool(tokens[28], &reply->rx_resume) ||
          parse_bool(tokens[29], &reply->transition)))
         return protocol_error();
+    if (reply->protocol_version == 2 && count == 33U) {
+        if (strcmp(tokens[30], "nbfm") && strcmp(tokens[30], "am"))
+            return protocol_error();
+        reply->tx_mode = !strcmp(tokens[30], "am") ? AUDIO_MOD_AM : AUDIO_MOD_NBFM;
+        if (parse_float(tokens[31], &reply->tx_am_depth) ||
+            reply->tx_am_depth < 0 || reply->tx_am_depth > 1 ||
+            parse_float(tokens[32], &reply->tx_am_backoff_db) ||
+            reply->tx_am_backoff_db < 0 || reply->tx_am_backoff_db > 18)
+            return protocol_error();
+        reply->tx_settings_valid = true;
+    }
     return 0;
 }
 
@@ -546,14 +557,15 @@ int control_reply_format(const control_reply_t *reply,
         int extra;
         if (version == 2)
             extra = snprintf(packet + bytes, capacity - (size_t)bytes,
-                             " %" PRIu64 " %.17g %.17g %u %d %d %u %.9g %.9g %.9g %u %u %u\n",
+                             " %" PRIu64 " %.17g %.17g %u %d %d %u %.9g %.9g %.9g %u %u %u %s %.9g %.9g\n",
                              reply->tx_pipeline_generation, reply->tx_requested_frequency_hz,
                              reply->tx_actual_frequency_hz, reply->tx_sample_rate_hz,
                              reply->tx_requested_power_dbm, reply->tx_actual_power_dbm,
                              reply->tx_tone_mode ? 1U : 0U, (double)reply->tx_tone_hz,
                              (double)reply->tx_tone_amp, (double)reply->tx_deviation_hz,
                              reply->tx_requested ? 1U : 0U, reply->rx_resume ? 1U : 0U,
-                             reply->transition ? 1U : 0U);
+                             reply->transition ? 1U : 0U, audio_mod_mode_name(reply->tx_mode),
+                             (double)reply->tx_am_depth, (double)reply->tx_am_backoff_db);
         else extra = snprintf(packet + bytes, capacity - (size_t)bytes, "\n");
         bytes = extra < 0 ? -1 : bytes + extra;
     }

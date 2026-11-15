@@ -24,7 +24,7 @@ CONTROLLER = helpers.BACKEND.with_name("cariboulite_radio_controller")
 
 def parse_reply(packet):
     fields = packet.decode("ascii").split()
-    if len(fields) != 30 or fields[0] != "v2":
+    if len(fields) != 33 or fields[0] != "v2":
         raise AssertionError(f"Invalid TX command reply: {packet!r}")
     reply = helpers.parse_reply(" ".join(["v1", *fields[1:17]]).encode())
     reply.update({
@@ -38,6 +38,8 @@ def parse_reply(packet):
         "tx_tone_hz": float(fields[24]), "tx_tone_amp": float(fields[25]),
         "tx_deviation": float(fields[26]), "tx_requested": fields[27] == "1",
         "rx_resume": fields[28] == "1", "transition": fields[29] == "1",
+        "tx_mode": fields[30], "tx_am_depth": float(fields[31]),
+        "tx_am_backoff_db": float(fields[32]),
     })
     for index in (23, 27, 28, 29):
         if fields[index] not in ("0", "1"):
@@ -79,7 +81,8 @@ class TxControlBackendTests(unittest.TestCase):
         self.assertAlmostEqual(initial['config']['tx_am_depth'],.7)
         self.assertEqual(initial['config']['tx_am_backoff_db'],3)
         self.command(peer,"tx_mode nbfm")
-        self.command(peer,"tx_mode am")
+        selected = self.command(peer,"tx_mode am")
+        self.assertEqual(selected["tx_mode"], "am")
         self.command(peer,"tx_am_depth 0.8")
         self.command(peer,"tx_am_backoff 6")
         self.command(peer,"tx_source tone")
