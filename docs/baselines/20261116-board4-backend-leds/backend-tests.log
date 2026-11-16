@@ -1,0 +1,18 @@
+test_active_transition_refuses_programming (__main__.FpgaControlBackendTests.test_active_transition_refuses_programming) ... ok
+test_built_controller_one_shot_programming_completes_after_exit (__main__.FpgaControlBackendTests.test_built_controller_one_shot_programming_completes_after_exit) ... ok
+test_built_controller_one_shot_reset_commands (__main__.FpgaControlBackendTests.test_built_controller_one_shot_reset_commands) ... ok
+test_controller_led_commands_and_invalid_values (__main__.FpgaControlBackendTests.test_controller_led_commands_and_invalid_values) ... ok
+test_led_read_write_is_explicit_and_preserves_radio_settings (__main__.FpgaControlBackendTests.test_led_read_write_is_explicit_and_preserves_radio_settings) ... ok
+test_programming_publishes_transition_then_idle_without_hardware (__main__.FpgaControlBackendTests.test_programming_publishes_transition_then_idle_without_hardware) ... ok
+test_programming_survives_controller_disconnect_and_leaves_rx_stopped (__main__.FpgaControlBackendTests.test_programming_survives_controller_disconnect_and_leaves_rx_stopped) ... ok
+test_reset_survives_disconnect_without_restarting_rx_or_tx (__main__.FpgaControlBackendTests.test_reset_survives_disconnect_without_restarting_rx_or_tx) ... ok
+test_running_rx_refuses_programming_and_resets_without_changing_configuration (__main__.FpgaControlBackendTests.test_running_rx_refuses_programming_and_resets_without_changing_configuration) ... ok
+test_running_tx_refuses_programming_then_idle_allows_it (__main__.FpgaControlBackendTests.test_running_tx_refuses_programming_then_idle_allows_it) ... ok
+test_soft_reset_preserves_configuration_without_loading_firmware (__main__.FpgaControlBackendTests.test_soft_reset_preserves_configuration_without_loading_firmware) ... ok
+test_soft_then_hard_reset_requires_programming_before_radio_mutations (__main__.FpgaControlBackendTests.test_soft_then_hard_reset_requires_programming_before_radio_mutations) ... ok
+test_v1_and_firmware_path_packets_remain_protocol_errors (__main__.FpgaControlBackendTests.test_v1_and_firmware_path_packets_remain_protocol_errors) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 6.987s
+
+OK

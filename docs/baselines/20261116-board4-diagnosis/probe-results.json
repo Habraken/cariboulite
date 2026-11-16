@@ -1,0 +1,827 @@
+[
+  {
+    "run": "cariboulite-board4-diagnosis-20261116T190206Z",
+    "completed_points": 0,
+    "startup_failures": [
+      {
+        "rx_rate_hz": 4000000,
+        "error": "{'ok': False, 'error': 'v2 4 ERROR HARDWARE 3 1 live FAULT RF24 430100000 430099999.73925781 4000000 nbfm 1 0 0.200000003 0.300000012 0 430100000 0 4000000 -12 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6'}"
+      }
+    ],
+    "measurements": []
+  },
+  {
+    "run": "cariboulite-board4-diagnosis-20261116T190351Z",
+    "completed_points": 0,
+    "startup_failures": [
+      {
+        "rx_rate_hz": 4000000,
+        "error": "{'ok': False, 'error': 'v2 4 ERROR HARDWARE 3 1 live FAULT RF24 430100000 430099999.73925781 4000000 nbfm 1 0 0.200000003 0.300000012 0 430100000 0 4000000 -12 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6'}"
+      }
+    ],
+    "measurements": []
+  },
+  {
+    "run": "cariboulite-board4-diagnosis-20261116T190415Z",
+    "completed_points": 2,
+    "startup_failures": [],
+    "measurements": [
+      {
+        "point": 1,
+        "axis": "rx",
+        "rx_rate_hz": 4000000,
+        "tx_rate_hz": 4000000,
+        "rx_divider": 1,
+        "tx_divider": 1,
+        "tx_power_dbm": null,
+        "tx_pa_code": null,
+        "tx_model_power_dbm": null,
+        "nominal_input_dbm": null,
+        "packets": 24,
+        "rssi_dbm": {
+          "mean": -93.41666666666667,
+          "median": -93.0,
+          "min": -94,
+          "max": -93,
+          "stdev": 0.5036101551853349,
+          "n": 24
+        },
+        "sinad_db": null,
+        "noise_rms": {
+          "mean": 1.2826666666666666,
+          "median": 1.2905,
+          "min": 1.203,
+          "max": 1.36,
+          "stdev": 0.04431867470419475,
+          "n": 24
+        },
+        "sinad_valid_fraction": 0.0,
+        "gate_open_fraction": 0.0,
+        "rx_errors": {
+          "iq_drops": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "audio_drops": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "alsa_underruns": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "playback_errors": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "read_errors": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "alignment_failures": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "invalid_frames": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          }
+        },
+        "tx_errors": {},
+        "first_rx_monotonic_s": 245.64823161,
+        "last_rx_monotonic_s": 250.263895792,
+        "rx_config": {
+          "sample_rate_hz": 4000000,
+          "rx_frequency_hz": 430099999.739,
+          "requested_frequency_hz": 430100000.0,
+          "rx_bandwidth_hz": 160000,
+          "tx_bandwidth_hz": 1000000,
+          "playback": "plughw:USB,0,0",
+          "pcm_gain": 8000.0,
+          "deemphasis_us": 50.0,
+          "am_offset_tuning_enabled": false,
+          "am_agc_enabled": false,
+          "am_rf_gain_db": 63,
+          "am_voice_low_hz": 300,
+          "am_voice_high_hz": 3000,
+          "rx_deviation_hz": 2500.0,
+          "tx_frequency_hz": 430100000.0,
+          "tx_actual_frequency_hz": null,
+          "tx_power_dbm": -12,
+          "tx_actual_power_dbm": null,
+          "tx_sample_rate_hz": 4000000,
+          "tx_source": "tone",
+          "tx_mode": "nbfm",
+          "tx_am_depth": 0.8,
+          "tx_am_backoff_db": 6.0,
+          "tx_am_dac_shaping": false,
+          "tx_am_carrier_fraction": 0.5,
+          "tx_tone_hz": 600.0,
+          "tx_tone_amp": 0.4,
+          "tx_deviation_hz": 2500.0,
+          "profile": {
+            "rx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 160000,
+              "digital_cutoff_hz": 500000
+            },
+            "tx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 80000,
+              "digital_cutoff_hz": 500000,
+              "sample_gap": 0
+            }
+          },
+          "observed": {
+            "rx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 160000.0,
+              "digital_cutoff_hz": 500000.0
+            },
+            "tx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 1000000.0,
+              "digital_cutoff_hz": 2000000.0
+            }
+          }
+        },
+        "tx_config": {
+          "sample_rate_hz": 1000000,
+          "rx_frequency_hz": 430099999.739,
+          "requested_frequency_hz": 430100000.0,
+          "rx_bandwidth_hz": 160000,
+          "tx_bandwidth_hz": 80000,
+          "playback": "plughw:USB,0,0",
+          "pcm_gain": 8000.0,
+          "deemphasis_us": 50.0,
+          "am_offset_tuning_enabled": false,
+          "am_agc_enabled": false,
+          "am_rf_gain_db": 63,
+          "am_voice_low_hz": 300,
+          "am_voice_high_hz": 3000,
+          "rx_deviation_hz": 2500.0,
+          "tx_frequency_hz": 430100000.0,
+          "tx_actual_frequency_hz": 430099999.739,
+          "tx_power_dbm": -12,
+          "tx_actual_power_dbm": -11,
+          "tx_sample_rate_hz": 4000000,
+          "tx_source": "tone",
+          "tx_mode": "nbfm",
+          "tx_am_depth": 0.8,
+          "tx_am_backoff_db": 6.0,
+          "tx_am_dac_shaping": false,
+          "tx_am_carrier_fraction": 0.5,
+          "tx_tone_hz": 1000.0,
+          "tx_tone_amp": 0.4,
+          "tx_deviation_hz": 2500.0,
+          "profile": {
+            "rx": {
+              "sample_rate_hz": 1000000,
+              "analog_bandwidth_hz": 160000,
+              "digital_cutoff_hz": 125000
+            },
+            "tx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 80000,
+              "digital_cutoff_hz": 500000,
+              "sample_gap": 0
+            }
+          },
+          "observed": {
+            "rx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 2000000.0,
+              "digital_cutoff_hz": 2000000.0
+            },
+            "tx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 80000.0,
+              "digital_cutoff_hz": 500000.0
+            }
+          }
+        }
+      },
+      {
+        "point": 2,
+        "axis": "rx",
+        "rx_rate_hz": 4000000,
+        "tx_rate_hz": 4000000,
+        "rx_divider": 1,
+        "tx_divider": 1,
+        "tx_power_dbm": 0,
+        "tx_pa_code": 12,
+        "tx_model_power_dbm": 0,
+        "nominal_input_dbm": -90,
+        "packets": 24,
+        "rssi_dbm": {
+          "mean": -86.75,
+          "median": -86.0,
+          "min": -89,
+          "max": -84,
+          "stdev": 1.5673294928413855,
+          "n": 24
+        },
+        "sinad_db": {
+          "mean": 25.325499999999998,
+          "median": 25.346,
+          "min": 25.174,
+          "max": 25.444,
+          "stdev": 0.08702173641507989,
+          "n": 24
+        },
+        "noise_rms": {
+          "mean": 0.011791666666666667,
+          "median": 0.012,
+          "min": 0.011,
+          "max": 0.013,
+          "stdev": 0.0005882299658752718,
+          "n": 24
+        },
+        "sinad_valid_fraction": 1.0,
+        "gate_open_fraction": 1.0,
+        "rx_errors": {
+          "iq_drops": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "audio_drops": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "alsa_underruns": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "playback_errors": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "read_errors": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "alignment_failures": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "invalid_frames": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          }
+        },
+        "tx_errors": {
+          "driver_underruns": 0,
+          "writer_errors": 0,
+          "queue_drops": 0
+        },
+        "first_rx_monotonic_s": 253.27406093,
+        "last_rx_monotonic_s": 257.889637129,
+        "rx_config": {
+          "sample_rate_hz": 4000000,
+          "rx_frequency_hz": 430099999.739,
+          "requested_frequency_hz": 430100000.0,
+          "rx_bandwidth_hz": 160000,
+          "tx_bandwidth_hz": 1000000,
+          "playback": "plughw:USB,0,0",
+          "pcm_gain": 8000.0,
+          "deemphasis_us": 50.0,
+          "am_offset_tuning_enabled": false,
+          "am_agc_enabled": false,
+          "am_rf_gain_db": 63,
+          "am_voice_low_hz": 300,
+          "am_voice_high_hz": 3000,
+          "rx_deviation_hz": 2500.0,
+          "tx_frequency_hz": 430100000.0,
+          "tx_actual_frequency_hz": null,
+          "tx_power_dbm": -12,
+          "tx_actual_power_dbm": null,
+          "tx_sample_rate_hz": 4000000,
+          "tx_source": "tone",
+          "tx_mode": "nbfm",
+          "tx_am_depth": 0.8,
+          "tx_am_backoff_db": 6.0,
+          "tx_am_dac_shaping": false,
+          "tx_am_carrier_fraction": 0.5,
+          "tx_tone_hz": 600.0,
+          "tx_tone_amp": 0.4,
+          "tx_deviation_hz": 2500.0,
+          "profile": {
+            "rx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 160000,
+              "digital_cutoff_hz": 500000
+            },
+            "tx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 80000,
+              "digital_cutoff_hz": 500000,
+              "sample_gap": 0
+            }
+          },
+          "observed": {
+            "rx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 160000.0,
+              "digital_cutoff_hz": 500000.0
+            },
+            "tx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 1000000.0,
+              "digital_cutoff_hz": 2000000.0
+            }
+          }
+        },
+        "tx_config": {
+          "sample_rate_hz": 1000000,
+          "rx_frequency_hz": 430099999.739,
+          "requested_frequency_hz": 430100000.0,
+          "rx_bandwidth_hz": 160000,
+          "tx_bandwidth_hz": 80000,
+          "playback": "plughw:USB,0,0",
+          "pcm_gain": 8000.0,
+          "deemphasis_us": 50.0,
+          "am_offset_tuning_enabled": false,
+          "am_agc_enabled": false,
+          "am_rf_gain_db": 63,
+          "am_voice_low_hz": 300,
+          "am_voice_high_hz": 3000,
+          "rx_deviation_hz": 2500.0,
+          "tx_frequency_hz": 430100000.0,
+          "tx_actual_frequency_hz": 430099999.739,
+          "tx_power_dbm": 0,
+          "tx_actual_power_dbm": 0,
+          "tx_sample_rate_hz": 4000000,
+          "tx_source": "tone",
+          "tx_mode": "nbfm",
+          "tx_am_depth": 0.8,
+          "tx_am_backoff_db": 6.0,
+          "tx_am_dac_shaping": false,
+          "tx_am_carrier_fraction": 0.5,
+          "tx_tone_hz": 1000.0,
+          "tx_tone_amp": 0.4,
+          "tx_deviation_hz": 2500.0,
+          "profile": {
+            "rx": {
+              "sample_rate_hz": 1000000,
+              "analog_bandwidth_hz": 160000,
+              "digital_cutoff_hz": 125000
+            },
+            "tx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 80000,
+              "digital_cutoff_hz": 500000,
+              "sample_gap": 0
+            }
+          },
+          "observed": {
+            "rx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 2000000.0,
+              "digital_cutoff_hz": 2000000.0
+            },
+            "tx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 80000.0,
+              "digital_cutoff_hz": 500000.0
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "run": "cariboulite-board4-diagnosis-20261116T190702Z",
+    "completed_points": 0,
+    "startup_failures": [
+      {
+        "rx_rate_hz": 4000000,
+        "error": "{'ok': False, 'error': 'v2 4 ERROR HARDWARE 3 1 live FAULT RF24 430100000 430099999.73925781 4000000 nbfm 1 0 0.200000003 0.300000012 0 430100000 0 4000000 -12 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6'}"
+      }
+    ],
+    "measurements": []
+  },
+  {
+    "run": "cariboulite-board4-diagnosis-20261116T190727Z",
+    "completed_points": 2,
+    "startup_failures": [],
+    "measurements": [
+      {
+        "point": 1,
+        "axis": "rx",
+        "rx_rate_hz": 4000000,
+        "tx_rate_hz": 4000000,
+        "rx_divider": 1,
+        "tx_divider": 1,
+        "tx_power_dbm": null,
+        "tx_pa_code": null,
+        "tx_model_power_dbm": null,
+        "nominal_input_dbm": null,
+        "packets": 24,
+        "rssi_dbm": {
+          "mean": -93.58333333333333,
+          "median": -94.0,
+          "min": -95,
+          "max": -93,
+          "stdev": 0.5835920751217648,
+          "n": 24
+        },
+        "sinad_db": null,
+        "noise_rms": {
+          "mean": 1.2861666666666667,
+          "median": 1.2885,
+          "min": 1.197,
+          "max": 1.402,
+          "stdev": 0.0529747000046221,
+          "n": 24
+        },
+        "sinad_valid_fraction": 0.0,
+        "gate_open_fraction": 0.0,
+        "rx_errors": {
+          "iq_drops": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "audio_drops": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "alsa_underruns": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "playback_errors": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "read_errors": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "alignment_failures": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "invalid_frames": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          }
+        },
+        "tx_errors": {},
+        "first_rx_monotonic_s": 88.77117423,
+        "last_rx_monotonic_s": 93.386899565,
+        "rx_config": {
+          "sample_rate_hz": 4000000,
+          "rx_frequency_hz": 430099999.739,
+          "requested_frequency_hz": 430100000.0,
+          "rx_bandwidth_hz": 160000,
+          "tx_bandwidth_hz": 1000000,
+          "playback": "plughw:USB,0,0",
+          "pcm_gain": 8000.0,
+          "deemphasis_us": 50.0,
+          "am_offset_tuning_enabled": false,
+          "am_agc_enabled": false,
+          "am_rf_gain_db": 63,
+          "am_voice_low_hz": 300,
+          "am_voice_high_hz": 3000,
+          "rx_deviation_hz": 2500.0,
+          "tx_frequency_hz": 430100000.0,
+          "tx_actual_frequency_hz": null,
+          "tx_power_dbm": -12,
+          "tx_actual_power_dbm": null,
+          "tx_sample_rate_hz": 4000000,
+          "tx_source": "tone",
+          "tx_mode": "nbfm",
+          "tx_am_depth": 0.8,
+          "tx_am_backoff_db": 6.0,
+          "tx_am_dac_shaping": false,
+          "tx_am_carrier_fraction": 0.5,
+          "tx_tone_hz": 600.0,
+          "tx_tone_amp": 0.4,
+          "tx_deviation_hz": 2500.0,
+          "profile": {
+            "rx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 160000,
+              "digital_cutoff_hz": 500000
+            },
+            "tx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 80000,
+              "digital_cutoff_hz": 500000,
+              "sample_gap": 0
+            }
+          },
+          "observed": {
+            "rx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 160000.0,
+              "digital_cutoff_hz": 500000.0
+            },
+            "tx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 1000000.0,
+              "digital_cutoff_hz": 2000000.0
+            }
+          }
+        },
+        "tx_config": {
+          "sample_rate_hz": 1000000,
+          "rx_frequency_hz": 430099999.739,
+          "requested_frequency_hz": 430100000.0,
+          "rx_bandwidth_hz": 160000,
+          "tx_bandwidth_hz": 80000,
+          "playback": "plughw:USB,0,0",
+          "pcm_gain": 8000.0,
+          "deemphasis_us": 50.0,
+          "am_offset_tuning_enabled": false,
+          "am_agc_enabled": false,
+          "am_rf_gain_db": 63,
+          "am_voice_low_hz": 300,
+          "am_voice_high_hz": 3000,
+          "rx_deviation_hz": 2500.0,
+          "tx_frequency_hz": 430100000.0,
+          "tx_actual_frequency_hz": 430099999.739,
+          "tx_power_dbm": -12,
+          "tx_actual_power_dbm": -11,
+          "tx_sample_rate_hz": 4000000,
+          "tx_source": "tone",
+          "tx_mode": "nbfm",
+          "tx_am_depth": 0.8,
+          "tx_am_backoff_db": 6.0,
+          "tx_am_dac_shaping": false,
+          "tx_am_carrier_fraction": 0.5,
+          "tx_tone_hz": 1000.0,
+          "tx_tone_amp": 0.4,
+          "tx_deviation_hz": 2500.0,
+          "profile": {
+            "rx": {
+              "sample_rate_hz": 1000000,
+              "analog_bandwidth_hz": 160000,
+              "digital_cutoff_hz": 125000
+            },
+            "tx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 80000,
+              "digital_cutoff_hz": 500000,
+              "sample_gap": 0
+            }
+          },
+          "observed": {
+            "rx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 2000000.0,
+              "digital_cutoff_hz": 2000000.0
+            },
+            "tx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 80000.0,
+              "digital_cutoff_hz": 500000.0
+            }
+          }
+        }
+      },
+      {
+        "point": 2,
+        "axis": "rx",
+        "rx_rate_hz": 4000000,
+        "tx_rate_hz": 4000000,
+        "rx_divider": 1,
+        "tx_divider": 1,
+        "tx_power_dbm": 0,
+        "tx_pa_code": 12,
+        "tx_model_power_dbm": 0,
+        "nominal_input_dbm": -90,
+        "packets": 24,
+        "rssi_dbm": {
+          "mean": -87.33333333333333,
+          "median": -87.0,
+          "min": -89,
+          "max": -85,
+          "stdev": 1.2740441145412122,
+          "n": 24
+        },
+        "sinad_db": {
+          "mean": 25.324541666666665,
+          "median": 25.4,
+          "min": 25.077,
+          "max": 25.477,
+          "stdev": 0.1315195403457353,
+          "n": 24
+        },
+        "noise_rms": {
+          "mean": 0.011833333333333333,
+          "median": 0.012,
+          "min": 0.011,
+          "max": 0.013,
+          "stdev": 0.0006370220572706062,
+          "n": 24
+        },
+        "sinad_valid_fraction": 1.0,
+        "gate_open_fraction": 1.0,
+        "rx_errors": {
+          "iq_drops": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "audio_drops": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "alsa_underruns": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "playback_errors": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "read_errors": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "alignment_failures": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          },
+          "invalid_frames": {
+            "first": 0,
+            "last": 0,
+            "max": 0,
+            "delta": 0
+          }
+        },
+        "tx_errors": {
+          "driver_underruns": 0,
+          "writer_errors": 0,
+          "queue_drops": 0
+        },
+        "first_rx_monotonic_s": 96.397357631,
+        "last_rx_monotonic_s": 101.013005624,
+        "rx_config": {
+          "sample_rate_hz": 4000000,
+          "rx_frequency_hz": 430099999.739,
+          "requested_frequency_hz": 430100000.0,
+          "rx_bandwidth_hz": 160000,
+          "tx_bandwidth_hz": 1000000,
+          "playback": "plughw:USB,0,0",
+          "pcm_gain": 8000.0,
+          "deemphasis_us": 50.0,
+          "am_offset_tuning_enabled": false,
+          "am_agc_enabled": false,
+          "am_rf_gain_db": 63,
+          "am_voice_low_hz": 300,
+          "am_voice_high_hz": 3000,
+          "rx_deviation_hz": 2500.0,
+          "tx_frequency_hz": 430100000.0,
+          "tx_actual_frequency_hz": null,
+          "tx_power_dbm": -12,
+          "tx_actual_power_dbm": null,
+          "tx_sample_rate_hz": 4000000,
+          "tx_source": "tone",
+          "tx_mode": "nbfm",
+          "tx_am_depth": 0.8,
+          "tx_am_backoff_db": 6.0,
+          "tx_am_dac_shaping": false,
+          "tx_am_carrier_fraction": 0.5,
+          "tx_tone_hz": 600.0,
+          "tx_tone_amp": 0.4,
+          "tx_deviation_hz": 2500.0,
+          "profile": {
+            "rx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 160000,
+              "digital_cutoff_hz": 500000
+            },
+            "tx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 80000,
+              "digital_cutoff_hz": 500000,
+              "sample_gap": 0
+            }
+          },
+          "observed": {
+            "rx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 160000.0,
+              "digital_cutoff_hz": 500000.0
+            },
+            "tx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 1000000.0,
+              "digital_cutoff_hz": 2000000.0
+            }
+          }
+        },
+        "tx_config": {
+          "sample_rate_hz": 1000000,
+          "rx_frequency_hz": 430099999.739,
+          "requested_frequency_hz": 430100000.0,
+          "rx_bandwidth_hz": 160000,
+          "tx_bandwidth_hz": 80000,
+          "playback": "plughw:USB,0,0",
+          "pcm_gain": 8000.0,
+          "deemphasis_us": 50.0,
+          "am_offset_tuning_enabled": false,
+          "am_agc_enabled": false,
+          "am_rf_gain_db": 63,
+          "am_voice_low_hz": 300,
+          "am_voice_high_hz": 3000,
+          "rx_deviation_hz": 2500.0,
+          "tx_frequency_hz": 430100000.0,
+          "tx_actual_frequency_hz": 430099999.739,
+          "tx_power_dbm": 0,
+          "tx_actual_power_dbm": 0,
+          "tx_sample_rate_hz": 4000000,
+          "tx_source": "tone",
+          "tx_mode": "nbfm",
+          "tx_am_depth": 0.8,
+          "tx_am_backoff_db": 6.0,
+          "tx_am_dac_shaping": false,
+          "tx_am_carrier_fraction": 0.5,
+          "tx_tone_hz": 1000.0,
+          "tx_tone_amp": 0.4,
+          "tx_deviation_hz": 2500.0,
+          "profile": {
+            "rx": {
+              "sample_rate_hz": 1000000,
+              "analog_bandwidth_hz": 160000,
+              "digital_cutoff_hz": 125000
+            },
+            "tx": {
+              "sample_rate_hz": 4000000,
+              "analog_bandwidth_hz": 80000,
+              "digital_cutoff_hz": 500000,
+              "sample_gap": 0
+            }
+          },
+          "observed": {
+            "rx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 2000000.0,
+              "digital_cutoff_hz": 2000000.0
+            },
+            "tx": {
+              "sample_rate_hz": 4000000.0,
+              "analog_bandwidth_hz": 80000.0,
+              "digital_cutoff_hz": 500000.0
+            }
+          }
+        }
+      }
+    ]
+  }
+]

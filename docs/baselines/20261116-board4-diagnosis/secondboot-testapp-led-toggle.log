@@ -1,0 +1,157 @@
+
+	   ____           _ _                 _     _ _         
+	  / ___|__ _ _ __(_) |__   ___  _   _| |   (_) |_ ___   
+	 | |   / _` | '__| | '_ \ / _ \| | | | |   | | __/ _ \  
+	 | |__| (_| | |  | | |_) | (_) | |_| | |___| | ||  __/  
+	  \____\__,_|_|  |_|_.__/ \___/ \__,_|_____|_|\__\___|  
+
+
+ Select a function:
+ [ 0]  Hard reset FPGA
+ [ 1]  Soft reset FPGA
+ [ 2]  Print board info and versions
+ [ 3]  Program FPGA
+ [ 4]  Perform a Self-Test
+ [ 5]  FPGA Digital I/O
+ [ 6]  FPGA RFFE control
+ [ 7]  FPGA SMI fifo status
+ [ 8]  Modem transmit CW signal
+ [ 9]  Modem receive I/Q stream
+ [10]  Synthesizer 85-4200 MHz
+ [11]  NBFM TX Tone (HiF)
+ [12]  NBFM RX (HiF)
+ [13]  NBFM modem Self-Test
+ [14]  Monitor Modem Status (HiF)
+ [99]  Quit
+    Choice:   
+=====================================
+
+	FPGA Digital I/O state:
+		LED0 = 0, LED1 = 0, BTN = 0, CFG = (0, 0, 0, 0)
+	[1] Toggle LED0
+	[2] Toggle LED1
+	[99] Return to Menu
+	Choice:
+	FPGA Digital I/O state:
+		LED0 = 1, LED1 = 0, BTN = 1, CFG = (1, 1, 1, 1)
+	[1] Toggle LED0
+	[2] Toggle LED1
+	[99] Return to Menu
+	Choice:
+	FPGA Digital I/O state:
+		LED0 = 1, LED1 = 1, BTN = 1, CFG = (1, 1, 1, 1)
+	[1] Toggle LED0
+	[2] Toggle LED1
+	[99] Return to Menu
+	Choice:
+	FPGA Digital I/O state:
+		LED0 = 0, LED1 = 1, BTN = 1, CFG = (1, 1, 1, 1)
+	[1] Toggle LED0
+	[2] Toggle LED1
+	[99] Return to Menu
+	Choice:
+	FPGA Digital I/O state:
+		LED0 = 0, LED1 = 0, BTN = 1, CFG = (1, 1, 1, 1)
+	[1] Toggle LED0
+	[2] Toggle LED1
+	[99] Return to Menu
+	Choice:
+=====================================
+ Select a function:
+ [ 0]  Hard reset FPGA
+ [ 1]  Soft reset FPGA
+ [ 2]  Print board info and versions
+ [ 3]  Program FPGA
+ [ 4]  Perform a Self-Test
+ [ 5]  FPGA Digital I/O
+ [ 6]  FPGA RFFE control
+ [ 7]  FPGA SMI fifo status
+ [ 8]  Modem transmit CW signal
+ [ 9]  Modem receive I/Q stream
+ [10]  Synthesizer 85-4200 MHz
+ [11]  NBFM TX Tone (HiF)
+ [12]  NBFM RX (HiF)
+ [13]  NBFM modem Self-Test
+ [14]  Monitor Modem Status (HiF)
+ [99]  Quit
+    Choice:   11-16 20:07:25.812  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_driver_minimal@cariboulite_setup.c:620 driver initializing[0;37m
+11-16 20:07:25.812  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_driver_minimal@cariboulite_setup.c:633 Initializing signals[0;37m
+11-16 20:07:25.812  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_setup_signal_handler@cariboulite_setup.c:776 setting up signal handler[0;37m
+11-16 20:07:25.812  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_setup_io@cariboulite_setup.c:236 Setting up board I/Os[0;37m
+11-16 20:07:25.812  1854  1854 D [0;32mIO_UTILS_Main io_utils_setup@io_utils.c:25 initializing rpi[0;37m
+11-16 20:07:25.813  1854  1854 D [0;32mIO_UTILS_SPI spi_init_impl@io_utils_spi.c:324 configuring gpio setups[0;37m
+11-16 20:07:25.813  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_driver_minimal@cariboulite_setup.c:668 Initializing FPGA[0;37m
+11-16 20:07:25.813  1854  1854 D [0;32mFPGA caribou_fpga_init@caribou_fpga.c:117 configuring reset and irq pins[0;37m
+11-16 20:07:25.813  1854  1854 D [0;32mFPGA caribou_fpga_init@caribou_fpga.c:125 Initializing io_utils_spi[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mCARIBOU_PROG caribou_prog_init@caribou_prog.c:84 FPGA is already configured and running[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mCARIBOU_PROG caribou_prog_init@caribou_prog.c:87 device init completed[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_driver_minimal@cariboulite_setup.c:676 Programming FPGA[0;37m
+11-16 20:07:25.815  1854  1854 I [0;36mFPGA caribou_fpga_program_to_fpga@caribou_fpga.c:207 FPGA already operational - not programming (use 'force_prog=true' to force update)[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_driver_minimal@cariboulite_setup.c:693 FPGA Digital Values: led0: 1, led1: 1, btn: 1, CFG[0..3]: [1,1,1,1][0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_driver_minimal@cariboulite_setup.c:704 Detected Board Information:[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mHAT hat_print_board_info@hat.c:740 # Board Info - Category name: hat[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mHAT hat_print_board_info@hat.c:741 # Board Info - Product name: CaribouLite RPI Hat[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mHAT hat_print_board_info@hat.c:742 # Board Info - Product ID: 0x0001, Numeric: 1[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mHAT hat_print_board_info@hat.c:743 # Board Info - Product Version: 0x0001, Numeric: 1[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mHAT hat_print_board_info@hat.c:744 # Board Info - Product UUID: c2440a8d-3852-4c44-b96f-1b64a962e7dc, Numeric serial: 0x43790877[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mHAT hat_print_board_info@hat.c:745 # Board Info - Vendor: CaribouLite Reproduction 2026Q4 PD9JH[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_print_board_info@cariboulite_setup.c:842 # Board Info - Product Type: CaribouLite FULL[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_submodules@cariboulite_setup.c:313 initializing submodules[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_submodules@cariboulite_setup.c:317 INIT FPGA SMI communication[0;37m
+11-16 20:07:25.815  1854  1854 D [0;32mCARIBOU_SMI caribou_smi_init_with_fd@caribou_smi.c:647 initializing caribou_smi[0;37m
+11-16 20:07:25.818  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_submodules@cariboulite_setup.c:327 INIT MODEM - AT86RF215[0;37m
+11-16 20:07:25.818  1854  1854 D [0;32mAT86RF215_Main at86rf215_init@at86rf215.c:174 configuring reset and irq pins[0;37m
+11-16 20:07:25.818  1854  1854 D [0;32mAT86RF215_Main at86rf215_init@at86rf215.c:182 Adding chip definition to io_utils_spi[0;37m
+11-16 20:07:25.819  1854  1854 D [0;32mAT86RF215_Main at86rf215_init@at86rf215.c:211 Modem identity: Version: 03, Product: 34[0;37m
+11-16 20:07:25.819  1854  1854 D [0;32mAT86RF215_Main at86rf215_calibrate_device@at86rf215.c:129 Calibration of modem channel 0...[0;37m
+11-16 20:07:25.884  1854  1854 D [0;32mAT86RF215_Main at86rf215_calibrate_device@at86rf215.c:145 Calibration Results of the modem: I=23, Q=21[0;37m
+11-16 20:07:25.884  1854  1854 D [0;32mAT86RF215_Main at86rf215_calibrate_device@at86rf215.c:129 Calibration of modem channel 1...[0;37m
+11-16 20:07:25.949  1854  1854 D [0;32mAT86RF215_Main at86rf215_calibrate_device@at86rf215.c:145 Calibration Results of the modem: I=35, Q=39[0;37m
+11-16 20:07:25.949  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_submodules@cariboulite_setup.c:337 Configuring modem initial state[0;37m
+11-16 20:07:25.949  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_submodules@cariboulite_setup.c:380 This board is a Full version CaribouLite - setting ext_ref: modem, 32MHz[0;37m
+11-16 20:07:25.949  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_ext_ref@cariboulite_radio.c:83 Setting ext_ref = 32MHz[0;37m
+11-16 20:07:25.949  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_submodules@cariboulite_setup.c:406 INIT MIXER - RFFC5072[0;37m
+11-16 20:07:25.949  1854  1854 D [0;32mRFFC5072 rffc507x_init@rffc507x.c:115 Initializing RFFC507x driver[0;37m
+11-16 20:07:25.949  1854  1854 D [0;32mRFFC5072 rffc507x_init@rffc507x.c:119 Setting up device GPIOs[0;37m
+11-16 20:07:25.980  1854  1854 D [0;32mRFFC5072 rffc507x_init@rffc507x.c:132 Received spi handle 3[0;37m
+11-16 20:07:25.995  1854  1854 D [0;32mRFFC5072 rffc507x_print_dev_id@rffc507x.c:414 RFFC507X DEVID: 0x8A01 ID: 0x1140, Rev: 1 (RFFC507x)[0;37m
+11-16 20:07:25.998  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1076 Activating channel 0, dir = RX, activate = 1[0;37m
+11-16 20:07:25.998  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:773 Setup Modem state to 2 (trx off)[0;37m
+11-16 20:07:25.998  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:774 Setup Modem state to 3 (tx prep)[0;37m
+11-16 20:07:25.999  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1096 Setup Modem state tx_prep[0;37m
+11-16 20:07:25.999  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:776 Setup Modem state to 5 (rx)[0;37m
+11-16 20:07:26.002  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1076 Activating channel 0, dir = RX, activate = 0[0;37m
+11-16 20:07:26.002  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:773 Setup Modem state to 2 (trx off)[0;37m
+11-16 20:07:26.002  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1076 Activating channel 1, dir = RX, activate = 1[0;37m
+11-16 20:07:26.002  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:773 Setup Modem state to 2 (trx off)[0;37m
+11-16 20:07:26.002  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:774 Setup Modem state to 3 (tx prep)[0;37m
+11-16 20:07:26.003  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1096 Setup Modem state tx_prep[0;37m
+11-16 20:07:26.003  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:776 Setup Modem state to 5 (rx)[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1076 Activating channel 1, dir = RX, activate = 0[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:773 Setup Modem state to 2 (trx off)[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1076 Activating channel 0, dir = RX, activate = 0[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:773 Setup Modem state to 2 (trx off)[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1076 Activating channel 1, dir = RX, activate = 0[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:773 Setup Modem state to 2 (trx off)[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_init_submodules@cariboulite_setup.c:442 Cariboulite submodules successfully initialized[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_self_test@cariboulite_setup.c:513 Testing modem communication and versions[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mAT86RF215_Main at86rf215_print_version@at86rf215.c:286 MODEM Version: AT86RF215 (with basebands), version: 03[0;37m
+11-16 20:07:26.005  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_self_test@cariboulite_setup.c:528 Testing mixer communication and versions[0;37m
+11-16 20:07:26.007  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_self_test@cariboulite_setup.c:542 Self-test process finished successfully![0;37m
+11-16 20:07:26.007  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_setup_signal_handler@cariboulite_setup.c:776 setting up signal handler[0;37m
+11-16 20:07:27.007  1854  1854 I [0;36mCARIBOULITE Test main@cariboulite_test_app.c:114 Quit command => terminating...[0;37m
+11-16 20:07:27.007  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_release_driver@cariboulite_setup.c:788 driver being released[0;37m
+11-16 20:07:27.007  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1076 Activating channel 0, dir = RX, activate = 0[0;37m
+11-16 20:07:27.007  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:773 Setup Modem state to 2 (trx off)[0;37m
+11-16 20:07:27.007  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_activate_channel@cariboulite_radio.c:1076 Activating channel 1, dir = RX, activate = 0[0;37m
+11-16 20:07:27.007  1854  1854 D [0;32mCARIBOULITE Radio cariboulite_radio_set_modem_state@cariboulite_radio.c:773 Setup Modem state to 2 (trx off)[0;37m
+11-16 20:07:27.007  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_release_submodules@cariboulite_setup.c:470 CLOSE SMI[0;37m
+11-16 20:07:27.018  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_release_submodules@cariboulite_setup.c:476 CLOSE MODEM - AT86RF215[0;37m
+11-16 20:07:27.018  1854  1854 D [0;32mIO_UTILS_SPI spi_remove_chip_impl@io_utils_spi.c:468 removing an spi device with handle 2[0;37m
+11-16 20:07:27.018  1854  1854 D [0;32mAT86RF215_Main at86rf215_close@at86rf215.c:251 device release completed[0;37m
+11-16 20:07:27.018  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_release_submodules@cariboulite_setup.c:485 CLOSE MIXER - RFFC5072[0;37m
+11-16 20:07:27.018  1854  1854 D [0;32mIO_UTILS_SPI spi_remove_chip_impl@io_utils_spi.c:468 removing an spi device with handle 3[0;37m
+11-16 20:07:27.018  1854  1854 D [0;32mRFFC5072 rffc507x_release@rffc507x.c:212 Device release completed[0;37m
+11-16 20:07:27.018  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_release_io@cariboulite_setup.c:275 Releasing board I/Os - closing SPI[0;37m
+11-16 20:07:27.018  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_release_io@cariboulite_setup.c:278 Releasing board I/Os - io_utils_cleanup[0;37m
+11-16 20:07:27.019  1854  1854 D [0;32mCARIBOULITE Setup cariboulite_release_driver@cariboulite_setup.c:797 driver released[0;37m

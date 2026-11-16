@@ -1,0 +1,455 @@
+[
+  {
+    "host": "pi4f",
+    "run_id": "20261116T192158Z",
+    "metadata": {
+      "boot_id": "07693751-414f-44ed-aa14-d754fd13d82e",
+      "board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+      "backend_sha256": "71af0b50982c900cf073edf91254cae4a72f14d0da9a6e04a510e081f9e8e768",
+      "library_sha256": "fe9c0716bd9bc95011660db077b08728ae20737a7c8e1bcf014ab7ee2c2c8700",
+      "test_app_used": false,
+      "tx_used": false
+    },
+    "trials": [
+      {
+        "after": "baseline",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 25,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 204875,
+          "emitted_samples": 0,
+          "stream_resets": 26
+        }
+      },
+      {
+        "after": "fpga leds",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 40,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 327800,
+          "emitted_samples": 0,
+          "stream_resets": 42
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 55,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 450725,
+          "emitted_samples": 0,
+          "stream_resets": 58
+        }
+      },
+      {
+        "after": "fpga leds 0 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 70,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 573650,
+          "emitted_samples": 0,
+          "stream_resets": 74
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 85,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 696575,
+          "emitted_samples": 0,
+          "stream_resets": 90
+        }
+      }
+    ],
+    "audio_prerequisite_failure": false
+  },
+  {
+    "host": "pi4f",
+    "run_id": "20261116T192247Z",
+    "metadata": {
+      "boot_id": "07693751-414f-44ed-aa14-d754fd13d82e",
+      "board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+      "backend_sha256": "71af0b50982c900cf073edf91254cae4a72f14d0da9a6e04a510e081f9e8e768",
+      "library_sha256": "fe9c0716bd9bc95011660db077b08728ae20737a7c8e1bcf014ab7ee2c2c8700",
+      "test_app_used": false,
+      "tx_used": false
+    },
+    "trials": [
+      {
+        "after": "baseline",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 31,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 254045,
+          "emitted_samples": 0,
+          "stream_resets": 26
+        }
+      },
+      {
+        "after": "fpga leds",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 46,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 376970,
+          "emitted_samples": 0,
+          "stream_resets": 42
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 61,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 499895,
+          "emitted_samples": 0,
+          "stream_resets": 58
+        }
+      },
+      {
+        "after": "fpga leds 0 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 76,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 622820,
+          "emitted_samples": 0,
+          "stream_resets": 74
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 91,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 745745,
+          "emitted_samples": 0,
+          "stream_resets": 90
+        }
+      },
+      {
+        "after": "fpga leds 0 0",
+        "rx_start_exit": 0,
+        "final_state": "RX",
+        "final_alignment": {
+          "acquisitions": 1,
+          "failures": 91,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 745745,
+          "emitted_samples": 12910592,
+          "stream_resets": 102
+        }
+      }
+    ],
+    "audio_prerequisite_failure": false
+  },
+  {
+    "host": "pi4f",
+    "run_id": "20261116T192344Z",
+    "metadata": {
+      "boot_id": "07693751-414f-44ed-aa14-d754fd13d82e",
+      "board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+      "backend_sha256": "71af0b50982c900cf073edf91254cae4a72f14d0da9a6e04a510e081f9e8e768",
+      "library_sha256": "fe9c0716bd9bc95011660db077b08728ae20737a7c8e1bcf014ab7ee2c2c8700",
+      "test_app_used": false,
+      "tx_used": false
+    },
+    "trials": [
+      {
+        "after": "baseline",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 31,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 254045,
+          "emitted_samples": 0,
+          "stream_resets": 26
+        }
+      },
+      {
+        "after": "fpga leds 0 0",
+        "rx_start_exit": 0,
+        "final_state": "RX",
+        "final_alignment": {
+          "acquisitions": 1,
+          "failures": 31,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 254045,
+          "emitted_samples": 12910592,
+          "stream_resets": 38
+        }
+      },
+      {
+        "after": "fpga leds 1 0",
+        "rx_start_exit": 0,
+        "final_state": "RX",
+        "final_alignment": {
+          "acquisitions": 2,
+          "failures": 31,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 254045,
+          "emitted_samples": 26214400,
+          "stream_resets": 52
+        }
+      },
+      {
+        "after": "fpga leds 0 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 3,
+          "failures": 46,
+          "ambiguous": 0,
+          "invalid_frames": 1,
+          "discarded_bytes": 376974,
+          "emitted_samples": 26836993,
+          "stream_resets": 70
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 3,
+          "failures": 61,
+          "ambiguous": 0,
+          "invalid_frames": 1,
+          "discarded_bytes": 499899,
+          "emitted_samples": 26836993,
+          "stream_resets": 86
+        }
+      },
+      {
+        "after": "fpga leds 0 0",
+        "rx_start_exit": 0,
+        "final_state": "RX",
+        "final_alignment": {
+          "acquisitions": 4,
+          "failures": 61,
+          "ambiguous": 0,
+          "invalid_frames": 1,
+          "discarded_bytes": 499899,
+          "emitted_samples": 39714817,
+          "stream_resets": 98
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 4,
+          "failures": 76,
+          "ambiguous": 0,
+          "invalid_frames": 1,
+          "discarded_bytes": 622824,
+          "emitted_samples": 40337409,
+          "stream_resets": 116
+        }
+      },
+      {
+        "after": "fpga leds 0 0",
+        "rx_start_exit": 0,
+        "final_state": "RX",
+        "final_alignment": {
+          "acquisitions": 5,
+          "failures": 76,
+          "ambiguous": 0,
+          "invalid_frames": 1,
+          "discarded_bytes": 622825,
+          "emitted_samples": 53215232,
+          "stream_resets": 128
+        }
+      }
+    ],
+    "audio_prerequisite_failure": false
+  },
+  {
+    "host": "pi4g",
+    "run_id": "20261116T192501Z",
+    "metadata": {
+      "boot_id": "77b6f2fd-1f73-4c37-b1da-921dd30edc33",
+      "board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+      "backend_sha256": "71af0b50982c900cf073edf91254cae4a72f14d0da9a6e04a510e081f9e8e768",
+      "library_sha256": "fe9c0716bd9bc95011660db077b08728ae20737a7c8e1bcf014ab7ee2c2c8700",
+      "test_app_used": false,
+      "tx_used": false
+    },
+    "trials": [
+      {
+        "after": "baseline",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 0,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 0,
+          "emitted_samples": 0,
+          "stream_resets": 15
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 0,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 0,
+          "emitted_samples": 0,
+          "stream_resets": 21
+        }
+      },
+      {
+        "after": "fpga leds 1 0",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 0,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 0,
+          "emitted_samples": 0,
+          "stream_resets": 27
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 1,
+        "final_state": "FAULT",
+        "final_alignment": {
+          "acquisitions": 0,
+          "failures": 0,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 0,
+          "emitted_samples": 0,
+          "stream_resets": 33
+        }
+      }
+    ],
+    "audio_prerequisite_failure": true
+  },
+  {
+    "host": "pi4g",
+    "run_id": "20261116T192558Z",
+    "metadata": {
+      "boot_id": "77b6f2fd-1f73-4c37-b1da-921dd30edc33",
+      "board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+      "backend_sha256": "71af0b50982c900cf073edf91254cae4a72f14d0da9a6e04a510e081f9e8e768",
+      "library_sha256": "fe9c0716bd9bc95011660db077b08728ae20737a7c8e1bcf014ab7ee2c2c8700",
+      "test_app_used": false,
+      "tx_used": false
+    },
+    "trials": [
+      {
+        "after": "baseline",
+        "rx_start_exit": 0,
+        "final_state": "RX",
+        "final_alignment": {
+          "acquisitions": 1,
+          "failures": 0,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 1,
+          "emitted_samples": 12091391,
+          "stream_resets": 22
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 0,
+        "final_state": "RX",
+        "final_alignment": {
+          "acquisitions": 2,
+          "failures": 0,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 2,
+          "emitted_samples": 25362430,
+          "stream_resets": 36
+        }
+      },
+      {
+        "after": "fpga leds 1 0",
+        "rx_start_exit": 0,
+        "final_state": "RX",
+        "final_alignment": {
+          "acquisitions": 3,
+          "failures": 0,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 3,
+          "emitted_samples": 38666237,
+          "stream_resets": 50
+        }
+      },
+      {
+        "after": "fpga leds 1 1",
+        "rx_start_exit": 0,
+        "final_state": "RX",
+        "final_alignment": {
+          "acquisitions": 4,
+          "failures": 0,
+          "ambiguous": 0,
+          "invalid_frames": 0,
+          "discarded_bytes": 4,
+          "emitted_samples": 51970044,
+          "stream_resets": 64
+        }
+      }
+    ],
+    "audio_prerequisite_failure": false
+  }
+]
