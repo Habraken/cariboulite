@@ -1,5 +1,10 @@
 # Wired TX power / RX sample-rate sweep, 2026-11-13
 
+Receiver identity: board #1, `d8810044-c444-46f4-a548-703412cbf971` on pi4f-trixie,
+attributed by the user on 2026-11-16. This includes the fixed receiver in
+TX-rate sweeps. See [per-board attribution](board-rx-validation.md); recorded
+measurements and their original validation scope are unchanged.
+
 > Historical measurements: this sweep predates the [TX wire-byte-order correction](smi-tx-byte-order-fix-2026-11-15.md) on 15 November 2026. Preserve these data as recorded; they do not establish the corrected transmitter’s performance limits.
 
 The original CaribouLite on **pi4g-trixie** transmitted a 1 kHz NBFM tone over

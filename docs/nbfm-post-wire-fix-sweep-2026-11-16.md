@@ -1,5 +1,10 @@
 # NBFM sample-rate and TX-power retest after TX wire fixes
 
+Receiver identity: board #1, `d8810044-c444-46f4-a548-703412cbf971` on pi4f-trixie,
+attributed by the user on 2026-11-16. This includes the fixed receiver in
+TX-rate sweeps. See [per-board attribution](board-rx-validation.md); recorded
+measurements and their original validation scope are unchanged.
+
 The restored **90 dB nominal attenuated link** connects pi4g-trixie as transmitter to pi4f-trixie as receiver at **430.100 MHz, RF24**. All eight native RX rates and all eight native TX rates passed the recorded power sweep, with zero recorded transport errors. This is 224 transmitting points and 16 TX-off baselines, rather than an 8-by-8 matrix of rate pairs.
 
 ## What changed in measured performance

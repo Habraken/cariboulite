@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-11-16",
+  "associations": [
+    {
+      "rx_board_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+      "rx_host": "pi4f-trixie",
+      "source": "User explicitly attributes all preceding pi4f RX RSSI/SINAD tests to this UUID; current device-tree UUID was also read before the board swap. Historical measurements were not recollected.",
+      "scope": "All preceding RX RSSI/SINAD results on pi4f, including the fixed receiver during TX-rate sweeps. This is receiver identity, not transmitter identity.",
+      "primary_reports": [
+        "docs/tx-power-sweep-2026-11-13.md",
+        "docs/native-sample-rate-power-sweep-2026-11-14.md",
+        "docs/nbfm-post-wire-fix-sweep-2026-11-16.md"
+      ],
+      "board_label": "#1"
+    }
+  ],
+  "next_board": {
+    "status": "Board #2 blank EEPROM initialized and verified; boot identity and SMI device verified; RX-only qualification in progress",
+    "rx_host": "pi4f-trixie",
+    "rx_board_uuid": "36b67ac4-b313-4369-99bd-4b3e09caabfa",
+    "restriction": "RX only due to user-reported incorrect U25 oscillator; initialize and establish viable RX operation before collecting performance data",
+    "tx_host": "pi4g-trixie",
+    "attenuation_db_nominal": 90,
+    "board_label": "#2",
+    "tx_board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+    "evidence": "docs/baselines/20261116-board2-rx/"
+  }
+}
