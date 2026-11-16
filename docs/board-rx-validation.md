@@ -51,6 +51,69 @@ See the [#3 report and comparisons with #1/#2](board3-rx-qualification-2026-11-1
 The inherited RX-only restriction remains; no oscillator-frequency measurement
 or TX qualification is inferred for #3.
 
+## Board #4 — EEPROM verified, RX qualification failed
+
+Device #4 on pi4f has UUID **`c2440a8d-3852-4c44-b96f-1b64a962e7dc`**.
+Two matching blank reads preceded programming; page verification, repeated full
+readback and post-reboot HAT/SMI recognition passed. RX startup failed twice at
+4 MS/s and once at 2 MS/s with SMI synchronization errors. Six lower rates were
+measured across 90 points. Invalid SMI frames appeared at 800 kS/s and 400 kS/s;
+15 retained windows had nonzero cumulative invalid-frame counters. Other
+retained transport counters were zero. The failed runs remain archived, and the
+continuation retains failures explicitly. Both radios were released. No TX test
+or oscillator measurement was performed on #4. The nominal 90 dB link was
+inherited from the preceding setup, without independent reconfirmation.
+See the [#4 report](board4-rx-qualification-2026-11-16.md) and
+[evidence](baselines/20261116-board4-rx/README.md).
+
+### Subsequent #4 retest and reboot check
+
+After the user's manual test-app/LED/RX session, the [fresh full retest](board4-rx-retest-2026-11-16.md)
+passed all 120 points with zero recorded transport counters. A requested pi4f
+reboot was followed by startup failures at4and2MS/s and invalid frames in lower-rate
+measurements. The [post-reboot run](board4-rx-reboot-2026-11-16.md) was stopped
+after33completed points at the user's request to prioritize #5. Both radios are
+released; diagnosis is deferred. Earlier failures remain retained.
+
+### #4 controlled startup diagnosis
+
+A later [two-boot investigation](board4-startup-diagnosis-2026-11-16.md) reproduced
+4MS/s RX startup failure before a test-app LED-toggle session and clean short
+RX probes afterward. Soft reset, reprogramming and an initial test-app-only
+session did not clear the first failure. The cause remains unconfirmed; no
+permanent workaround was applied. Both radios were released.
+
+### #4 backend-only LED isolation
+
+The [new backend/controller LED commands](board4-backend-led-control-2026-11-16.md)
+reproduced recovery without the test app and isolated a state dependency: #4
+started4MS/s RX with LED1=0 and failed with LED1=1, regardless of LED0. The
+original pi4g reference started RX in either state. Cause remains unconfirmed;
+no automatic LED initialization workaround was added. Both radios were released.
+
+### #4 full RX sweep with LED1=0 after reboot
+
+The user-requested [post-reboot LED1-low sweep](board4-led1-low-rx-qualification-2026-11-16.md)
+passed all120points across eight native RX rates and the full established TX-power
+request grid. All2,879retained snapshots reconcile; every transmitting window had
+valid SINAD and all transport counters were zero. LED0 stayed1 and explicit
+LED1=0 setup was independently verified before all eight rate starts. Both radios
+were released. This is conditional RX success with LED1low; the LED1high failure
+and its unresolved cause remain separate findings.
+
+## Board #5 — EEPROM verified, all RX startup attempts failed
+
+Device #5 UUID: **`b43713d5-7ebf-45ff-b327-aa2e0962c9e2`**. The user confirmed
+installation on pi4f and the90dB link to the original pi4g transmitter. Two matching
+blank EEPROM reads preceded programming. Page verification, repeated full
+readbacks, image validation and post-reboot HAT/SMI recognition passed.
+All eight native RX rates then failed startup with SMI synchronization errors;
+no power-sweep/RSSI/SINAD points were collected. No manual test-app initialization
+was performed after reboot. Both radios were released. No production software
+change, TX test on #5 or oscillator measurement was performed; cause remains open.
+See the [#5 report](board5-rx-qualification-2026-11-16.md) and
+[evidence](baselines/20261116-board5-rx/README.md).
+
 ## Qualification procedure (repeat for subsequent boards)
 
 

@@ -1,5 +1,7 @@
 # Board #4 EEPROM and RX qualification — 16 November 2026
 
+**Latest:** the [full post-reboot sweep with explicit LED1=0](board4-led1-low-rx-qualification-2026-11-16.md) passed all120points with zero recorded transport errors. This is conditional on LED1low; the original failures remain retained.
+
 **Later tests:** the [full retest after manual test-app use](board4-rx-retest-2026-11-16.md) passed all 120 points. The [post-reboot test](board4-rx-reboot-2026-11-16.md) reproduced startup/frame failures and was stopped at the user's request to prioritize #5. Diagnosis is deferred. The results below describe the initial run.
 
 EEPROM programming and boot recognition passed. RX qualification **failed**: 4 MS/s and 2 MS/s failed startup with SMI synchronization errors. The six lower native rates were measured in a 90-point NBFM power sweep, with transport failures retained. No transmitter test was performed on #4.

@@ -1,0 +1,14 @@
+{
+  "board_label": "#4",
+  "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+  "tx_reference_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+  "sequence": "User-requested pi4f reboot, explicit backend LED1=0 with LED0 preserved, full eight-rate RX sweep",
+  "attenuation_db_nominal": 90,
+  "setup_confirmation": "User confirms #4 attached to pi4f and90dB link to original pi4g reference",
+  "no_test_app": true,
+  "oscillator_frequency_measured": false,
+  "run_label": "Full RX sweep after reboot with LED1=0",
+  "interpretation": "This run measures #4 across all eight native RX rates with explicit LED1=0 and LED0 preserved at1. It does not establish the cause of the LED1 dependency or qualify the oscillator.",
+  "reboot_context": "User-requested pi4f reboot immediately before the sweep; no manual test app or LED menu initialization afterward. Each RX helper explicitly preserves LED0 and sets LED1 low through backend commands.",
+  "post_reboot_boot_id": "cef40621-d7f1-4a80-b0eb-ed23ea201120"
+}

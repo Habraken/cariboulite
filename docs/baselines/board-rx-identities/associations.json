@@ -34,18 +34,43 @@
         "docs/board3-rx-qualification-2026-11-16.md"
       ],
       "evidence": "docs/baselines/20261116-board3-rx/"
+    },
+    {
+      "board_label": "#4",
+      "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+      "rx_host": "pi4f-trixie",
+      "source": "User physical label, verified blank EEPROM programming and post-reboot identity",
+      "scope": "RX qualification failed: startup failures at4and2MS/s; invalid frames at800and400kS/s; 90points recorded at six lower rates",
+      "primary_reports": [
+        "docs/board4-rx-qualification-2026-11-16.md",
+        "docs/board4-led1-low-rx-qualification-2026-11-16.md"
+      ],
+      "evidence": "docs/baselines/20261116-board4-rx/",
+      "latest_rx_result": "Full post-reboot LED1low RX sweep passed120points; conditional success, not a resolution of earlier LED1high failures"
+    },
+    {
+      "board_label": "#5",
+      "rx_board_uuid": "b43713d5-7ebf-45ff-b327-aa2e0962c9e2",
+      "rx_host": "pi4f-trixie",
+      "source": "User physical label and90dB link confirmation; blank EEPROM write/readback and post-reboot identity",
+      "scope": "All8nativeRXrates failed startup with SMI synchronization errors; no measurement points; no TX/oscillator qualification",
+      "primary_reports": [
+        "docs/board5-rx-qualification-2026-11-16.md"
+      ],
+      "evidence": "docs/baselines/20261116-board5-rx/"
     }
   ],
   "current_receiver": {
-    "status": "Board #3 EEPROM/boot verified and120pointRX-only sweep complete; bothradiosreleased",
+    "status": "Board4 full post-reboot LED1=0 RX sweep passed all120points;2879snapshots reconciled; zero transport counters; both radios released; LED1high dependency remains unresolved",
     "rx_host": "pi4f-trixie",
-    "rx_board_uuid": "f23c0015-fd1b-47b7-8314-f5c9e7de0ea7",
-    "restriction": "RX only due to user-reported incorrect U25 oscillator; initialize and establish viable RX operation before collecting performance data",
+    "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+    "restriction": "RX only; no oscillator-frequency or TX qualification",
     "tx_host": "pi4g-trixie",
     "attenuation_db_nominal": 90,
-    "board_label": "#3",
+    "board_label": "#4",
     "tx_board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
     "evidence": "docs/baselines/20261116-board3-rx/",
-    "report": "docs/board3-rx-qualification-2026-11-16.md"
+    "report": "docs/board3-rx-qualification-2026-11-16.md",
+    "setup_note": "User confirmed #4 on pi4f and90dB link to original pi4g reference"
   }
 }
