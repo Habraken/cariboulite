@@ -4,6 +4,59 @@ Recorded 2026-09-16 from Jan's backlog. This is a proposed implementation
 order, not a claim that the features below are complete. Original item numbers
 are retained for tracking. Update this document as work is verified.
 
+## Progress review — 2026-11-16
+
+This update preserves milestones A–I, the documentation backlog and their exit
+criteria. It records implementation and acceptance separately; an implemented
+feature does not close a milestone's remaining route, platform, RF or endurance
+requirements. Checked tasks are complete only within their stated scope.
+
+Current work is on `dev-fpga-pa-control`; implementation and measurement evidence
+through `804247b` is reviewed here. This does not claim that later branch work
+has been merged into `main` or published. The October branch records below are
+historical milestones.
+
+| Milestone | Position at this review | Remaining acceptance / deliverables |
+| --- | --- | --- |
+| A — Documentation and regression coverage | Extensive software checks and reproducible NBFM/AM bench records | Reproducible installation guide, supported-platform coverage and complete RF acceptance |
+| B — Shared radio/stream/DSP core | Shared application profiles, pipelines and standalone DSP implemented | Shared control across public adapters, lifecycle consolidation and build/source organization |
+| C — Transceiver and modes | NBFM RX/TX, mono WBFM RX, narrow-voice AM RX/TX, squelch and audio controls implemented | Menu 15 workflow, remaining route/operational acceptance, USB/LSB, CW and BPSK/QPSK |
+| D — FPGA/PA sequencing | A5 baseline acceptance recorded in receiver-side working notes; B1 interface contract in progress | Reconcile those notes into versioned documentation; finish electrical/timing specification, PA RTL/host integration and physical qualification |
+| E — Platforms and external interfaces | Pi 4 and earlier Zero 2 W trials recorded | Latest-build platform requalification, network audio/PTT, GNU Radio RX/TX and exploratory Dire Wolf work |
+| F — Editable KiCad reconstruction | Goal retained; no completed project recorded | Reconstruction and all stated comparison/verification deliverables |
+| G — First NBFM QSO | Bench capability and measurements established | Complete and record two-way contact with the selected station/switching arrangement |
+| H — First QO-100 QSO | Goal retained; station milestone not accepted | Station design, selected mode, RF/switching qualification and recorded contact |
+| I — Profiling and receiver extensions | Backend/controller/monitor and hardware-paced TX implemented; native-rate and quality instrumentation extended | Full CPU/latency/health qualification, deployment matrix, CTCSS, stereo, RDS and DAB+ |
+
+Recent evidence:
+
+- [RX alignment correction](docs/alignment-fix-validation-2026-11-13.md),
+  [native RX rates](docs/rx-native-rates-validation-2026-11-13.md),
+  [native TX rates](docs/tx-native-rates-validation-2026-11-13.md) and
+  [TX-window continuity](docs/tx-window-restart-validation-2026-11-14.md).
+- [TX wire-byte-order correction](docs/smi-tx-byte-order-fix-2026-11-15.md)
+  and [AM DAC candidate qualification](docs/am-dac-candidates-2026-11-15.md).
+- [NBFM post-fix sweep](docs/nbfm-post-wire-fix-sweep-2026-11-16.md): eight
+  native RX rates and eight native TX rates from 400 kS/s to 4 MS/s, with
+  224 transmitting points and 16 TX-off baselines on the nominal 90 dB RF24
+  link at 430.100 MHz. Recorded transport counters stayed zero. No SINAD gain
+  over the historical sweep was established; mean differences were about
+  -0.30 dB on the RX axis and -0.40 dB on the TX axis. One brief dip was retained
+  and did not recur in three follow-up repetitions. This is neither an 8-by-8
+  rate matrix nor calibrated sensitivity, full-route or endurance acceptance.
+- [AM reception](docs/am-voice-rx.md), [AM transmission](docs/am-voice-tx.md)
+  and [calibrated playback, live volume and metering](docs/rx-audio-levels.md).
+
+The implemented boundaries follow the intended architecture below: DSP operates
+on explicit sample blocks; pipelines own workers/queues; applications share
+validated profiles; the backend owns local control and publishes cached status.
+Remaining consolidation belongs to B: move reusable transition/recovery policy
+out of application orchestration, extend shared control/stream contracts to
+public adapters, give additional TX waveform families clearer implementation
+boundaries, and unify build/deployment checks. The standalone backend Makefile
+and CMake applications currently require separate builds. No wholesale rewrite
+or new architecture goal is introduced by this review.
+
 ## Pending hardware checks — 2026-11-06
 
 - [ ] Cross-check the U25 clock measurement on the known-good original reference
@@ -15,7 +68,7 @@ are retained for tracking. Update this document as work is verified.
   settings and a scope photograph, then restore the original radio firmware.
   Pending the user's board swap; the reference-board measurement has not run.
 
-## Current branch milestone — 2026-10-16
+## Historical branch milestone — 2026-10-16
 
 The accepted development work through FM refactoring step 4 is merged into
 `main` at `7da1ee0`. New receive-mode development starts on
@@ -36,7 +89,13 @@ network audio/PTT and the external-PA sequencer remain open. The
 [2026-10-16 documentation audit](docs/documentation-audit-2026-10-16.md) records
 this source review; it is not a new hardware qualification.
 
-## Agreed near-term development order — 2026-10-17
+## Development order and current position
+
+### Original agreed order — 2026-10-17
+
+The following records the original order. November work subsequently advanced
+AM and transport diagnosis ahead of complete external-PA integration, as agreed
+with the user; the PA and complete-transceiver acceptance goals remain open.
 
 1. Finish shared radio configuration and status for the test app and standalone
    backend. The same explicit configuration must produce matching hardware
@@ -45,13 +104,14 @@ this source review; it is not a new hardware qualification.
    the [detailed step-2 execution plan](docs/fpga-pa-control-plan-2026-10-17.md), building on
    the existing [synthesis/routing and LVDS timing experiments](docs/lvds-fmax-next-test-2026-10-08.md),
    recording resource use, repeatability and timing margin before selecting build
-   settings. The last recorded CE2 build failed LVDS timing; no replacement build
-   settings are accepted. RAM is already fully used, so account for the additional
+   settings. The early CE2 parallel-refinement build failed LVDS timing; later
+   CE2 serial-refinement results and baseline acceptance are summarized in D.
+   RAM is already fully used, so account for the additional
    logic without adding RAM or relaxing the clock constraints. After accepting the
-   baseline, integrate and measure one or two FPGA logic outputs for the selected
-   PA interface. Output roles, pins, polarity, electrical interface and timing
-   remain to be specified. Coordinate PA control with shared TX start/stop/abort
-   and RX handoff, and verify output behavior with the PA disconnected before
+   baseline, integrate and measure the selected FPGA output interface. The B1
+   working contract selects one active-high PA enable; its complete electrical
+   interface and measured timing profile remain to be qualified. Coordinate PA
+   control with shared TX start/stop/abort and RX handoff, and verify output behavior with the PA disconnected before
    testing the complete chain. See [milestone D](#d-fpga-antennapttpa-sequencer-item-6).
 3. Complete reproducible end-to-end NBFM transceiver acceptance, including RF/audio
    measurements, extended operation and repeated PTT/recovery checks, followed by
@@ -59,8 +119,29 @@ this source review; it is not a new hardware qualification.
 4. Extend reception with CW listening, then AM and USB/LSB through the existing
    audio/DSP interfaces.
 
-FPGA build headroom and external-PA control are prerequisites for the complete
-transceiver demonstration in step 3; shared configuration/status remains first.
+The original complete-transceiver demonstration retains its FPGA/PA sequencing
+requirements. Bench tests through attenuation do not require an external PA and
+do not close that demonstration milestone.
+
+### Agreed updates through 2026-11-16
+
+- Shared test-app/backend configuration and status are implemented and accepted
+  within the scope recorded under B.
+- Transport framing, native RX/TX rates and TX wire accuracy were addressed,
+  tested and committed before repeating the power/rate sweep.
+- The user's additional-mode plan starts with narrow-voice AM RX, then AM TX,
+  followed by USB/LSB. AM RX/TX and the intervening audio calibration, live volume
+  and level-metering work are implemented. Broadcast AM RX remains a later
+  extension; CW and PSK goals remain in C.
+- Underlying AM low-level artifacts were investigated before adding further
+  modes or aviation-inspired processing. The integrated opt-in DAC shaping
+  passed the recorded listening and measurement checks. The requested NBFM
+  regression sweep is now complete. These results are evidence for the next
+  planning decision, not automatic acceptance of all AM/RF requirements.
+- USB/LSB and aviation-inspired speech processing remain deferred pending the
+  next agreed implementation step. External PA, QSO, platform/interface and
+  broadcast-decoder goals remain intact; this review does not choose a new
+  implementation priority or authorize their hardware operation.
 
 ## Existing foundation
 
@@ -115,11 +196,20 @@ user setting. Document thread ownership, stop deadlines and error recovery.
   source revision, OS/kernel, Pi model and firmware for each verified recipe.
 - [x] Inventory existing tests and provide a [documented entry point](docs/testing.md)
   for hardware-free checks, separate from physical/RF procedures.
-- [ ] Add meaningful unit coverage for configuration validation, DSP vectors,
-  squelch state and sequencing. Integration tests should exercise partial I/O,
-  timeout, overflow/underflow, cancellation and repeated start/stop.
-- [ ] Record an RX/TX hardware baseline and reproducible end-to-end procedure,
+- [ ] Complete meaningful unit coverage for configuration validation, DSP
+  vectors, squelch state and sequencing, and integration coverage for partial
+  I/O, timeout, overflow/underflow, cancellation and repeated start/stop.
+  - [x] Implement focused regressions for shared profiles, DSP, squelch,
+    lifecycle/ownership, framing, partial transfers, pacing and TX serialization;
+    retain [test entry points](docs/testing.md) and linked validation records.
+  - [ ] Audit coverage against the full acceptance/platform matrix and close
+    remaining gaps; existing suites do not establish universal fault coverage.
+- [ ] Complete RX/TX hardware baselines and reproducible end-to-end procedures,
   including signal source/load, levels, expected output and pass criteria.
+  - [x] Record RF24 NBFM native-rate/power baselines, post-wire-fix comparison,
+    and scoped AM RX/TX measurements/listening records linked above.
+  - [ ] Extend acceptance to remaining supported routes/configurations,
+    calibrated RF limits, endurance and complete station workflows.
 
 Exit: repeatable checks protect the behavior that will be moved during refactoring;
 installation claims are tied to evidence. Hardware results are not inferred from
@@ -145,12 +235,23 @@ reception after the update. Quantitative RF measurements remain separate.
 Broader public adapter configuration and directory/build reorganization below
 remain open.
 
-- [ ] Extract menu-owned streaming, radio control and audio handling behind the
-  interfaces above, preserving current NBFM behavior and public entry points.
-- [ ] Centralize runtime configuration and capability validation. Replace
-  scattered rate, buffer and timeout assumptions with documented settings.
+- [ ] Complete extraction of menu-owned streaming, radio control and audio
+  handling behind the interfaces above, preserving NBFM and public entry points.
+  - [x] Complete the eight-step audio/DSP extraction and reusable RX/TX pipelines
+    used by menu 14 and the standalone backend.
+  - [ ] Consolidate reusable transition/recovery policy still held in application
+    orchestration and extend the common control/stream API to public adapters.
+- [ ] Complete centralized runtime configuration and capability validation,
+  replacing scattered rate, buffer and timeout assumptions with documented settings.
+  - [x] Share validated test-app/backend radio profiles and checked snapshots;
+    implement native 4 MHz/divider RX/TX rate contracts and explicit unsupported
+    combination rejection within those application paths.
+  - [ ] Complete cross-adapter configuration/capability coverage and remaining
+    buffer, timeout and lifecycle policy consolidation.
 - [ ] Organize build targets and source directories along the module boundaries;
   update includes, installation rules, examples and documentation together.
+  Include a build/deployment path that verifies both standalone backend/controller
+  and CMake applications, avoiding stale executables from separate build systems.
 
 Exit: the menu and an adapter can use the same control/stream API, DSP can be
 exercised without hardware, and regression checks pass after each extraction.
@@ -172,9 +273,24 @@ physical acceptance of this addition is pending.
 - [ ] Add menu item **15: VHF/UHF TRX** using the shared core. Offer `rf09` and
   `rf24`, frequency, IQ sample rate, RF bandwidth and mode selection, filtered
   by actual modem/board/DSP capabilities.
-- [ ] Deliver NBFM RX/TX first, including audio selection, PTT, squelch, status,
-  validation errors and reliable stop/return to the menu.
+- [ ] Complete NBFM RX/TX delivery, including audio selection, PTT, squelch,
+  status, validation errors and reliable stop/return to the menu.
+  - [x] Implement and bench-test NBFM TX/RX through shared pipelines, local
+    backend/controller and menu 14, including scoped native-rate/power checks.
+  - [ ] Complete menu-15 integration and remaining route, extended-operation,
+    repeated PTT/recovery and station-level acceptance.
 - [ ] Add SSB (USB/LSB), AM and CW with per-mode DSP tests and hardware checks.
+  - [x] Implement narrow-voice AM RX/TX through the existing pipelines, with
+    software checks and recorded RF24 listening/measurement acceptance.
+  - [x] Implement backend calibrated playback, live volume and level metering
+    across NBFM, mono WBFM and AM; preserve legacy standalone PCM scaling.
+  - [x] Qualify the opt-in AM DAC-shaping option on the recorded fixture;
+    default remains off and no universal RF-linearity claim is made.
+  - [ ] Complete remaining AM route/operational qualification; add broadcast AM
+    RX later as requested. Aviation-inspired processing is a deferred refinement,
+    not a substitute for underlying signal-path acceptance.
+  - [ ] Implement and accept USB/LSB RX/TX and CW, retaining explicit per-mode
+    contracts, software tests and physical checkpoints.
 - [ ] Add BPSK/QPSK after defining symbol rates, filtering, synchronization and
   whether the interface exposes symbols, bits or framed packets. Keep further
   modes extensible and expose only implemented modes as selectable.
@@ -184,14 +300,29 @@ are explained, and mode/path changes leave the radio in a defined state.
 
 ### D. FPGA antenna/PTT/PA sequencer (item 6)
 
-Next firmware development test, recorded 2026-10-08: establish repeatable LVDS
-timing on the physically tested main firmware before the next sequencer
-integration attempt. The [LVDS Fmax test plan](docs/lvds-fmax-next-test-2026-10-08.md)
-records the default/CE2 comparison, DDR-pair staging proposal, behavioral and
-timing acceptance criteria, and the following PMOD integration sequence.
+Status review, 2026-11-16: early LVDS failures were followed by successful
+CE2 serial-refinement experiments. Preserved receiver-side working notes
+`docs/fpga-a5-baseline-2026-10-17.md` on pi4f record A5 accepted for PA development:
+three seed-16 builds plus seeds 1, 2 and 3 passed, using 1035/1280 logic cells
+and 16/16 RAM blocks. User RF/start-stop/reset and accessible-pad acceptance
+are recorded, with two inaccessible mixer pads electrically unmeasured.
+Those notes and `docs/fpga-b1-pa-interface-2026-10-17.md` remain uncommitted
+receiver-side documents at this review; they must be reconciled with the
+[versioned execution plan](docs/fpga-pa-control-plan-2026-10-17.md).
+A5 acceptance applies to its selected candidate, not every image: the recent
+radio tests restored the packaged rollback image and do not requalify PA RTL.
 
-- [ ] Complete and accept the LVDS baseline test before the next sequencer
-  integration test.
+B1 selects one active-high PA enable with external relay/PA sequencing and
+PA-off-only behavior on host loss. Electrical loading/default states and a
+measured lead/release/lease timing profile remain open. No PA RTL or integrated
+PA host control is implemented. Preserve the
+[LVDS experiment history](docs/lvds-fmax-next-test-2026-10-08.md) and all actual
+clock/resource constraints; the complete PA design needs its own qualification.
+
+- [x] Complete and accept the LVDS baseline before sequencer integration, within
+  the A5 scope and limitations recorded in the receiver-side notes above.
+- [ ] Reconcile and version the preserved A5/B1 records without overwriting
+  receiver-side documentation changes or implying they describe deployed PA logic.
 - [ ] Specify board pin allocation, electrical polarity, external PA interface,
   PTT sources, timing constraints and host/FPGA responsibility before RTL work.
 - [ ] Implement explicit RX, TX preparation, TX active, TX shutdown and fault
@@ -307,6 +438,9 @@ stereo/RDS, DAB+ and adjustable CTCSS are not.
   read-only monitor and a separate controller. Menu 14 remains an alternative
   frontend using the shared pipelines. See [radio controls](docs/radio-control.md)
   and [the monitor](docs/passive-monitor.md).
+- [x] Add a scoped [NBFM SINAD estimator](docs/sinad.md) and record repeatable
+  RSSI/SINAD rate/power sweeps. Preserve the fixed-notch, uncalibrated-link
+  limitations and distinguish measurement instrumentation from RF acceptance.
 - [ ] Finish combined backend/client CPU and latency qualification across the
   planned recording and rate matrix, including slow-client/disconnect behavior.
   Existing dry-run and physical comparisons are recorded in the
@@ -332,10 +466,17 @@ stereo/RDS, DAB+ and adjustable CTCSS are not.
   [Pi 4 report](docs/pi4-tx-validation-2026-10-15.md).
 - [ ] **Complete TX RF and deployment qualification.** Measure physical SWE
   sampling, RF calibration and quantitative signal quality; extend soak and
-  repeated PTT testing. The source is merged into this branch, while the cited
-  physical trials used staged binaries/runtime driver reloads. A clean install
-  and permanent deployment across the supported Pi/OS matrix remain distinct
-  acceptance steps.
+  repeated PTT testing.
+  - [x] Correct RX alignment, native-rate support, TX-window continuity and TX
+    sample serialization; retain software and physical evidence linked above.
+  - [x] Deploy matched current backend/controller/library builds on both Pi 4
+    radios and record the 16 November NBFM rate/power regression sweep.
+  - [ ] Complete calibrated RF and physical SWE acceptance, extended soak/PTT
+    testing and requalification of the latest implementation on Zero 2 W and
+    other claimed platforms. Earlier Zero 2 W trials predate the recent fixes.
+  - [ ] Validate clean installation and permanent deployment across the supported
+    Pi/OS matrix. Matched builds on two existing Pi 4 installations do not close
+    this requirement; backend autostart remains deferred at the user's request.
 - [ ] Add adjustable CTCSS TX encoding and optional RX tone squelch, including
   explicit tone deviation, total ±2.5 kHz modulation budget, tone rejection
   from listening audio and compatible Quindar/PTT/tail timing.
@@ -352,6 +493,9 @@ and physical-reception results; unsupported configurations fail explicitly.
 
 ## Suggested order
 
+The following remains the broad dependency guide; the dated development-order
+updates above record the actual agreed sequence and current position.
+
 Start A, then B, then deliver C incrementally. Specify D early so the shared
 control API accommodates sequencing. Start Pi testing after B and repeat as DSP
 and adapters are added. Ethernet and GNU Radio integration can build on the same
@@ -361,8 +505,8 @@ reconstruction (F) can proceed alongside the software work and support the
 revision-specific PMOD/LVDS and calibration documentation (DOC-04/DOC-06).
 
 Decisions to resolve during design: exact Pi Zero models, physical antenna/PA
-wiring, supported rate/bandwidth combinations, initial SSB/AM/CW requirements,
-BPSK/QPSK data interface and network latency targets.
+wiring, remaining route/rate/bandwidth qualification, SSB/CW and broadcast-AM
+requirements, BPSK/QPSK data interface and network latency targets.
 
 ## Documentation validation backlog
 
@@ -370,6 +514,9 @@ Process: when a README TODO or an outdated instruction is encountered, complete
 it using implementation or measured evidence where possible. Otherwise retain a
 short status note at its source and add a linked task here. Do not treat source
 inspection, successful compilation and hardware validation as interchangeable.
+This review refreshes roadmap status only; older interface/research documents
+may still contain dated mode/rate descriptions. Reconcile those summaries with
+the implementation without replacing their historical evidence.
 The [2026-09-16 audit](docs/documentation-audit-2026-09-16.md) records the initial
 pass; the [2026-10-16 audit](docs/documentation-audit-2026-10-16.md) records the
 current review and corrected status claims.
