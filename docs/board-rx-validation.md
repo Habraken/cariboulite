@@ -36,16 +36,20 @@ released afterward. See the [#2 report and #1 comparison](board2-rx-qualificatio
 The measured SINAD increase is an uncalibrated link observation, not isolated
 receiver-quality or oscillator acceptance.
 
-## Board #3 — initialized, RX qualification pending
+## Board #3 — initialized, scoped RX qualification complete
 
 The user installed #3 on pi4f and confirmed the nominal 90 dB link to the same
 original TX reference on pi4g. UUID **`f23c0015-fd1b-47b7-8314-f5c9e7de0ea7`**
 was generated for its confirmed blank EEPROM. Page checks and two full final
 readbacks matched the prepared image; after reboot, HAT identity and `/dev/smi`
 were verified. [EEPROM and boot evidence](baselines/20261116-board3-rx/) is
-separate from #1/#2. RX-only qualification is pending. The inherited RX-only
-restriction remains; no oscillator-frequency measurement or TX qualification
-is inferred for #3.
+separate from #1/#2. All eight native RX rates completed a 120-point sweep,
+with zero recorded transport errors and valid SINAD in every transmitting
+measurement window. All 2,885 retained snapshots reconcile with the summaries;
+no TX state/start command was recorded on #3. Both radios were released.
+See the [#3 report and comparisons with #1/#2](board3-rx-qualification-2026-11-16.md).
+The inherited RX-only restriction remains; no oscillator-frequency measurement
+or TX qualification is inferred for #3.
 
 ## Qualification procedure (repeat for subsequent boards)
 

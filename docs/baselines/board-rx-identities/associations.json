@@ -29,13 +29,15 @@
       "rx_board_uuid": "f23c0015-fd1b-47b7-8314-f5c9e7de0ea7",
       "rx_host": "pi4f-trixie",
       "source": "User physical label/setup confirmation, verified blank EEPROM write/readback and post-reboot device-tree identity",
-      "scope": "EEPROM initialization and boot recognition verified; RX qualification pending",
-      "primary_reports": [],
+      "scope": "RX-only NBFM rate/power sweep at430.1MHz RF24 over nominal90dB link; all120points complete, zero recorded transport errors; not TX or oscillator qualification",
+      "primary_reports": [
+        "docs/board3-rx-qualification-2026-11-16.md"
+      ],
       "evidence": "docs/baselines/20261116-board3-rx/"
     }
   ],
   "current_receiver": {
-    "status": "Board #3 EEPROM and boot identity verified; RX-only qualification pending",
+    "status": "Board #3 EEPROM/boot verified and120pointRX-only sweep complete; bothradiosreleased",
     "rx_host": "pi4f-trixie",
     "rx_board_uuid": "f23c0015-fd1b-47b7-8314-f5c9e7de0ea7",
     "restriction": "RX only due to user-reported incorrect U25 oscillator; initialize and establish viable RX operation before collecting performance data",
@@ -43,6 +45,7 @@
     "attenuation_db_nominal": 90,
     "board_label": "#3",
     "tx_board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
-    "evidence": "docs/baselines/20261116-board3-rx/"
+    "evidence": "docs/baselines/20261116-board3-rx/",
+    "report": "docs/board3-rx-qualification-2026-11-16.md"
   }
 }

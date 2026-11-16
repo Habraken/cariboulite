@@ -1,0 +1,421 @@
+{
+  "source_commit": "3edde8e",
+  "driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+  "tx_host": "pi4g-trixie",
+  "rx_host": "pi4f-trixie",
+  "frequency_hz": 430100000,
+  "channel": "RF24",
+  "attenuation_db_nominal": 90,
+  "tone_hz": 1000,
+  "tone_amplitude": 0.4,
+  "tx_deviation_hz": 2500,
+  "settle_seconds": 2,
+  "measure_seconds": 5,
+  "rates": [
+    [
+      1,
+      4000000
+    ],
+    [
+      2,
+      2000000
+    ],
+    [
+      3,
+      1333333
+    ],
+    [
+      4,
+      1000000
+    ],
+    [
+      5,
+      800000
+    ],
+    [
+      6,
+      666667
+    ],
+    [
+      8,
+      500000
+    ],
+    [
+      10,
+      400000
+    ]
+  ],
+  "tx_powers_dbm": [
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14
+  ],
+  "axes": [
+    "rx"
+  ],
+  "rx_board_label": "#3",
+  "rx_board_uuid": "f23c0015-fd1b-47b7-8314-f5c9e7de0ea7",
+  "rx_restriction": "RX only; incorrect U25 oscillator reported by user",
+  "reference_receiver_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+  "timestamp_filter": "RX snapshots must be newer than measurement start; status drained throughout settling",
+  "profiles": {
+    "rx_4000000": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_2000000": {
+      "rx": {
+        "sample_rate_hz": 2000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 250000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 2000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 250000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_1333333": {
+      "rx": {
+        "sample_rate_hz": 1333333,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 166666
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 1333333.333,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 166666.667
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_1000000": {
+      "rx": {
+        "sample_rate_hz": 1000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 125000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 1000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 125000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_800000": {
+      "rx": {
+        "sample_rate_hz": 800000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 100000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 800000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 100000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_666667": {
+      "rx": {
+        "sample_rate_hz": 666667,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 83333
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 666666.667,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 83333.333
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_500000": {
+      "rx": {
+        "sample_rate_hz": 500000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 62500
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 500000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 62500.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_400000": {
+      "rx": {
+        "sample_rate_hz": 400000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 50000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 400000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 50000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    }
+  },
+  "run_id": "cariboulite-board3-rx-20261116T163944Z",
+  "backends": {
+    "rx": {
+      "board_uuid": "f23c0015-fd1b-47b7-8314-f5c9e7de0ea7",
+      "board_label": "#3",
+      "host": "pi4f-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "role": "rx",
+      "args": [
+        "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+        "--channel",
+        "RF24",
+        "--rx-frequency",
+        "430100000",
+        "--tx-frequency",
+        "430100000",
+        "--tx-sample-rate",
+        "4000000",
+        "--tx-power",
+        "-12",
+        "--tx-mode",
+        "nbfm",
+        "--tx-source",
+        "tone",
+        "--tx-deviation",
+        "2500",
+        "--rx-mode",
+        "nbfm",
+        "--rx-sample-rate",
+        "1000000",
+        "--rx-sinad",
+        "--rx-playback",
+        "plughw:USB,0,0",
+        "--seconds",
+        "7200",
+        "--socket",
+        "/tmp/cariboulite-board3-rx-20261116T163944Z/rx_div6/rx/ipc/status.sock"
+      ],
+      "uid": 0,
+      "binary_sha256": "25a9b8cf2c764fc4945e2fc5facb4b1143bf3bad9b7d606abc997cc4d3e390b9"
+    },
+    "tx": {
+      "board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+      "board_label": "original TX reference",
+      "host": "pi4g-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "role": "tx",
+      "args": [
+        "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+        "--channel",
+        "RF24",
+        "--rx-frequency",
+        "430100000",
+        "--tx-frequency",
+        "430100000",
+        "--tx-sample-rate",
+        "4000000",
+        "--tx-power",
+        "-12",
+        "--tx-mode",
+        "nbfm",
+        "--tx-source",
+        "tone",
+        "--tx-deviation",
+        "2500",
+        "--rx-mode",
+        "nbfm",
+        "--rx-sample-rate",
+        "1000000",
+        "--rx-sinad",
+        "--rx-playback",
+        "plughw:USB,0,0",
+        "--seconds",
+        "7200",
+        "--socket",
+        "/tmp/cariboulite-board3-rx-20261116T163944Z/rx_axis_source/tx/ipc/status.sock"
+      ],
+      "uid": 0,
+      "binary_sha256": "25a9b8cf2c764fc4945e2fc5facb4b1143bf3bad9b7d606abc997cc4d3e390b9"
+    }
+  },
+  "source_manifest_sha256": "c7804937ed3e76cfa7039a3b7c19335f032a0a8eb928f4fb5146d6e012eac681",
+  "recording_end_utc_host_clock": "2026-11-16T16:56:22+00:00",
+  "date_note": "Board #3 RX-only run on 2026-11-16; timestamps and run IDs are UTC.",
+  "module_images": [
+    {
+      "host": "pi4g-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "radio_processes": [],
+      "smi_open_fds": [],
+      "playback": {
+        "/proc/asound/card0/pcm0p/sub0/status": "closed",
+        "/proc/asound/card1/pcm0p/sub0/status": "closed",
+        "/proc/asound/card2/pcm0p/sub0/status": "closed",
+        "/proc/asound/card2/pcm0p/sub1/status": "closed",
+        "/proc/asound/card2/pcm0p/sub2/status": "closed",
+        "/proc/asound/card2/pcm0p/sub3/status": "closed",
+        "/proc/asound/card2/pcm0p/sub4/status": "closed",
+        "/proc/asound/card2/pcm0p/sub5/status": "closed",
+        "/proc/asound/card2/pcm0p/sub6/status": "closed",
+        "/proc/asound/card2/pcm0p/sub7/status": "closed",
+        "/proc/asound/card2/pcm1p/sub0/status": "closed",
+        "/proc/asound/card2/pcm1p/sub1/status": "closed",
+        "/proc/asound/card2/pcm1p/sub2/status": "closed",
+        "/proc/asound/card2/pcm1p/sub3/status": "closed",
+        "/proc/asound/card2/pcm1p/sub4/status": "closed",
+        "/proc/asound/card2/pcm1p/sub5/status": "closed",
+        "/proc/asound/card2/pcm1p/sub6/status": "closed",
+        "/proc/asound/card2/pcm1p/sub7/status": "closed",
+        "/proc/asound/card3/pcm0p/sub0/status": "closed",
+        "/proc/asound/card3/pcm0p/sub1/status": "closed",
+        "/proc/asound/card3/pcm0p/sub2/status": "closed",
+        "/proc/asound/card3/pcm0p/sub3/status": "closed",
+        "/proc/asound/card3/pcm0p/sub4/status": "closed",
+        "/proc/asound/card3/pcm0p/sub5/status": "closed",
+        "/proc/asound/card3/pcm0p/sub6/status": "closed",
+        "/proc/asound/card3/pcm0p/sub7/status": "closed",
+        "/proc/asound/card4/pcm0p/sub0/status": "closed"
+      },
+      "loaded_driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+      "installed_driver_srcversion": "1AC65CD6AE81A1E2ED63F14"
+    },
+    {
+      "host": "pi4f-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "radio_processes": [],
+      "smi_open_fds": [],
+      "playback": {
+        "/proc/asound/card0/pcm0p/sub0/status": "closed",
+        "/proc/asound/card1/pcm0p/sub0/status": "closed",
+        "/proc/asound/card2/pcm0p/sub0/status": "closed",
+        "/proc/asound/card2/pcm0p/sub1/status": "closed",
+        "/proc/asound/card2/pcm0p/sub2/status": "closed",
+        "/proc/asound/card2/pcm0p/sub3/status": "closed",
+        "/proc/asound/card2/pcm0p/sub4/status": "closed",
+        "/proc/asound/card2/pcm0p/sub5/status": "closed",
+        "/proc/asound/card2/pcm0p/sub6/status": "closed",
+        "/proc/asound/card2/pcm0p/sub7/status": "closed",
+        "/proc/asound/card2/pcm1p/sub0/status": "closed",
+        "/proc/asound/card2/pcm1p/sub1/status": "closed",
+        "/proc/asound/card2/pcm1p/sub2/status": "closed",
+        "/proc/asound/card2/pcm1p/sub3/status": "closed",
+        "/proc/asound/card2/pcm1p/sub4/status": "closed",
+        "/proc/asound/card2/pcm1p/sub5/status": "closed",
+        "/proc/asound/card2/pcm1p/sub6/status": "closed",
+        "/proc/asound/card2/pcm1p/sub7/status": "closed",
+        "/proc/asound/card3/pcm0p/sub0/status": "closed",
+        "/proc/asound/card3/pcm0p/sub1/status": "closed",
+        "/proc/asound/card3/pcm0p/sub2/status": "closed",
+        "/proc/asound/card3/pcm0p/sub3/status": "closed",
+        "/proc/asound/card3/pcm0p/sub4/status": "closed",
+        "/proc/asound/card3/pcm0p/sub5/status": "closed",
+        "/proc/asound/card3/pcm0p/sub6/status": "closed",
+        "/proc/asound/card3/pcm0p/sub7/status": "closed",
+        "/proc/asound/card4/pcm0p/sub0/status": "closed"
+      },
+      "loaded_driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+      "installed_driver_srcversion": "1AC65CD6AE81A1E2ED63F14"
+    }
+  ],
+  "collector_legacy_shared_reference": "4M/4M measured independently in both axes",
+  "shared_reference": "RX axis only; TX fixed at4MS/s; no independent repeated4Mreference curve",
+  "source_commit_meaning": "Binary implementationbase3edde8e; original launchHEAD52c7503; no production software changes"
+}

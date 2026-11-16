@@ -1,0 +1,14 @@
+{
+  "board_label": "#3",
+  "rx_board_uuid": "f23c0015-fd1b-47b7-8314-f5c9e7de0ea7",
+  "comparison_receivers": {
+    "#1": "d8810044-c444-46f4-a548-703412cbf971",
+    "#2": "36b67ac4-b313-4369-99bd-4b3e09caabfa"
+  },
+  "tx_reference_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+  "original_launch_commit": "52c7503",
+  "binary_implementation_commit": "3edde8e",
+  "rx_restriction": "RX only as requested for this sequence; oscillator frequency not measured on #3",
+  "setup_confirmation": "User confirmed installed board3 on pi4f and 90dB coax link to original pi4g board",
+  "ssh_trust": "pi4g existing public host keys restored in temporary known-hosts file before collector launch"
+}
