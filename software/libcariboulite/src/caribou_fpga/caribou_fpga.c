@@ -605,7 +605,8 @@ int caribou_fpga_get_io_ctrl_dig (caribou_fpga_st* dev, int* led0, int* led1, in
     };
 
     uint8_t pins = 0;
-    caribou_fpga_spi_transfer (dev, (uint8_t*)(&oc), &pins);
+    if (caribou_fpga_spi_transfer(dev, (uint8_t*)&oc, &pins) != 0)
+        return -1;
     if (led0) *led0 = (pins>>0)&0x01;
     if (led1) *led1 = (pins>>1)&0x01;
     if (cfg) *cfg = (pins>>3)&0x0F;

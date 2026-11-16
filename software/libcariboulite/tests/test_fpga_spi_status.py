@@ -19,12 +19,13 @@ preamble = r'''
 #define CARIBOU_FPGA_CHECK_DEV(...) ((void)0)
 #define IOC_SYS_CTRL_TX_SAMPLE_GAP 6
 #define IOC_SYS_CTRL_DEBUG_MODES 5
+#define IOC_IO_CTRL_DIG_PIN 2
 #define io_utils_spi_read_write 0
 typedef struct { void *io_spi; int io_spi_handle; } caribou_fpga_st;
 static uint8_t regval, debugval;
 static int calls, fail_call;
 static int io_utils_spi_transmit(void *d,int h,const uint8_t *tx,uint8_t *rx,size_t len,int dir) {
-    assert(len==2); assert((tx[0]&127)==6 || tx[0]==0x85);
+    assert(len==2); assert((tx[0]&127)==6 || tx[0]==0x85 || tx[0]==0x22);
     if(++calls==fail_call)return -1;
     if(tx[0]==0x85) { debugval=tx[1]; return 0; }
     if(tx[0]&128)regval=tx[1];
@@ -57,6 +58,13 @@ int main(void) {
  assert(caribou_fpga_set_debug_loopback(&d,true)==0 && debugval==8);
  calls=0;fail_call=1;
  assert(caribou_fpga_set_debug_loopback(&d,false)==-1 && debugval==8);
+ int led0=9,led1=9,btn=9,cfg=9;
+ calls=0;fail_call=1;
+ assert(caribou_fpga_get_io_ctrl_dig(&d,&led0,&led1,&btn,&cfg)==-1);
+ assert(led0==9 && led1==9 && btn==9 && cfg==9);
+ calls=0;fail_call=0;regval=0xf9;
+ assert(caribou_fpga_get_io_ctrl_dig(&d,&led0,&led1,&btn,&cfg)==0);
+ assert(led0==1 && led1==0 && btn==1 && cfg==15 && calls==1);
  return 0;
 }
 '''
@@ -64,7 +72,8 @@ code = preamble + types + '\n' + '\n'.join(function(n) for n in [
  'static int caribou_fpga_spi_transfer (',
  'int caribou_fpga_set_sys_ctrl_tx_sample_gap (',
  'int caribou_fpga_get_sys_ctrl_tx_sample_gap (',
- 'int caribou_fpga_set_debug_loopback(']) + main
+ 'int caribou_fpga_set_debug_loopback(',
+ 'int caribou_fpga_get_io_ctrl_dig (']) + main
 with tempfile.TemporaryDirectory() as d:
     p = Path(d); (p/'test.c').write_text(code)
     subprocess.run(['cc','-std=c11',str(p/'test.c'),'-o',str(p/'test')],check=True)

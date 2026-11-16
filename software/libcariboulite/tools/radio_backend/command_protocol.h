@@ -28,6 +28,8 @@ typedef enum control_command {
     CONTROL_TX_AM_DEPTH,
     CONTROL_TX_AM_BACKOFF,
     CONTROL_TX_TONE,
+    CONTROL_FPGA_LED_GET,
+    CONTROL_FPGA_LED_SET,
     CONTROL_FPGA_PROGRAM,
     CONTROL_FPGA_SOFT_RESET,
     CONTROL_FPGA_HARD_RESET,
@@ -61,6 +63,7 @@ typedef struct control_request {
     float tx_am_backoff_db;
     float tx_tone_hz;
     float tx_tone_amp;
+    bool fpga_led0, fpga_led1;
 } control_request_t;
 
 typedef struct control_reply {
@@ -98,12 +101,16 @@ typedef struct control_reply {
     bool tx_requested;
     bool rx_resume;
     bool transition;
+    bool fpga_io_valid; /* Present only in explicit LED command replies. */
+    unsigned fpga_io_pins; /* LED0/1 bits0/1, CFG bits3..6, BTN bit7. */
 } control_reply_t;
 
 /* Strict ASCII protocol-v1/v2 packets. v1 carries RX commands/settings; v2
  * extends them with TX controls, combined RX/TX settings, FPGA programming and
  * transition states. Current v2 replies append TX mode/depth/backoff; the
  * parser also accepts legacy 30-field replies with tx_settings_valid=false.
+ * Explicit LED replies append "fpga_io N" with digital readback; ordinary
+ * status replies remain unchanged.
  * Combined requests use frequency_hz, mode or sample_rate_hz
  * and require both RX and TX to be stopped. Parsers accept ASCII whitespace between
  * tokens, reject embedded NULs, nonfinite/overflowed numbers and trailing

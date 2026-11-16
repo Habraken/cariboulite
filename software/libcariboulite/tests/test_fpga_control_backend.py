@@ -262,6 +262,61 @@ class FpgaControlBackendTests(unittest.TestCase):
                 self.assert_simulated(completed)
                 self.assertFalse(completed["control"]["rx_requested"])
 
+    def test_led_read_write_is_explicit_and_preserves_radio_settings(self):
+        self.start_backend(start=False)
+        peer = self.controller()
+        before = self.command(peer, "get")
+        def leds(command):
+            self.request_id += 1
+            peer.sendall(f"v2 {self.request_id} {command}".encode())
+            fields = peer.recv(4096).decode().split()
+            self.assertEqual(fields[2:4], ["OK", "OK"])
+            self.assertEqual(fields[-2], "fpga_io")
+            return int(fields[-1])
+        self.assertEqual(leds("fpga_led_get") & 3, 3)
+        self.assertEqual(leds("fpga_led_set 0 1") & 3, 2)
+        self.assertEqual(leds("fpga_led_get") & 3, 2)
+        self.assertEqual(leds("fpga_led_set 0 1") & 3, 2)
+        after = self.command(peer, "get")
+        self.assertEqual(after["pipeline_generation"], before["pipeline_generation"])
+        self.assertEqual(after["config_generation"], before["config_generation"] + 2)
+        self.assertEqual({k:v for k,v in self.settings(after).items() if k!="config_generation"},
+                         {k:v for k,v in self.settings(before).items() if k!="config_generation"})
+        self.command(peer, "start")
+        self.command(peer, "fpga_led_get", "RX_RUNNING")
+        self.command(peer, "fpga_led_set 1 1", "RX_RUNNING")
+        self.command(peer, "stop")
+        self.command(peer, "tx_start", "ACCEPTED")
+        self.wait_state(peer, "TX")
+        self.command(peer, "fpga_led_get", "TX_RUNNING")
+        self.command(peer, "fpga_led_set 1 1", "TX_RUNNING")
+        self.command(peer, "tx_stop", "ACCEPTED")
+        self.wait_state(peer, "IDLE")
+        self.assertEqual(leds("fpga_led_set 0 0") & 3, 0)
+        self.command(peer, "fpga_soft_reset", "ACCEPTED")
+        self.wait_state(peer, "IDLE")
+        self.assertEqual(leds("fpga_led_get") & 3, 3)
+        self.command(peer, "fpga_hard_reset", "ACCEPTED")
+        self.wait_state(peer, "FPGA_NEEDS_PROGRAM")
+        self.command(peer, "fpga_led_set 1 1", "FPGA_REQUIRED")
+
+    def test_controller_led_commands_and_invalid_values(self):
+        self.start_backend(start=False)
+        for command, expected in [("fpga leds", "LED0=1 LED1=1"),
+                                  ("fpga leds 0 1", "LED0=0 LED1=1"),
+                                  ("fpga leds", "LED0=0 LED1=1")]:
+            r = subprocess.run([str(helpers.CONTROLLER), "--socket", str(self.control_path),
+                                "--command", command],capture_output=True,text=True,timeout=3,
+                               env=rx_helpers.ENVIRONMENT)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertIn(expected, r.stdout)
+            self.assertIn("(simulated)", r.stdout)
+        for command in ["fpga leds 2 0", "fpga leds 1", "fpga leds on off"]:
+            r = subprocess.run([str(helpers.CONTROLLER), "--socket", str(self.control_path),
+                                "--command", command],capture_output=True,text=True,timeout=3,
+                               env=rx_helpers.ENVIRONMENT)
+            self.assertEqual(r.returncode, 2)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

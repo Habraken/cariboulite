@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_TOKENS 33
+#define MAX_TOKENS 35
 
 static int protocol_error(void)
 {
@@ -250,6 +250,11 @@ int control_request_parse(const char *packet, size_t bytes,
         request->command = CONTROL_TX_START;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "tx_stop") && count == 3)
         request->command = CONTROL_TX_STOP;
+    else if (request->protocol_version == 2 && !strcmp(tokens[2], "fpga_led_get") && count == 3)
+        request->command = CONTROL_FPGA_LED_GET;
+    else if (request->protocol_version == 2 && !strcmp(tokens[2], "fpga_led_set") && count == 5 &&
+             !parse_bool(tokens[3], &request->fpga_led0) && !parse_bool(tokens[4], &request->fpga_led1))
+        request->command = CONTROL_FPGA_LED_SET;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "fpga_program") && count == 3)
         request->command = CONTROL_FPGA_PROGRAM;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "fpga_soft_reset") && count == 3)
@@ -326,7 +331,7 @@ int control_reply_parse(const char *packet, size_t bytes, control_reply_t *reply
     if (!count || (strcmp(tokens[0], "v1") && strcmp(tokens[0], "v2")))
         return protocol_error();
     reply->protocol_version = !strcmp(tokens[0], "v2") ? 2 : 1;
-    if ((reply->protocol_version == 2 ? (count != 30U && count != 33U) : count != 17U) ||
+    if ((reply->protocol_version == 2 ? (count != 30U && count != 33U && count != 35U) : count != 17U) ||
         parse_uint64(tokens[1], &reply->id) < 0)
         return protocol_error();
     if (!strcmp(tokens[2], "OK"))
@@ -375,7 +380,7 @@ int control_reply_parse(const char *packet, size_t bytes, control_reply_t *reply
          parse_bool(tokens[28], &reply->rx_resume) ||
          parse_bool(tokens[29], &reply->transition)))
         return protocol_error();
-    if (reply->protocol_version == 2 && count == 33U) {
+    if (reply->protocol_version == 2 && count >= 33U) {
         if (strcmp(tokens[30], "nbfm") && strcmp(tokens[30], "am"))
             return protocol_error();
         reply->tx_mode = !strcmp(tokens[30], "am") ? AUDIO_MOD_AM : AUDIO_MOD_NBFM;
@@ -385,6 +390,13 @@ int control_reply_parse(const char *packet, size_t bytes, control_reply_t *reply
             reply->tx_am_backoff_db < 0 || reply->tx_am_backoff_db > 18)
             return protocol_error();
         reply->tx_settings_valid = true;
+    }
+    if (reply->protocol_version == 2 && count == 35U) {
+        uint64_t pins;
+        if (strcmp(tokens[33], "fpga_io") || parse_uint64(tokens[34], &pins) || pins > 255)
+            return protocol_error();
+        reply->fpga_io_valid = true;
+        reply->fpga_io_pins = (unsigned)pins;
     }
     return 0;
 }
@@ -464,6 +476,13 @@ int control_request_format(const control_request_t *request,
     case CONTROL_TX_STOP:
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " %s\n", version, request->id,
                          request->command == CONTROL_TX_START ? "tx_start" : "tx_stop");
+        break;
+    case CONTROL_FPGA_LED_GET:
+        bytes = snprintf(packet, capacity, "v%u %" PRIu64 " fpga_led_get\n", version, request->id);
+        break;
+    case CONTROL_FPGA_LED_SET:
+        bytes = snprintf(packet, capacity, "v%u %" PRIu64 " fpga_led_set %u %u\n", version, request->id,
+                         request->fpga_led0 ? 1U : 0U, request->fpga_led1 ? 1U : 0U);
         break;
     case CONTROL_FPGA_PROGRAM:
     case CONTROL_FPGA_SOFT_RESET:
@@ -571,6 +590,14 @@ int control_reply_format(const control_reply_t *reply,
     }
     uselocale(previous_locale);
     freelocale(numeric_locale);
+    if (version == 2 && reply->fpga_io_valid && bytes > 0 && (size_t)bytes < capacity) {
+        if (reply->fpga_io_pins > 255) bytes = -1;
+        else {
+            int extra = snprintf(packet + bytes - 1, capacity - (size_t)bytes + 1,
+                                 " fpga_io %u\n", reply->fpga_io_pins);
+            bytes = extra < 0 ? -1 : bytes - 1 + extra;
+        }
+    }
     bytes = formatted_size(bytes, capacity);
     if (bytes >= 0 && control_reply_parse(packet, (size_t)bytes, &checked) < 0)
         return -1;

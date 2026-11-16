@@ -61,6 +61,8 @@ static void test_requests(void)
         { "v2 22 tx_source mic", CONTROL_TX_SOURCE },
         { "v2 22 tx_source tone", CONTROL_TX_SOURCE },
         { "v2 23 tx_tone 1000 .5", CONTROL_TX_TONE },
+        { "v2 20 fpga_led_get", CONTROL_FPGA_LED_GET },
+        { "v2 21 fpga_led_set 1 0", CONTROL_FPGA_LED_SET },
         { "v2 24 fpga_program", CONTROL_FPGA_PROGRAM },
         { "\tv2 25\r fpga_program\n", CONTROL_FPGA_PROGRAM },
         { "v2 26 fpga_soft_reset", CONTROL_FPGA_SOFT_RESET },
@@ -106,6 +108,10 @@ static void test_requests(void)
         "v2 1 tx_tone 1000 .5 extra", "v1 1 fpga_program",
         "v2 1 fpga_program firmware/top.bin", "v2 1 fpga_program extra",
         "v2 1 fpga program", "v2 1 FPGA_PROGRAM", "v2 1 fpga_program\x80",
+        "v1 1 fpga_led_get", "v1 1 fpga_led_set 0 1",
+        "v2 1 fpga_led_set 2 0", "v2 1 fpga_led_set -1 0",
+        "v2 1 fpga_led_set 0", "v2 1 fpga_led_get extra",
+        "v2 1 fpga_led_set 0 1 extra", "v2 1 fpga_led_set 0 true",
         "v1 1 fpga_soft_reset", "v1 1 fpga_hard_reset",
         "v2 1 fpga_soft_reset extra", "v2 1 fpga_hard_reset firmware/top.bin",
         "v2 1 fpga_soft reset", "v2 1 fpga_hard reset", "v2 1 FPGA_SOFT_RESET"
@@ -288,6 +294,14 @@ static void test_v2_replies(void)
     int bytes = control_reply_format(&reply, formatted, sizeof(formatted));
     CHECK(bytes > 0 && !control_reply_parse(formatted, (size_t)bytes, &decoded));
     CHECK(decoded.tx_tone_amp == reply.tx_tone_amp && decoded.protocol_version == 2);
+    reply.fpga_io_valid = true; reply.fpga_io_pins = 249;
+    bytes = control_reply_format(&reply, formatted, sizeof(formatted));
+    CHECK(bytes > 0 && !control_reply_parse(formatted, bytes, &decoded));
+    CHECK(decoded.fpga_io_valid && decoded.fpga_io_pins == 249);
+    reply.fpga_io_pins = 256;
+    CHECK(control_reply_format(&reply, formatted, sizeof(formatted)) == -1);
+    reply.fpga_io_valid = false; reply.fpga_io_pins = 0;
+
     static const char *states[] = {"IDLE", "RX", "TX_STARTING", "TX", "TX_STOPPING", "RX_STARTING",
         "FPGA_PROGRAMMING", "FPGA_RESETTING", "FPGA_NEEDS_PROGRAM", "FAULT"};
     for (unsigned i = 0; i < sizeof(states) / sizeof(states[0]); ++i) {

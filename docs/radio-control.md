@@ -265,6 +265,8 @@ information only, so no Transmit section is shown.
 | `tx rate 1`, `tx rate 2` or `tx rate 4` | Select TX sample rate in MS/s. |
 | `tx source mic` or `tx source tone` | Select microphone input or synthesized audio. |
 | `tx tone 600 0.4` | Set tone frequency in Hz and normalized audio amplitude. |
+| `fpga leds` | Explicitly read LED0/LED1, BTN and CFG through the backend; requires stopped RX/TX. |
+| `fpga leds 0 1` | Write both LED states (each 0 or 1), then read back once; requires stopped RX/TX. |
 | `fpga program` | Load `firmware/top.bin` using the menu-3 sequence; requires stopped RX and TX. |
 | `fpga soft reset` | Reset FPGA runtime logic while preserving the loaded firmware; requires stopped RX and TX. |
 | `fpga hard reset` | Pulse FPGA configuration reset; requires stopped RX/TX and subsequent `fpga program`. |
@@ -759,6 +761,8 @@ v2 ID tx_tone HZ AMPLITUDE
 v2 ID both_frequency HZ
 v2 ID both_mode nbfm|wbfm
 v2 ID both_sample_rate 1000000|2000000|4000000
+v2 ID fpga_led_get
+v2 ID fpga_led_set LED0 LED1
 v2 ID fpga_program
 v2 ID fpga_soft_reset
 v2 ID fpga_hard_reset
@@ -981,3 +985,23 @@ See [AM voice TX](am-voice-tx.md) for filtering, power reference and validation.
 
 AM RX uses offset tuning by default. Channel frequency commands and the reported
 RF frequency stay unchanged; `--rx-am-offset off` disables it for diagnostics.
+
+### Explicit FPGA LED diagnostics
+
+`fpga leds` performs a digital-pin read only. `fpga leds 1 0` writes both LED
+bits and reads the digital register once; writes are sent even when the requested
+state matches the last readback. There is no automatic LED read or write during
+backend startup, status publication or ordinary `get` commands. These commands
+are available while stopped after an RX fault, but do not clear that fault or
+reset/program the FPGA. They reject active RX/TX, pending transitions and
+`FPGA_NEEDS_PROGRAM`. SPI errors return `HARDWARE`; a successful read with LED
+bits different from the requested states returns `VERIFY` and the actual readback.
+There is no automatic write retry. `rx stop` clears a pipeline fault before the
+next RX attempt.
+
+Only explicit LED-command replies append `fpga_io N` to the normal 33-field v2
+reply. This is an unsigned byte with LED0/LED1 at bits0/1, CFG at bits3..6 and
+BTN at bit7 (reserved bit2 is zero). Other replies keep their previous format;
+the updated parser also accepts legacy30/33-field v2 replies. Use the updated
+controller for LED commands. Dry-run readback is labelled simulated and resets
+to the firmware LED defaults after simulated programming/soft reset.

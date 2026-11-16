@@ -391,6 +391,7 @@ typedef struct {
     double last_tx_progress;
     double tx_state_deadline, tx_state_next_check;
     control_server_t *server;
+    unsigned simulated_fpga_pins;
 } backend_control_t;
 
 static const char *backend_control_state(const options_t *o)
@@ -979,6 +980,8 @@ static void backend_poll_lifecycle(backend_control_t *c)
     o->actual_tx_frequency = c->lifecycle_options.actual_tx_frequency;
     o->actual_tx_power = c->lifecycle_options.actual_tx_power;
     if (backend_lifecycle_fpga(c->lifecycle_action)) {
+        if (o->dry_run && !c->lifecycle_result && c->lifecycle_action != 6)
+            c->simulated_fpga_pins = 3;
         o->tx_requested = o->rx_requested = o->rx_resume = false;
         o->control_fault = c->lifecycle_result != 0;
         o->tx_error = NULL;
@@ -1023,6 +1026,9 @@ static void backend_control_command(void *opaque, const control_request_t *reque
     options_t *o = c->options;
     const char *code = "OK";
     bool changed = false;
+    bool fpga_io_valid = false;
+    unsigned fpga_io_pins = 0;
+    const bool led_command = request->command == CONTROL_FPGA_LED_GET || request->command == CONTROL_FPGA_LED_SET;
     radio_profile_t profile;
     const bool both = request->command == CONTROL_BOTH_FREQUENCY ||
         request->command == CONTROL_BOTH_MODE || request->command == CONTROL_BOTH_SAMPLE_RATE;
@@ -1039,7 +1045,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
     else if (o->fpga_needs_programming && request->command != CONTROL_GET
              && request->command != CONTROL_FPGA_PROGRAM && request->command != CONTROL_FPGA_HARD_RESET
              && request->command != CONTROL_STOP && request->command != CONTROL_TX_STOP) code = "FPGA_REQUIRED";
-    else if (o->control_fault && request->command != CONTROL_GET
+    else if (o->control_fault && !led_command && request->command != CONTROL_GET
              && request->command != CONTROL_STOP && request->command != CONTROL_TX_STOP
              && request->command != CONTROL_FPGA_PROGRAM && request->command != CONTROL_FPGA_SOFT_RESET
              && request->command != CONTROL_FPGA_HARD_RESET) code = "FAULT";
@@ -1059,6 +1065,37 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         }
         break;
     case CONTROL_GET: break;
+    case CONTROL_FPGA_LED_GET:
+    case CONTROL_FPGA_LED_SET:
+        if (o->rx_requested || (!o->dry_run && c->pipeline->running)) code = "RX_RUNNING";
+        else if (!o->dry_run && c->tx_pipeline->running) code = "TX_RUNNING";
+        else {
+            int led0 = 0, led1 = 0, btn = 0, cfg = 0, rc = 0;
+            if (o->dry_run) {
+                if (request->command == CONTROL_FPGA_LED_SET)
+                    c->simulated_fpga_pins = (c->simulated_fpga_pins & ~3U) |
+                        (request->fpga_led0 ? 1U : 0U) | (request->fpga_led1 ? 2U : 0U);
+                fpga_io_pins = c->simulated_fpga_pins;
+                fpga_io_valid = true;
+            } else {
+                HW_LOCK();
+                if (request->command == CONTROL_FPGA_LED_SET)
+                    rc = caribou_fpga_set_io_ctrl_dig(&c->sys->fpga, request->fpga_led0, request->fpga_led1);
+                if (!rc) rc = caribou_fpga_get_io_ctrl_dig(&c->sys->fpga, &led0, &led1, &btn, &cfg);
+                HW_UNLOCK();
+                if (!rc) {
+                    fpga_io_pins = led0 | (led1 << 1) | (cfg << 3) | (btn << 7);
+                    fpga_io_valid = true;
+                }
+            }
+            if (rc) code = "HARDWARE";
+            else if (request->command == CONTROL_FPGA_LED_SET) {
+                changed = true; /* An explicit write is never optimized away. */
+                if ((fpga_io_pins & 3U) != ((request->fpga_led0 ? 1U : 0U) | (request->fpga_led1 ? 2U : 0U)))
+                    code = "VERIFY";
+            }
+        }
+        break;
     case CONTROL_FPGA_PROGRAM:
     case CONTROL_FPGA_SOFT_RESET:
     case CONTROL_FPGA_HARD_RESET:
@@ -1280,6 +1317,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         .tx_requested_frequency_hz = o->tx.freq_hz, .tx_actual_frequency_hz = o->actual_tx_frequency,
         .tx_sample_rate_hz = o->tx.rf_fs, .tx_requested_power_dbm = o->tx.tx_power_dbm,
         .tx_actual_power_dbm = o->actual_tx_power, .tx_tone_mode = o->tx.tone_mode,
+        .fpga_io_valid = fpga_io_valid, .fpga_io_pins = fpga_io_pins,
         .tx_settings_valid = true, .tx_mode = o->tx.mode,
         .tx_am_depth = o->tx.am_depth, .tx_am_backoff_db = o->tx.am_backoff_db,
         .tx_tone_hz = o->tx.tone_hz, .tx_tone_amp = o->tx.tone_amp,
@@ -1724,7 +1762,7 @@ int main(int argc, char **argv)
     rx_pipeline_t pipeline = {0};
     tx_pipeline_t tx_pipeline = {0};
     cariboulite_radio_state_st *radio = NULL;
-    backend_control_t control = {.options = &options, .sys = &sys,
+    backend_control_t control = {.simulated_fpga_pins = 3, .options = &options, .sys = &sys,
         .pipeline = &pipeline, .tx_pipeline = &tx_pipeline, .server = &control_server};
     modem_snapshot modem;
     const at86rf215_rf_channel_en channel = !strcmp(options.channel, "RF09")
