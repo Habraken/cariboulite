@@ -4,6 +4,7 @@ root=pathlib.Path(sys.argv[1]);out=pathlib.Path(sys.argv[2])
 r=json.loads((root/'summary.json').read_text());c=json.loads((root/'comparison-summary.json').read_text());v=json.loads((root/'raw-verification.json').read_text())
 rates=[4000000,2000000,1333333,1000000,800000,666667,500000,400000];labels=['4 MS/s','2 MS/s','4/3 MS/s','1 MS/s','800 kS/s','2/3 MS/s','500 kS/s','400 kS/s']
 s=['# NBFM sample-rate and TX-power retest after TX wire fixes','',
+'Receiver identity: board #1, `d8810044-c444-46f4-a548-703412cbf971` on pi4f-trixie, attributed by the user on 2026-11-16. This includes the fixed receiver in TX-rate sweeps. See [per-board attribution](board-rx-validation.md); recorded measurements and their original validation scope are unchanged.','',
 'The restored **90 dB nominal attenuated link** connects pi4g-trixie as transmitter to pi4f-trixie as receiver at **430.100 MHz, RF24**. All eight native RX rates and all eight native TX rates passed the recorded power sweep, with zero recorded transport errors. This is 224 transmitting points and 16 TX-off baselines, rather than an 8-by-8 matrix of rate pairs.','',
 '## What changed in measured performance','',
 'This repeat does **not establish a NBFM SINAD improvement** over the [historical sweep](native-sample-rate-power-sweep-2026-11-14.md). The shared TX wire corrections remain necessary for sample accuracy, but their benefit cannot be inferred from a small change in this fixed-notch link-quality estimate.','']

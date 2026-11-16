@@ -11,7 +11,7 @@ values or identify the transmitter. It includes the receiver held at 4 MS/s
 while TX sample rate was varied. Machine-readable attribution and the primary
 report list are in [associations.json](baselines/board-rx-identities/associations.json).
 
-## Board #2 — initialized, RX qualification in progress
+## Board #2 — initialized, scoped RX qualification complete
 
 The user labels the previous receiver #1 and its replacement #2. Board #2 is
 installed on pi4f with the nominal 90 dB link to the original TX reference on
@@ -29,9 +29,14 @@ The user reports that #2 still has the incorrect U25 oscillator. Its frequency
 has not been measured on #2; do not transfer #1's scope measurement to #2.
 Board #2 stays RX-only; successful identity programming is not RF acceptance.
 The guarded collector requires #2's boot UUID on pi4f and confines TX commands
-to pi4g. RX initialization at 4 MS/s succeeded; measurements are in progress.
+to pi4g. All eight native RX rates initialized and the 120-point RX-rate/power sweep
+completed with zero recorded transport errors. All 2,878 retained snapshots
+reconcile to the summaries. No TX trials were run on #2; both radios were
+released afterward. See the [#2 report and #1 comparison](board2-rx-qualification-2026-11-16.md).
+The measured SINAD increase is an uncalibrated link observation, not isolated
+receiver-quality or oscillator acceptance.
 
-Qualification procedure:
+Qualification procedure used (repeat for subsequent boards):
 
 1. Read and preserve two complete EEPROM backups, check agreement and inspect
    any existing identity. A boot-time device-tree identity alone does not verify

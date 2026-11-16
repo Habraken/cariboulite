@@ -1,0 +1,18 @@
+{
+  "transmitting_points": 112,
+  "off_points": 8,
+  "receiver_uuid": "36b67ac4-b313-4369-99bd-4b3e09caabfa",
+  "reference_receiver_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+  "note": "Board2 minus board1 at matched requests; uncalibrated link estimate, not a causal hardware-quality comparison.",
+  "rssi_dbm_delta": {
+    "min": -0.2083333333333286,
+    "max": 7.009057971014499,
+    "mean": 0.8833572722567287
+  },
+  "sinad_db_delta": {
+    "min": 0.5757916666666674,
+    "max": 5.724666666666664,
+    "mean": 3.2471141149068323
+  },
+  "max_within_point_sinad_range": 1.0660000000000025
+}

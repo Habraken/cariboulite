@@ -1,0 +1,12 @@
+{
+  "board_label": "#2",
+  "rx_board_uuid": "36b67ac4-b313-4369-99bd-4b3e09caabfa",
+  "reference_board_label": "#1",
+  "reference_rx_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+  "tx_reference_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+  "original_launch_commit": "df291ba",
+  "binary_implementation_commit": "3edde8e",
+  "rx_restriction": "RX only; wrong U25 reported by user, oscillator frequency not measured on board2",
+  "setup_confirmation": "User confirmed installed board2 on pi4f and 90dB link to original pi4g board",
+  "initial_attempt": "20261116T155759Z failed SSH host verification before radio helper ready; public host key restored and collector retried without changing RF setup"
+}

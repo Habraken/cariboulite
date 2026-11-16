@@ -13,10 +13,20 @@
         "docs/nbfm-post-wire-fix-sweep-2026-11-16.md"
       ],
       "board_label": "#1"
+    },
+    {
+      "board_label": "#2",
+      "rx_board_uuid": "36b67ac4-b313-4369-99bd-4b3e09caabfa",
+      "rx_host": "pi4f-trixie",
+      "source": "User physical label/setup confirmation, EEPROM backup/write/readback verification, post-reboot device-tree identity and guarded RX backend metadata",
+      "scope": "RX-only NBFM rate/power sweep at 430.1MHz RF24, nominal 90dB link; not TX or oscillator qualification",
+      "primary_reports": [
+        "docs/board2-rx-qualification-2026-11-16.md"
+      ]
     }
   ],
-  "next_board": {
-    "status": "Board #2 blank EEPROM initialized and verified; boot identity and SMI device verified; RX-only qualification in progress",
+  "current_receiver": {
+    "status": "EEPROM initialized and verified; 120-point RX-only sweep complete, zero recorded transport errors; both radios released",
     "rx_host": "pi4f-trixie",
     "rx_board_uuid": "36b67ac4-b313-4369-99bd-4b3e09caabfa",
     "restriction": "RX only due to user-reported incorrect U25 oscillator; initialize and establish viable RX operation before collecting performance data",
@@ -24,6 +34,7 @@
     "attenuation_db_nominal": 90,
     "board_label": "#2",
     "tx_board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
-    "evidence": "docs/baselines/20261116-board2-rx/"
+    "evidence": "docs/baselines/20261116-board2-rx/",
+    "report": "docs/board2-rx-qualification-2026-11-16.md"
   }
 }
