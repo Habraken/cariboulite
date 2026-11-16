@@ -1,0 +1,10 @@
+{
+  "board_label": "#5",
+  "rx_board_uuid": "b43713d5-7ebf-45ff-b327-aa2e0962c9e2",
+  "tx_reference_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+  "setup_confirmation": "User confirms device5 attached on pi4f and linked with90dB attenuation",
+  "rx_only": true,
+  "oscillator_frequency_measured": false,
+  "sequence": "EEPROM program and verification; reboot; guarded RX sweep without manual test-app initialization",
+  "production_software_changed": false
+}

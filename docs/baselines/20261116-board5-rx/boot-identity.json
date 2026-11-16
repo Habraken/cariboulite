@@ -1,0 +1,18 @@
+{
+  "host": "pi4f-trixie",
+  "kernel": "6.18.60+rpt-rpi-v8",
+  "hat": {
+    "vendor": "CaribouLite Reproduction 2026Q4 PD9JH",
+    "product": "CaribouLite RPI Hat",
+    "product_ver": "0x0001",
+    "uuid": "b43713d5-7ebf-45ff-b327-aa2e0962c9e2",
+    "product_id": "0x0001",
+    "name": "hat"
+  },
+  "smi_present": true,
+  "radio_processes": [],
+  "smi_open_fds": [],
+  "binary_sha256": "25a9b8cf2c764fc4945e2fc5facb4b1143bf3bad9b7d606abc997cc4d3e390b9",
+  "loaded_driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+  "installed_driver_srcversion": "1AC65CD6AE81A1E2ED63F14"
+}
