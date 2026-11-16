@@ -23,18 +23,26 @@
       "primary_reports": [
         "docs/board2-rx-qualification-2026-11-16.md"
       ]
+    },
+    {
+      "board_label": "#3",
+      "rx_board_uuid": "f23c0015-fd1b-47b7-8314-f5c9e7de0ea7",
+      "rx_host": "pi4f-trixie",
+      "source": "User physical label/setup confirmation, verified blank EEPROM write/readback and post-reboot device-tree identity",
+      "scope": "EEPROM initialization and boot recognition verified; RX qualification pending",
+      "primary_reports": [],
+      "evidence": "docs/baselines/20261116-board3-rx/"
     }
   ],
   "current_receiver": {
-    "status": "EEPROM initialized and verified; 120-point RX-only sweep complete, zero recorded transport errors; both radios released",
+    "status": "Board #3 EEPROM and boot identity verified; RX-only qualification pending",
     "rx_host": "pi4f-trixie",
-    "rx_board_uuid": "36b67ac4-b313-4369-99bd-4b3e09caabfa",
+    "rx_board_uuid": "f23c0015-fd1b-47b7-8314-f5c9e7de0ea7",
     "restriction": "RX only due to user-reported incorrect U25 oscillator; initialize and establish viable RX operation before collecting performance data",
     "tx_host": "pi4g-trixie",
     "attenuation_db_nominal": 90,
-    "board_label": "#2",
+    "board_label": "#3",
     "tx_board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
-    "evidence": "docs/baselines/20261116-board2-rx/",
-    "report": "docs/board2-rx-qualification-2026-11-16.md"
+    "evidence": "docs/baselines/20261116-board3-rx/"
   }
 }
