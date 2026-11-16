@@ -1,0 +1,24 @@
+{
+  "host": "pi4g-trixie",
+  "board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+  "command": [
+    "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+    "--channel",
+    "RF24",
+    "--rx-frequency",
+    "430100000",
+    "--tx-frequency",
+    "430100000",
+    "--seconds",
+    "2",
+    "--socket",
+    "/tmp/fpga-retry-check-a8byaheo/status.sock"
+  ],
+  "exit_code": 0,
+  "initialization_failed_reported": false,
+  "exhausted_retries_reported": false,
+  "reached_rx_idle": true,
+  "source_sha256": "ce5e846004a543c219b79deea7a6129c5969284553f96bb8a98cd0c4ed0f23ed",
+  "build_library_sha256": "9142777cced313c299936dd97126790e4472d1f883810b0f472bee0012899e0d",
+  "installed_library_sha256": "9142777cced313c299936dd97126790e4472d1f883810b0f472bee0012899e0d"
+}

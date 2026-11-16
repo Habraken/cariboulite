@@ -171,7 +171,6 @@ int caribou_fpga_get_status(caribou_fpga_st* dev, caribou_fpga_status_en *stat)
 //--------------------------------------------------------------
 int caribou_fpga_program_to_fpga(caribou_fpga_st* dev, unsigned char *buffer, size_t len, bool force_prog)
 {
-    int prog_retries = 3;
 	caribou_fpga_get_status(dev, NULL);
 	if (dev->status == caribou_fpga_status_not_programmed || force_prog)
 	{
@@ -181,7 +180,7 @@ int caribou_fpga_program_to_fpga(caribou_fpga_st* dev, unsigned char *buffer, si
         	return -1;
 		}
 
-        while (prog_retries--)
+        for (int attempt = 0; attempt < 3; ++attempt)
         {
             if (caribou_prog_configure_from_buffer(&dev->prog_dev, buffer, len) != 0)
             {
@@ -197,14 +196,11 @@ int caribou_fpga_program_to_fpga(caribou_fpga_st* dev, unsigned char *buffer, si
             caribou_fpga_get_status(dev, NULL);
             if (dev->status == caribou_fpga_status_operational)
             {
-                break;
+                return 0;
             }  
         }
-        if (prog_retries == 0)
-        {
-            ZF_LOGE("Programming failed");
-            return -1;
-        }            
+        ZF_LOGE("Programming failed: FPGA not operational after 3 attempts");
+        return -1;
 	}
 	else
 	{

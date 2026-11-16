@@ -29,6 +29,7 @@ typedef struct {
 static char events[32];
 static size_t event_count;
 static int failures_remaining;
+static bool reject_status;
 static bool configured, leds_on, reset_asserted;
 
 static void event(char value) {
@@ -39,7 +40,7 @@ static void event(char value) {
 static int caribou_fpga_get_status(caribou_fpga_st *dev, void *unused) {
     (void)unused;
     event('Q');
-    dev->status = configured ? caribou_fpga_status_operational
+    dev->status = configured && !reject_status ? caribou_fpga_status_operational
                              : caribou_fpga_status_not_programmed;
     return 0;
 }
@@ -83,6 +84,7 @@ static caribou_fpga_st setup(bool operational, int failures) {
     event_count = 0;
     events[0] = '\0';
     failures_remaining = failures;
+    reject_status = false;
     configured = operational;
     leds_on = false;
     reset_asserted = false;
@@ -109,8 +111,8 @@ int main(void) {
         assert(strcmp(events, "Q") == 0 && !leds_on);
 
         dev = setup(false, 3);
-        /* Retry return-value bookkeeping is separate from reset consistency. */
-        (void)program(&dev, file, false);
+        /* Exhausting configuration attempts must propagate failure. */
+        assert(program(&dev, file, false) < 0);
         assert(strcmp(events, file ? "QF" : "QBBB") == 0);
         assert(!configured && !leds_on && !reset_asserted);
     }
@@ -118,6 +120,22 @@ int main(void) {
     caribou_fpga_st dev = setup(false, 1);
     assert(program(&dev, false, false) == 0);
     assert(strcmp(events, "QBBLHQ") == 0 && leds_on && !reset_asserted);
+    /* Success on the last allowed attempt must not be reported as failure. */
+    dev = setup(false, 2);
+    assert(program(&dev, false, false) == 0);
+    assert(strcmp(events, "QBBBLHQ") == 0 && leds_on);
+
+    /* CDONE/configuration success alone does not imply operational SPI. */
+    dev = setup(false, 0);
+    reject_status = true;
+    assert(program(&dev, false, false) < 0);
+    assert(strcmp(events, "QBLHQBLHQBLHQ") == 0);
+    assert(dev.status == caribou_fpga_status_not_programmed);
+
+    /* Forced reprogramming failure must not reuse an old operational status. */
+    dev = setup(true, 3);
+    assert(program(&dev, false, true) < 0);
+    assert(strcmp(events, "QBBB") == 0);
     return 0;
 }
 '''
