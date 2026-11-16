@@ -2,3 +2,7 @@
 software/libcariboulite/src/caribou_smi/caribou_smi.[ch] whitespace=cr-at-eol
 docs/baselines/20261113-rx-stutter/*.bin binary
 docs/baselines/20261113-rx-stutter/consensus-diagnostic.patch whitespace=-blank-at-eol,-blank-at-eof
+
+# Preserve generated qualification CSV/SVG bytes without whitespace warnings.
+docs/baselines/20261116-board4-*/*.csv whitespace=cr-at-eol
+docs/baselines/20261116-board4-*/*.svg whitespace=-blank-at-eol

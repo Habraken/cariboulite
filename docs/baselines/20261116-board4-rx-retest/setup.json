@@ -1,0 +1,10 @@
+{
+  "board_label": "#4",
+  "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+  "user_report_before_retest": "Ran cariboulite_test_app, toggled LEDs to check function, then manually tested4MS/s RX with audio sounding okay",
+  "interpretation": "Different initialization history; cause of earlier startup and frame errors not established",
+  "eeprom_reprogrammed": false,
+  "production_software_changed": false,
+  "tx_reference_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+  "attenuation_note": "Nominal90dB link inherited from previous setup, not independently measured"
+}

@@ -1,0 +1,338 @@
+{
+  "source_commit": "3edde8e",
+  "driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+  "tx_host": "pi4g-trixie",
+  "rx_host": "pi4f-trixie",
+  "frequency_hz": 430100000,
+  "channel": "RF24",
+  "attenuation_db_nominal": 90,
+  "tone_hz": 1000,
+  "tone_amplitude": 0.4,
+  "tx_deviation_hz": 2500,
+  "settle_seconds": 2,
+  "measure_seconds": 5,
+  "rates": [
+    [
+      3,
+      1333333
+    ],
+    [
+      4,
+      1000000
+    ],
+    [
+      5,
+      800000
+    ],
+    [
+      6,
+      666667
+    ],
+    [
+      8,
+      500000
+    ],
+    [
+      10,
+      400000
+    ]
+  ],
+  "tx_powers_dbm": [
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14
+  ],
+  "axes": [
+    "rx"
+  ],
+  "rx_board_label": "#4",
+  "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+  "rx_restriction": "RX only; oscillator frequency not measured on this board",
+  "failed_rx_start_rates_hz": [
+    4000000,
+    2000000
+  ],
+  "reference_receiver_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+  "timestamp_filter": "RX snapshots must be newer than measurement start; status drained throughout settling",
+  "profiles": {
+    "rx_1333333": {
+      "rx": {
+        "sample_rate_hz": 1333333,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 166666
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 1333333.333,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 166666.667
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_1000000": {
+      "rx": {
+        "sample_rate_hz": 1000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 125000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 1000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 125000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_800000": {
+      "rx": {
+        "sample_rate_hz": 800000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 100000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 800000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 100000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_666667": {
+      "rx": {
+        "sample_rate_hz": 666667,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 83333
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 666666.667,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 83333.333
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_500000": {
+      "rx": {
+        "sample_rate_hz": 500000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 62500
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 500000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 62500.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_400000": {
+      "rx": {
+        "sample_rate_hz": 400000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 50000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 400000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 50000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    }
+  },
+  "run_id": "cariboulite-board4-rx-20261116T173153Z",
+  "backends": {
+    "rx": {
+      "board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+      "board_label": "#4",
+      "host": "pi4f-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "role": "rx",
+      "args": [
+        "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+        "--channel",
+        "RF24",
+        "--rx-frequency",
+        "430100000",
+        "--tx-frequency",
+        "430100000",
+        "--tx-sample-rate",
+        "4000000",
+        "--tx-power",
+        "-12",
+        "--tx-mode",
+        "nbfm",
+        "--tx-source",
+        "tone",
+        "--tx-deviation",
+        "2500",
+        "--rx-mode",
+        "nbfm",
+        "--rx-sample-rate",
+        "1000000",
+        "--rx-sinad",
+        "--rx-playback",
+        "plughw:USB,0,0",
+        "--seconds",
+        "7200",
+        "--socket",
+        "/tmp/cariboulite-board4-rx-20261116T173153Z/rx_div6/rx/ipc/status.sock"
+      ],
+      "uid": 0,
+      "binary_sha256": "25a9b8cf2c764fc4945e2fc5facb4b1143bf3bad9b7d606abc997cc4d3e390b9"
+    },
+    "tx": {
+      "board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+      "board_label": "original TX reference",
+      "host": "pi4g-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "role": "tx",
+      "args": [
+        "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+        "--channel",
+        "RF24",
+        "--rx-frequency",
+        "430100000",
+        "--tx-frequency",
+        "430100000",
+        "--tx-sample-rate",
+        "4000000",
+        "--tx-power",
+        "-12",
+        "--tx-mode",
+        "nbfm",
+        "--tx-source",
+        "tone",
+        "--tx-deviation",
+        "2500",
+        "--rx-mode",
+        "nbfm",
+        "--rx-sample-rate",
+        "1000000",
+        "--rx-sinad",
+        "--rx-playback",
+        "plughw:USB,0,0",
+        "--seconds",
+        "7200",
+        "--socket",
+        "/tmp/cariboulite-board4-rx-20261116T173153Z/rx_axis_source/tx/ipc/status.sock"
+      ],
+      "uid": 0,
+      "binary_sha256": "25a9b8cf2c764fc4945e2fc5facb4b1143bf3bad9b7d606abc997cc4d3e390b9"
+    }
+  },
+  "source_manifest_sha256": "aca5edaeb98c67afc9b64b9daf10539e08656f782251a9ec1885cac9980cbf08",
+  "recording_end_utc_host_clock": "2026-11-16T17:40:13+00:00",
+  "date_note": "Board #4 RX-only run on 2026-11-16; timestamps and run IDs are UTC.",
+  "module_images": [
+    {
+      "host": "pi4f-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "hat": {
+        "vendor": "CaribouLite Reproduction 2026Q4 PD9JH",
+        "product": "CaribouLite RPI Hat",
+        "product_ver": "0x0001",
+        "uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+        "product_id": "0x0001",
+        "name": "hat"
+      },
+      "smi_present": true,
+      "radio_processes": [],
+      "smi_open_fds": [],
+      "binary_sha256": "25a9b8cf2c764fc4945e2fc5facb4b1143bf3bad9b7d606abc997cc4d3e390b9",
+      "loaded_driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+      "installed_driver_srcversion": "1AC65CD6AE81A1E2ED63F14"
+    },
+    {
+      "host": "pi4g-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "hat": {
+        "vendor": "CaribouLabs LTD",
+        "product": "CaribouLite RPI Hat",
+        "product_ver": "0x0001",
+        "uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+        "product_id": "0x0001",
+        "name": "hat"
+      },
+      "smi_present": true,
+      "radio_processes": [],
+      "smi_open_fds": [],
+      "binary_sha256": "25a9b8cf2c764fc4945e2fc5facb4b1143bf3bad9b7d606abc997cc4d3e390b9",
+      "loaded_driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+      "installed_driver_srcversion": "1AC65CD6AE81A1E2ED63F14"
+    }
+  ],
+  "collector_legacy_shared_reference": "RX axis only; TX fixed at 4 MS/s",
+  "shared_reference": "RX axis only; TX fixed at4MS/s; no independent repeated4Mreference curve",
+  "source_commit_meaning": "Binary implementationbase3edde8e; qualification launch HEAD222c8a7; no production software changes",
+  "continuation": {
+    "prior_run": "/tmp/cariboulite-board4-rx-20261116T172440Z",
+    "imported_points": 30,
+    "reason": "original stopped on invalid_frames=1 at800k; retain error counters rather than abort subsequent measurements"
+  }
+}

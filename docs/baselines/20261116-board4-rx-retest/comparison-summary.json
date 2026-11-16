@@ -1,0 +1,45 @@
+{
+  "transport_error_points": [],
+  "transmitting_points": 112,
+  "off_points": 8,
+  "receiver_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+  "reference_receiver_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+  "note": "Board4 minus board1 at matched requests; uncalibrated link estimate, not a causal hardware-quality comparison.",
+  "rssi_dbm_delta": {
+    "min": 2.9583333333333286,
+    "max": 4.25,
+    "mean": 3.6173641304347828
+  },
+  "sinad_db_delta": {
+    "min": 1.4733750000000008,
+    "max": 2.6449583333333315,
+    "mean": 1.9899671648550725
+  },
+  "max_within_point_sinad_range": 0.6460000000000008,
+  "comparison_board2": {
+    "receiver_uuid": "36b67ac4-b313-4369-99bd-4b3e09caabfa",
+    "rssi_dbm_delta": {
+      "min": -3.1340579710144993,
+      "max": 3.5833333333333286,
+      "mean": 2.734006858178054
+    },
+    "sinad_db_delta": {
+      "min": -3.231749999999998,
+      "max": 1.350791666666666,
+      "mean": -1.2571469500517598
+    }
+  },
+  "comparison_board3": {
+    "receiver_uuid": "f23c0015-fd1b-47b7-8314-f5c9e7de0ea7",
+    "rssi_dbm_delta": {
+      "min": -1.316666666666677,
+      "max": 8.041666666666671,
+      "mean": 6.650934265010352
+    },
+    "sinad_db_delta": {
+      "min": -3.46875,
+      "max": 4.055708333333332,
+      "mean": 0.1863140366200829
+    }
+  }
+}

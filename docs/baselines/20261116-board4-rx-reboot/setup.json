@@ -1,0 +1,16 @@
+{
+  "board_label": "#4",
+  "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+  "user_report_before_retest": "Ran cariboulite_test_app, toggled LEDs to check function, then manually tested4MS/s RX with audio sounding okay",
+  "interpretation": "Compare with the initial failures and the retest following manual test-app use. A successful reboot run does not isolate the cause of initial failures.",
+  "eeprom_reprogrammed": false,
+  "production_software_changed": false,
+  "tx_reference_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+  "attenuation_note": "Nominal90dB link inherited from previous setup, not independently measured",
+  "run_label": "Post-reboot RX sweep",
+  "reboot_context": "pi4f rebooted; first radio application was the RX collector. Its4MS/s startup failed. That attempt is archived separately. The following sweep reattempts all rates and continues after startup failures; no manual test-app or LED initialization occurred after reboot.",
+  "boot_id_before": "96b58652-1b49-448b-9ec7-8197381434c7",
+  "boot_id_after": "871ce5c1-f034-405a-a151-dab13401a1bd",
+  "first_post_reboot_4msps_start_failed": true,
+  "first_post_reboot_run": "cariboulite-board4-rx-reboot-20261116T181603Z"
+}
