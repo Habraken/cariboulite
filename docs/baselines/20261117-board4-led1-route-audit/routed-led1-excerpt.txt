@@ -1,0 +1,22 @@
+reg n931 = 0;
+wire n1280;
+wire \_o_led1$SB_IO_OUT = n931;
+assign n1280 = /* LUT    9 16  2 */ n931;
+assign n1887 = /* LUT    8 15  6 */ (n1044 ? (n785 ? (n931 ? 1'b0 : !n559) : !n559) : (n785 ? !n931 : 1'b1));
+/* FF  9 16  2 */ assign o_led1 = n1280;
+/* FF  8 16  3 */ always @(posedge n810, posedge n26) if (n26) n931 <= 1'b1; else if (n925) n931 <= n2135;
+
+LED register route segments:
+// (7, 15, 'neigh_op_tnr_3')
+// (7, 16, 'neigh_op_rgt_3')
+// (7, 17, 'logic_op_bnr_3')
+// (8, 15, 'local_g0_3')
+// (8, 15, 'lutff_6/in_1')
+// (8, 15, 'neigh_op_top_3')
+// (8, 16, 'lutff_3/out')
+// (8, 17, 'logic_op_bot_3')
+// (9, 15, 'neigh_op_tnl_3')
+// (9, 16, 'local_g0_3')
+// (9, 16, 'lutff_2/in_3')
+// (9, 16, 'neigh_op_lft_3')
+// (9, 17, 'logic_op_bnl_3')

@@ -16,6 +16,7 @@ retain their original revision and test conditions. See the
 - [Standalone backend, controller and radio commands](radio-control.md)
 - [Raw SMI RX capture and framing analysis](smi-raw-capture.md)
 - [Board #4 raw SMI framing comparison](board4-smi-framing-2026-11-17.md)
+- [Board #4 LED1 pin, route and circuit audit](board4-led1-route-audit-2026-11-17.md)
 - [Passive terminal monitor](passive-monitor.md)
 - [Menu 14 frequency controls](monitor-frequency.md)
 - [RX squelch](rx-squelch.md)

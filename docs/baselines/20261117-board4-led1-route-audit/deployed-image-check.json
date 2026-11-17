@@ -1,0 +1,8 @@
+{
+  "host": "pi4f-trixie",
+  "library": "/home/pi/src/cariboulite/build/libcariboulite.so",
+  "symbol": "cariboulite_firmware",
+  "length": 32220,
+  "sha256": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6",
+  "method": "ctypes CDLL symbol read, no radio initialization or FPGA readback"
+}
