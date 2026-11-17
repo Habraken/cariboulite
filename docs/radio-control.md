@@ -1005,3 +1005,39 @@ BTN at bit7 (reserved bit2 is zero). Other replies keep their previous format;
 the updated parser also accepts legacy30/33-field v2 replies. Use the updated
 controller for LED commands. Dry-run readback is labelled simulated and resets
 to the firmware LED defaults after simulated programming/soft reset.
+
+### Explicit read-only FPGA register snapshot
+
+With RX/TX stopped, `fpga registers` takes ten whitelisted SPI reads under the
+backend's hardware lock. It adds no startup or periodic reads and does not call
+FPGA programming, reset, status-recovery, LED setters or any register write.
+Ordinary `get`, status JSON and existing command replies retain their formats.
+
+The readable subset is SYS module/system/manufacturer versions and packed TX
+gap/sync-source configuration; IO module version, mode, digital pins and internal
+RF control state; and SMI module version and FIFO/channel/direction status.
+The current RTL implements these reads without clear-on-read effects. Write-only
+controls, unimplemented error-state reads and unused PMOD state are excluded.
+This is a sequential snapshot, not a simultaneous capture of every internal bit.
+
+The controller prints raw values, defined-bit masks and dynamic-bit masks.
+IO mode bits7..5 and digital bit2 are not defined by those read cases and should
+not be compared. Digital BTN/CFG inputs and FIFO empty/full flags can change
+without a control write. RF-state readback describes the internal control state;
+it does not prove a physical pad level (the current top-level mixer-enable pad
+is overridden). SPI completion likewise does not prove a returned value is
+semantically correct; compare versions and expected state separately.
+
+There are no read retries. Each register has a validity bit. A failed read
+returns `HARDWARE` with partial results; the controller shows `UNAVAILABLE` for
+invalid entries instead of treating zero as a measurement. The command refuses
+active RX/TX, transitions and `FPGA_NEEDS_PROGRAM`. A stopped pipeline fault allows
+it for diagnosis, without clearing the fault or changing configuration generations.
+
+The wire request is `v2 ID fpga_regs`. Only this reply appends
+`fpga_regs VALID_MASK BYTE0 ... BYTE9` to the normal 33-field v2 reply. Values are
+decimal bytes; mask bits follow the register order printed by the controller.
+The updated parser retains 17-field v1, 30/33-field v2 and 35-field LED replies.
+Use the updated controller for this command; no older command gains this tail.
+The FPGA bitstream and existing public library structures are unchanged; the
+library adds a separate readback API. Dry-run snapshots are explicitly simulated.

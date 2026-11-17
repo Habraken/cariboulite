@@ -98,6 +98,31 @@ int caribou_smi_set_driver_streaming_state(caribou_smi_st *device, smi_stream_st
         : state != smi_stream_idle && fail_stream ? -1 : 0;
 }
 
+static unsigned register_snapshot_calls;
+static bool register_snapshot_partial;
+int caribou_fpga_read_registers(caribou_fpga_st *dev, caribou_fpga_regs_st *snapshot)
+{
+    (void)dev;
+    ++register_snapshot_calls;
+    *snapshot = (caribou_fpga_regs_st){.valid_mask=CARIBOU_FPGA_REG_ALL,
+        .value={1,1,1,0,1,0,0xfb,0x56,1,5}};
+    if (register_snapshot_partial) {
+        snapshot->valid_mask &= ~(1U << 3);
+        return -1;
+    }
+    return 0;
+}
+int caribou_fpga_set_io_ctrl_dig(caribou_fpga_st *dev, int led0, int led1)
+{
+    (void)dev; (void)led0; (void)led1;
+    assert(!"Unexpected LED write in RX fault-injection tests"); return -1;
+}
+int caribou_fpga_get_io_ctrl_dig(caribou_fpga_st *dev, int *led0, int *led1, int *btn, int *cfg)
+{
+    (void)dev; (void)led0; (void)led1; (void)btn; (void)cfg;
+    assert(!"Unexpected LED read in RX fault-injection tests"); return -1;
+}
+
 int caribou_fpga_set_io_ctrl_mode(caribou_fpga_st *device, uint8_t debug,
                                  caribou_fpga_io_ctrl_rfm_en mode)
 {
@@ -1129,6 +1154,35 @@ static void test_joint_settings(void)
     puts("Joint RX/TX settings and rollback fault injection passed");
 }
 
+static void test_explicit_register_snapshot(void)
+{
+    options_t options; sys_st sys; cariboulite_radio_state_st radio; rx_pipeline_t pipeline;
+    backend_control_t owner = context(&options, &sys, &radio, &pipeline);
+    assert(register_snapshot_calls == 0); /* Normal paths above never poll it. */
+    control_reply_t before=command(&owner,(control_request_t){.command=CONTROL_GET},"OK","IDLE");
+    control_request_t request={.protocol_version=2,.command=CONTROL_FPGA_REGS};
+    control_reply_t r=command(&owner,request,"OK","IDLE");
+    assert(register_snapshot_calls==1 && r.fpga_regs_present && r.fpga_regs.valid_mask==CARIBOU_FPGA_REG_ALL);
+    assert(r.config_generation==before.config_generation && r.pipeline_generation==before.pipeline_generation);
+    register_snapshot_partial=true;
+    r=command(&owner,request,"HARDWARE","IDLE");
+    assert(r.fpga_regs_present && r.fpga_regs.valid_mask==(CARIBOU_FPGA_REG_ALL & ~(1U<<3)));
+    assert(r.fpga_regs.value[6]==0xfb && !options.control_fault);
+    register_snapshot_partial=false;
+    options.control_fault=true;
+    r=command(&owner,request,"OK","FAULT");
+    assert(options.control_fault && r.fpga_regs_present);
+    options.control_fault=false;options.rx_requested=true;
+    r=command(&owner,request,"RX_RUNNING","RX");assert(!r.fpga_regs_present);
+    options.rx_requested=false;options.tx_requested=true;
+    r=command(&owner,request,"TX_RUNNING","TX");assert(!r.fpga_regs_present);
+    options.tx_requested=false;owner.lifecycle_active=true;
+    r=command(&owner,request,"TRANSITION","IDLE");assert(!r.fpga_regs_present);
+    owner.lifecycle_active=false;options.fpga_needs_programming=true;
+    r=command(&owner,request,"FPGA_REQUIRED","FPGA_NEEDS_PROGRAM");assert(!r.fpga_regs_present);
+    assert(register_snapshot_calls==3);
+}
+
 int main(void)
 {
     options_t options;
@@ -1482,6 +1536,7 @@ int main(void)
     test_fpga_resets();
     test_fpga_modem_recovery();
     test_joint_settings();
+    test_explicit_register_snapshot();
     puts("TX control fault injection passed");
     puts("RX control fault injection passed");
     return 0;

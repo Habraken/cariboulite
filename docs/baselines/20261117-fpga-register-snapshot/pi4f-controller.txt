@@ -1,0 +1,28 @@
+FPGA register snapshot (defined/dynamic masks shown):
+  0:00 SYS.module_version           raw=0x01 defined=0x01 mask=0xFF dynamic=0x00
+  0:01 SYS.system_version           raw=0x01 defined=0x01 mask=0xFF dynamic=0x00
+  0:02 SYS.manufacturer             raw=0x01 defined=0x01 mask=0xFF dynamic=0x00
+  0:06 SYS.gap_sync_source          raw=0x00 defined=0x00 mask=0xFF dynamic=0x00
+  1:00 IO.module_version            raw=0x01 defined=0x01 mask=0xFF dynamic=0x00
+  1:01 IO.mode                      raw=0x00 defined=0x00 mask=0x1F dynamic=0x00
+  1:02 IO.digital                   raw=0xF9 defined=0xF9 mask=0xFB dynamic=0xF8
+  1:05 IO.rf_state                  raw=0x56 defined=0x56 mask=0xFF dynamic=0x00
+  2:00 SMI.module_version           raw=0x01 defined=0x01 mask=0xFF dynamic=0x00
+  2:01 SMI.fifo_channel_direction   raw=0x14 defined=0x14 mask=0xFF dynamic=0x03
+
+  LIVE | RF24 | IDLE
+  ------------------------------------------------------------
+  Receive
+    Frequency        430.125000 MHz
+    Mode             NBFM
+    Sample rate      1 MS/s
+    Noise squelch    On
+    Carrier squelch  Off
+
+  Transmit
+    Frequency        430.125000 MHz
+    Power            -12 dBm
+    Mode             NBFM
+    Sample rate      1 MS/s
+    Audio source     Microphone
+

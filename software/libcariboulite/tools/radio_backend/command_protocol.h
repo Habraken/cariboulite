@@ -6,6 +6,7 @@
 #include "audio_mod.h"
 #include <stddef.h>
 #include <stdint.h>
+#include "caribou_fpga/caribou_fpga_regs.h"
 
 #define CONTROL_PROTOCOL_MAX_PACKET_BYTES 1024
 
@@ -28,6 +29,7 @@ typedef enum control_command {
     CONTROL_TX_AM_DEPTH,
     CONTROL_TX_AM_BACKOFF,
     CONTROL_TX_TONE,
+    CONTROL_FPGA_REGS,
     CONTROL_FPGA_LED_GET,
     CONTROL_FPGA_LED_SET,
     CONTROL_FPGA_PROGRAM,
@@ -101,6 +103,8 @@ typedef struct control_reply {
     bool tx_requested;
     bool rx_resume;
     bool transition;
+    bool fpga_regs_present; /* Explicit register-command replies only. */
+    caribou_fpga_regs_st fpga_regs;
     bool fpga_io_valid; /* Present only in explicit LED command replies. */
     unsigned fpga_io_pins; /* LED0/1 bits0/1, CFG bits3..6, BTN bit7. */
 } control_reply_t;

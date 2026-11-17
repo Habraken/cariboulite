@@ -317,6 +317,41 @@ class FpgaControlBackendTests(unittest.TestCase):
                                env=rx_helpers.ENVIRONMENT)
             self.assertEqual(r.returncode, 2)
 
+    def test_explicit_register_snapshot_does_not_change_settings_or_leds(self):
+        self.start_backend(start=False)
+        peer=self.controller();before=self.command(peer,"get")
+        def snapshot():
+            self.request_id+=1;peer.sendall(f"v2 {self.request_id} fpga_regs".encode())
+            fields=peer.recv(4096).decode().split()
+            self.assertEqual(fields[2:4],["OK","OK"]);self.assertEqual(len(fields),45)
+            self.assertEqual(fields[33],"fpga_regs");self.assertEqual(int(fields[34]),1023)
+            return list(map(int,fields[35:]))
+        first=snapshot();second=snapshot();self.assertEqual(first,second)
+        self.assertEqual(first[:3],[1,1,1]);self.assertEqual(first[6]&3,3)
+        after=self.command(peer,"get");self.assertEqual(self.settings(before),self.settings(after))
+        self.request_id+=1;peer.sendall(f"v2 {self.request_id} fpga_led_set 0 1".encode());peer.recv(4096)
+        self.assertEqual(snapshot()[6]&3,2)
+        self.command(peer,"start");self.command(peer,"fpga_regs","RX_RUNNING")
+        self.command(peer,"stop");self.command(peer,"tx_start","ACCEPTED");self.wait_state(peer,"TX")
+        self.command(peer,"fpga_regs","TX_RUNNING")
+        self.command(peer,"tx_stop","ACCEPTED");self.wait_state(peer,"IDLE")
+        self.command(peer,"fpga_hard_reset","ACCEPTED");self.wait_state(peer,"FPGA_NEEDS_PROGRAM")
+        self.command(peer,"fpga_regs","FPGA_REQUIRED")
+
+    def test_controller_explicit_register_snapshot(self):
+        self.start_backend(start=False)
+        for command,expected in [("fpga registers",0),("fpga registers extra",2)]:
+            r=subprocess.run([str(helpers.CONTROLLER),"--socket",str(self.control_path),"--command",command],
+                             capture_output=True,text=True,timeout=3,env=rx_helpers.ENVIRONMENT)
+            self.assertEqual(r.returncode,expected,r.stderr)
+            if not expected:
+                self.assertIn("FPGA register snapshot (simulated)",r.stdout)
+                self.assertIn("SYS.gap_sync_source",r.stdout)
+                self.assertIn("SMI.fifo_channel_direction",r.stdout)
+                self.assertIn("mask=0xFB dynamic=0xF8",r.stdout)
+                rf_line=next(line for line in r.stdout.splitlines() if "IO.rf_state" in line)
+                self.assertIn("mask=0xFF",rf_line)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

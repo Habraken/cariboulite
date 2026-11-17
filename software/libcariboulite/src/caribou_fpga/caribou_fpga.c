@@ -104,6 +104,23 @@ static int caribou_fpga_spi_transfer (caribou_fpga_st* dev, uint8_t *opcode, uin
 }
 
 //--------------------------------------------------------------
+int caribou_fpga_read_registers(caribou_fpga_st *dev, caribou_fpga_regs_st *snapshot)
+{
+    if (!snapshot) return -1;
+    memset(snapshot, 0, sizeof(*snapshot));
+    CARIBOU_FPGA_CHECK_DEV(dev, "caribou_fpga_read_registers");
+    for (unsigned i = 0; i < CARIBOU_FPGA_REG_COUNT; ++i) {
+        uint8_t opcode = (caribou_fpga_reg_desc[i].module << 5) | caribou_fpga_reg_desc[i].ioc;
+        uint8_t value = 0;
+        if (caribou_fpga_spi_transfer(dev, &opcode, &value) == 0) {
+            snapshot->value[i] = value;
+            snapshot->valid_mask |= (uint16_t)(1U << i);
+        }
+    }
+    return snapshot->valid_mask == CARIBOU_FPGA_REG_ALL ? 0 : -1;
+}
+
+//--------------------------------------------------------------
 int caribou_fpga_init(caribou_fpga_st* dev, io_utils_spi_st* io_spi)
 {
     if (dev == NULL)

@@ -1,0 +1,32 @@
+/tmp/snapshot-final-test_rx_control_backend.py.log
+----------------------------------------------------------------------
+Ran 16 tests in 13.909s
+
+OK
+
+/tmp/snapshot-release-test_fpga_control_backend.py.log
+----------------------------------------------------------------------
+Ran 15 tests in 8.111s
+
+OK
+
+/tmp/snapshot-test_tx_control_backend.py.log
+----------------------------------------------------------------------
+Ran 18 tests in 11.776s
+
+OK
+
+/tmp/snapshot-test_radio_control.py.log
+----------------------------------------------------------------------
+Ran 37 tests in 14.483s
+
+OK
+
+/tmp/snapshot-release-test_radio_backend.py.log
+----------------------------------------------------------------------
+Ran 26 tests in 30.518s
+
+OK
+
+C mock: ten whitelist reads, each single-read failure, unchanged cached state and masks: PASS
+Protocol and control-server native tests: PASS

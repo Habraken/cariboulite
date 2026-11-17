@@ -2,6 +2,7 @@
 ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../../../..)
 SRC := $(ROOT)/software/libcariboulite/src
 HERE := $(ROOT)/software/libcariboulite/tools/radio_backend
+FPGA_REGS_HEADER := $(SRC)/caribou_fpga/caribou_fpga_regs.h
 OUT ?= $(ROOT)/build/radio-backend
 LIBDIR ?= $(ROOT)/build
 CC ?= cc
@@ -23,7 +24,7 @@ $(OUT)/cariboulite_radio_backend: $(OBJECTS) $(LIBDIR)/libcariboulite.so
 	$(CC) $(OBJECTS) -L$(LIBDIR) -Wl,-rpath,$(LIBDIR) -lcariboulite -lasound -lpthread -lm -o "$@.tmp"
 	mv "$@.tmp" "$@"
 
-$(OUT)/cariboulite_radio_controller: $(HERE)/radio_controller.c $(HERE)/command_protocol.c $(HERE)/command_protocol.h | $(OUT)
+$(OUT)/cariboulite_radio_controller: $(HERE)/radio_controller.c $(HERE)/command_protocol.c $(HERE)/command_protocol.h $(FPGA_REGS_HEADER) | $(OUT)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(HERE)/radio_controller.c $(HERE)/command_protocol.c -lm -o "$@.tmp"
 	mv "$@.tmp" "$@"
 
@@ -52,10 +53,10 @@ $(OUT)/test_status_publisher: $(HERE)/status_publisher.c $(HERE)/status_publishe
 $(OUT)/test_modem_snapshot: $(SRC)/modem_snapshot.c $(SRC)/modem_snapshot.h $(SRC)/radio_profile.c $(SRC)/radio_profile.h $(HERE)/test_modem_snapshot.c | $(OUT)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Werror $(SRC)/modem_snapshot.c $(SRC)/radio_profile.c $(HERE)/test_modem_snapshot.c -lpthread -lm -o "$@"
 
-$(OUT)/test_command_protocol: $(HERE)/command_protocol.c $(HERE)/command_protocol.h $(HERE)/test_command_protocol.c | $(OUT)
+$(OUT)/test_command_protocol: $(HERE)/command_protocol.c $(HERE)/command_protocol.h $(HERE)/test_command_protocol.c $(FPGA_REGS_HEADER) | $(OUT)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Werror $(HERE)/command_protocol.c $(HERE)/test_command_protocol.c -lm -o "$@"
 
-$(OUT)/test_control_server: $(HERE)/control_server.c $(HERE)/control_server.h $(HERE)/command_protocol.c $(HERE)/status_publisher.c $(HERE)/test_control_server.c | $(OUT)
+$(OUT)/test_control_server: $(HERE)/control_server.c $(HERE)/control_server.h $(HERE)/command_protocol.c $(HERE)/status_publisher.c $(HERE)/test_control_server.c $(FPGA_REGS_HEADER) | $(OUT)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Werror $(HERE)/control_server.c $(HERE)/command_protocol.c $(HERE)/status_publisher.c $(HERE)/test_control_server.c -lm -o "$@"
 
 $(OUT)/test_sinad: $(SRC)/sinad.h $(ROOT)/software/libcariboulite/tests/test_sinad.c | $(OUT)

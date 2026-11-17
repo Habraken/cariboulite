@@ -7,6 +7,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdint.h>
+#include "caribou_fpga_regs.h"
 #include "io_utils/io_utils.h"
 #include "io_utils/io_utils_spi.h"
 #include "caribou_programming/caribou_prog.h"
@@ -167,6 +168,11 @@ int caribou_fpga_hard_reset_keep(caribou_fpga_st* dev, bool reset);
 int caribou_fpga_get_status(caribou_fpga_st* dev, caribou_fpga_status_en *stat);
 int caribou_fpga_program_to_fpga(caribou_fpga_st* dev, unsigned char *buffer, size_t len, bool force_prog);
 int caribou_fpga_program_to_fpga_from_file(caribou_fpga_st* dev, const char *filename, bool force_prog);
+
+/* Explicit diagnostic only: exactly one read per whitelisted register, no
+ * retries, reset, writes or cached-status updates. Partial reads are retained;
+ * returns -1 if any transaction fails. Caller must serialize hardware access. */
+int caribou_fpga_read_registers(caribou_fpga_st *dev, caribou_fpga_regs_st *snapshot);
 
 // System Controller
 int caribou_fpga_get_versions (caribou_fpga_st* dev, caribou_fpga_versions_st *vers);

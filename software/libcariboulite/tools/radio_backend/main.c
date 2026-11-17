@@ -1026,8 +1026,11 @@ static void backend_control_command(void *opaque, const control_request_t *reque
     options_t *o = c->options;
     const char *code = "OK";
     bool changed = false;
+    bool fpga_regs_present = false;
+    caribou_fpga_regs_st fpga_regs = {0};
     bool fpga_io_valid = false;
     unsigned fpga_io_pins = 0;
+    const bool register_command = request->command == CONTROL_FPGA_REGS;
     const bool led_command = request->command == CONTROL_FPGA_LED_GET || request->command == CONTROL_FPGA_LED_SET;
     radio_profile_t profile;
     const bool both = request->command == CONTROL_BOTH_FREQUENCY ||
@@ -1045,7 +1048,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
     else if (o->fpga_needs_programming && request->command != CONTROL_GET
              && request->command != CONTROL_FPGA_PROGRAM && request->command != CONTROL_FPGA_HARD_RESET
              && request->command != CONTROL_STOP && request->command != CONTROL_TX_STOP) code = "FPGA_REQUIRED";
-    else if (o->control_fault && !led_command && request->command != CONTROL_GET
+    else if (o->control_fault && !led_command && !register_command && request->command != CONTROL_GET
              && request->command != CONTROL_STOP && request->command != CONTROL_TX_STOP
              && request->command != CONTROL_FPGA_PROGRAM && request->command != CONTROL_FPGA_SOFT_RESET
              && request->command != CONTROL_FPGA_HARD_RESET) code = "FAULT";
@@ -1065,6 +1068,23 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         }
         break;
     case CONTROL_GET: break;
+    case CONTROL_FPGA_REGS:
+        if (o->rx_requested || (!o->dry_run && c->pipeline->running)) code = "RX_RUNNING";
+        else if (!o->dry_run && c->tx_pipeline->running) code = "TX_RUNNING";
+        else {
+            fpga_regs_present = true;
+            if (o->dry_run) {
+                fpga_regs = (caribou_fpga_regs_st){.valid_mask = CARIBOU_FPGA_REG_ALL,
+                    .value = {1,1,1,0,1,0,0,0,1,1}};
+                fpga_regs.value[6] = (uint8_t)(0xf8 | c->simulated_fpga_pins);
+            } else {
+                HW_LOCK();
+                int rc = caribou_fpga_read_registers(&c->sys->fpga, &fpga_regs);
+                HW_UNLOCK();
+                if (rc) code = "HARDWARE";
+            }
+        }
+        break;
     case CONTROL_FPGA_LED_GET:
     case CONTROL_FPGA_LED_SET:
         if (o->rx_requested || (!o->dry_run && c->pipeline->running)) code = "RX_RUNNING";
@@ -1317,6 +1337,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         .tx_requested_frequency_hz = o->tx.freq_hz, .tx_actual_frequency_hz = o->actual_tx_frequency,
         .tx_sample_rate_hz = o->tx.rf_fs, .tx_requested_power_dbm = o->tx.tx_power_dbm,
         .tx_actual_power_dbm = o->actual_tx_power, .tx_tone_mode = o->tx.tone_mode,
+        .fpga_regs_present = fpga_regs_present, .fpga_regs = fpga_regs,
         .fpga_io_valid = fpga_io_valid, .fpga_io_pins = fpga_io_pins,
         .tx_settings_valid = true, .tx_mode = o->tx.mode,
         .tx_am_depth = o->tx.am_depth, .tx_am_backoff_db = o->tx.am_backoff_db,

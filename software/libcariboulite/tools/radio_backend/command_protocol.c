@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_TOKENS 35
+#define MAX_TOKENS (35 + CARIBOU_FPGA_REG_COUNT)
 
 static int protocol_error(void)
 {
@@ -250,6 +250,8 @@ int control_request_parse(const char *packet, size_t bytes,
         request->command = CONTROL_TX_START;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "tx_stop") && count == 3)
         request->command = CONTROL_TX_STOP;
+    else if (request->protocol_version == 2 && !strcmp(tokens[2], "fpga_regs") && count == 3)
+        request->command = CONTROL_FPGA_REGS;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "fpga_led_get") && count == 3)
         request->command = CONTROL_FPGA_LED_GET;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "fpga_led_set") && count == 5 &&
@@ -331,7 +333,7 @@ int control_reply_parse(const char *packet, size_t bytes, control_reply_t *reply
     if (!count || (strcmp(tokens[0], "v1") && strcmp(tokens[0], "v2")))
         return protocol_error();
     reply->protocol_version = !strcmp(tokens[0], "v2") ? 2 : 1;
-    if ((reply->protocol_version == 2 ? (count != 30U && count != 33U && count != 35U) : count != 17U) ||
+    if ((reply->protocol_version == 2 ? (count != 30U && count != 33U && count != 35U && count != 35U + CARIBOU_FPGA_REG_COUNT) : count != 17U) ||
         parse_uint64(tokens[1], &reply->id) < 0)
         return protocol_error();
     if (!strcmp(tokens[2], "OK"))
@@ -390,6 +392,17 @@ int control_reply_parse(const char *packet, size_t bytes, control_reply_t *reply
             reply->tx_am_backoff_db < 0 || reply->tx_am_backoff_db > 18)
             return protocol_error();
         reply->tx_settings_valid = true;
+    }
+    if (reply->protocol_version == 2 && count == 35U + CARIBOU_FPGA_REG_COUNT) {
+        uint64_t value;
+        if (strcmp(tokens[33], "fpga_regs") || parse_uint64(tokens[34], &value) || value > CARIBOU_FPGA_REG_ALL)
+            return protocol_error();
+        reply->fpga_regs_present = true;
+        reply->fpga_regs.valid_mask = (uint16_t)value;
+        for (unsigned i = 0; i < CARIBOU_FPGA_REG_COUNT; ++i) {
+            if (parse_uint64(tokens[35+i], &value) || value > 255) return protocol_error();
+            reply->fpga_regs.value[i] = (uint8_t)value;
+        }
     }
     if (reply->protocol_version == 2 && count == 35U) {
         uint64_t pins;
@@ -476,6 +489,9 @@ int control_request_format(const control_request_t *request,
     case CONTROL_TX_STOP:
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " %s\n", version, request->id,
                          request->command == CONTROL_TX_START ? "tx_start" : "tx_stop");
+        break;
+    case CONTROL_FPGA_REGS:
+        bytes = snprintf(packet, capacity, "v%u %" PRIu64 " fpga_regs\n", version, request->id);
         break;
     case CONTROL_FPGA_LED_GET:
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " fpga_led_get\n", version, request->id);
@@ -596,6 +612,23 @@ int control_reply_format(const control_reply_t *reply,
             int extra = snprintf(packet + bytes - 1, capacity - (size_t)bytes + 1,
                                  " fpga_io %u\n", reply->fpga_io_pins);
             bytes = extra < 0 ? -1 : bytes - 1 + extra;
+        }
+    }
+    if (reply->fpga_regs_present) {
+        if (version != 2 || reply->fpga_io_valid || reply->fpga_regs.valid_mask > CARIBOU_FPGA_REG_ALL)
+            bytes = -1;
+        if (bytes > 0 && (size_t)bytes < capacity) {
+            int extra = snprintf(packet + bytes - 1, capacity - (size_t)bytes + 1,
+                                 " fpga_regs %u", (unsigned)reply->fpga_regs.valid_mask);
+            bytes = extra < 0 ? -1 : bytes - 1 + extra;
+            for (unsigned i = 0; i < CARIBOU_FPGA_REG_COUNT && bytes > 0 && (size_t)bytes < capacity; ++i) {
+                extra = snprintf(packet + bytes, capacity - (size_t)bytes, " %u", reply->fpga_regs.value[i]);
+                bytes = extra < 0 ? -1 : bytes + extra;
+            }
+            if (bytes > 0 && (size_t)bytes < capacity) {
+                extra = snprintf(packet + bytes, capacity - (size_t)bytes, "\n");
+                bytes = extra < 0 ? -1 : bytes + extra;
+            }
         }
     }
     bytes = formatted_size(bytes, capacity);

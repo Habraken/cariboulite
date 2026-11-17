@@ -61,6 +61,7 @@ static void test_requests(void)
         { "v2 22 tx_source mic", CONTROL_TX_SOURCE },
         { "v2 22 tx_source tone", CONTROL_TX_SOURCE },
         { "v2 23 tx_tone 1000 .5", CONTROL_TX_TONE },
+        { "v2 19 fpga_regs", CONTROL_FPGA_REGS },
         { "v2 20 fpga_led_get", CONTROL_FPGA_LED_GET },
         { "v2 21 fpga_led_set 1 0", CONTROL_FPGA_LED_SET },
         { "v2 24 fpga_program", CONTROL_FPGA_PROGRAM },
@@ -108,6 +109,7 @@ static void test_requests(void)
         "v2 1 tx_tone 1000 .5 extra", "v1 1 fpga_program",
         "v2 1 fpga_program firmware/top.bin", "v2 1 fpga_program extra",
         "v2 1 fpga program", "v2 1 FPGA_PROGRAM", "v2 1 fpga_program\x80",
+        "v1 1 fpga_regs", "v2 1 fpga_regs extra",
         "v1 1 fpga_led_get", "v1 1 fpga_led_set 0 1",
         "v2 1 fpga_led_set 2 0", "v2 1 fpga_led_set -1 0",
         "v2 1 fpga_led_set 0", "v2 1 fpga_led_get extra",
@@ -301,6 +303,23 @@ static void test_v2_replies(void)
     reply.fpga_io_pins = 256;
     CHECK(control_reply_format(&reply, formatted, sizeof(formatted)) == -1);
     reply.fpga_io_valid = false; reply.fpga_io_pins = 0;
+    reply.fpga_regs_present = true; reply.fpga_regs.valid_mask = CARIBOU_FPGA_REG_ALL;
+    for (unsigned i=0;i<CARIBOU_FPGA_REG_COUNT;++i) reply.fpga_regs.value[i]=(uint8_t)(i+240);
+    bytes=control_reply_format(&reply,formatted,sizeof(formatted));
+    CHECK(bytes>0 && !control_reply_parse(formatted,bytes,&decoded));
+    CHECK(decoded.fpga_regs_present && decoded.fpga_regs.valid_mask==CARIBOU_FPGA_REG_ALL);
+    CHECK(!memcmp(decoded.fpga_regs.value,reply.fpga_regs.value,CARIBOU_FPGA_REG_COUNT));
+    reply.fpga_regs.valid_mask=0;
+    bytes=control_reply_format(&reply,formatted,sizeof(formatted));
+    CHECK(bytes>0 && !control_reply_parse(formatted,bytes,&decoded) && !decoded.fpga_regs.valid_mask);
+    char *last=strrchr(formatted,' '); CHECK(last); strcpy(last," 256\n");
+    CHECK(control_reply_parse(formatted,strlen(formatted),&decoded)==-1);
+    reply.fpga_regs.valid_mask=CARIBOU_FPGA_REG_ALL+1;
+    CHECK(control_reply_format(&reply,formatted,sizeof(formatted))==-1);
+    reply.fpga_regs.valid_mask=0;reply.fpga_io_valid=true;
+    CHECK(control_reply_format(&reply,formatted,sizeof(formatted))==-1);
+    reply.fpga_io_valid=false;reply.fpga_regs_present=false;
+
 
     static const char *states[] = {"IDLE", "RX", "TX_STARTING", "TX", "TX_STOPPING", "RX_STARTING",
         "FPGA_PROGRAMMING", "FPGA_RESETTING", "FPGA_NEEDS_PROGRAM", "FAULT"};

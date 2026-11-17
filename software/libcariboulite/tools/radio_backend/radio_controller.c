@@ -93,6 +93,7 @@ static void command_help(void)
          "  tx am-depth VALUE     nominal AM modulation 0..1, default 0.8\n"
          "  tx source mic|tone    saved TX audio source\n"
          "  tx tone HZ AMP        0 < HZ <= 3000, 0 < AMP <= 1\n"
+         "  fpga registers        explicit read-only snapshot; RX/TX stopped\n"
          "  fpga leds [0|1 0|1]  read LEDs/BTN/CFG, or write both LEDs and read back; radio stopped\n"
          "  fpga program          load firmware/top.bin, as test_app menu 3 does\n"
          "  fpga soft reset       reset FPGA logic and FIFOs; keep the loaded firmware\n"
@@ -187,6 +188,8 @@ static int parse_command(const char *input, ui_command_t *command)
         command->request.command = CONTROL_GET;
     } else if (count == 1 && (!strcmp(name, "start") || !strcmp(name, "stop"))) {
         command->request.command = !strcmp(name, "start") ? CONTROL_START : CONTROL_STOP;
+    } else if (count == 2 && !strcmp(name, "fpga") && !strcmp(tokens[1], "registers")) {
+        command->request.command = CONTROL_FPGA_REGS;
     } else if (count == 2 && !strcmp(name, "fpga") && !strcmp(tokens[1], "leds")) {
         command->request.command = CONTROL_FPGA_LED_GET;
     } else if (count == 4 && !strcmp(name, "fpga") && !strcmp(tokens[1], "leds") &&
@@ -606,6 +609,20 @@ static int execute_command(controller_t *controller, ui_command_t *command)
         printf("TX AM backoff: %.1f dB\n",(double)command->request.tx_am_backoff_db);
     if(!result && command->request.command==CONTROL_TX_AM_DEPTH)
         printf("TX AM depth: %.3f\n",(double)command->request.tx_am_depth);
+    if (result >= 0 && controller->state_valid && controller->state.fpga_regs_present &&
+        controller->state.id == command->request.id && command->request.command == CONTROL_FPGA_REGS) {
+        printf("FPGA register snapshot%s (defined/dynamic masks shown):\n",
+               controller->state.simulated ? " (simulated)" : "");
+        for (unsigned i = 0; i < CARIBOU_FPGA_REG_COUNT; ++i) {
+            const caribou_fpga_reg_desc_st *d = &caribou_fpga_reg_desc[i];
+            printf("  %u:%02X %-28s ", d->module, d->ioc, d->name);
+            if (controller->state.fpga_regs.valid_mask & (1U << i))
+                printf("raw=0x%02X defined=0x%02X", controller->state.fpga_regs.value[i],
+                       controller->state.fpga_regs.value[i] & d->defined_mask);
+            else printf("UNAVAILABLE            ");
+            printf(" mask=0x%02X dynamic=0x%02X\n", d->defined_mask, d->dynamic_mask);
+        }
+    }
     if (result >= 0 && controller->state_valid && controller->state.fpga_io_valid &&
         controller->state.id == command->request.id &&
         (command->request.command == CONTROL_FPGA_LED_GET || command->request.command == CONTROL_FPGA_LED_SET)) {
