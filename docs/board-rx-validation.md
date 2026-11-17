@@ -101,6 +101,26 @@ LED1=0 setup was independently verified before all eight rate starts. Both radio
 were released. This is conditional RX success with LED1low; the LED1high failure
 and its unresolved cause remain separate findings.
 
+### #4 additional 1240.1 MHz qualification
+
+On 17 November the same eight-rate RX/power sweep at 1240.1 MHz passed all
+120 points with LED1=0 and LED0 preserved. All 2,877 snapshots reconcile, all
+112 transmitting points had fully valid SINAD, and transport counters were zero.
+The original pi4g board transmitted through the user-confirmed nominal 90 dB
+coax link; both radios were released. The existing
+[#4 qualification report](board4-led1-low-rx-qualification-2026-11-16.md) now
+contains separate 430.1 and 1240.1 MHz results and plots. Cross-frequency
+comparisons are uncalibrated end-to-end link differences.
+
+### #4 additional 144.1 MHz qualification
+
+The unchanged 90 dB coax setup was used on 17 November for a further full
+120-point sweep at 144.1 MHz. LED1=0 was verified before all eight RX-rate
+starts. All 2,877 retained snapshots reconcile, all 112 transmitting points had
+fully valid SINAD, and transport counters were zero. Both radios were released.
+The [qualification report](board4-led1-low-rx-qualification-2026-11-16.md) retains
+separate 144.1, 430.1 and 1240.1 MHz results, plots and uncalibrated comparisons.
+
 ## Board #5 — EEPROM verified, all RX startup attempts failed
 
 Device #5 UUID: **`b43713d5-7ebf-45ff-b327-aa2e0962c9e2`**. The user confirmed

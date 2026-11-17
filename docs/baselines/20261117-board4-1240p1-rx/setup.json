@@ -1,0 +1,16 @@
+{
+  "board_label": "#4",
+  "rx_host": "pi4f-trixie",
+  "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+  "tx_host": "pi4g-trixie",
+  "tx_reference_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+  "frequency_hz": 1240100000,
+  "channel": "RF24",
+  "attenuation_db_nominal": 90,
+  "setup_confirmation": "User confirms both radios connected over90dB coax link; pi4gTX, pi4fboard4RX",
+  "led_setup": "Preserve LED0; explicitly set and verify LED1=0 before every RX rate",
+  "no_test_app": true,
+  "reboot_requested": false,
+  "oscillator_frequency_measured": false,
+  "repository_head": "858e6b25b692800252ff3887bbfff4766337b31b"
+}

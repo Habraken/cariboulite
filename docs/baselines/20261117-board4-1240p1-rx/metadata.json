@@ -1,0 +1,461 @@
+{
+  "source_commit": "3edde8e",
+  "driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+  "tx_host": "pi4g-trixie",
+  "rx_host": "pi4f-trixie",
+  "frequency_hz": 1240100000,
+  "channel": "RF24",
+  "attenuation_db_nominal": 90,
+  "tone_hz": 1000,
+  "tone_amplitude": 0.4,
+  "tx_deviation_hz": 2500,
+  "settle_seconds": 2,
+  "measure_seconds": 5,
+  "rates": [
+    [
+      1,
+      4000000
+    ],
+    [
+      2,
+      2000000
+    ],
+    [
+      3,
+      1333333
+    ],
+    [
+      4,
+      1000000
+    ],
+    [
+      5,
+      800000
+    ],
+    [
+      6,
+      666667
+    ],
+    [
+      8,
+      500000
+    ],
+    [
+      10,
+      400000
+    ]
+  ],
+  "tx_powers_dbm": [
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14
+  ],
+  "axes": [
+    "rx"
+  ],
+  "rx_board_label": "#4",
+  "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+  "rx_restriction": "RX only; oscillator frequency not measured on this board",
+  "test_context": "Board4 full RX sweep at1240.1MHz; no reboot requested; preserve LED0, set LED1=0 explicitly; user confirms90dB coax link",
+  "reference_receiver_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+  "timestamp_filter": "RX snapshots must be newer than measurement start; status drained throughout settling",
+  "startup_failures": [],
+  "profiles": {
+    "rx_4000000": {
+      "rx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 500000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 500000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_2000000": {
+      "rx": {
+        "sample_rate_hz": 2000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 250000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 2000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 250000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_1333333": {
+      "rx": {
+        "sample_rate_hz": 1333333,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 166666
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 1333333.333,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 166666.667
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_1000000": {
+      "rx": {
+        "sample_rate_hz": 1000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 125000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 1000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 125000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_800000": {
+      "rx": {
+        "sample_rate_hz": 800000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 100000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 800000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 100000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_666667": {
+      "rx": {
+        "sample_rate_hz": 666667,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 83333
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 666666.667,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 83333.333
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_500000": {
+      "rx": {
+        "sample_rate_hz": 500000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 62500
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 500000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 62500.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    },
+    "rx_400000": {
+      "rx": {
+        "sample_rate_hz": 400000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 50000
+      },
+      "tx": {
+        "sample_rate_hz": 4000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 500000,
+        "sample_gap": 0
+      },
+      "rx_observed": {
+        "sample_rate_hz": 400000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 50000.0
+      },
+      "tx_observed": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 80000.0,
+        "digital_cutoff_hz": 500000.0
+      }
+    }
+  },
+  "run_id": "cariboulite-board4-1240p1-rx-20261117T183324Z",
+  "backends": {
+    "rx": {
+      "board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+      "board_label": "#4",
+      "host": "pi4f-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "boot_id": "cef40621-d7f1-4a80-b0eb-ed23ea201120",
+      "role": "rx",
+      "args": [
+        "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+        "--channel",
+        "RF24",
+        "--rx-frequency",
+        "1240100000",
+        "--tx-frequency",
+        "1240100000",
+        "--tx-sample-rate",
+        "4000000",
+        "--tx-power",
+        "-12",
+        "--tx-mode",
+        "nbfm",
+        "--tx-source",
+        "tone",
+        "--tx-deviation",
+        "2500",
+        "--rx-mode",
+        "nbfm",
+        "--rx-sample-rate",
+        "1000000",
+        "--rx-sinad",
+        "--rx-playback",
+        "plughw:USB,0,0",
+        "--seconds",
+        "7200",
+        "--socket",
+        "/tmp/cariboulite-board4-1240p1-rx-20261117T183324Z/rx_div6/rx/ipc/status.sock"
+      ],
+      "uid": 0,
+      "binary_sha256": "446b2333742467602cdad712888a2471c095363591096504d79122ca4480834a",
+      "library_sha256": "fe9c0716bd9bc95011660db077b08728ae20737a7c8e1bcf014ab7ee2c2c8700",
+      "led_setup": {
+        "before_reply": "v2 2 OK OK 1 0 live IDLE RF24 1240100000 1240099999.7392578 1000000 nbfm 1 0 0.200000003 0.300000012 0 1240100000 0 4000000 -12 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249",
+        "after_reply": "v2 3 OK OK 2 0 live IDLE RF24 1240100000 1240099999.7392578 1000000 nbfm 1 0 0.200000003 0.300000012 0 1240100000 0 4000000 -12 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249",
+        "preserved_led0": 1,
+        "led1": 0
+      }
+    },
+    "tx": {
+      "board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+      "board_label": "original TX reference",
+      "host": "pi4g-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "boot_id": "77b6f2fd-1f73-4c37-b1da-921dd30edc33",
+      "role": "tx",
+      "args": [
+        "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+        "--channel",
+        "RF24",
+        "--rx-frequency",
+        "1240100000",
+        "--tx-frequency",
+        "1240100000",
+        "--tx-sample-rate",
+        "4000000",
+        "--tx-power",
+        "-12",
+        "--tx-mode",
+        "nbfm",
+        "--tx-source",
+        "tone",
+        "--tx-deviation",
+        "2500",
+        "--rx-mode",
+        "nbfm",
+        "--rx-sample-rate",
+        "1000000",
+        "--rx-sinad",
+        "--rx-playback",
+        "plughw:USB,0,0",
+        "--seconds",
+        "7200",
+        "--socket",
+        "/tmp/cariboulite-board4-1240p1-rx-20261117T183324Z/rx_axis_source/tx/ipc/status.sock"
+      ],
+      "uid": 0,
+      "binary_sha256": "446b2333742467602cdad712888a2471c095363591096504d79122ca4480834a",
+      "library_sha256": "fe9c0716bd9bc95011660db077b08728ae20737a7c8e1bcf014ab7ee2c2c8700"
+    }
+  },
+  "source_manifest_sha256": "a3c204f759fb17a5aaa35a0599288c28dd76d7c8206f4738459e03cd0b37b0ac",
+  "recording_end_utc_host_clock": "2026-11-17T18:50:02+00:00",
+  "date_note": "Board #4 1240.1MHz RX sweep on 2026-11-17; timestamps and run IDs are UTC.",
+  "module_images": [
+    {
+      "host": "pi4f-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "hat": {
+        "vendor": "CaribouLite Reproduction 2026Q4 PD9JH",
+        "product": "CaribouLite RPI Hat",
+        "product_ver": "0x0001",
+        "uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+        "product_id": "0x0001",
+        "name": "hat"
+      },
+      "smi_present": true,
+      "radio_processes": [],
+      "smi_open_fds": [],
+      "binary_sha256": "446b2333742467602cdad712888a2471c095363591096504d79122ca4480834a",
+      "loaded_driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+      "installed_driver_srcversion": "1AC65CD6AE81A1E2ED63F14"
+    },
+    {
+      "host": "pi4g-trixie",
+      "kernel": "6.18.60+rpt-rpi-v8",
+      "hat": {
+        "vendor": "CaribouLabs LTD",
+        "product": "CaribouLite RPI Hat",
+        "product_ver": "0x0001",
+        "uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+        "product_id": "0x0001",
+        "name": "hat"
+      },
+      "smi_present": true,
+      "radio_processes": [],
+      "smi_open_fds": [],
+      "binary_sha256": "446b2333742467602cdad712888a2471c095363591096504d79122ca4480834a",
+      "loaded_driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+      "installed_driver_srcversion": "1AC65CD6AE81A1E2ED63F14"
+    }
+  ],
+  "collector_legacy_shared_reference": "RX axis only; TX fixed at 4 MS/s",
+  "shared_reference": "RX axis only; TX fixed at4MS/s; no independent repeated4Mreference curve",
+  "source_commit_meaning": "Frequency-only collector variation of the committed LED1-low sweep; see setup repository_head and actual backend/library hashes; no production code changes for1240.1MHz",
+  "setup": {
+    "board_label": "#4",
+    "rx_host": "pi4f-trixie",
+    "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+    "tx_host": "pi4g-trixie",
+    "tx_reference_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+    "frequency_hz": 1240100000,
+    "channel": "RF24",
+    "attenuation_db_nominal": 90,
+    "setup_confirmation": "User confirms both radios connected over90dB coax link; pi4gTX, pi4fboard4RX",
+    "led_setup": "Preserve LED0; explicitly set and verify LED1=0 before every RX rate",
+    "no_test_app": true,
+    "reboot_requested": false,
+    "oscillator_frequency_measured": false,
+    "repository_head": "858e6b25b692800252ff3887bbfff4766337b31b"
+  },
+  "verified_led_setup": {
+    "verified_rx_rate_cases": 8,
+    "boot_ids": [
+      "cef40621-d7f1-4a80-b0eb-ed23ea201120"
+    ],
+    "led1_low_before_all_rx_starts": true,
+    "led0_preserved": true,
+    "cases": [
+      {
+        "case": "rx_div1",
+        "pins_before": 249,
+        "pins_after": 249
+      },
+      {
+        "case": "rx_div2",
+        "pins_before": 249,
+        "pins_after": 249
+      },
+      {
+        "case": "rx_div3",
+        "pins_before": 249,
+        "pins_after": 249
+      },
+      {
+        "case": "rx_div4",
+        "pins_before": 249,
+        "pins_after": 249
+      },
+      {
+        "case": "rx_div5",
+        "pins_before": 249,
+        "pins_after": 249
+      },
+      {
+        "case": "rx_div6",
+        "pins_before": 249,
+        "pins_after": 249
+      },
+      {
+        "case": "rx_div8",
+        "pins_before": 249,
+        "pins_after": 249
+      },
+      {
+        "case": "rx_divA",
+        "pins_before": 249,
+        "pins_after": 249
+      }
+    ]
+  }
+}

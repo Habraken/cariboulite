@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_date": "2026-11-16",
+  "recorded_date": "2026-11-17",
   "associations": [
     {
       "rx_board_uuid": "d8810044-c444-46f4-a548-703412cbf971",
@@ -46,7 +46,7 @@
         "docs/board4-led1-low-rx-qualification-2026-11-16.md"
       ],
       "evidence": "docs/baselines/20261116-board4-rx/",
-      "latest_rx_result": "Full post-reboot LED1low RX sweep passed120points; conditional success, not a resolution of earlier LED1high failures"
+      "latest_rx_result": "2026-11-17:144.1MHz full LED1-low sweep passed120points,112transmitting;2877snapshots verified;430.1MHz and1240.1MHz records retained separately"
     },
     {
       "board_label": "#5",
@@ -61,7 +61,7 @@
     }
   ],
   "current_receiver": {
-    "status": "Board4 full post-reboot LED1=0 RX sweep passed all120points;2879snapshots reconciled; zero transport counters; both radios released; LED1high dependency remains unresolved",
+    "status": "Board4 LED1-low RX sweeps passed120points each at144.1MHz,430.1MHz and1240.1MHz; latest2877snapshots verified with zero transport counters; both radios released; LED1high dependency unresolved",
     "rx_host": "pi4f-trixie",
     "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
     "restriction": "RX only; no oscillator-frequency or TX qualification",
@@ -71,6 +71,7 @@
     "tx_board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
     "evidence": "docs/baselines/20261116-board3-rx/",
     "report": "docs/board3-rx-qualification-2026-11-16.md",
-    "setup_note": "User confirmed #4 on pi4f and90dB link to original pi4g reference"
+    "setup_note": "User confirmed #4 on pi4f and90dB link to original pi4g reference",
+    "frequency_hz": 144100000
   }
 }

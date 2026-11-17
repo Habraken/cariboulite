@@ -1,5 +1,7 @@
 # Board #4 EEPROM and RX qualification — 16 November 2026
 
+**RF-frequency follow-ups (17 November):** the [LED1-low qualification report](board4-led1-low-rx-qualification-2026-11-16.md) now includes separate full 120-point sweeps at 1240.1 MHz and 144.1 MHz, both with zero recorded transport errors.
+
 **Latest:** the [full post-reboot sweep with explicit LED1=0](board4-led1-low-rx-qualification-2026-11-16.md) passed all120points with zero recorded transport errors. This is conditional on LED1low; the original failures remain retained.
 
 **Later tests:** the [full retest after manual test-app use](board4-rx-retest-2026-11-16.md) passed all 120 points. The [post-reboot test](board4-rx-reboot-2026-11-16.md) reproduced startup/frame failures and was stopped at the user's request to prioritize #5. Diagnosis is deferred. The results below describe the initial run.

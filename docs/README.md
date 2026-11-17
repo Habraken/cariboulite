@@ -61,7 +61,7 @@ retain their original revision and test conditions. See the
 - [Pi 4 hardware-paced TX validation](pi4-tx-validation-2026-10-15.md)
 - [Menu 14 NBFM RX chain and sensitivity investigation](nbfm-rx-sensitivity-context.md)
 - [Board #5 EEPROM and failed RX startup](board5-rx-qualification-2026-11-16.md)
-- [Board #4 full RX sweep after reboot with LED1 low](board4-led1-low-rx-qualification-2026-11-16.md)
+- [Board #4 LED1-low RX qualification at 144.1, 430.1 and 1240.1 MHz](board4-led1-low-rx-qualification-2026-11-16.md)
 - [Backend LED controls and #4 LED1-dependent RX startup](board4-backend-led-control-2026-11-16.md)
 - [Board #4 EEPROM and failed RX qualification](board4-rx-qualification-2026-11-16.md)
 - [Physical baseline procedure](physical-baseline-test.md)

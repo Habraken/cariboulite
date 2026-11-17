@@ -1,0 +1,19 @@
+{
+  "points": 120,
+  "transmitting_points": 112,
+  "transport_error_points": [],
+  "transmitting_points_with_full_valid_sinad": 112,
+  "comparison_note": "Same board, different RF frequencies and dates; uncalibrated link with frequency-dependent TX/frontend/attenuator/cable behavior; no isolated receiver-gain or sensitivity claim",
+  "rssi_dbm_1240p1_minus_430p1": {
+    "n": 112,
+    "mean": -7.108979684265011,
+    "min": -8.507246376811594,
+    "max": -0.25
+  },
+  "sinad_db_1240p1_minus_430p1": {
+    "n": 112,
+    "mean": -6.521641951345756,
+    "min": -7.241041666666668,
+    "max": -5.378208333333333
+  }
+}
