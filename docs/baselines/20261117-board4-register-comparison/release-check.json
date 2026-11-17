@@ -1,0 +1,38 @@
+[
+  {
+    "host": "pi4f-trixie",
+    "kernel": "6.18.60+rpt-rpi-v8",
+    "hat": {
+      "vendor": "CaribouLite Reproduction 2026Q4 PD9JH",
+      "product": "CaribouLite RPI Hat",
+      "product_ver": "0x0001",
+      "uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
+      "product_id": "0x0001",
+      "name": "hat"
+    },
+    "smi_present": true,
+    "radio_processes": [],
+    "smi_open_fds": [],
+    "binary_sha256": "b2d62dcd100d9a2a90a4e83fefb0d1a4d101b710dbd1f62135d5db88c25a9036",
+    "loaded_driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+    "installed_driver_srcversion": "1AC65CD6AE81A1E2ED63F14"
+  },
+  {
+    "host": "pi4g-trixie",
+    "kernel": "6.18.60+rpt-rpi-v8",
+    "hat": {
+      "vendor": "CaribouLabs LTD",
+      "product": "CaribouLite RPI Hat",
+      "product_ver": "0x0001",
+      "uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+      "product_id": "0x0001",
+      "name": "hat"
+    },
+    "smi_present": true,
+    "radio_processes": [],
+    "smi_open_fds": [],
+    "binary_sha256": "b2d62dcd100d9a2a90a4e83fefb0d1a4d101b710dbd1f62135d5db88c25a9036",
+    "loaded_driver_srcversion": "1AC65CD6AE81A1E2ED63F14",
+    "installed_driver_srcversion": "1AC65CD6AE81A1E2ED63F14"
+  }
+]

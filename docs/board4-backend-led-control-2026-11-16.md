@@ -75,3 +75,11 @@ No permanent initialization write or relaxed acquisition check was added.
 Both radios released their SMI descriptors. Full logs and status windows are
 archived; [source hashes, summary and evidence](baselines/20261116-board4-backend-leds/README.md)
 record the experiment. The prior test-app investigation remains separate evidence.
+
+## Subsequent register comparison — 17 November 2026
+
+The [before/after comparison](board4-register-comparison-2026-11-17.md) found
+only the intended LED1 bit change in the ten exposed readable registers across
+three stopped low/high cycles. RX still succeeded with LED1low, failed with
+LED1high and recovered low. No unintended exposed-control change was observed;
+unexposed or transient state and electrical causes remain unresolved.

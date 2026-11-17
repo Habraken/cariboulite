@@ -55,6 +55,7 @@ retain their original revision and test conditions. See the
 
 ## Recorded investigations and measurements
 
+- [Board #4 LED1 before/after register comparison](board4-register-comparison-2026-11-17.md)
 - [Explicit read-only FPGA register snapshots](fpga-register-snapshot-2026-11-17.md)
 
 - [Reproduction-board U25 clock measurement and FPGA scope probe](u25-clock-measurement-2026-11-06.md)

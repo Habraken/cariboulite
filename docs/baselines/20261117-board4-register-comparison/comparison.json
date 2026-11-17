@@ -1,0 +1,172 @@
+{
+  "snapshot_count": 27,
+  "complete_successful_register_reads": 270,
+  "stopped_comparison_snapshots": 20,
+  "repeated_low_high_cycles": 3,
+  "baseline_values": {
+    "SYS.module_version": 1,
+    "SYS.system_version": 1,
+    "SYS.manufacturer": 1,
+    "SYS.gap_sync_source": 0,
+    "IO.module_version": 1,
+    "IO.mode": 0,
+    "IO.digital": 249,
+    "IO.rf_state": 86,
+    "SMI.module_version": 1,
+    "SMI.fifo_channel_direction": 20
+  },
+  "baseline_expected_versions_and_idle_controls_match": true,
+  "only_LED1_defined_bit_changed": true,
+  "other_defined_bit_changes": [],
+  "changes": [
+    {
+      "label": "cycle1_led1=1_read1",
+      "register": "IO.digital",
+      "baseline": 249,
+      "observed": 251,
+      "defined_xor": 2,
+      "dynamic_xor": 0
+    },
+    {
+      "label": "cycle1_led1=1_read2",
+      "register": "IO.digital",
+      "baseline": 249,
+      "observed": 251,
+      "defined_xor": 2,
+      "dynamic_xor": 0
+    },
+    {
+      "label": "cycle1_led1=1_read3",
+      "register": "IO.digital",
+      "baseline": 249,
+      "observed": 251,
+      "defined_xor": 2,
+      "dynamic_xor": 0
+    },
+    {
+      "label": "cycle2_led1=1_read1",
+      "register": "IO.digital",
+      "baseline": 249,
+      "observed": 251,
+      "defined_xor": 2,
+      "dynamic_xor": 0
+    },
+    {
+      "label": "cycle2_led1=1_read2",
+      "register": "IO.digital",
+      "baseline": 249,
+      "observed": 251,
+      "defined_xor": 2,
+      "dynamic_xor": 0
+    },
+    {
+      "label": "cycle2_led1=1_read3",
+      "register": "IO.digital",
+      "baseline": 249,
+      "observed": 251,
+      "defined_xor": 2,
+      "dynamic_xor": 0
+    },
+    {
+      "label": "cycle3_led1=1_read1",
+      "register": "IO.digital",
+      "baseline": 249,
+      "observed": 251,
+      "defined_xor": 2,
+      "dynamic_xor": 0
+    },
+    {
+      "label": "cycle3_led1=1_read2",
+      "register": "IO.digital",
+      "baseline": 249,
+      "observed": 251,
+      "defined_xor": 2,
+      "dynamic_xor": 0
+    },
+    {
+      "label": "cycle3_led1=1_read3",
+      "register": "IO.digital",
+      "baseline": 249,
+      "observed": 251,
+      "defined_xor": 2,
+      "dynamic_xor": 0
+    }
+  ],
+  "rx_checks": [
+    {
+      "led1": 0,
+      "state": "RX",
+      "alignment_first": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 2,
+        "emitted_samples": 851967,
+        "stream_resets": 22
+      },
+      "alignment_last": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 2,
+        "emitted_samples": 12091391,
+        "stream_resets": 22
+      },
+      "failures_delta_during_observation": 0,
+      "emitted_samples_delta_during_observation": 11239424
+    },
+    {
+      "led1": 1,
+      "state": "FAULT",
+      "alignment_first": {
+        "acquisitions": 1,
+        "failures": 15,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 122927,
+        "emitted_samples": 12287999,
+        "stream_resets": 40
+      },
+      "alignment_last": {
+        "acquisitions": 1,
+        "failures": 15,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 122927,
+        "emitted_samples": 12287999,
+        "stream_resets": 40
+      },
+      "failures_delta_during_observation": 0,
+      "emitted_samples_delta_during_observation": 0
+    },
+    {
+      "led1": 0,
+      "state": "RX",
+      "alignment_first": {
+        "acquisitions": 2,
+        "failures": 15,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 122927,
+        "emitted_samples": 13172735,
+        "stream_resets": 52
+      },
+      "alignment_last": {
+        "acquisitions": 2,
+        "failures": 15,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 122927,
+        "emitted_samples": 25198591,
+        "stream_resets": 52
+      },
+      "failures_delta_during_observation": 0,
+      "emitted_samples_delta_during_observation": 12025856
+    }
+  ],
+  "final_led0": 1,
+  "final_led1": 0,
+  "no_reset_program_or_tx_start_commands": true
+}

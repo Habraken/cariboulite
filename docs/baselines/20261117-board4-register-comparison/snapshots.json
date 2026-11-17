@@ -1,0 +1,542 @@
+[
+  {
+    "phase": "stopped",
+    "label": "initial",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89602.829762168
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle1_led1=0_read1",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89602.98046797
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle1_led1=0_read2",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89603.080397902
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle1_led1=0_read3",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89603.181018934
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle1_led1=1_read1",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89603.331788273
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle1_led1=1_read2",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89603.431663205
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle1_led1=1_read3",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89603.532229923
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle2_led1=0_read1",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89603.682953207
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle2_led1=0_read2",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89603.783018377
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle2_led1=0_read3",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89603.883674409
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle2_led1=1_read1",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89604.034384582
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle2_led1=1_read2",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89604.13439879
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle2_led1=1_read3",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89604.234912472
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle3_led1=0_read1",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89604.385700236
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle3_led1=0_read2",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89604.485638056
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle3_led1=0_read3",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89604.586192145
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle3_led1=1_read1",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89604.736937966
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle3_led1=1_read2",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89604.837086079
+  },
+  {
+    "phase": "stopped",
+    "label": "cycle3_led1=1_read3",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89604.937649039
+  },
+  {
+    "phase": "stopped",
+    "label": "restored_low",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89605.038238664
+  },
+  {
+    "phase": "rx_checks",
+    "label": "trial1_led1=0_before",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89605.189100964
+  },
+  {
+    "phase": "rx_checks",
+    "label": "trial1_led1=0_after",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      21
+    ],
+    "monotonic_s": 89608.435565559
+  },
+  {
+    "phase": "rx_checks",
+    "label": "trial2_led1=1_before",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      21
+    ],
+    "monotonic_s": 89608.58605929
+  },
+  {
+    "phase": "rx_checks",
+    "label": "trial2_led1=1_after",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      251,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89611.806293924
+  },
+  {
+    "phase": "rx_checks",
+    "label": "trial3_led1=0_before",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      20
+    ],
+    "monotonic_s": 89611.957720124
+  },
+  {
+    "phase": "rx_checks",
+    "label": "trial3_led1=0_after",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      21
+    ],
+    "monotonic_s": 89615.383543225
+  },
+  {
+    "phase": "cleanup",
+    "label": "final_low",
+    "state": "IDLE",
+    "ok": true,
+    "valid_mask": 1023,
+    "values": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      249,
+      86,
+      1,
+      21
+    ],
+    "monotonic_s": 89615.534500135
+  }
+]
