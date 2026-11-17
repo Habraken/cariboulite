@@ -69,6 +69,7 @@ test: all $(OUT)/test_sinad $(OUT)/test_status_publisher $(OUT)/test_modem_snaps
 	"$(OUT)/test_command_protocol"
 	"$(OUT)/test_control_server"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_smi_rx_stream.py"
+	python3 "$(ROOT)/software/libcariboulite/tests/test_smi_raw_capture.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_smi_tx_wire.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_am_demod.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_rx_audio_output.py"

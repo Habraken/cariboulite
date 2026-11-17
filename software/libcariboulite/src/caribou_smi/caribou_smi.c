@@ -28,6 +28,7 @@
 
 #include "caribou_smi.h"
 #include "smi_utils.h"
+#include "smi_raw_capture.h"
 #include "io_utils/io_utils.h"
 #include <unistd.h>
 #include <errno.h>
@@ -705,6 +706,7 @@ int caribou_smi_init_with_fd(caribou_smi_st* dev, void* context, int owned_fd)
     dev->invert_iq = false;
     dev->sample_rate = CARIBOU_SMI_SAMPLE_RATE;
     dev->initialized = 1;
+    smi_raw_capture_open(dev);
 
     return 0;
 }
@@ -715,6 +717,7 @@ int caribou_smi_close (caribou_smi_st* dev)
     /* Another descriptor may retain ownership: stop DMA explicitly. */
     if (dev->initialized)
         caribou_smi_set_driver_streaming_state(dev, smi_stream_idle);
+    smi_raw_capture_close(dev);
     // release temporary buffers
     if (dev->read_temp_buffer) free(dev->read_temp_buffer);
     if (dev->write_temp_buffer) free(dev->write_temp_buffer);
@@ -810,6 +813,7 @@ static int smi_read_normal(caribou_smi_st *dev, caribou_smi_channel_en channel,
                 caribou_smi_calc_read_timeout(dev->sample_rate,wanted));
         read_done=true;
         if (n<=0) return total?(int)total:n<0?-1:0;
+        smi_raw_capture_append(dev, dev->read_temp_buffer, (size_t)n);
         dev->rx_pending_bytes=(size_t)n;
     }
     return (int)total;
