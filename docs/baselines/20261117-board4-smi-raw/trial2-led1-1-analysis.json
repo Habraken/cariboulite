@@ -1,0 +1,301 @@
+{
+  "bytes": 262144,
+  "sha256": "890bbb88ca884f25b7ef55d07265449a46fdf1df27ad802cb90725590280728b",
+  "framing_mask": "0xc001c000",
+  "framing_expected": "0x80004000",
+  "phases": [
+    {
+      "phase": 0,
+      "words": 65536,
+      "valid_words": 5374,
+      "longest_valid_run": 2,
+      "valid_suffix": 0,
+      "framing_bit_errors": {
+        "14": 35279,
+        "15": 32156,
+        "16": 31684,
+        "30": 31526,
+        "31": 33745
+      },
+      "bit_ones": [
+        31581,
+        31508,
+        31184,
+        31927,
+        31107,
+        31872,
+        253,
+        61680,
+        456,
+        31312,
+        31454,
+        31677,
+        31482,
+        31130,
+        30257,
+        32156,
+        31684,
+        30543,
+        31353,
+        30986,
+        31277,
+        31259,
+        63060,
+        747,
+        635,
+        31509,
+        31488,
+        32006,
+        31535,
+        30833,
+        31526,
+        31791
+      ],
+      "stuck_zero_bits": [],
+      "stuck_one_bits": [],
+      "adjacent_repeated_words": 7,
+      "zero_words": 0,
+      "all_one_words": 0
+    },
+    {
+      "phase": 1,
+      "words": 65535,
+      "valid_words": 57940,
+      "longest_valid_run": 401,
+      "valid_suffix": 1,
+      "framing_bit_errors": {
+        "14": 2476,
+        "15": 747,
+        "16": 635,
+        "30": 253,
+        "31": 3856
+      },
+      "bit_ones": [
+        456,
+        31311,
+        31454,
+        31676,
+        31481,
+        31129,
+        30256,
+        32155,
+        31683,
+        30542,
+        31352,
+        30985,
+        31276,
+        31258,
+        63059,
+        747,
+        635,
+        31508,
+        31488,
+        32005,
+        31535,
+        30833,
+        31526,
+        31790,
+        31581,
+        31508,
+        31184,
+        31927,
+        31107,
+        31872,
+        253,
+        61679
+      ],
+      "stuck_zero_bits": [],
+      "stuck_one_bits": [],
+      "adjacent_repeated_words": 7,
+      "zero_words": 0,
+      "all_one_words": 0
+    },
+    {
+      "phase": 2,
+      "words": 65535,
+      "valid_words": 3262,
+      "longest_valid_run": 3,
+      "valid_suffix": 0,
+      "framing_bit_errors": {
+        "14": 34009,
+        "15": 31790,
+        "16": 31581,
+        "30": 30257,
+        "31": 33379
+      },
+      "bit_ones": [
+        31683,
+        30542,
+        31352,
+        30985,
+        31276,
+        31258,
+        63059,
+        747,
+        635,
+        31508,
+        31488,
+        32005,
+        31535,
+        30833,
+        31526,
+        31790,
+        31581,
+        31508,
+        31184,
+        31927,
+        31107,
+        31872,
+        253,
+        61679,
+        456,
+        31311,
+        31454,
+        31677,
+        31481,
+        31130,
+        30257,
+        32156
+      ],
+      "stuck_zero_bits": [],
+      "stuck_one_bits": [],
+      "adjacent_repeated_words": 4,
+      "zero_words": 0,
+      "all_one_words": 0
+    },
+    {
+      "phase": 3,
+      "words": 65535,
+      "valid_words": 0,
+      "longest_valid_run": 0,
+      "valid_suffix": 0,
+      "framing_bit_errors": {
+        "14": 65282,
+        "15": 61679,
+        "16": 456,
+        "30": 63059,
+        "31": 64788
+      },
+      "bit_ones": [
+        635,
+        31508,
+        31488,
+        32005,
+        31535,
+        30833,
+        31526,
+        31790,
+        31581,
+        31508,
+        31184,
+        31927,
+        31107,
+        31872,
+        253,
+        61679,
+        456,
+        31311,
+        31454,
+        31677,
+        31481,
+        31130,
+        30257,
+        32156,
+        31684,
+        30543,
+        31353,
+        30986,
+        31277,
+        31259,
+        63059,
+        747
+      ],
+      "stuck_zero_bits": [],
+      "stuck_one_bits": [],
+      "adjacent_repeated_words": 4,
+      "zero_words": 0,
+      "all_one_words": 0
+    }
+  ],
+  "byte_order_hypotheses": {
+    "swap_bytes_in_halfwords": [
+      {
+        "input_phase": 0,
+        "valid_words": 0,
+        "words": 65536,
+        "longest_valid_run": 0
+      },
+      {
+        "input_phase": 1,
+        "valid_words": 998,
+        "words": 65535,
+        "longest_valid_run": 2
+      },
+      {
+        "input_phase": 2,
+        "valid_words": 58137,
+        "words": 65535,
+        "longest_valid_run": 401
+      },
+      {
+        "input_phase": 3,
+        "valid_words": 487,
+        "words": 65535,
+        "longest_valid_run": 1
+      }
+    ],
+    "swap_halfwords": [
+      {
+        "input_phase": 0,
+        "valid_words": 5659,
+        "words": 65536,
+        "longest_valid_run": 3
+      },
+      {
+        "input_phase": 1,
+        "valid_words": 0,
+        "words": 65535,
+        "longest_valid_run": 0
+      },
+      {
+        "input_phase": 2,
+        "valid_words": 3391,
+        "words": 65535,
+        "longest_valid_run": 3
+      },
+      {
+        "input_phase": 3,
+        "valid_words": 57823,
+        "words": 65535,
+        "longest_valid_run": 400
+      }
+    ],
+    "reverse_word_bytes": [
+      {
+        "input_phase": 0,
+        "valid_words": 58012,
+        "words": 65536,
+        "longest_valid_run": 400
+      },
+      {
+        "input_phase": 1,
+        "valid_words": 930,
+        "words": 65535,
+        "longest_valid_run": 2
+      },
+      {
+        "input_phase": 2,
+        "valid_words": 0,
+        "words": 65535,
+        "longest_valid_run": 0
+      },
+      {
+        "input_phase": 3,
+        "valid_words": 619,
+        "words": 65535,
+        "longest_valid_run": 2
+      }
+    ]
+  },
+  "note": "Aggregate run lengths do not reproduce decoder chunk boundaries. Stuck payload bits may be legitimate signal data. No upstream/SMI fault localization is implied."
+}

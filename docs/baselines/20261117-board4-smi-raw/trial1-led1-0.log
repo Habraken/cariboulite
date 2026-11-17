@@ -1,0 +1,13 @@
+Status socket: /tmp/smi-raw-lguo8exa/status.sock
+Control socket: /tmp/smi-raw-lguo8exa/control.sock
+11-17 22:17:38.660  4894  4894 I [0;36mFPGA caribou_fpga_program_to_fpga@caribou_fpga.c:224 FPGA already operational - not programming (use 'force_prog=true' to force update)[0;37m
+SMI raw capture armed: /home/pi/src/cariboulite/build/board4-smi-raw/20261117T211738Z/trial1-led1-0.bin (first 1048576 bytes, saved on clean close)
+RX idle: RF24 430.100000 MHz, 4000000 S/s, NBFM. Ctrl+C stops the backend.
+ALSA: opened plughw:USB,0,0, 1ch, S16_LE, 48000 Hz, period 480, buffer 2400 frames
+[scheduling] th=547651481952 actual=SCHED_FIFO/55 affinity=1 requested=FIFO/55 cpu=1 selected=1 rt_error=0 fallback_error=0 affinity_error=0 mlock=attempted mlock_error=0 query_error=0
+[scheduling] th=547659936096 actual=SCHED_FIFO/46 affinity=0 requested=FIFO/46 cpu=0 selected=0 rt_error=0 fallback_error=0 affinity_error=0 mlock=attempted mlock_error=0 query_error=0
+[scheduling] th=547642863968 actual=SCHED_FIFO/70 affinity=2 requested=FIFO/70 cpu=2 selected=2 rt_error=0 fallback_error=0 affinity_error=0 mlock=attempted mlock_error=0 query_error=0
+DEMOD: produced_frames=48960 (1.0s) ALSA=RUNNING  audio_fifo=1/24 (4%)  corr=0.00050  noise_rms=1.356 open=0.200 close=0.300 detector=CLOSED gate=CLOSED
+DEMOD: produced_frames=97440 (2.0s) ALSA=RUNNING  audio_fifo=1/24 (4%)  corr=0.00050  noise_rms=1.313 open=0.200 close=0.300 detector=CLOSED gate=CLOSED
+DEMOD: produced_frames=145440 (3.0s) ALSA=RUNNING  audio_fifo=1/24 (4%)  corr=0.00050  noise_rms=1.297 open=0.200 close=0.300 detector=CLOSED gate=CLOSED
+SMI raw capture: saved 1048576/1048576 bytes

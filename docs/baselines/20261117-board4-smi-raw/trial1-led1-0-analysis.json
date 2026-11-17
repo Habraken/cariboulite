@@ -1,0 +1,333 @@
+{
+  "bytes": 1048576,
+  "sha256": "552b208f203d5033b91b5e34fc8a67a96d9751a4be4c7e80a9d9b93c79d7ab4c",
+  "framing_mask": "0xc001c000",
+  "framing_expected": "0x80004000",
+  "phases": [
+    {
+      "phase": 0,
+      "words": 262144,
+      "valid_words": 0,
+      "longest_valid_run": 0,
+      "valid_suffix": 0,
+      "framing_bit_errors": {
+        "14": 262144,
+        "15": 262144,
+        "16": 0,
+        "30": 262144,
+        "31": 262144
+      },
+      "bit_ones": [
+        0,
+        131093,
+        130355,
+        131474,
+        131270,
+        129567,
+        128694,
+        133551,
+        130468,
+        130469,
+        130471,
+        130469,
+        130472,
+        130472,
+        0,
+        262144,
+        0,
+        131468,
+        130955,
+        131188,
+        131047,
+        129245,
+        128782,
+        133287,
+        130361,
+        130362,
+        130362,
+        130365,
+        130363,
+        130364,
+        262144,
+        0
+      ],
+      "stuck_zero_bits": [
+        0,
+        14,
+        16,
+        31
+      ],
+      "stuck_one_bits": [
+        15,
+        30
+      ],
+      "adjacent_repeated_words": 13,
+      "zero_words": 0,
+      "all_one_words": 0
+    },
+    {
+      "phase": 1,
+      "words": 262143,
+      "valid_words": 23863,
+      "longest_valid_run": 2,
+      "valid_suffix": 0,
+      "framing_bit_errors": {
+        "14": 133362,
+        "15": 133286,
+        "16": 130360,
+        "30": 128693,
+        "31": 128593
+      },
+      "bit_ones": [
+        130467,
+        130468,
+        130470,
+        130468,
+        130471,
+        130471,
+        0,
+        262143,
+        0,
+        131467,
+        130955,
+        131187,
+        131046,
+        129244,
+        128781,
+        133286,
+        130360,
+        130361,
+        130361,
+        130364,
+        130362,
+        130363,
+        262143,
+        0,
+        0,
+        131093,
+        130354,
+        131474,
+        131270,
+        129567,
+        128693,
+        133550
+      ],
+      "stuck_zero_bits": [
+        6,
+        8,
+        23,
+        24
+      ],
+      "stuck_one_bits": [
+        7,
+        22
+      ],
+      "adjacent_repeated_words": 111,
+      "zero_words": 0,
+      "all_one_words": 0
+    },
+    {
+      "phase": 2,
+      "words": 262143,
+      "valid_words": 262143,
+      "longest_valid_run": 262143,
+      "valid_suffix": 262143,
+      "framing_bit_errors": {
+        "14": 0,
+        "15": 0,
+        "16": 0,
+        "30": 0,
+        "31": 0
+      },
+      "bit_ones": [
+        0,
+        131467,
+        130955,
+        131187,
+        131046,
+        129244,
+        128781,
+        133286,
+        130360,
+        130361,
+        130361,
+        130364,
+        130362,
+        130363,
+        262143,
+        0,
+        0,
+        131093,
+        130354,
+        131474,
+        131270,
+        129567,
+        128693,
+        133550,
+        130467,
+        130468,
+        130470,
+        130468,
+        130471,
+        130471,
+        0,
+        262143
+      ],
+      "stuck_zero_bits": [
+        0,
+        15,
+        16,
+        30
+      ],
+      "stuck_one_bits": [
+        14,
+        31
+      ],
+      "adjacent_repeated_words": 116,
+      "zero_words": 0,
+      "all_one_words": 0
+    },
+    {
+      "phase": 3,
+      "words": 262143,
+      "valid_words": 14976,
+      "longest_valid_run": 3,
+      "valid_suffix": 0,
+      "framing_bit_errors": {
+        "14": 133450,
+        "15": 133550,
+        "16": 130467,
+        "30": 128782,
+        "31": 128856
+      },
+      "bit_ones": [
+        130360,
+        130361,
+        130361,
+        130364,
+        130362,
+        130363,
+        262143,
+        0,
+        0,
+        131093,
+        130354,
+        131474,
+        131270,
+        129567,
+        128693,
+        133550,
+        130467,
+        130468,
+        130470,
+        130468,
+        130471,
+        130471,
+        0,
+        262143,
+        0,
+        131468,
+        130954,
+        131187,
+        131047,
+        129245,
+        128782,
+        133287
+      ],
+      "stuck_zero_bits": [
+        7,
+        8,
+        22,
+        24
+      ],
+      "stuck_one_bits": [
+        6,
+        23
+      ],
+      "adjacent_repeated_words": 13,
+      "zero_words": 0,
+      "all_one_words": 0
+    }
+  ],
+  "byte_order_hypotheses": {
+    "swap_bytes_in_halfwords": [
+      {
+        "input_phase": 0,
+        "valid_words": 842,
+        "words": 262144,
+        "longest_valid_run": 1
+      },
+      {
+        "input_phase": 1,
+        "valid_words": 0,
+        "words": 262143,
+        "longest_valid_run": 0
+      },
+      {
+        "input_phase": 2,
+        "valid_words": 2773,
+        "words": 262143,
+        "longest_valid_run": 2
+      },
+      {
+        "input_phase": 3,
+        "valid_words": 262143,
+        "words": 262143,
+        "longest_valid_run": 262143
+      }
+    ],
+    "swap_halfwords": [
+      {
+        "input_phase": 0,
+        "valid_words": 262144,
+        "words": 262144,
+        "longest_valid_run": 262144
+      },
+      {
+        "input_phase": 1,
+        "valid_words": 23274,
+        "words": 262143,
+        "longest_valid_run": 3
+      },
+      {
+        "input_phase": 2,
+        "valid_words": 0,
+        "words": 262143,
+        "longest_valid_run": 0
+      },
+      {
+        "input_phase": 3,
+        "valid_words": 14822,
+        "words": 262143,
+        "longest_valid_run": 3
+      }
+    ],
+    "reverse_word_bytes": [
+      {
+        "input_phase": 0,
+        "valid_words": 898,
+        "words": 262144,
+        "longest_valid_run": 1
+      },
+      {
+        "input_phase": 1,
+        "valid_words": 262143,
+        "words": 262143,
+        "longest_valid_run": 262143
+      },
+      {
+        "input_phase": 2,
+        "valid_words": 2677,
+        "words": 262143,
+        "longest_valid_run": 2
+      },
+      {
+        "input_phase": 3,
+        "valid_words": 0,
+        "words": 262143,
+        "longest_valid_run": 0
+      }
+    ]
+  },
+  "note": "Aggregate run lengths do not reproduce decoder chunk boundaries. Stuck payload bits may be legitimate signal data. No upstream/SMI fault localization is implied."
+}

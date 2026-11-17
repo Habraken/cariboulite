@@ -1,0 +1,41 @@
+Status socket: /tmp/smi-raw-pjvqxoma/status.sock
+Control socket: /tmp/smi-raw-pjvqxoma/control.sock
+11-17 22:18:44.392  4927  4927 I [0;36mFPGA caribou_fpga_program_to_fpga@caribou_fpga.c:224 FPGA already operational - not programming (use 'force_prog=true' to force update)[0;37m
+SMI raw capture armed: /home/pi/src/cariboulite/build/board4-smi-raw/20261117T211738Z/trial2-led1-1.bin (first 1048576 bytes, saved on clean close)
+RX idle: RF24 430.100000 MHz, 4000000 S/s, NBFM. Ctrl+C stops the backend.
+ALSA: opened plughw:USB,0,0, 1ch, S16_LE, 48000 Hz, period 480, buffer 2400 frames
+[scheduling] th=548617351520 actual=SCHED_FIFO/46 affinity=0 requested=FIFO/46 cpu=0 selected=0 rt_error=0 fallback_error=0 affinity_error=0 mlock=attempted mlock_error=0 query_error=0
+[scheduling] th=548608897376 actual=SCHED_FIFO/55 affinity=1 requested=FIFO/55 cpu=1 selected=1 rt_error=0 fallback_error=0 affinity_error=0 mlock=attempted mlock_error=0 query_error=0
+[scheduling] th=548600279392 actual=SCHED_FIFO/70 affinity=2 requested=FIFO/70 cpu=2 selected=2 rt_error=0 fallback_error=0 affinity_error=0 mlock=attempted mlock_error=0 query_error=0
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.798  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.799  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.799  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+11-17 22:18:44.805  4927  4930 E [0;31mCARIBOULITE Radio cariboulite_radio_read_samples@cariboulite_radio.c:1314 SMI data synchronization failed[0;37m
+SMI raw capture: saved 262144/262144 bytes
