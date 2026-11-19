@@ -1,0 +1,11 @@
+{
+  "network_interfaces": [
+    "eth0",
+    "lo"
+  ],
+  "bluetooth_devices": [],
+  "disable_overlays": [
+    "dtoverlay=disable-wifi",
+    "dtoverlay=disable-bt"
+  ]
+}

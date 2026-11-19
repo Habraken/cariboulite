@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "ready": true,
+  "out": "/tmp/cariboulite-board1-distant-frequency-20261118T180227Z/session1/rx",
+  "metadata": {
+    "board_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+    "board_label": "#1",
+    "host": "pi4f-trixie",
+    "kernel": "6.18.60+rpt-rpi-v8",
+    "boot_id": "0017d2a2-65a3-403f-aef3-31c471ec6f91",
+    "role": "rx",
+    "args": [
+      "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend",
+      "--channel",
+      "RF24",
+      "--rx-frequency",
+      "30000000",
+      "--tx-frequency",
+      "30000000",
+      "--tx-sample-rate",
+      "1000000",
+      "--tx-power",
+      "0",
+      "--tx-mode",
+      "nbfm",
+      "--tx-source",
+      "tone",
+      "--tx-deviation",
+      "2500",
+      "--rx-mode",
+      "nbfm",
+      "--rx-sample-rate",
+      "1000000",
+      "--rx-sinad",
+      "--rx-playback",
+      "plughw:USB,0,0",
+      "--seconds",
+      "7200",
+      "--socket",
+      "/tmp/cariboulite-board1-distant-frequency-20261118T180227Z/session1/rx/ipc/status.sock"
+    ],
+    "uid": 0,
+    "binary_sha256": "b2d62dcd100d9a2a90a4e83fefb0d1a4d101b710dbd1f62135d5db88c25a9036",
+    "library_sha256": "458ab66094c41b1df9079561f3b6187b9a089529b36ca1d18f52c629c9f2f058",
+    "led_setup": {
+      "before_reply": "v2 2 OK OK 1 0 live IDLE RF24 30000000 30000001.265136719 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249",
+      "after_reply": "v2 3 OK OK 2 0 live IDLE RF24 30000000 30000001.265136719 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249",
+      "preserved_led0": 1,
+      "led1": 0
+    }
+  }
+}

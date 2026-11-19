@@ -1,0 +1,66 @@
+{
+  "matched_frequencies": 172,
+  "identical_plan_and_software_verified": true,
+  "backend_arguments_match_except_socket": true,
+  "matched_nearby_followup_points": 21,
+  "additional_distant_followup_points": [],
+  "rssi_distant_minus_nearby_db": {
+    "n": 172,
+    "mean": -0.21011332996292523,
+    "median": -0.3200000000000074,
+    "min": -3.0,
+    "max": 5.560000000000002
+  },
+  "sinad_distant_minus_nearby_db": {
+    "n": 155,
+    "mean": 0.5856931168770453,
+    "median": 0.36936000000000035,
+    "min": -0.88436,
+    "max": 2.9524
+  },
+  "partial_distant_hz": [
+    2300100000
+  ],
+  "partial_nearby_hz": [],
+  "unreported_on_both_hz": [
+    2320100000,
+    2350000000,
+    2360000000,
+    2384900000,
+    2385000000,
+    2385100000,
+    2399900000,
+    2400000000,
+    2400100000,
+    2425000000,
+    2449900000,
+    2450000000,
+    2494900000,
+    2650000000
+  ],
+  "unreported_only_distant_hz": [],
+  "unreported_only_nearby_hz": [
+    2250000000,
+    2300000000,
+    2300100000
+  ],
+  "two_to_three_ghz": {
+    "points": 35,
+    "rssi_difference_db": {
+      "n": 35,
+      "mean": 0.18576190476190532,
+      "median": -0.11999999999999034,
+      "min": -3.0,
+      "max": 5.560000000000002
+    },
+    "sinad_difference_db": {
+      "n": 18,
+      "mean": 0.47507277777777773,
+      "median": 0.3285,
+      "min": -0.88436,
+      "max": 1.99464
+    },
+    "unreported_distant": 14,
+    "unreported_nearby": 17
+  }
+}

@@ -1,0 +1,87 @@
+[
+  {
+    "run": "cariboulite-board1-distant-frequency-20261118T180227Z",
+    "session": "session1/rx",
+    "observed_invalid_frame_events": 3,
+    "events": [
+      {
+        "count_increase": 1,
+        "previous_status_monotonic_s": 2765.285932299,
+        "first_observed_monotonic_s": 2765.411407791,
+        "state": "RX",
+        "requested_frequency_hz": 600000000.0,
+        "recent_commands": [
+          {
+            "monotonic_s": 2765.235297442,
+            "request": "v2 171 fpga_led_get",
+            "reply": "v2 171 OK OK 134 33 live IDLE RF24 600000000 600000001.26513672 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 2765.285560008,
+            "request": "v2 172 fpga_led_set 1 0",
+            "reply": "v2 172 OK OK 135 33 live IDLE RF24 600000000 600000001.26513672 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 2765.411068685,
+            "request": "v2 173 start",
+            "reply": "v2 173 OK OK 136 34 live RX RF24 600000000 600000001.26513672 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6"
+          }
+        ]
+      },
+      {
+        "count_increase": 1,
+        "previous_status_monotonic_s": 3018.266689522,
+        "first_observed_monotonic_s": 3018.392092352,
+        "state": "RX",
+        "requested_frequency_hz": 1600000000.0,
+        "recent_commands": [
+          {
+            "monotonic_s": 3018.216089566,
+            "request": "v2 316 fpga_led_get",
+            "reply": "v2 316 OK OK 250 62 live IDLE RF24 1600000000 1600000001.2651367 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 3018.266302157,
+            "request": "v2 317 fpga_led_set 1 0",
+            "reply": "v2 317 OK OK 251 62 live IDLE RF24 1600000000 1600000001.2651367 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 3018.391758245,
+            "request": "v2 318 start",
+            "reply": "v2 318 OK OK 252 63 live RX RF24 1600000000 1600000001.2651367 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6"
+          }
+        ]
+      },
+      {
+        "count_increase": 1,
+        "previous_status_monotonic_s": 3297.490459246,
+        "first_observed_monotonic_s": 3297.615838856,
+        "state": "RX",
+        "requested_frequency_hz": 2500000000.0,
+        "recent_commands": [
+          {
+            "monotonic_s": 3297.439846923,
+            "request": "v2 476 fpga_led_get",
+            "reply": "v2 476 OK OK 378 94 live IDLE RF24 2500000000 2499999999.9577332 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 3297.490061251,
+            "request": "v2 477 fpga_led_set 1 0",
+            "reply": "v2 477 OK OK 379 94 live IDLE RF24 2500000000 2499999999.9577332 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 3297.615540564,
+            "request": "v2 478 start",
+            "reply": "v2 478 OK OK 380 95 live RX RF24 2500000000 2499999999.9577332 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "run": "cariboulite-board1-distant-frequency-open-20261118T182735Z",
+    "session": "session1/rx",
+    "observed_invalid_frame_events": 0,
+    "events": []
+  }
+]
