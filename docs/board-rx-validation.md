@@ -121,6 +121,47 @@ fully valid SINAD, and transport counters were zero. Both radios were released.
 The [qualification report](board4-led1-low-rx-qualification-2026-11-16.md) retains
 separate 144.1, 430.1 and 1240.1 MHz results, plots and uncalibrated comparisons.
 
+### #4 frequency response at fixed 0 dBm and 1 MS/s
+
+On 18 November the [full frequency sweep](board4-frequency-sweep-2026-11-18.md)
+measured 172 frequencies from 30 to 5,999.999 MHz, using both radios at 1 MS/s,
+0 dBm requested TX and the existing nominal 90 dB coax link. LED1 remained low.
+The plan covers every listed amateur/ISM range with at least three points.
+Twenty-one frequencies were repeated with squelches disabled; the estimator is
+pre-gate, and 16 frequencies still have no reportable SINAD. The final selection
+has 156 fully numeric SINAD points and 4,287 paired snapshots. Three isolated
+startup invalid-frame events were observed across the two runs, with no new
+transport errors during retained measurement windows. Both radios were released.
+These remain uncalibrated link measurements, not receiver-only sensitivity.
+
+### #1 repeat of the full frequency sweep
+
+After the user swapped board #1 onto pi4f on 18 November, the identical
+172-frequency plan and 21 open-squelch follow-up points were repeated with
+0 dBm requested TX, both radios at 1 MS/s and LED1 low. Plan bytes, software
+hashes and backend arguments apart from socket paths match board #4's run.
+All 4,289 selected paired snapshots reconcile. Board #1 has 155 fully numeric
+SINAD points and 17 unreported values; 16 unreported frequencies are shared
+with board #4, with 2250 MHz additional on #1. The 2650 MHz RSSI peak is present
+on both boards, while their bypass-region RSSI levels differ substantially.
+Board #1 recorded zero transport counters and no invalid-frame events across
+both runs. Both radios were released. See the
+[board #1 report and overlaid comparison](board1-frequency-sweep-2026-11-18.md).
+
+### #1 repeat with the laptop distant
+
+The user moved the laptop away, then authorized the same 172-frequency plan
+and 21 open-squelch follow-up points on board #1. Both remain at 1 MS/s, TX
+request 0 dBm, LED1 low and the nominal 90 dB coax setup. All 4,289 selected
+paired snapshots reconcile. There are 157 fully numeric SINAD points, one
+partial point and 14 unreported values. The 2650 MHz peak persists at
+−58.36 dBm versus −58.24 dBm nearby, with no reported SINAD in either run;
+the bypass-region lack of SINAD also persists. Three startup invalid-frame
+events were observed, with no new transport errors in retained measurement
+windows. Both radios were released. The
+[laptop-distant report](board1-laptop-distant-frequency-sweep-2026-11-18.md)
+retains the comparison and placement/causality limitations.
+
 ## Board #5 — EEPROM verified, all RX startup attempts failed
 
 Device #5 UUID: **`b43713d5-7ebf-45ff-b327-aa2e0962c9e2`**. The user confirmed

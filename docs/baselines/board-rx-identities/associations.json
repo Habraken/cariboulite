@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_date": "2026-11-17",
+  "recorded_date": "2026-11-18",
   "associations": [
     {
       "rx_board_uuid": "d8810044-c444-46f4-a548-703412cbf971",
@@ -10,9 +10,12 @@
       "primary_reports": [
         "docs/tx-power-sweep-2026-11-13.md",
         "docs/native-sample-rate-power-sweep-2026-11-14.md",
-        "docs/nbfm-post-wire-fix-sweep-2026-11-16.md"
+        "docs/nbfm-post-wire-fix-sweep-2026-11-16.md",
+        "docs/board1-frequency-sweep-2026-11-18.md",
+        "docs/board1-laptop-distant-frequency-sweep-2026-11-18.md"
       ],
-      "board_label": "#1"
+      "board_label": "#1",
+      "latest_rx_result": "2026-11-18: board1 laptop-distant repeat measured172frequencies and21matched follow-ups at1MS/s RX/TX,0dBm requested TX andLED1low;4289selected paired snapshots;157fully numeric SINAD,1partial,14unreported;2650MHz peak persists within0.12dB;3startup invalid-frame events, no new transport errors in measurement windows; both radios released"
     },
     {
       "board_label": "#2",
@@ -43,10 +46,11 @@
       "scope": "RX qualification failed: startup failures at4and2MS/s; invalid frames at800and400kS/s; 90points recorded at six lower rates",
       "primary_reports": [
         "docs/board4-rx-qualification-2026-11-16.md",
-        "docs/board4-led1-low-rx-qualification-2026-11-16.md"
+        "docs/board4-led1-low-rx-qualification-2026-11-16.md",
+        "docs/board4-frequency-sweep-2026-11-18.md"
       ],
       "evidence": "docs/baselines/20261116-board4-rx/",
-      "latest_rx_result": "2026-11-17:144.1MHz full LED1-low sweep passed120points,112transmitting;2877snapshots verified;430.1MHz and1240.1MHz records retained separately"
+      "latest_rx_result": "2026-11-18: LED1-low frequency sweep measured172points from30to5999.999MHz at1MS/s RX/TX and0dBm requested TX;156numeric SINAD,16unreported;4287selected paired snapshots;3startup invalid-frame events across two runs, no new transport errors in measurement windows; both radios released"
     },
     {
       "board_label": "#5",
@@ -61,17 +65,26 @@
     }
   ],
   "current_receiver": {
-    "status": "Board4 LED1-low RX sweeps passed120points each at144.1MHz,430.1MHz and1240.1MHz; latest2877snapshots verified with zero transport counters; both radios released; LED1high dependency unresolved",
+    "status": "2026-11-18: board1 laptop-distant repeat measured172frequencies and21matched follow-ups at1MS/s RX/TX,0dBm requested TX andLED1low;4289selected paired snapshots;157fully numeric SINAD,1partial,14unreported;2650MHz peak persists within0.12dB;3startup invalid-frame events, no new transport errors in measurement windows; both radios released",
     "rx_host": "pi4f-trixie",
-    "rx_board_uuid": "c2440a8d-3852-4c44-b96f-1b64a962e7dc",
-    "restriction": "RX only; no oscillator-frequency or TX qualification",
+    "rx_board_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+    "restriction": "This sweep covers RX only; no receiver-board TX or oscillator-frequency measurement",
     "tx_host": "pi4g-trixie",
     "attenuation_db_nominal": 90,
-    "board_label": "#4",
+    "board_label": "#1",
     "tx_board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
-    "evidence": "docs/baselines/20261116-board3-rx/",
-    "report": "docs/board3-rx-qualification-2026-11-16.md",
-    "setup_note": "User confirmed #4 on pi4f and90dB link to original pi4g reference",
-    "frequency_hz": 144100000
+    "evidence": "docs/baselines/20261118-board1-laptop-distant-frequency-sweep/",
+    "report": "docs/board1-laptop-distant-frequency-sweep-2026-11-18.md",
+    "setup_note": "Board #1 on pi4f used the existing nominal 90 dB coax link to the original pi4g reference",
+    "frequency_hz": 2650000000,
+    "frequency_note": "Last configured frequency after laptop-distant open-squelch follow-up; both radios stopped",
+    "frequency_sweep_hz": [
+      30000000,
+      5999999000
+    ],
+    "rx_sample_rate_hz": 1000000,
+    "tx_sample_rate_hz": 1000000,
+    "tx_power_dbm_requested": 0,
+    "laptop_placement_user_reported": "Large distance; not measured"
   }
 }

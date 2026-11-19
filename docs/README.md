@@ -58,6 +58,12 @@ retain their original revision and test conditions. See the
 
 ## Recorded investigations and measurements
 
+- [Board #1 frequency sweep with laptop distant: paired placement comparison](board1-laptop-distant-frequency-sweep-2026-11-18.md)
+
+- [Board #1 frequency sweep and direct comparison with board #4](board1-frequency-sweep-2026-11-18.md)
+
+- [Board #4 frequency sweep: 30 MHz to 6 GHz, 0 dBm, 1 MS/s](board4-frequency-sweep-2026-11-18.md)
+
 - [Board #4 LED1 before/after register comparison](board4-register-comparison-2026-11-17.md)
 - [Explicit read-only FPGA register snapshots](fpga-register-snapshot-2026-11-17.md)
 
