@@ -1,0 +1,88 @@
+[
+  {
+    "run": "cariboulite-board4-frequency-20261118T061904Z",
+    "session": "session1/rx",
+    "observed_invalid_frame_events": 1,
+    "events": [
+      {
+        "count_increase": 1,
+        "previous_status_monotonic_s": 29030.187433567,
+        "first_observed_monotonic_s": 29030.388201966,
+        "state": "RX",
+        "requested_frequency_hz": 3409900000.0,
+        "recent_commands": [
+          {
+            "monotonic_s": 29030.034547525,
+            "request": "v2 581 fpga_led_get",
+            "reply": "v2 581 OK OK 462 115 live IDLE RF24 3409900000 3409900000.0531006 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 29030.084744579,
+            "request": "v2 582 fpga_led_set 1 0",
+            "reply": "v2 582 OK OK 463 115 live IDLE RF24 3409900000 3409900000.0531006 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 29030.185835739,
+            "request": "v2 583 start",
+            "reply": "v2 583 OK OK 464 116 live RX RF24 3409900000 3409900000.0531006 1000000 nbfm 1 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "run": "cariboulite-board4-frequency-open-20261118T064412Z",
+    "session": "session1/rx",
+    "observed_invalid_frame_events": 2,
+    "events": [
+      {
+        "count_increase": 1,
+        "previous_status_monotonic_s": 29542.377461642,
+        "first_observed_monotonic_s": 29542.578201152,
+        "state": "RX",
+        "requested_frequency_hz": 2000000000.0,
+        "recent_commands": [
+          {
+            "monotonic_s": 29542.220747381,
+            "request": "v2 12 fpga_led_get",
+            "reply": "v2 12 OK OK 8 1 live IDLE RF24 2000000000 2000000001.2651367 1000000 nbfm 0 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 29542.270985216,
+            "request": "v2 13 fpga_led_set 1 0",
+            "reply": "v2 13 OK OK 9 1 live IDLE RF24 2000000000 2000000001.2651367 1000000 nbfm 0 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 29542.377109479,
+            "request": "v2 14 start",
+            "reply": "v2 14 OK OK 10 2 live RX RF24 2000000000 2000000001.2651367 1000000 nbfm 0 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6"
+          }
+        ]
+      },
+      {
+        "count_increase": 1,
+        "previous_status_monotonic_s": 29690.422900067,
+        "first_observed_monotonic_s": 29690.537928409,
+        "state": "RX",
+        "requested_frequency_hz": 2450000000.0,
+        "recent_commands": [
+          {
+            "monotonic_s": 29690.371094834,
+            "request": "v2 97 fpga_led_get",
+            "reply": "v2 97 OK OK 76 18 live IDLE RF24 2450000000 2449999616 1000000 nbfm 0 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 29690.421337843,
+            "request": "v2 98 fpga_led_set 1 0",
+            "reply": "v2 98 OK OK 77 18 live IDLE RF24 2450000000 2449999616 1000000 nbfm 0 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6 fpga_io 249"
+          },
+          {
+            "monotonic_s": 29690.537615654,
+            "request": "v2 99 start",
+            "reply": "v2 99 OK OK 78 19 live RX RF24 2450000000 2449999616 1000000 nbfm 0 0 0.200000003 0.300000012 0 30000000 0 1000000 0 -2147483648 1 600 0.400000006 2500 0 0 0 nbfm 0.800000012 6"
+          }
+        ]
+      }
+    ]
+  }
+]

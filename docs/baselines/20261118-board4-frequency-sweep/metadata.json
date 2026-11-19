@@ -1,0 +1,21 @@
+{
+  "run": "cariboulite-board4-frequency-20261118T061904Z",
+  "rx_host": "pi4f-trixie",
+  "tx_host": "pi4g-trixie",
+  "rx_board": "#4",
+  "attenuation_db_nominal": 90,
+  "rx_sample_rate_hz": 1000000,
+  "tx_sample_rate_hz": 1000000,
+  "tx_power_dbm": 0,
+  "tone_hz": 1000,
+  "tone_amplitude": 0.4,
+  "tx_deviation_hz": 2500,
+  "settle_seconds": 2,
+  "measure_seconds": 5,
+  "source_commit": "03deb4f88840fe68a1d68324c8cd2afc29b1f307",
+  "timestamp_filter": "per-host sequence freshness and RX-local monotonic time; clocks never compared across hosts",
+  "repeat_run": "cariboulite-board4-frequency-open-20261118T064412Z",
+  "repeated_point_count": 21,
+  "repeat_reason": "Check unavailable SINAD with both squelches disabled; estimator runs pre-gate",
+  "selected_data_note": "Use source-selection.json to distinguish original open-gate measurements from open-squelch repeats. Both complete raw runs retained."
+}
