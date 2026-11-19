@@ -80,6 +80,7 @@ typedef struct {
     bool running;
     bool am_offset_tuning_enabled; // backend default on, legacy callers opt in
     unsigned am_rf_attenuation_db;
+    bool ssb_spectrum_inverted;
     double am_tuner_offset_hz;
     int am_mix_hz;
 

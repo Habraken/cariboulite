@@ -17,9 +17,9 @@ nbfm_demod_result_t wb_demod_process_with_raw(nbfm_demod_t* dsp,
     const iq16_t* input, size_t count, int16_t* output, float* raw,
     size_t capacity, double correction);
 
-nbfm_demod_t* am_demod_create(const nbfm_demod_config_t* config);
-void am_demod_reset(nbfm_demod_t* dsp);
-int am_demod_set_audio(nbfm_demod_t* dsp, float tau, float gain);
-nbfm_demod_result_t am_demod_process_with_raw(nbfm_demod_t* dsp,
+nbfm_demod_t* voice_demod_create(audio_demod_mode_t mode, const nbfm_demod_config_t* c);
+void voice_demod_reset(nbfm_demod_t* dsp);
+int voice_demod_set_audio(nbfm_demod_t* dsp, float tau, float gain);
+nbfm_demod_result_t voice_demod_process_with_raw(nbfm_demod_t* dsp,
     const iq16_t* input, size_t count, int16_t* output, float* raw,
     size_t capacity, double correction);

@@ -176,11 +176,7 @@ static int parse_int(const char *token, int *value)
 
 static int parse_mode(const char *token, audio_demod_mode_t *mode)
 {
-    if (!strcmp(token,"nbfm")) *mode=AUDIO_DEMOD_NBFM;
-    else if (!strcmp(token,"wbfm")) *mode=AUDIO_DEMOD_WBFM;
-    else if (!strcmp(token,"am")) *mode=AUDIO_DEMOD_AM;
-    else return -1;
-    return 0;
+    return audio_demod_mode_parse(token, mode) ? 0 : -1;
 }
 
 static int parse_rate(const char *token, unsigned *rate)
@@ -273,9 +269,8 @@ int control_request_parse(const char *packet, size_t bytes,
              !parse_rate(tokens[3], &request->tx_sample_rate_hz))
         request->command = CONTROL_TX_SAMPLE_RATE;
     else if (request->protocol_version==2 && !strcmp(tokens[2],"tx_mode") && count==4 &&
-             (!strcmp(tokens[3],"nbfm") || !strcmp(tokens[3],"am"))) {
+             audio_mod_mode_parse(tokens[3], &request->tx_mode)) {
         request->command=CONTROL_TX_MODE;
-        request->tx_mode=!strcmp(tokens[3],"am") ? AUDIO_MOD_AM : AUDIO_MOD_NBFM;
     } else if (request->protocol_version==2 && !strcmp(tokens[2],"tx_am_depth") && count==4 &&
                !parse_float(tokens[3],&request->tx_am_depth) && request->tx_am_depth>=0 && request->tx_am_depth<=1)
         request->command=CONTROL_TX_AM_DEPTH;
@@ -299,7 +294,7 @@ static int valid_code(const char *code)
 {
     static const char *const codes[] = {
         "OK", "BUSY", "PROTOCOL", "RX_RUNNING", "INVALID", "FREQ_RANGE",
-        "HARDWARE", "FAULT", "WBFM_NOISE", "AM_NOISE", "ACCEPTED", "TRANSITION",
+        "HARDWARE", "FAULT", "WBFM_NOISE", "AM_NOISE", "SSB_NOISE", "ACCEPTED", "TRANSITION",
         "TX_RUNNING", "LOOPBACK", "TX_FAILED", "FIRMWARE_FILE", "FPGA_REQUIRED"
     };
     size_t i;
@@ -383,9 +378,8 @@ int control_reply_parse(const char *packet, size_t bytes, control_reply_t *reply
          parse_bool(tokens[29], &reply->transition)))
         return protocol_error();
     if (reply->protocol_version == 2 && count >= 33U) {
-        if (strcmp(tokens[30], "nbfm") && strcmp(tokens[30], "am"))
+        if (!audio_mod_mode_parse(tokens[30], &reply->tx_mode))
             return protocol_error();
-        reply->tx_mode = !strcmp(tokens[30], "am") ? AUDIO_MOD_AM : AUDIO_MOD_NBFM;
         if (parse_float(tokens[31], &reply->tx_am_depth) ||
             reply->tx_am_depth < 0 || reply->tx_am_depth > 1 ||
             parse_float(tokens[32], &reply->tx_am_backoff_db) ||

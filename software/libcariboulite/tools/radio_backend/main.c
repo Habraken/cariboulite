@@ -107,7 +107,7 @@ static void usage(FILE *out, const char *program)
         "  --rx-start                start reception after initialization\n"
         "  --rx-frequency HZ         default 430125000\n"
         "  --rx-sample-rate HZ       400000/500000/666667/800000/1000000/1333333/2000000/4000000\n"
-        "  --rx-mode nbfm|wbfm|am    default nbfm; AM is 300-3000 Hz voice\n"
+        "  --rx-mode nbfm|wbfm|am|usb|lsb   RX mode, default nbfm\n"
         "  --rx-deviation HZ         NBFM audio normalization 1..24000 (default %.0f)\n"
         "  --rx-playback DEVICE      default plughw:Loopback,0,0\n"
         "  --rx-no-noise-squelch      bypass noise squelch\n"
@@ -123,7 +123,7 @@ static void usage(FILE *out, const char *program)
         "Transmit options:\n"
         "  --tx-frequency HZ         default 430125000\n"
         "  --tx-power DBM            default -12; RF24 -12..14, RF09 -14..14\n"
-        "  --tx-mode nbfm|am         NBFM or 300-3000 Hz AM voice, default nbfm\n"
+        "  --tx-mode nbfm|am|usb|lsb   TX mode, default nbfm\n"
         "  --tx-am-dac-shaping on|off  experimental AM DAC error feedback, default off\n"
         "  --tx-am-backoff DB       extra AM IQ backoff: 0..18 dB, default 6\n"
         "  --tx-am-depth DEPTH      modulation at unit audio: 0..1, default 0.8\n"
@@ -238,10 +238,7 @@ static int parse_options(int argc, char **argv, options_t *o)
                 || radio_profile_rx(o->rx.mode, (unsigned)value, &profile)) return -1;
             o->rx.fs_rf = (float)profile.sample_rate_hz; break;
         case MODE:
-            if (!strcmp(optarg, "nbfm")) o->rx.mode = AUDIO_DEMOD_NBFM;
-            else if (!strcmp(optarg, "wbfm")) o->rx.mode = AUDIO_DEMOD_WBFM;
-            else if (!strcmp(optarg,"am")) o->rx.mode = AUDIO_DEMOD_AM;
-            else return -1;
+            if (!audio_demod_mode_parse(optarg, &o->rx.mode)) return -1;
             break;
         case RX_DEVIATION:
             if (number(optarg, &value, NBFM_RX_MIN_DEVIATION_HZ,
@@ -261,9 +258,7 @@ static int parse_options(int argc, char **argv, options_t *o)
             if (number(optarg, &value, -14, 14) || floor(value) != value) return -1;
             o->tx.tx_power_dbm = (int)value; break;
         case TX_MODE:
-            if (!strcmp(optarg,"nbfm")) o->tx.mode=AUDIO_MOD_NBFM;
-            else if (!strcmp(optarg,"am")) o->tx.mode=AUDIO_MOD_AM;
-            else return -1;
+            if (!audio_mod_mode_parse(optarg, &o->tx.mode)) return -1;
             break;
         case TX_AM_DAC_SHAPING:
             if(!strcmp(optarg,"on"))o->tx.am_dac_shaping=true;
@@ -453,7 +448,7 @@ static int backend_tune(backend_control_t *c, double hz)
 {
     if (c->options->dry_run) { c->options->actual_rx_frequency = hz; return 0; }
     const double requested=hz;int mix=0;
-    if(c->options->rx.mode==AUDIO_DEMOD_AM && c->options->rx.am_offset_tuning_enabled &&
+    if(audio_demod_uses_offset(c->options->rx.mode, c->options->rx.am_offset_tuning_enabled) &&
        radio_profile_am_rx_tuning(c->radio->type,c->sys->board_info.numeric_product_id,
                                  requested,&hz,&mix))return -1;
     const double offset=hz-requested;
@@ -1210,7 +1205,8 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         if (!noise_squelch_pack_levels(request->noise_open_rms, request->noise_close_rms, &levels))
             code = "INVALID";
         else if (o->rx.mode != AUDIO_DEMOD_NBFM && request->noise_enabled)
-            code = o->rx.mode==AUDIO_DEMOD_AM ? "AM_NOISE" : "WBFM_NOISE";
+            code = audio_demod_is_ssb(o->rx.mode) ? "SSB_NOISE" :
+                o->rx.mode==AUDIO_DEMOD_AM ? "AM_NOISE" : "WBFM_NOISE";
         else {
             /* Non-FM modes and WBFM have no FM noise detector. The effective flag must
              * not discard the user's saved NBFM noise-squelch preference. */
@@ -1287,7 +1283,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         }
         break;
     case CONTROL_TX_MODE:
-        if(request->tx_mode!=AUDIO_MOD_NBFM && request->tx_mode!=AUDIO_MOD_AM)code="INVALID";
+        if(!audio_mod_mode_valid(request->tx_mode))code="INVALID";
         else if(o->tx.mode!=request->tx_mode) {
             o->tx.mode=request->tx_mode;c->tx_configuration_dirty=true;changed=true;
         }
@@ -1722,7 +1718,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         modem->monotonic_s, o->dry_run ? "simulated" : "live", o->dry_run ? " transport-only dry run" : "",
         (long)getpid(), o->channel, state, audio_demod_mode_label(o->rx.mode),
         (double)o->rx.fs_rf, actual_freq, o->frequency, bandwidth, tx_bandwidth, playback,
-        (double)o->rx.pcm_gain, o->rx.mode==AUDIO_DEMOD_AM ? 0.0 : o->rx.deemph_tau_s * 1e6,
+        (double)o->rx.pcm_gain, (o->rx.mode==AUDIO_DEMOD_AM || audio_demod_is_ssb(o->rx.mode)) ? 0.0 : o->rx.deemph_tau_s * 1e6,
         o->rx.mode==AUDIO_DEMOD_AM && o->rx.am_offset_tuning_enabled ? "true":"false",
         o->rx.mode==AUDIO_DEMOD_AM && !o->rx.am_agc_disabled ? "true" : "false",
         63 - o->rx.am_rf_attenuation_db,

@@ -77,8 +77,8 @@ backend and controller together: older controllers reject the extended reply.
 The updated controller accepts legacy replies but shows TX mode as unknown
 instead of assuming NBFM. The passive monitor also reports the saved settings.
 `rx mode` and the existing bare mode command continue to select RX only. Use
-explicit `tx mode am` to select AM transmission. WBFM TX, USB and LSB remain
-unsupported. NBFM deviation settings are retained but have no effect in AM.
+explicit `tx mode am` to select AM transmission. USB and LSB TX are described in the [SSB TX guide](ssb-voice-tx.md).
+NBFM deviation settings are retained but have no effect in AM.
 
 ## Validation and hardware connection
 

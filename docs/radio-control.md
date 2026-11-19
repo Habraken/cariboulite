@@ -250,16 +250,16 @@ information only, so no Transmit section is shown.
 | --- | --- |
 | `status` or `get` | Request current settings; also reconnect after a lost connection. |
 | `frequency 430.125` | Set RX and TX frequency together in MHz; requires both stopped. |
-| `mode nbfm` or `mode wbfm` | Set the supported RX and TX modes together; WBFM changes RX only, with TX remaining NBFM. Requires both stopped. |
+| `mode wbfm` | Set the RX mode while both paths are stopped. |
 | `rate 1`, `rate 2` or `rate 4` | Set RX and TX sample rates together in MS/s; requires both stopped. |
 | `rx start` or `rx stop` | Start reception with the saved configuration, or stop and release the RX pipeline. |
 | `rx frequency 430.125` | Set receive frequency in MHz. |
-| `rx mode nbfm` or `rx mode wbfm` | Select NBFM or mono WBFM. |
+| `rx mode nbfm\|wbfm\|am\|usb\|lsb` | Select receive modulation while RX is stopped. |
 | `rx rate 1`, `rx rate 2` or `rx rate 4` | Select RF sample rate in MS/s. |
 | `squelch noise on` or `squelch noise off` | Enable or bypass NBFM noise squelch. |
 | `squelch carrier on` or `squelch carrier off` | Enable or bypass carrier squelch. |
 | `squelch levels 0.20 0.30` | Set noise opening and closing RMS thresholds together, in that order. |
-| `tx start` or `tx stop` | Start or stop half-duplex NBFM transmission. |
+| `tx start` or `tx stop` | Start or stop half-duplex transmission in the saved mode. |
 | `tx frequency 430.125` | Set the separate TX frequency in MHz. |
 | `tx power -12` | Set requested output power in integer dBm. |
 | `tx rate 1`, `tx rate 2` or `tx rate 4` | Select TX sample rate in MS/s. |
@@ -968,6 +968,12 @@ default; `--rx-am-agc off --rx-gain GAIN` selects manual audio scaling.
 FM de-emphasis, FM noise-RMS squelch and NBFM SINAD do not apply to AM.
 AM TX is available with `tx mode am`. See [AM RX operation and validation](am-voice-rx.md) for
 settings, the receive-only 119.050 MHz test and its antenna-connection gate.
+
+## SSB voice RX
+
+Select USB or LSB with `--rx-mode` at launch or `rx mode` while reception is
+stopped. Frequency selection uses the ordinary `rx frequency` command in MHz.
+See [SSB RX operation and bench results](ssb-voice-rx.md).
 
 ## Calibrated RX playback
 

@@ -1,5 +1,4 @@
-/* Narrow voice AM: amplitude-preserving RF filtering, envelope detection,
- * carrier-referenced slow AGC, 300 Hz HP / 3 kHz LP, then 48 kHz PCM.
+/* Shared AM/SSB narrow-voice channel filtering and 48 kHz PCM conversion.
  * No device access or allocations in process/reset/setters. */
 #include "fm_demod_internal.h"
 #include "nbfm_channel_filter.h"
@@ -10,6 +9,7 @@
 #include <string.h>
 
 #define AM_CHANNEL_TAPS 193
+enum { SSB_DELAY = 192, SSB_TAPS = 2 * SSB_DELAY + 1 };
 #define AM_BOOTSTRAP_SAMPLES 1000 /* 20 ms, including channel-filter settling */
 typedef struct { double b0,b1,b2,a1,a2,z1,z2; } am_biquad_t;
 typedef struct {
@@ -18,7 +18,9 @@ typedef struct {
     float coeff[AM_CHANNEL_TAPS],i[2*AM_CHANNEL_TAPS],q[2*AM_CHANNEL_TAPS];
     unsigned pos,bootstrap,mix_phase,mix_step,rf_divider;
     float mix_cos[320],mix_sin[320];
-    bool agc_disabled;
+    bool agc_disabled, ssb_inverted;
+    unsigned ssb_head;
+    float ssb_coeff[SSB_DELAY / 2], ssb_i[SSB_TAPS], ssb_q[2 * SSB_TAPS];
     float carrier,carrier_alpha,gain;
     am_biquad_t hp,lp[2];
     float previous,current;
@@ -48,9 +50,9 @@ static float biquad_run(am_biquad_t* b,float x)
     b->z1=b->b1*x-b->a1*y+b->z2;b->z2=b->b2*x-b->a2*y;
     return (float)y;
 }
-int am_demod_set_audio(nbfm_demod_t* dsp,float tau,float gain)
+int voice_demod_set_audio(nbfm_demod_t* dsp,float tau,float gain)
 {
-    if(!dsp||dsp->mode!=AUDIO_DEMOD_AM||!finite_float(tau)||tau<0||
+    if(!dsp||(dsp->mode!=AUDIO_DEMOD_AM && !audio_demod_is_ssb(dsp->mode))||!finite_float(tau)||tau<0||
        !finite_float(gain)||gain<0)return -EINVAL;
     // FM de-emphasis is deliberately bypassed for AM.
     ((am_state_t*)dsp)->gain=gain;return 0;
@@ -60,32 +62,67 @@ int audio_demod_set_am_agc(audio_demod_t* dsp,bool enabled)
     if(!dsp||dsp->mode!=AUDIO_DEMOD_AM)return -EINVAL;
     ((am_state_t*)dsp)->agc_disabled=!enabled;return 0;
 }
-int audio_demod_set_am_offset(audio_demod_t* dsp,int hz)
+static int voice_set_offset(am_state_t* s, int hz)
 {
-    if(!dsp || dsp->mode!=AUDIO_DEMOD_AM || (hz!=0 && hz!=12500 && hz!=-12500))return -EINVAL;
-    am_state_t* s=(am_state_t*)dsp;
-    s->mix_step=hz==0 ? 0 : hz>0 ? s->rf_divider : 320-s->rf_divider;
-    s->mix_phase=0;
+    if (hz != 0 && hz != 12500 && hz != -12500) return -EINVAL;
+    s->mix_step = hz == 0 ? 0 : hz > 0 ? s->rf_divider : 320 - s->rf_divider;
+    s->mix_phase = 0;
     return 0;
 }
-void am_demod_reset(nbfm_demod_t* dsp)
+int audio_demod_set_am_offset(audio_demod_t* dsp, int hz)
+{
+    if (!dsp || dsp->mode != AUDIO_DEMOD_AM) return -EINVAL;
+    return voice_set_offset((am_state_t*)dsp, hz);
+}
+int audio_demod_set_ssb_tuning(audio_demod_t* dsp, int hz, bool inverted)
+{
+    if (!dsp || !audio_demod_is_ssb(dsp->mode)) return -EINVAL;
+    am_state_t* s = (am_state_t*)dsp;
+    int rc = voice_set_offset(s, hz);
+    if (!rc) s->ssb_inverted = inverted;
+    return rc;
+}
+
+static float ssb_detect(am_state_t* s, float i, float q)
+{
+    s->ssb_head = s->ssb_head ? s->ssb_head - 1 : SSB_TAPS - 1;
+    float* history = s->ssb_q + s->ssb_head;
+    history[0] = history[SSB_TAPS] = q;
+    s->ssb_i[s->ssb_head] = i;
+    unsigned delay_pos = s->ssb_head + SSB_DELAY;
+    if (delay_pos >= SSB_TAPS) delay_pos -= SSB_TAPS;
+    float quadrature = 0;
+    for (unsigned tap = 0; tap < SSB_DELAY / 2; ++tap) {
+        unsigned offset = 2 * tap + 1;
+        quadrature += s->ssb_coeff[tap] *
+            (history[SSB_DELAY + offset] - history[SSB_DELAY - offset]);
+    }
+    // H(sin) = -cos. Subtract for positive IQ frequencies, add for negative.
+    const bool lower = (s->base.mode == AUDIO_DEMOD_LSB) != s->ssb_inverted;
+    return (s->ssb_i[delay_pos] + (lower ? quadrature : -quadrature)) / 8192.f;
+}
+
+void voice_demod_reset(nbfm_demod_t* dsp)
 {
     am_state_t* s=(am_state_t*)dsp;if(!s)return;
     nbfm_channel_filter_reset(&s->frontend);
     memset(s->i,0,sizeof(s->i));memset(s->q,0,sizeof(s->q));
     s->mix_phase=0;
+    s->ssb_head = 0;
+    memset(s->ssb_i, 0, sizeof(s->ssb_i));
+    memset(s->ssb_q, 0, sizeof(s->ssb_q));
     s->pos=0;s->carrier=0;s->bootstrap=AM_BOOTSTRAP_SAMPLES;
     s->previous=s->current=0;s->phase=0;
     s->hp.z1=s->hp.z2=0;
     for(unsigned k=0;k<2;++k)s->lp[k].z1=s->lp[k].z2=0;
 }
-nbfm_demod_t* am_demod_create(const nbfm_demod_config_t* c)
+nbfm_demod_t* voice_demod_create(audio_demod_mode_t mode, const nbfm_demod_config_t* c)
 {
     if(!c||!radio_rate_divider(c->rf_rate)||c->audio_rate!=48000||
        !finite_float(c->deemph_tau)||c->deemph_tau<0||
        !finite_float(c->pcm_gain)||c->pcm_gain<0){errno=EINVAL;return NULL;}
     am_state_t* s=calloc(1,sizeof(*s));if(!s)return NULL;
-    s->base.mode=AUDIO_DEMOD_AM;s->gain=c->pcm_gain;
+    s->base.mode=mode;s->gain=c->pcm_gain;
     s->rf_divider=radio_rate_divider(c->rf_rate);
     for(unsigned k=0;k<320;k++){
         s->mix_cos[k]=(float)cos(2*M_PI*k/320);
@@ -104,9 +141,16 @@ nbfm_demod_t* am_demod_create(const nbfm_demod_config_t* c)
     biquad_init(&s->hp,300,.7071067811865476,true);
     biquad_init(&s->lp[0],3000,.541196100146197,false);
     biquad_init(&s->lp[1],3000,1.306562964876377,false);
-    am_demod_reset(&s->base);return &s->base;
+    if (audio_demod_is_ssb(mode)) {
+        for (unsigned tap = 0; tap < SSB_DELAY / 2; ++tap) {
+            unsigned offset = 2 * tap + 1;
+            double window = 0.54 + 0.46 * cos(M_PI * offset / SSB_DELAY);
+            s->ssb_coeff[tap] = (float)(2 * window / (M_PI * offset));
+        }
+    }
+    voice_demod_reset(&s->base);return &s->base;
 }
-audio_demod_result_t am_demod_process_with_raw(nbfm_demod_t* dsp,
+audio_demod_result_t voice_demod_process_with_raw(nbfm_demod_t* dsp,
     const iq16_t* input,size_t count,int16_t* output,float* raw,size_t capacity,double correction)
 {
     am_state_t* s=(am_state_t*)dsp;audio_demod_result_t result={0};
@@ -129,19 +173,24 @@ audio_demod_result_t am_demod_process_with_raw(nbfm_demod_t* dsp,
         const float* hi=s->i+s->pos,*hq=s->q+s->pos;
         float fi=0,fq=0;
         for(unsigned j=0;j<AM_CHANNEL_TAPS;++j){fi+=s->coeff[j]*hi[j];fq+=s->coeff[j]*hq[j];}
-        float envelope=sqrtf(fi*fi+fq*fq);
-        if(s->bootstrap){s->carrier=fmaxf(s->carrier,envelope);--s->bootstrap;}
+        s->previous = s->current;
+        if (audio_demod_is_ssb(s->base.mode))
+            s->current = ssb_detect(s, fi, fq);
         else {
-            // A new strong transmission must not spend a quarter second at
-            // the old weak-signal gain. Normal <=100% AM stays below this
-            // threshold, so this guard does not track individual voice peaks.
-            if(envelope>2.5f*fmaxf(s->carrier,128.f))s->carrier=envelope;
-            else s->carrier+=s->carrier_alpha*(envelope-s->carrier);
+            float envelope=sqrtf(fi*fi+fq*fq);
+            if(s->bootstrap){s->carrier=fmaxf(s->carrier,envelope);--s->bootstrap;}
+            else {
+                // A new strong transmission must not spend a quarter second at
+                // the old weak-signal gain. Normal <=100% AM stays below this
+                // threshold, so this guard does not track individual voice peaks.
+                if(envelope>2.5f*fmaxf(s->carrier,128.f))s->carrier=envelope;
+                else s->carrier+=s->carrier_alpha*(envelope-s->carrier);
+            }
+            // Cap automatic gain at 32x relative to 13-bit IQ full scale. Manual
+            // mode uses a fixed IQ reference; --rx-gain remains the volume control.
+            float reference=s->agc_disabled?4096.f:fmaxf(s->carrier,128.f);
+            s->current=envelope/reference;
         }
-        // Cap automatic gain at 32x relative to 13-bit IQ full scale. Manual
-        // mode uses a fixed IQ reference; --rx-gain remains the volume control.
-        float reference=s->agc_disabled?4096.f:fmaxf(s->carrier,128.f);
-        s->previous=s->current;s->current=envelope/reference;
         double r=(48000./50000)*(1+correction);s->phase+=r;
         if(s->phase>=1){
             float v=s->current+(float)((s->phase-1)/r)*(s->previous-s->current);

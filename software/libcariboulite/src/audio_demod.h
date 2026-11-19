@@ -1,6 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include <stdbool.h>
+#include <string.h>
 #include "iq16.h"
 #include "audio_format.h"
 #include "nbfm_defaults.h"
@@ -8,14 +9,50 @@
 // Standalone DSP. No threads, device handles, queues or retained caller buffers.
 // NBFM audio defaults to NBFM_DEFAULT_DEVIATION_HZ normalization.
 typedef struct nbfm_demod audio_demod_t;
-typedef enum { AUDIO_DEMOD_NBFM = 0, AUDIO_DEMOD_WBFM = 1, AUDIO_DEMOD_AM = 2 } audio_demod_mode_t;
+typedef enum {
+    AUDIO_DEMOD_NBFM = 0, AUDIO_DEMOD_WBFM, AUDIO_DEMOD_AM,
+    AUDIO_DEMOD_USB, AUDIO_DEMOD_LSB
+} audio_demod_mode_t;
+static inline bool audio_demod_is_ssb(audio_demod_mode_t mode)
+{
+    return mode == AUDIO_DEMOD_USB || mode == AUDIO_DEMOD_LSB;
+}
+static inline bool audio_demod_uses_offset(audio_demod_mode_t mode, bool am_enabled)
+{
+    return audio_demod_is_ssb(mode) || (mode == AUDIO_DEMOD_AM && am_enabled);
+}
 static inline const char* audio_demod_mode_name(audio_demod_mode_t mode)
 {
-    switch(mode){case AUDIO_DEMOD_NBFM:return "nbfm";case AUDIO_DEMOD_WBFM:return "wbfm";case AUDIO_DEMOD_AM:return "am";default:return "unknown";}
+    switch (mode) {
+    case AUDIO_DEMOD_NBFM: return "nbfm";
+    case AUDIO_DEMOD_WBFM: return "wbfm";
+    case AUDIO_DEMOD_AM: return "am";
+    case AUDIO_DEMOD_USB: return "usb";
+    case AUDIO_DEMOD_LSB: return "lsb";
+    default: return "unknown";
+    }
 }
 static inline const char* audio_demod_mode_label(audio_demod_mode_t mode)
 {
-    switch(mode){case AUDIO_DEMOD_NBFM:return "NBFM";case AUDIO_DEMOD_WBFM:return "WBFM mono";case AUDIO_DEMOD_AM:return "AM voice";default:return "Unknown";}
+    switch (mode) {
+    case AUDIO_DEMOD_NBFM: return "NBFM";
+    case AUDIO_DEMOD_WBFM: return "WBFM mono";
+    case AUDIO_DEMOD_AM: return "AM voice";
+    case AUDIO_DEMOD_USB: return "USB";
+    case AUDIO_DEMOD_LSB: return "LSB";
+    default: return "Unknown";
+    }
+}
+static inline bool audio_demod_mode_parse(const char* name, audio_demod_mode_t* mode)
+{
+    for (int candidate = AUDIO_DEMOD_NBFM; candidate <= AUDIO_DEMOD_LSB; ++candidate) {
+        audio_demod_mode_t value = (audio_demod_mode_t)candidate;
+        if (strcmp(name, audio_demod_mode_name(value)) == 0) {
+            *mode = value;
+            return true;
+        }
+    }
+    return false;
 }
 typedef struct {
     unsigned rf_rate;       // native 4 MHz/divider rate label; see radio_rates.h
@@ -62,6 +99,9 @@ int audio_demod_set_am_agc(audio_demod_t* dsp, bool enabled);
 // AM only, configure before processing: digital shift 0 or +/-12500 Hz.
 // Reset retains the shift and restarts its exact native-clock phase.
 int audio_demod_set_am_offset(audio_demod_t* dsp, int hz);
+// SSB only, configure before processing. Offset is in decoded IQ coordinates;
+// inverted indicates that positive decoded IQ frequency represents lower RF.
+int audio_demod_set_ssb_tuning(audio_demod_t* dsp, int hz, bool inverted);
 
 // Optional parallel 48 kHz discriminator tap, before DC/de-emphasis/low-pass
 // and PCM gain in NBFM; WBFM taps follow mono/anti-alias filtering.

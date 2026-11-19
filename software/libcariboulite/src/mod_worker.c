@@ -42,7 +42,7 @@ int tx_generate_frame(tx_writer_ctrl_st* tx, rf10_frame_t* frame)
     for (size_t index = 0; index < count; ++index) {
         /* TX enable belongs to the SMI frame flags, not an IQ data bit. */
         frame->data[index].i = tx->iq_rf[index].i;
-        frame->data[index].q = tx->iq_rf[index].q;
+        frame->data[index].q = tx->conjugate_iq ? -tx->iq_rf[index].q : tx->iq_rf[index].q;
     }
     latest_tx_sample.i = frame->data[count / 2].i;
     latest_tx_sample.q = frame->data[count / 2].q;

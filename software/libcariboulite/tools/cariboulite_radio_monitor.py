@@ -314,6 +314,8 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
                       + f" DAC shaping={'on' if config.get('tx_am_dac_shaping') else 'off'}"
                       f" backoff={_formatted(config.get('tx_am_backoff_db'), '.1f')} dB"
                       if config.get("tx_mode")=="am" else
+                      f" TX mode={config['tx_mode']}"
+                      if config.get("tx_mode") in ("usb", "lsb") else
                       f" TX deviation=+/-{_formatted(config.get('tx_deviation_hz'), 'g')} Hz"
                       + (f" TX mode={_label(config.get('tx_mode'))}" if "tx_mode" in config else ""))) if (
                        "tx_sample_rate_hz" in config) else ""

@@ -143,6 +143,31 @@ do not close that demonstration milestone.
   broadcast-decoder goals remain intact; this review does not choose a new
   implementation priority or authorize their hardware operation.
 
+### SSB transmitter first pass — 2026-11-19
+
+- USB and LSB voice TX are implemented in the standalone backend. See the
+  [SSB TX bench procedure](docs/ssb-voice-tx.md) for software results and the
+  receiver checks at 430.100 MHz.
+- The original CaribouLite on pi4g-trixie is the transmitter. pi4f-trixie is
+  assigned the receiver role, with the RSP2pro on the 90 dB attenuated link.
+  The RSP2pro spectrogram confirmed USB and LSB placement on the bench link.
+  Quantitative RF image rejection and SSB reception development remain open.
+
+### SSB receiver first pass — 2026-11-19
+
+- USB and LSB reception are implemented in the standalone backend, including
+  offset tuning and fine frequency selection through the controller.
+- pi4f-trixie recovered both matching sidebands from pi4g-trixie over the 90 dB
+  cabled HiF link at 430.100 MHz. See the [SSB RX bench report](docs/ssb-voice-rx.md)
+  for opposite-mode measurements and the scope of the RF check.
+
+### Voice compression follow-up — 2026-11-19
+
+- [ ] After the SSB implementation, add a shared microphone audio compressor
+  for all voice TX modes, starting with NBFM, AM, USB and LSB. Lift quiet
+  speech and limit loud peaks before modulation. Verify recovered speech levels
+  and each mode's modulation limits over the attenuated bench link.
+
 ## Existing foundation
 
 - Hardware modules already live under `software/libcariboulite/src/`:

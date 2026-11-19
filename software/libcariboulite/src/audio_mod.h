@@ -1,6 +1,7 @@
 #pragma once
 #include "nbfm_mod.h"
 #include <stdbool.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,11 +9,41 @@ extern "C" {
 
 // Shared audio-to-IQ handle; legacy NBFM entry points retain their behavior.
 typedef nbfm_mod_t audio_mod_t;
-typedef enum { AUDIO_MOD_NBFM=0, AUDIO_MOD_AM=1 } audio_mod_mode_t;
+typedef enum {
+    AUDIO_MOD_NBFM = 0,
+    AUDIO_MOD_AM,
+    AUDIO_MOD_USB,
+    AUDIO_MOD_LSB,
+} audio_mod_mode_t;
+
+static inline bool audio_mod_mode_valid(audio_mod_mode_t mode)
+{
+    return mode >= AUDIO_MOD_NBFM && mode <= AUDIO_MOD_LSB;
+}
+
 static inline const char* audio_mod_mode_name(audio_mod_mode_t mode)
 {
-    return mode==AUDIO_MOD_NBFM ? "nbfm" : mode==AUDIO_MOD_AM ? "am" : "unknown";
+    switch (mode) {
+    case AUDIO_MOD_NBFM: return "nbfm";
+    case AUDIO_MOD_AM: return "am";
+    case AUDIO_MOD_USB: return "usb";
+    case AUDIO_MOD_LSB: return "lsb";
+    }
+    return "unknown";
 }
+
+static inline bool audio_mod_mode_parse(const char* name, audio_mod_mode_t* mode)
+{
+    for (int candidate = AUDIO_MOD_NBFM; candidate <= AUDIO_MOD_LSB; ++candidate) {
+        if (strcmp(name, audio_mod_mode_name(candidate)) == 0) {
+            *mode = candidate;
+            return true;
+        }
+    }
+    return false;
+}
+
+// USB/LSB: suppressed-carrier SSB, 300–3000 Hz voice, no pre-emphasis.
 // AM: conventional carrier-present DSB, 300–3000 Hz voice, no pre-emphasis.
 // out_scale is the maximum IQ envelope at 100% modulation; carrier=out_scale/2.
 // depth is nominal modulation at unit audio (0..1); default chosen by caller.

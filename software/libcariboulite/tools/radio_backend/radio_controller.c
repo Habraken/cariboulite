@@ -72,11 +72,11 @@ static void command_help(void)
     puts("Commands:\n"
          "  status | get          read current settings\n"
          "  frequency MHz         set RX and TX frequency while both are stopped\n"
-         "  mode nbfm|wbfm|am        set mode while both are stopped; TX stays NBFM\n"
+         "  mode nbfm|wbfm|am|usb|lsb        set RX mode while both are stopped\n"
          "  rate MS/s            set RX and TX native sample rate in MS/s while stopped\n"
          "  rx start | rx stop    start/stop reception\n"
          "  rx frequency MHz      saved RX frequency, for example 430.125\n"
-         "  rx mode nbfm|wbfm|am     WBFM is mono\n"
+         "  rx mode nbfm|wbfm|am|usb|lsb     WBFM is mono\n"
          "  rx volume DB|mute    live playback volume: -60..+12 dB; 0 = calibrated default\n"
          "  rx rate [MS/s]       no value opens divider menu; RX: .4/.5/.666667/.8/1/1.333333/2/4\n"
          "  rx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
@@ -88,7 +88,7 @@ static void command_help(void)
          "  tx frequency MHz      saved TX frequency, for example 430.125\n"
          "  tx power DBM          integer -14..14; backend applies channel limits\n"
          "  tx rate [MS/s]       no value opens divider menu; TX: .4/.5/.666667/.8/1/1.333333/2/4\n"
-         "  tx mode nbfm|am       saved TX modulation (change while TX is stopped)\n"
+         "  tx mode nbfm|am|usb|lsb   saved TX modulation (change while TX is stopped)\n"
          "  tx am-backoff DB      extra AM IQ backoff: 0..18 dB, TX stopped\n"
          "  tx am-depth VALUE     nominal AM modulation 0..1, default 0.8\n"
          "  tx source mic|tone    saved TX audio source\n"
@@ -217,10 +217,8 @@ static int parse_command(const char *input, ui_command_t *command)
         command->request.command = rx_only ? CONTROL_FREQUENCY : CONTROL_BOTH_FREQUENCY;
         command->request.frequency_hz = value * 1e6;
     } else if (count == 2 && !strcmp(name, "mode") &&
-               (!strcmp(tokens[1], "nbfm") || !strcmp(tokens[1], "wbfm") || !strcmp(tokens[1], "am"))) {
+               audio_demod_mode_parse(tokens[1], &command->request.mode)) {
         command->request.command = rx_only ? CONTROL_MODE : CONTROL_BOTH_MODE;
-        command->request.mode = !strcmp(tokens[1],"am") ? AUDIO_DEMOD_AM :
-            !strcmp(tokens[1],"wbfm") ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM;
     } else if(count==1 && (!strcmp(name,"rate")||!strcmp(name,"sample-rate"))){
         command->kind=UI_RATE_MENU;
         command->request.command=rx_only?CONTROL_SAMPLE_RATE:CONTROL_BOTH_SAMPLE_RATE;
@@ -283,9 +281,8 @@ static int parse_command(const char *input, ui_command_t *command)
         command->request.command = CONTROL_TX_SAMPLE_RATE;
         command->request.tx_sample_rate_hz = radio_rate_label(divider);
     } else if (count==3 && !strcmp(name,"tx") && !strcmp(tokens[1],"mode") &&
-               (!strcmp(tokens[2],"nbfm") || !strcmp(tokens[2],"am"))) {
+               audio_mod_mode_parse(tokens[2], &command->request.tx_mode)) {
         command->request.command=CONTROL_TX_MODE;
-        command->request.tx_mode=!strcmp(tokens[2],"am") ? AUDIO_MOD_AM : AUDIO_MOD_NBFM;
     } else if (count==3 && !strcmp(name,"tx") && !strcmp(tokens[1],"am-backoff")) {
         double backoff;
         if(parse_number(tokens[2],&backoff) || backoff<0 || backoff>18)return -1;
@@ -471,6 +468,7 @@ static const char *radio_error(const control_reply_t *state)
             {"HARDWARE", "Hardware operation failed; check backend log"},
             {"FAULT", "Backend fault; check backend log"},
             {"WBFM_NOISE", "Noise squelch is not available in WBFM"},
+            {"SSB_NOISE", "FM noise squelch is unavailable in SSB. Use carrier squelch or leave it off"},
             {"AM_NOISE", "FM noise squelch is not available in AM; use carrier squelch or leave it off"},
             {"TRANSITION", "A change is already in progress"},
             {"LOOPBACK", "Disable digital loopback before transmitting"},
@@ -520,7 +518,9 @@ static void print_state(const controller_t *controller)
                "Frequency", state->tx_requested_frequency_hz / 1e6,
                "Power", state->tx_requested_power_dbm,
                "Mode", !state->tx_settings_valid ? "Unknown (older backend)" :
-                   state->tx_mode == AUDIO_MOD_AM ? "AM" : "NBFM",
+                   state->tx_mode == AUDIO_MOD_AM ? "AM" :
+                   state->tx_mode == AUDIO_MOD_USB ? "USB" :
+                   state->tx_mode == AUDIO_MOD_LSB ? "LSB" : "NBFM",
                "Sample rate", state->tx_sample_rate_hz / 1e6,
                "Audio source", state->tx_tone_mode ? "Tone" : "Microphone");
         if (state->tx_settings_valid && state->tx_mode == AUDIO_MOD_AM)

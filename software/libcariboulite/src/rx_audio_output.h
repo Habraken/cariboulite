@@ -44,7 +44,7 @@ static inline float rx_audio_calibration(audio_demod_mode_t mode, float tau)
 {
     double response;
     const double w=2*M_PI*1000/48000;
-    if (mode==AUDIO_DEMOD_AM) {
+    if (mode==AUDIO_DEMOD_AM || audio_demod_is_ssb(mode)) {
         response=rx_audio_biquad(300,.7071067811865476,true)*
             rx_audio_biquad(3000,.541196100146197,false)*
             rx_audio_biquad(3000,1.306562964876377,false);

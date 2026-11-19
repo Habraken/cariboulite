@@ -205,10 +205,11 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
                                   par->noise_squelch_close_rms, &noise_levels)) return -1;
 
     double tuner_frequency=par->freq_hz;
-    if(par->mode==AUDIO_DEMOD_AM && par->am_offset_tuning_enabled &&
+    if(audio_demod_uses_offset(par->mode, par->am_offset_tuning_enabled) &&
        radio_profile_am_rx_tuning(radio->type,sys->board_info.numeric_product_id,
                                  par->freq_hz,&tuner_frequency,&p->am_mix_hz))return -1;
     p->am_tuner_offset_hz=tuner_frequency-par->freq_hz;
+    p->ssb_spectrum_inverted = radio_profile_rx_spectrum_inverted(radio->type, par->freq_hz);
 
     // FIFOs
     rf10_fifo_init(&p->rxq,  /*cap=*/64, /*drop_oldest_on_full=*/true);
@@ -283,6 +284,12 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     if (par->mode == AUDIO_DEMOD_AM &&
         (audio_demod_set_am_agc(p->demod.dsp, !par->am_agc_disabled) != 0 ||
          audio_demod_set_am_offset(p->demod.dsp,p->am_mix_hz) != 0)) { error = -4; goto fail; }
+    if (audio_demod_is_ssb(par->mode) &&
+        audio_demod_set_ssb_tuning(p->demod.dsp, p->am_mix_hz,
+            p->ssb_spectrum_inverted) != 0) {
+        error = -4;
+        goto fail;
+    }
     if (par->mode == AUDIO_DEMOD_NBFM &&
         audio_demod_set_nbfm_deviation(p->demod.dsp, deviation) != 0) {
         error = -4;
@@ -505,6 +512,10 @@ int rx_pipeline_set_freq(rx_pipeline_t* p, double freq_hz)
     double tuner=freq_hz;int mix=0;
     if(p->am_mix_hz && (radio_profile_am_rx_tuning(p->radio->type,
         p->sys->board_info.numeric_product_id,freq_hz,&tuner,&mix) || mix!=p->am_mix_hz))return -1;
+    if (audio_demod_is_ssb(p->demod.mode) &&
+        radio_profile_rx_spectrum_inverted(p->radio->type, freq_hz) !=
+        p->ssb_spectrum_inverted)
+        return -1;
     const double offset=tuner-freq_hz;
     HW_LOCK();
     int rc = cariboulite_radio_set_frequency(p->radio, true, &tuner);

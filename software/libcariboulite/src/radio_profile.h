@@ -36,7 +36,9 @@ unsigned radio_profile_tx_bandwidth_hz(int txcutc);
 double radio_profile_sample_rate_hz(int dfe);
 double radio_profile_digital_cutoff_hz(int dfe);
 
-// Offset-tuned AM RX, preserving the selected RF band/conversion region.
+// True where the SMI-decoded spectrum is reversed relative to RF.
+bool radio_profile_rx_spectrum_inverted(cariboulite_channel_en channel, double hz);
+// AM and SSB offset tuning, preserving the selected RF conversion region.
 // Returns physical tuner request and digital +/-12.5 kHz correction.
 int radio_profile_am_rx_tuning(cariboulite_channel_en channel,int product_id,
     double requested_hz,double* tuner_hz,int* mix_hz);

@@ -333,7 +333,7 @@ class RadioControlTests(unittest.TestCase):
                         "tx tone 0 .5", "tx tone 3001 .5", "tx tone 1000 0",
                         "tx tone 1000 1.1", "tx tone 1000 1e-50", "tx tone 1e-50 .5",
                         "tx tone 0x1 .5", "tx sample-rate 3", "rx", "rx frequency",
-                        "rx volume nan", "rx volume 13", "rx volume -61", "rx volume", "rx volume 0 extra", "rx frequency nan", "rx frequency 430.125 extra", "rx mode usb",
+                        "rx volume nan", "rx volume 13", "rx volume -61", "rx volume", "rx volume 0 extra", "rx frequency nan", "rx frequency 430.125 extra", "rx mode ssb",
                         "rx rate 3", "rx sample-rate 1.5", "rx start extra", "squelch",
                         "squelch noise", "squelch noise maybe", "squelch noise on extra",
                         "squelch carrier true", "squelch levels .3 .2", "squelch levels .2",

@@ -99,6 +99,29 @@ class TxControlBackendTests(unittest.TestCase):
         current=self.snapshot_matching(status,lambda s:s['config']['tx_mode']=='nbfm')
         self.assertEqual(current['rx_mode'],initial['rx_mode'])
 
+    def test_ssb_mode_is_independent_of_rx_and_locked_during_tx(self):
+        self.start_backend("--tx-mode", "usb")
+        result = subprocess.run(
+            [str(CONTROLLER), "--socket", str(self.control_path)],
+            input="tx mode lsb\nstatus\nq\n", capture_output=True, text=True,
+            timeout=3, env=helpers.ENVIRONMENT)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stderr, "")
+        _, transmit = result.stdout.rsplit("  Transmit\n", 1)
+        self.assertRegex(transmit, r"Mode\s+LSB")
+        peer = self.controller()
+        initial = self.command(peer, "get")
+        self.assertEqual(initial["tx_mode"], "lsb")
+        self.command(peer, "tx_source tone")
+        self.command(peer, "tx_start", code="ACCEPTED")
+        self.wait_state(peer, "TX")
+        self.assertEqual(self.command(peer, "tx_mode usb", code="TX_RUNNING")["tx_mode"], "lsb")
+        self.command(peer, "tx_stop", code="ACCEPTED")
+        self.wait_state(peer, "RX")
+        updated = self.command(peer, "tx_mode usb")
+        self.assertEqual(updated["tx_mode"], "usb")
+        self.assertEqual(updated["mode"], initial["mode"])
+
     @staticmethod
     def settings(reply):
         return {key: value for key, value in reply.items()

@@ -171,6 +171,29 @@ class RxControlBackendTests(unittest.TestCase):
         self.assertIsNone(snapshot["rx"]["audio_queue"])
         self.assertEqual(snapshot["hardware"]["register_poll"]["polls"], 0)
 
+    def test_ssb_modes_and_noise_policy(self):
+        self.start_backend("--rx-mode", "usb", "--rx-sinad", start=False)
+        result = subprocess.run(
+            [str(CONTROLLER), "--socket", str(self.control_path)],
+            input="rx mode lsb\nstatus\nq\n", capture_output=True, text=True,
+            timeout=3, env=ENVIRONMENT)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stderr, "")
+        self.assertRegex(result.stdout, r"Mode\s+LSB")
+        peer = self.controller()
+        self.assertEqual(self.command(peer, "get")["mode"], "lsb")
+        self.command(peer, "squelch 1 0 .2 .3", code="SSB_NOISE")
+        self.assertEqual(self.command(peer, "mode usb")["mode"], "usb")
+        status = self.connect(self.status_path)
+        self.command(peer, "start")
+        self.command(peer, "mode lsb", code="RX_RUNNING")
+        snapshot = self.snapshot_matching(status, lambda p: p["control"]["rx_requested"])
+        self.assertEqual(snapshot["rx_mode"], "USB")
+        self.assertEqual(snapshot["config"]["deemphasis_us"], 0)
+        self.assertFalse(snapshot["rx"]["noise_enabled"])
+        self.assertIsNone(snapshot["rx"]["sinad"]["db"])
+        self.assertFalse(snapshot["control"]["tx_requested"])
+
     def test_am_mode_receive_only_frequency_and_noise_policy(self):
         self.start_backend("--rx-sinad",start=False)
         peer=self.controller();status=self.connect(self.status_path)
@@ -387,7 +410,7 @@ class RxControlBackendTests(unittest.TestCase):
             b"v3 40 start", b"v1 40 get surplus", b"v1 40", b"v1 40 transmit",
             b"v1 -1 get", b"v1 not-an-id start", b"v1 18446744073709551616 get",
             b"v1 40 start\x00stop", b"v1 40 frequency nan", b"v1 40 frequency inf",
-            b"v1 40 frequency 430125000x", b"v1 40 mode usb",
+            b"v1 40 frequency 430125000x", b"v1 40 mode ssb",
             b"v1 40 sample_rate 3000000", b"v1 40 sample_rate 1000001",
             b"v1 40 squelch 2 0 .20 .30", b"v1 40 squelch 1 0 nan .30",
             b"v1 40 squelch 1 0 .20 inf", b"v1 40 squelch 1 0 .20 .30 extra",

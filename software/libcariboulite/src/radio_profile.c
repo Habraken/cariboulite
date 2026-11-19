@@ -31,7 +31,8 @@ static int profile_rate(unsigned hz, radio_profile_t* out)
 
 int radio_profile_rx(audio_demod_mode_t mode, unsigned hz, radio_profile_t* out)
 {
-    if (mode != AUDIO_DEMOD_NBFM && mode != AUDIO_DEMOD_WBFM && mode != AUDIO_DEMOD_AM) return -1;
+    if (mode != AUDIO_DEMOD_NBFM && mode != AUDIO_DEMOD_WBFM && mode != AUDIO_DEMOD_AM &&
+        !audio_demod_is_ssb(mode)) return -1;
     if (profile_rate(hz, out)) return -1;
     out->rx_bandwidth = mode != AUDIO_DEMOD_WBFM
         ? cariboulite_radio_rx_bw_160KHz : cariboulite_radio_rx_bw_250KHz;
@@ -135,13 +136,16 @@ static unsigned am_rx_region(cariboulite_channel_en channel,int product_id,doubl
     if(product_id==system_type_cariboulite_ism)return 3;
     return hz<CARIBOULITE_2G4_MIN ? 2 : hz<CARIBOULITE_2G4_MAX ? 3 : 4;
 }
+bool radio_profile_rx_spectrum_inverted(cariboulite_channel_en channel, double hz)
+{
+    // HiF decoding swaps I/Q. Below bypass the mixer reverses it again.
+    return channel == cariboulite_channel_hif && hz >= CARIBOULITE_2G4_MIN;
+}
 int radio_profile_am_rx_tuning(cariboulite_channel_en channel,int product_id,
     double requested,double* tuner,int* mix)
 {
     if(!tuner || !mix || !radio_profile_frequency_valid(channel,product_id,requested))return -1;
-    const int sign=channel==cariboulite_channel_hif && requested>=CARIBOULITE_2G4_MIN ? -1 : 1;
-    // HiF decoding swaps I/Q. Below the bypass band the external mixer also reverses
-    // RF frequency sense; the two inversions cancel. S1G is not swapped.
+    const int sign = radio_profile_rx_spectrum_inverted(channel, requested) ? -1 : 1;
     const int offsets[]={12500,-12500};
     for(unsigned k=0;k<2;k++) {
         double candidate=requested+offsets[k];

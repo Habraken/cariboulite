@@ -820,7 +820,7 @@ int main(void) {
             ("--tx-sample-rate", "3000000"), ("--tx-sample-rate", "nan"),
             ("--tx-power", "-13"), ("--tx-power", "15"), ("--tx-power", "-12.5"),
             ("--channel", "RF09", "--tx-power", "-15"),
-            ("--rx-am-offset", "invalid"), ("--rx-am-offset",), ("--rx-volume", "nan"), ("--rx-volume", "13"), ("--rx-volume", "-61"), ("--rx-volume",), ("--rx-mode", "usb"), ("--status-hz", "nan"),
+            ("--rx-am-offset", "invalid"), ("--rx-am-offset",), ("--rx-volume", "nan"), ("--rx-volume", "13"), ("--rx-volume", "-61"), ("--rx-volume",), ("--rx-mode", "ssb"), ("--status-hz", "nan"),
             ("--status-hz", "0"), ("--status-hz", "21"),
             ("--seconds", "inf"), ("--seconds", "0"),
             ("--rx-gain", "nan"), ("--rx-gain", "-1"),
@@ -829,7 +829,7 @@ int main(void) {
             ("--rx-noise-open", "0.3001", "--rx-noise-close", "0.3002"),
             ("--rx-deemphasis-us", "60"), ("--rx-playback", ""),
             ("--rx-frequency",), ("--tx-microphone",), ("--tx-microphone", ""),
-            ("--tx-mode", "wbfm"), ("--tx-mode", "usb"), ("--tx-mode", "NBFM"),
+            ("--tx-mode", "wbfm"), ("--tx-mode", "ssb"), ("--tx-mode", "NBFM"),
             ("--tx-mode", ""), ("--tx-mode",),
             ("unexpected-positional-argument",),
         )

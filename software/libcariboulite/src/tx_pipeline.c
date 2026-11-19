@@ -434,7 +434,7 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
 
     unsigned rf_fs = par->rf_fs ? par->rf_fs : 4000000;
     radio_profile_t profile;
-    if ((par->mode!=AUDIO_MOD_NBFM && par->mode!=AUDIO_MOD_AM) ||
+    if (!audio_mod_mode_valid(par->mode) ||
         !radio_profile_finite(par->am_backoff_db) || par->am_backoff_db<0 || par->am_backoff_db>18 ||
         !radio_profile_finite(par->am_depth) || par->am_depth<0 || par->am_depth>1 ||
         radio_profile_tx(rf_fs, &profile) != 0 ||
@@ -527,6 +527,7 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
         .out_scale     = par->out_scale * (par->mode==AUDIO_MOD_AM ? powf(10.f,-par->am_backoff_db/20.f) : 1.f),
         .linear_interp = 1,
     };
+    p->tx_ctrl.mode = par->mode;
     p->tx_ctrl.fm   = audio_mod_create(par->mode,&cfg,par->am_depth);
     if (p->tx_ctrl.fm && par->mode==AUDIO_MOD_AM && par->am_dac_shaping &&
         audio_mod_set_am_dac_shaping(p->tx_ctrl.fm,true)) goto fail;
@@ -756,6 +757,14 @@ int tx_pipeline_start(tx_pipeline_t* p)
         HW_UNLOCK();
         usleep(2000);
     }
+
+    // The low HiF route uses RF = LO - IF, reversing sideband offsets.
+    // Correct SSB at the packet boundary after the producer is parked.
+    p->tx_ctrl.conjugate_iq =
+        (p->tx_ctrl.mode == AUDIO_MOD_USB || p->tx_ctrl.mode == AUDIO_MOD_LSB) &&
+        p->radio->type == cariboulite_channel_hif &&
+        p->sys->board_info.numeric_product_id == system_type_cariboulite_full &&
+        p->radio->requested_rf_frequency < CARIBOULITE_2G4_MIN;
 
     // Clear any stale queued frames before starting TX
     rf10_fifo_flush(&p->txq);

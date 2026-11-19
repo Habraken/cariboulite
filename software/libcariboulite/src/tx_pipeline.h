@@ -46,7 +46,9 @@ typedef struct {
     bool    live_from_mic;     // set true to enable live generation
     audio_source_t* mic;     // ALSA handle
     tx_audio_buffer_t* audio_buffer; // Independent capture and clock adaptation
-    nbfm_mod_t*     fm;      // 48 kHz audio -> configured RF rate NBFM
+    audio_mod_t*    fm;      // 48 kHz audio -> configured RF IQ rate
+    audio_mod_mode_t mode;
+    bool conjugate_iq;      // Correct spectral inversion on the low HiF mixer route
     float*            a48k;    // 480-float scratch
     iq16_t*           iq_rf;    // One RF frame of IQ scratch
 	
@@ -90,7 +92,7 @@ typedef struct {
     int    tx_power_dbm;        // e.g., -3
     unsigned rf_fs;            // 1, 2 or 4 MS/s; 0 defaults to 4 MS/s
 
-    audio_mod_mode_t mode; // zero/default NBFM; AM voice also supported
+    audio_mod_mode_t mode; // zero/default NBFM
     float am_backoff_db; // additional AM IQ envelope backoff, 0..18 dB
     float am_depth; // AM modulation at unit filtered audio; 0..1
     bool am_dac_shaping; // opt-in AM DAC error feedback; NBFM is unaffected
