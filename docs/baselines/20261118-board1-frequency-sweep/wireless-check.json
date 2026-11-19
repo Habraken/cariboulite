@@ -1,0 +1,25 @@
+{
+  "pi4f-trixie": {
+    "network_interfaces": [
+      "lo",
+      "eth0"
+    ],
+    "bluetooth_devices": [],
+    "disable_overlays": [
+      "dtoverlay=disable-wifi",
+      "dtoverlay=disable-bt"
+    ]
+  },
+  "pi4g-trixie": {
+    "network_interfaces": [
+      "eth0",
+      "lo"
+    ],
+    "bluetooth_devices": [],
+    "disable_overlays": [
+      "dtoverlay=disable-wifi",
+      "dtoverlay=disable-bt"
+    ]
+  },
+  "method": "Read /sys/class/net, /sys/class/bluetooth and matching active disable-overlay lines in /boot/firmware/config.txt; no settings changed"
+}

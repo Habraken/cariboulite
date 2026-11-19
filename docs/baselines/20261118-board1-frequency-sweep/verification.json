@@ -1,0 +1,259 @@
+{
+  "planned_points": 172,
+  "measured_points": 172,
+  "failed_points": 0,
+  "snapshots": 4289,
+  "all_points_measured": true,
+  "fully_valid_sinad_points": 155,
+  "points_with_transport_counters": 0,
+  "points_with_new_transport_errors": 0,
+  "all_bands_have_three_measured_points": true,
+  "statistics_reconciled": true,
+  "settings_and_observed_filters_verified": true,
+  "band_coverage": [
+    {
+      "name": "amateur-6m",
+      "low_hz": 50000000,
+      "high_hz": 52000000,
+      "scope": "Region 1",
+      "points": [
+        50000000,
+        50100000,
+        51000000,
+        51900000
+      ],
+      "measured_points": 4,
+      "fully_valid_sinad_points": 4,
+      "transport_clean_points": 4
+    },
+    {
+      "name": "amateur-4m",
+      "low_hz": 70000000,
+      "high_hz": 70500000,
+      "scope": "Region 1, national availability varies",
+      "points": [
+        70050000,
+        70250000,
+        70450000
+      ],
+      "measured_points": 3,
+      "fully_valid_sinad_points": 3,
+      "transport_clean_points": 3
+    },
+    {
+      "name": "amateur-2m",
+      "low_hz": 144000000,
+      "high_hz": 146000000,
+      "scope": "Region 1",
+      "points": [
+        144100000,
+        145000000,
+        145900000
+      ],
+      "measured_points": 3,
+      "fully_valid_sinad_points": 3,
+      "transport_clean_points": 3
+    },
+    {
+      "name": "amateur-1p25m",
+      "low_hz": 222000000,
+      "high_hz": 225000000,
+      "scope": "Supplementary Region 2",
+      "points": [
+        222100000,
+        223500000,
+        224900000
+      ],
+      "measured_points": 3,
+      "fully_valid_sinad_points": 3,
+      "transport_clean_points": 3
+    },
+    {
+      "name": "amateur-70cm",
+      "low_hz": 430000000,
+      "high_hz": 440000000,
+      "scope": "Region 1",
+      "points": [
+        430100000,
+        433100000,
+        433920000,
+        434700000,
+        435000000,
+        439900000
+      ],
+      "measured_points": 6,
+      "fully_valid_sinad_points": 6,
+      "transport_clean_points": 6
+    },
+    {
+      "name": "amateur-33cm",
+      "low_hz": 902000000,
+      "high_hz": 928000000,
+      "scope": "Supplementary Region 2",
+      "points": [
+        902100000,
+        915000000,
+        927900000
+      ],
+      "measured_points": 3,
+      "fully_valid_sinad_points": 3,
+      "transport_clean_points": 3
+    },
+    {
+      "name": "amateur-23cm",
+      "low_hz": 1240000000,
+      "high_hz": 1300000000,
+      "scope": "Region 1",
+      "points": [
+        1240100000,
+        1250000000,
+        1270000000,
+        1299900000,
+        1300000000
+      ],
+      "measured_points": 5,
+      "fully_valid_sinad_points": 5,
+      "transport_clean_points": 5
+    },
+    {
+      "name": "amateur-13cm",
+      "low_hz": 2300000000,
+      "high_hz": 2450000000,
+      "scope": "Region 1, national subbands vary",
+      "points": [
+        2300000000,
+        2300100000,
+        2320100000,
+        2350000000,
+        2360000000,
+        2384900000,
+        2385000000,
+        2385100000,
+        2399900000,
+        2400000000,
+        2400100000,
+        2425000000,
+        2449900000,
+        2450000000
+      ],
+      "measured_points": 14,
+      "fully_valid_sinad_points": 0,
+      "transport_clean_points": 14
+    },
+    {
+      "name": "amateur-9cm",
+      "low_hz": 3400000000,
+      "high_hz": 3410000000,
+      "scope": "Region 1, national availability varies",
+      "points": [
+        3400000000,
+        3400100000,
+        3405000000,
+        3409900000
+      ],
+      "measured_points": 4,
+      "fully_valid_sinad_points": 4,
+      "transport_clean_points": 4
+    },
+    {
+      "name": "amateur-6cm",
+      "low_hz": 5650000000,
+      "high_hz": 5850000000,
+      "scope": "Region 1",
+      "points": [
+        5650000000,
+        5650100000,
+        5700000000,
+        5725100000,
+        5750000000,
+        5800000000,
+        5849900000,
+        5850000000
+      ],
+      "measured_points": 8,
+      "fully_valid_sinad_points": 8,
+      "transport_clean_points": 8
+    },
+    {
+      "name": "ISM-40MHz",
+      "low_hz": 40660000,
+      "high_hz": 40700000,
+      "scope": "ITU 5.150",
+      "points": [
+        40670000,
+        40680000,
+        40690000
+      ],
+      "measured_points": 3,
+      "fully_valid_sinad_points": 3,
+      "transport_clean_points": 3
+    },
+    {
+      "name": "ISM-433MHz",
+      "low_hz": 433050000,
+      "high_hz": 434790000,
+      "scope": "ITU 5.138 Region 1",
+      "points": [
+        433100000,
+        433920000,
+        434700000
+      ],
+      "measured_points": 3,
+      "fully_valid_sinad_points": 3,
+      "transport_clean_points": 3
+    },
+    {
+      "name": "ISM-915MHz",
+      "low_hz": 902000000,
+      "high_hz": 928000000,
+      "scope": "ITU 5.150 Region 2 supplement",
+      "points": [
+        902100000,
+        915000000,
+        927900000
+      ],
+      "measured_points": 3,
+      "fully_valid_sinad_points": 3,
+      "transport_clean_points": 3
+    },
+    {
+      "name": "ISM-2p4GHz",
+      "low_hz": 2400000000,
+      "high_hz": 2500000000,
+      "scope": "ITU 5.150",
+      "points": [
+        2400000000,
+        2400100000,
+        2425000000,
+        2449900000,
+        2450000000,
+        2494900000,
+        2495000000,
+        2495100000,
+        2499900000,
+        2500000000
+      ],
+      "measured_points": 10,
+      "fully_valid_sinad_points": 4,
+      "transport_clean_points": 10
+    },
+    {
+      "name": "ISM-5p8GHz",
+      "low_hz": 5725000000,
+      "high_hz": 5875000000,
+      "scope": "ITU 5.150",
+      "points": [
+        5725100000,
+        5750000000,
+        5800000000,
+        5849900000,
+        5850000000,
+        5874900000
+      ],
+      "measured_points": 6,
+      "fully_valid_sinad_points": 6,
+      "transport_clean_points": 6
+    }
+  ],
+  "raw_points_sha256": "81b609a60ac64f7ec6ac898143623023ed39ede40b7dc2786efd2424b6376d8e"
+}

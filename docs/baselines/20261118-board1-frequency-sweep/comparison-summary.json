@@ -1,0 +1,62 @@
+{
+  "matched_frequencies": 172,
+  "identical_plan_and_software_verified": true,
+  "backend_arguments_match_except_socket": true,
+  "matched_board4_followup_points": 21,
+  "additional_board1_followup_points": [],
+  "rssi_board1_minus_board4_db": {
+    "n": 172,
+    "mean": -5.532587209302325,
+    "median": -3.8800000000000026,
+    "min": -30.453333333333333,
+    "max": 5.640000000000001
+  },
+  "sinad_board1_minus_board4_db": {
+    "n": 155,
+    "mean": -2.023876634408602,
+    "median": -1.774560000000001,
+    "min": -9.577960000000001,
+    "max": 3.9494
+  },
+  "unreported_on_both_hz": [
+    2300000000,
+    2300100000,
+    2320100000,
+    2350000000,
+    2360000000,
+    2384900000,
+    2385000000,
+    2385100000,
+    2399900000,
+    2400000000,
+    2400100000,
+    2425000000,
+    2449900000,
+    2450000000,
+    2494900000,
+    2650000000
+  ],
+  "unreported_only_board1_hz": [
+    2250000000
+  ],
+  "unreported_only_board4_hz": [],
+  "two_to_three_ghz": {
+    "points": 35,
+    "rssi_difference_db": {
+      "n": 35,
+      "mean": -12.535,
+      "median": -5.0,
+      "min": -30.453333333333333,
+      "max": 5.640000000000001
+    },
+    "sinad_difference_db": {
+      "n": 18,
+      "mean": -0.6798462962962962,
+      "median": 1.1565166666666666,
+      "min": -8.05708,
+      "max": 3.9494
+    },
+    "unreported_board1": 17,
+    "unreported_board4": 16
+  }
+}

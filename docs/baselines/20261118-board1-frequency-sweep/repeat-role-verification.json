@@ -1,0 +1,14 @@
+{
+  "receiver_board_identity_verified": true,
+  "transmitter_reference_identity_verified": true,
+  "rx_starts": 21,
+  "sessions": [
+    {
+      "session": "session1/rx",
+      "rx_starts": 21,
+      "led0_preserved": 1,
+      "led1_low_before_every_start": true,
+      "no_rx_tx_commands_or_states": true
+    }
+  ]
+}
