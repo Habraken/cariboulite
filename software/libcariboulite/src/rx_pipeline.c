@@ -411,10 +411,19 @@ int rx_pipeline_start(rx_pipeline_t* p)
         fprintf(stderr, "[rx] modem filter/AGC configuration failed; RX not started\n");
         return -4;
     }
-    caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, caribou_fpga_io_ctrl_rfm_rx_lowpass);
-    cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_rx, true);
-    caribou_smi_set_driver_streaming_state(&p->sys->smi,
-        p->radio == &p->sys->radio_high ? smi_stream_rx_channel_1 : smi_stream_rx_channel_0);
+    const bool bypass = cariboulite_radio_uses_mixer_bypass(p->radio->type,
+        p->sys->board_info.numeric_product_id, p->radio->requested_rf_frequency);
+    caribou_fpga_io_ctrl_rfm_en mode = bypass ? caribou_fpga_io_ctrl_rfm_bypass
+                                            : caribou_fpga_io_ctrl_rfm_rx_lowpass;
+    if (caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, mode) ||
+        cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_rx, true) ||
+        caribou_smi_set_driver_streaming_state(&p->sys->smi,
+            p->radio == &p->sys->radio_high ? smi_stream_rx_channel_1 : smi_stream_rx_channel_0)) {
+        cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_rx, false);
+        caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, caribou_fpga_io_ctrl_rfm_low_power);
+        HW_UNLOCK();
+        return -4;
+    }
     HW_UNLOCK();
 
     // start reader now (only when RX is active)

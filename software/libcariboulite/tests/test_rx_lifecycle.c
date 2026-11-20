@@ -983,7 +983,22 @@ static void test_config_validation_before_side_effects(void)
     puts("PASS: invalid RX/TX settings and retunes rejected before side effects; live setters preserve valid settings; tuning failures unwind and retry");
 }
 
+static void test_mixer_bypass_limits(void)
+{
+    assert(!cariboulite_radio_uses_mixer_bypass(cariboulite_channel_hif,
+        system_type_cariboulite_full, CARIBOULITE_2G4_MIN - 1));
+    assert(cariboulite_radio_uses_mixer_bypass(cariboulite_channel_hif,
+        system_type_cariboulite_full, CARIBOULITE_2G4_MIN));
+    assert(cariboulite_radio_uses_mixer_bypass(cariboulite_channel_hif,
+        system_type_cariboulite_full, CARIBOULITE_2G4_MAX - 1));
+    assert(!cariboulite_radio_uses_mixer_bypass(cariboulite_channel_hif,
+        system_type_cariboulite_full, CARIBOULITE_2G4_MAX));
+    assert(!cariboulite_radio_uses_mixer_bypass(cariboulite_channel_hif,
+        system_type_cariboulite_ism, 2450e6));
+}
+
 int main(void) {
+    test_mixer_bypass_limits();
     test_config_validation_before_side_effects();
     test_rssi_capture();
     test_shared_rx_stats();

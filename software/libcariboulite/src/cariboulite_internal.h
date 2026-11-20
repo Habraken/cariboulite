@@ -45,6 +45,14 @@ typedef enum
     system_type_cariboulite_ism = 2,
 } system_type_en;
 
+/* Full HiF uses the modem directly inside its native 2.4 GHz band. */
+static inline bool cariboulite_radio_uses_mixer_bypass(
+    cariboulite_channel_en channel, int product_id, double tuner_hz)
+{
+    return channel == cariboulite_channel_hif && product_id == system_type_cariboulite_full &&
+           tuner_hz >= CARIBOULITE_2G4_MIN && tuner_hz < CARIBOULITE_2G4_MAX;
+}
+
 typedef enum
 {
     cariboulite_ext_ref_src_modem = 0,

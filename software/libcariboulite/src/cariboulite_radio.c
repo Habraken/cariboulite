@@ -950,8 +950,8 @@ int cariboulite_radio_set_frequency(cariboulite_radio_state_st* radio,
             caribou_smi_invert_iq(&radio->sys->smi, true);
         }
         //-------------------------------------
-        else if ( f_rf >= CARIBOULITE_2G4_MIN && 
-                f_rf < CARIBOULITE_2G4_MAX )
+        else if (cariboulite_radio_uses_mixer_bypass(
+                     radio->type, radio->sys->board_info.numeric_product_id, f_rf))
         {
 			cariboulite_radio_ext_ref (radio->sys, cariboulite_ext_ref_off);
             // region #2 - bypass mode

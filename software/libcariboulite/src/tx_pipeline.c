@@ -808,8 +808,11 @@ int tx_pipeline_start(tx_pipeline_t* p)
     /* A retained allocation can outlive RX or generic radio configuration.
      * Reapply the NBFM profile on every start while the sample gate is shut. */
     int filter_error = timing_error ? -1 : tx_configure_nbfm_profile(p, requested_power);
-    int fpga_error = filter_error ? -1 :
-        caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, caribou_fpga_io_ctrl_rfm_tx_lowpass);
+    const bool bypass = cariboulite_radio_uses_mixer_bypass(p->radio->type,
+        p->sys->board_info.numeric_product_id, p->radio->requested_rf_frequency);
+    caribou_fpga_io_ctrl_rfm_en mode = bypass ? caribou_fpga_io_ctrl_rfm_bypass
+                                            : caribou_fpga_io_ctrl_rfm_tx_lowpass;
+    int fpga_error = filter_error ? -1 : caribou_fpga_set_io_ctrl_mode(&p->sys->fpga, 0, mode);
     int radio_error = timing_error || filter_error || fpga_error ? -1 :
         cariboulite_radio_activate_channel(p->radio, cariboulite_channel_dir_tx, true);
     /* Activation's bandwidth setter uses an uncalibrated PAC mapping. Restore
