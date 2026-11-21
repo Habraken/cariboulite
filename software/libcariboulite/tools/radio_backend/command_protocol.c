@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 #endif
 #include "command_protocol.h"
+#include "carrier_squelch.h"
 #include "rx_audio_output.h"
 #include "radio_rates.h"
 
@@ -233,6 +234,10 @@ int control_request_parse(const char *packet, size_t bytes,
              parse_float(tokens[5], &request->noise_open_rms) == 0 &&
              parse_float(tokens[6], &request->noise_close_rms) == 0)
         request->command = CONTROL_SQUELCH;
+    else if (request->protocol_version == 2 && !strcmp(tokens[2], "carrier_levels") && count == 5 &&
+             !parse_int(tokens[3], &request->carrier_open_dbm) &&
+             !parse_int(tokens[4], &request->carrier_close_dbm))
+        request->command = CONTROL_CARRIER_LEVELS;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "both_frequency") && count == 4 &&
              !parse_double(tokens[3], &request->frequency_hz))
         request->command = CONTROL_BOTH_FREQUENCY;
@@ -470,6 +475,12 @@ int control_request_format(const control_request_t *request,
                          version, request->id,
                          request->command == CONTROL_BOTH_SAMPLE_RATE ? "both_sample_rate" : "sample_rate",
                          request->sample_rate_hz);
+        break;
+    case CONTROL_CARRIER_LEVELS:
+        if (version != 2 || !carrier_squelch_pack_levels(request->carrier_open_dbm,
+                                                         request->carrier_close_dbm)) break;
+        bytes = snprintf(packet, capacity, "v2 %" PRIu64 " carrier_levels %d %d\n",
+                         request->id, request->carrier_open_dbm, request->carrier_close_dbm);
         break;
     case CONTROL_SQUELCH:
         bytes = snprintf(packet, capacity,

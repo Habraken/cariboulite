@@ -19,6 +19,7 @@ typedef enum control_command {
     CONTROL_MODE,
     CONTROL_SAMPLE_RATE,
     CONTROL_SQUELCH,
+    CONTROL_CARRIER_LEVELS,
     CONTROL_TX_START,
     CONTROL_TX_STOP,
     CONTROL_TX_FREQUENCY,
@@ -56,6 +57,7 @@ typedef struct control_request {
     bool carrier_enabled;
     float noise_open_rms;
     float noise_close_rms;
+    int carrier_open_dbm, carrier_close_dbm;
     double tx_frequency_hz;
     int tx_power_dbm;
     unsigned tx_sample_rate_hz;

@@ -253,6 +253,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     atomic_init(&p->demod.audio_levels, 0);
     atomic_init(&p->demod.audio_clipped, 0);
     atomic_init(&p->demod.squelch_open, 0);
+    atomic_init(&p->demod.carrier_squelch_levels, par->carrier_squelch_levels);
     atomic_init(&p->demod.noise_squelch_levels, noise_levels);
     p->demod.sinad_enabled = par->sinad_enabled;
     atomic_init(&p->demod.sinad_db_milli, 0);
@@ -600,6 +601,11 @@ void rx_pipeline_set_squelch(rx_pipeline_t* p, bool noise, bool carrier)
     if (p && p->inited) atomic_store(&p->demod.squelch_flags,
         (noise && (audio_demod_capabilities(p->demod.dsp) & AUDIO_DEMOD_CAP_NOISE_SQUELCH) ? RX_SQUELCH_NOISE : 0u) | (carrier ? RX_SQUELCH_CARRIER : 0u));
 }
+void rx_pipeline_set_carrier_squelch_levels(rx_pipeline_t* p, uint32_t levels)
+{
+    if (p && p->inited) atomic_store(&p->demod.carrier_squelch_levels, levels);
+}
+
 bool rx_pipeline_squelch_open(const rx_pipeline_t* p)
 {
     return p && p->running && atomic_load(&p->demod.squelch_open);

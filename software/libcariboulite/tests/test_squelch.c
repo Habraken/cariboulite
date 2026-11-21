@@ -55,6 +55,16 @@ bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* frame, int timeout)
     }
     nbfm_result_t r=nbfm_process(mod,audio,480,frame->data,rate/100);
     assert(r.consumed==480 && r.produced==rate/100 && !r.error);
+    if (worker->mode == AUDIO_DEMOD_AM || audio_demod_is_ssb(worker->mode)) {
+        for (unsigned i = 0; i < rate / 100; ++i) {
+            double angle = 2 * M_PI * 1000 * i / rate;
+            if (worker->mode == AUDIO_DEMOD_AM)
+                frame->data[i] = (iq16_t){(int16_t)(10000 + 4000 * cos(angle)), 0};
+            else
+                frame->data[i] = (iq16_t){(int16_t)(8000 * cos(angle)),
+                    (int16_t)((worker->mode == AUDIO_DEMOD_LSB ? -8000 : 8000) * sin(angle))};
+        }
+    }
     if ((mode == 0 || mode == 3 || mode == 4) && stage == 1) {
         // Broadband RF noise, not just a manufactured audio detection signal.
         for (unsigned i=0;i<rate/100;++i) {
@@ -64,6 +74,14 @@ bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* frame, int timeout)
     }
     frame->rssi_valid = !(mode == 1 && stage == 3);
     frame->rssi_dbm = (mode == 3 ? stage == 3 : stage == 1 || (mode == 2 && stage == 3)) ? -115 : -80;
+    if (worker->mode == AUDIO_DEMOD_AM || audio_demod_is_ssb(worker->mode)) {
+        // At -95 dBm, tightening the thresholds closes the gate and restoring
+        // the defaults reopens it without changing the RF level or pipeline.
+        frame->rssi_dbm = -95;
+        if (block % 60 == 0)
+            atomic_store(&worker->carrier_squelch_levels,
+                         stage == 1 ? carrier_squelch_pack_levels(-88, -92) : 0);
+    }
     // Exercise live bypass while noise is enabled and carrier blocks audio.
     if (mode == 2 && stage == 3) atomic_store(&worker->squelch_flags,0);
     ++block;
@@ -258,7 +276,7 @@ static void receive_deviation(void)
     audio_demod_destroy(broadcast);
     printf("rate=%u configurable RX deviation preserves raw squelch scale and reset setting\n",rate);
 }
-static void integration(void)
+static void integration(audio_demod_mode_t rx_mode)
 {
     rf10_fifo_t rf={0}; aud10_fifo_t af={0};
     audio_sink_t sink={.sample_rate=48000,.ops=&test_sink_ops};
@@ -271,6 +289,7 @@ static void integration(void)
     atomic_init(&c.last_error,0);
     atomic_init(&c.scheduling.ready,false);
     atomic_init(&c.squelch_flags, flags);
+    atomic_init(&c.carrier_squelch_levels, 0);
     atomic_init(&c.squelch_open, 0);
     atomic_init(&c.noise_squelch_levels, 0); // existing/offline callers retain defaults
     atomic_init(&c.noise_squelch_rms_milli, 0);
@@ -278,7 +297,7 @@ static void integration(void)
     atomic_init(&c.noise_squelch_valid, 0);
     nbfm_demod_config_t dc={rate,48000,50e-6f,8000};
     nbfm_cfg_t mc={48000,rate,2500,0,4000,1};
-    c.mode = mode == 5 ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM;
+    c.mode = rx_mode;
     c.dsp=audio_demod_create(c.mode, &dc); mod=nbfm_create(&mc); assert(c.dsp && mod);
     worker=&c; block=out_block=0; phase=0; seed=123; memset(energy,0,sizeof(energy));
     memset(rms, 0, sizeof(rms)); memset(detector_open, 0, sizeof(detector_open));
@@ -293,8 +312,9 @@ static void integration(void)
         for (unsigned stage=0; stage<4; ++stage) assert(energy[stage]>1e5);
     }
     for (unsigned stage=0; stage<4; ++stage) {
-        assert(metric_valid[stage] == (mode != 5));
-        if (mode == 5) assert(!rms[stage] && !detector_open[stage]);
+        assert(metric_valid[stage] == (rx_mode == AUDIO_DEMOD_NBFM));
+        if (rx_mode != AUDIO_DEMOD_NBFM) assert(!rms[stage] && !detector_open[stage]);
+        if (mode == 1) assert(effective_open[stage] == (stage == 0 || stage == 2));
     }
     if (mode == 4) {
         assert(rms[1] > NOISE_SQUELCH_CLOSE_RMS*1000 && !detector_open[1] && effective_open[1]);
@@ -309,7 +329,8 @@ static void integration(void)
         // Live threshold changes do not reset DSP progress or the output queue.
         assert(c.pcm_total_frames == out_block * 480u);
     }
-    printf("rate=%u mode=%u RMS=[%u %u %u %u]\n", rate, mode, rms[0], rms[1], rms[2], rms[3]);
+    printf("rate=%u rx_mode=%s scenario=%u RMS=[%u %u %u %u]\n",
+           rate, audio_demod_mode_name(rx_mode), mode, rms[0], rms[1], rms[2], rms[3]);
     nbfm_demod_destroy(c.dsp); nbfm_destroy(mod);
 }
 int main(void)
@@ -319,7 +340,12 @@ int main(void)
     for(rate=1000000;rate<=4000000;rate*=2) {
         raw_tap();
         receive_deviation();
-        for(mode=0;mode<7;++mode) integration();
+        for (mode = 0; mode < 7; ++mode)
+            integration(mode == 5 ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM);
+        mode = 1; // Carrier squelch with live thresholds and invalid RSSI.
+        integration(AUDIO_DEMOD_AM);
+        integration(AUDIO_DEMOD_USB);
+        integration(AUDIO_DEMOD_LSB);
     }
     puts("Squelch detectors and RX worker integration pass at 1/2/4 MS/s");
 }

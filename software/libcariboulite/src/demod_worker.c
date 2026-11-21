@@ -84,7 +84,8 @@ void* audio_demod_thread(void* arg)
         noise_squelch_unpack_levels(atomic_load(&c->noise_squelch_levels), &open_rms, &close_rms);
         noise_squelch_set_thresholds(&noise, open_rms, close_rms);
         bool carrier_open = !(flags & RX_SQUELCH_CARRIER) ||
-            carrier_squelch_process(&carrier, frm.rssi_dbm, frm.rssi_valid);
+            carrier_squelch_process_levels(&carrier, frm.rssi_dbm, frm.rssi_valid,
+                                           atomic_load(&c->carrier_squelch_levels));
         size_t offset = 0;
         while (offset < frame_samples) {
             size_t count = frame_samples - 1 - offset;

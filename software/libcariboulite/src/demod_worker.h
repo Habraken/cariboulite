@@ -21,6 +21,7 @@ typedef struct {
     atomic_int last_error;
     pipeline_thread_diagnostics_t scheduling;
     atomic_uint squelch_flags; // control writes, worker reads; zero bypasses both
+    atomic_uint carrier_squelch_levels; // packed dBm thresholds; zero defaults
     atomic_uint squelch_open;  // worker publishes effective gate (0/1)
     atomic_uint noise_squelch_levels; // open RMS milli (upper 16), close (lower); zero defaults
     atomic_uint noise_squelch_rms_milli; // worker telemetry, raw detector RMS * 1000

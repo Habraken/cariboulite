@@ -258,6 +258,7 @@ information only, so no Transmit section is shown.
 | `rx rate 1`, `rx rate 2` or `rx rate 4` | Select RF sample rate in MS/s. |
 | `squelch noise on` or `squelch noise off` | Enable or bypass NBFM noise squelch. |
 | `squelch carrier on` or `squelch carrier off` | Enable or bypass carrier squelch. |
+| `squelch carrier levels -90 -95` | Set the carrier opening and closing thresholds in modem RSSI dBm. Takes effect live. |
 | `squelch levels 0.20 0.30` | Set noise opening and closing RMS thresholds together, in that order. |
 | `tx start` or `tx stop` | Start or stop half-duplex transmission in the saved mode. |
 | `tx frequency 430.125` | Set the separate TX frequency in MHz. |

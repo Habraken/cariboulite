@@ -4,6 +4,7 @@
 #define _GNU_SOURCE
 #endif
 #include "command_protocol.h"
+#include "carrier_squelch.h"
 #include "rx_audio_output.h"
 #include "radio_rates.h"
 
@@ -83,6 +84,7 @@ static void command_help(void)
          "  tx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
          "  squelch noise on|off  noise squelch enable\n"
          "  squelch carrier on|off  carrier squelch enable\n"
+         "  squelch carrier levels OPEN CLOSE  carrier thresholds in whole dBm\n"
          "  squelch levels OPEN CLOSE  noise RMS thresholds: 0 < OPEN < CLOSE <= 8\n"
          "  tx start | tx stop    key/unkey selected TX mode; keep this controller connected\n"
          "  tx frequency MHz      saved TX frequency, for example 430.125\n"
@@ -176,6 +178,16 @@ static int parse_command(const char *input, ui_command_t *command)
         ++tokens;
         --count;
         name = tokens[0];
+        if (count == 4 && !strcmp(name, "carrier") && !strcmp(tokens[1], "levels")) {
+            double open, close;
+            if (parse_number(tokens[2], &open) || parse_number(tokens[3], &close) ||
+                close < CARRIER_SQUELCH_MIN_DBM || open > CARRIER_SQUELCH_MAX_DBM ||
+                open <= close || open != (int)open || close != (int)close) return -1;
+            command->request.command = CONTROL_CARRIER_LEVELS;
+            command->request.carrier_open_dbm = (int)open;
+            command->request.carrier_close_dbm = (int)close;
+            return 0;
+        }
         if (strcmp(name, "noise") && strcmp(name, "carrier") && strcmp(name, "levels"))
             return -1;
     }
@@ -603,6 +615,9 @@ static int execute_command(controller_t *controller, ui_command_t *command)
     int result = exchange(controller, &command->request);
     if (!result && command->request.command==CONTROL_RX_VOLUME)
         printf("RX volume: %s%.1f dB\n",command->request.volume_db==-120 ? "muted; " : "",(double)command->request.volume_db);
+    if (!result && command->request.command == CONTROL_CARRIER_LEVELS)
+        printf("Carrier squelch opens at %d dBm and closes below %d dBm\n",
+               command->request.carrier_open_dbm, command->request.carrier_close_dbm);
     if(!result && command->request.command==CONTROL_TX_MODE)
         printf("TX mode: %s\n",audio_mod_mode_name(command->request.tx_mode));
     if(!result && command->request.command==CONTROL_TX_AM_BACKOFF)

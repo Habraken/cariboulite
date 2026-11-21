@@ -353,6 +353,11 @@ void rx_pipeline_get_stats(rx_pipeline_t *pipeline, rx_pipeline_stats_t *stats)
     stats->audio_worker.alive = pipeline->running;
 }
 
+void rx_pipeline_set_carrier_squelch_levels(rx_pipeline_t *pipeline, uint32_t levels)
+{
+    if (pipeline && pipeline->inited) atomic_store(&pipeline->demod.carrier_squelch_levels, levels);
+}
+
 int rx_pipeline_set_noise_squelch_levels(rx_pipeline_t *pipeline, float open, float close)
 {
     (void)pipeline; (void)open; (void)close;

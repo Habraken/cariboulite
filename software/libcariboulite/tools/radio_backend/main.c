@@ -9,6 +9,7 @@
 #include "nbfm_mod.h"
 #include "pipeline_runtime.h"
 #include "noise_squelch.h"
+#include "carrier_squelch.h"
 #include "radio_profile.h"
 #include "modem_snapshot.h"
 #include "status_publisher.h"
@@ -1087,7 +1088,8 @@ static void backend_control_command(void *opaque, const control_request_t *reque
              && request->command != CONTROL_FPGA_HARD_RESET) code = "FAULT";
     else if (o->tx_requested && request->command != CONTROL_GET
              && request->command != CONTROL_TX_START && request->command != CONTROL_TX_STOP
-             && request->command != CONTROL_RX_VOLUME && request->command != CONTROL_SQUELCH) code = "TX_RUNNING";
+             && request->command != CONTROL_RX_VOLUME && request->command != CONTROL_SQUELCH
+             && request->command != CONTROL_CARRIER_LEVELS) code = "TX_RUNNING";
     else if (both && (o->rx_requested || (!o->dry_run && c->pipeline->running)))
         code = "RX_RUNNING";
     else if (both && !o->dry_run && c->tx_pipeline && c->tx_pipeline->running)
@@ -1242,6 +1244,17 @@ static void backend_control_command(void *opaque, const control_request_t *reque
             }
         }
         break;
+    case CONTROL_CARRIER_LEVELS: {
+        uint32_t levels = carrier_squelch_pack_levels(request->carrier_open_dbm,
+                                                       request->carrier_close_dbm);
+        if (!levels) code = "INVALID";
+        else if (levels != o->rx.carrier_squelch_levels) {
+            if (!o->dry_run) rx_pipeline_set_carrier_squelch_levels(c->pipeline, levels);
+            o->rx.carrier_squelch_levels = levels;
+            changed = true;
+        }
+        break;
+    }
     case CONTROL_SQUELCH: {
         uint32_t levels;
         if (!noise_squelch_pack_levels(request->noise_open_rms, request->noise_close_rms, &levels))
@@ -1660,6 +1673,8 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         || worker_json(stats ? &stats->demod_worker : NULL, demod_worker, sizeof(demod_worker)) < 0
         || worker_json(stats ? &stats->audio_worker : NULL, audio_worker, sizeof(audio_worker)) < 0)
         return -1;
+    int carrier_open_dbm, carrier_close_dbm;
+    carrier_squelch_unpack_levels(o->rx.carrier_squelch_levels, &carrier_open_dbm, &carrier_close_dbm);
     rx_noise_squelch_status_t noise = {.open_rms = o->rx.noise_squelch_open_rms,
         .close_rms = o->rx.noise_squelch_close_rms};
     const bool live = pipeline && pipeline->inited;
@@ -1741,6 +1756,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"tx_mode\":\"%s\",\"tx_am_depth\":%.3f,\"tx_am_backoff_db\":%.3f,\"tx_am_dac_shaping\":%s,\"tx_am_carrier_fraction\":0.5,\"tx_tone_hz\":%.3f,\"tx_tone_amp\":%.3f,\"tx_deviation_hz\":%.3f,"
         "\"profile\":%s,\"observed\":%s},"
         "\"rx\":{\"running\":%s,\"queue\":%s,\"noise_enabled\":%s,\"carrier_enabled\":%s,"
+        "\"carrier_open_dbm\":%d,\"carrier_close_dbm\":%d,"
         "\"gate_open\":%s,\"noise\":{\"valid\":%s,\"detector_open\":%s,\"rms\":%s,"
         "\"open_rms\":%.3f,\"close_rms\":%.3f},"
         "\"alignment\":%s,"
@@ -1771,6 +1787,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         desired_profile, observed_profile,
         live && rx_pipeline_running(pipeline) ? "true" : "false", queue,
         noise_enabled ? "true" : "false", o->rx.carrier_squelch_enabled ? "true" : "false",
+        carrier_open_dbm, carrier_close_dbm,
         live ? (rx_pipeline_squelch_open(pipeline) ? "true" : "false") : "null",
         noise.valid ? "true" : "false", noise.valid ? (noise.detector_open ? "true" : "false") : "null",
         rms, (double)noise.open_rms, (double)noise.close_rms,

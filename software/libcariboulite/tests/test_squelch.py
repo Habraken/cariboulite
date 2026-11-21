@@ -7,7 +7,7 @@ here = Path(__file__).resolve().parent
 src = here.parent / 'src'
 with tempfile.TemporaryDirectory(prefix='squelch-') as directory:
     modules = ['noise_squelch.c', 'carrier_squelch.c', 'nbfm_mod.c',
-               'nbfm_demod.c', 'nbfm_demod_dsp.c', 'wbfm_demod.c', 'demod_worker.c']
+               'nbfm_demod.c', 'nbfm_demod_dsp.c', 'wbfm_demod.c', 'am_demod.c', 'demod_worker.c']
     for label, flags in [('strict', ['-O2']), ('production',
             ['-O3', '-ffast-math', '-fno-math-errno', '-funroll-loops'])]:
         binary = Path(directory) / label

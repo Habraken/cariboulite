@@ -175,6 +175,35 @@ class RadioBackendTests(unittest.TestCase):
                                        delta=.01)
                 self.assertEqual(snap["rx"]["audio_output"]["volume_db"], -3)
 
+    def test_live_carrier_squelch_levels(self):
+        self.start_backend("--rx-mode", "am", "--rx-start", "--rx-carrier-squelch")
+        controller = BACKEND.with_name("cariboulite_radio_controller")
+
+        def command(text):
+            return subprocess.run(
+                [str(controller), "--socket", str(self.path.with_name("control.sock")),
+                 "--command", text], capture_output=True, text=True, timeout=3)
+
+        before = self.once()
+        self.assertEqual(before["rx"]["carrier_open_dbm"], -97)
+        self.assertEqual(before["rx"]["carrier_close_dbm"], -102)
+        result = command("squelch carrier levels -88 -92")
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertNotEqual(command("squelch carrier levels -92 -88").returncode, 0)
+        self.assertNotEqual(command("squelch carrier levels -88.5 -92").returncode, 0)
+        after = self.once()
+        self.assertEqual(after["rx"]["carrier_open_dbm"], -88)
+        self.assertEqual(after["rx"]["carrier_close_dbm"], -92)
+        self.assertTrue(after["rx"]["carrier_enabled"])
+        self.assertEqual(after["control"]["pipeline_generation"],
+                         before["control"]["pipeline_generation"])
+        for text in ("rx stop", "rx mode usb", "rx start"):
+            result = command(text)
+            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        restarted = self.once()
+        self.assertEqual(restarted["rx"]["carrier_open_dbm"], -88)
+        self.assertEqual(restarted["rx"]["carrier_close_dbm"], -92)
+
     def test_all_native_tx_cli_profiles(self):
         for rate,divider in [(4000000,1),(2000000,2),(1333333,3),(1000000,4),
                              (800000,5),(666667,6),(500000,8),(400000,10)]:

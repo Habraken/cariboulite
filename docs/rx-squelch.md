@@ -47,7 +47,7 @@ The user subsequently reported satisfactory listening with the updated receiver;
 this is not a calibrated sensitivity specification. With all-zero IQ there is no detected
 noise, so noise squelch alone can open: it is not a stream-validity detector.
 
-`carrier_squelch` uses the selected AT86RF215 channel's RSSI. It opens at
+`carrier_squelch` uses the selected AT86RF215 channel's RSSI. By default it opens at
 **-97 dBm or stronger** for three consecutive 10 ms RF blocks and closes below
 **-102 dBm** for fifteen blocks. Values in between retain the state. Invalid or
 failed reads immediately close the detector. The chip reports signed RSSI,
@@ -55,6 +55,14 @@ with 127 indicating invalid, as specified in the
 [AT86RF215 datasheet, section 6.2.5.5](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-42415-WIRELESS-AT86RF215_Datasheet.pdf).
 These thresholds refer to the modem measurement, not calibrated power at the
 external connector or an SDRPlay reading; front-end losses and bandwidth matter.
+
+In the backend controller, `squelch carrier levels -90 -95` sets the opening
+and closing thresholds while RX is running or stopped. Both are whole dBm in
+the range −127 to +4, and the opening value must be higher than the closing
+value. The pair is shared across RX modes and stays set until the backend
+exits. Use `squelch carrier on` to enable the gate, and
+`squelch carrier levels -97 -102` to restore the defaults. The passive status
+JSON reports the pair in `rx.carrier_open_dbm` and `rx.carrier_close_dbm`.
 The squelch detectors do not change AGC configuration. The
 [NBFM RX profile](nbfm-rx-sensitivity-context.md#minimum-modem-rx-bandwidth-and-explicit-agc-2026-10-10)
 explicitly enables filtered AGC at each RX start.

@@ -48,6 +48,7 @@ typedef struct {
     bool sinad_enabled; // optional 1 kHz NBFM link-quality estimate
     bool noise_squelch_disabled; // zero/default enables noise squelch
     bool carrier_squelch_enabled; // zero/default disables carrier squelch
+    uint32_t carrier_squelch_levels; // packed dBm thresholds; zero defaults
     float noise_squelch_open_rms; // both zero select the default 0.20/0.30 pair
     float noise_squelch_close_rms;
 
@@ -143,6 +144,7 @@ void rx_pipeline_reset_stats(rx_pipeline_t*);
 // Thread-safe controls; configuration survives start/stop, reset on re-init.
 void rx_pipeline_set_squelch(rx_pipeline_t*, bool noise_enabled, bool carrier_enabled);
 bool rx_pipeline_squelch_open(const rx_pipeline_t*);
+void rx_pipeline_set_carrier_squelch_levels(rx_pipeline_t*, uint32_t levels);
 // Threshold pairs update atomically without stopping RX. Resolution 0.001 RMS;
 // require 0 < open < close <= 8.0 after rounding. PCM volume is independent.
 int rx_pipeline_set_noise_squelch_levels(rx_pipeline_t*, float open_rms, float close_rms);
