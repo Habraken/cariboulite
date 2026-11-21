@@ -58,6 +58,7 @@ retain their original revision and test conditions. See the
 
 ## Recorded investigations and measurements
 
+- [Pi Zero board #1 frequency and sample-rate sweep: 30 MHz to 6 GHz, 0 dBm](baselines/20261121-pi0-board1-frequency-rate-sweep/REPORT.md)
 - [Board #1 frequency sweep with laptop distant: paired placement comparison](board1-laptop-distant-frequency-sweep-2026-11-18.md)
 
 - [Board #1 frequency sweep and direct comparison with board #4](board1-frequency-sweep-2026-11-18.md)

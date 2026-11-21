@@ -1,0 +1,169 @@
+    PID COMMAND
+      1 /sbin/init splash
+      2 [kthreadd]
+      3 [pool_workqueue_release]
+      4 [kworker/R-rcu_gp]
+      5 [kworker/R-sync_wq]
+      6 [kworker/R-kvfree_rcu_reclaim]
+      7 [kworker/R-slub_flushwq]
+      8 [kworker/R-netns]
+     12 [kworker/u16:0-kvfree_rcu_reclaim]
+     13 [kworker/R-mm_percpu_wq]
+     14 [ksoftirqd/0]
+     15 [rcu_preempt]
+     16 [rcu_exp_par_gp_kthread_worker/0]
+     17 [rcu_exp_gp_kthread_worker]
+     18 [migration/0]
+     19 [cpuhp/0]
+     20 [cpuhp/1]
+     21 [migration/1]
+     22 [ksoftirqd/1]
+     25 [cpuhp/2]
+     26 [migration/2]
+     27 [ksoftirqd/2]
+     30 [cpuhp/3]
+     31 [migration/3]
+     32 [ksoftirqd/3]
+     35 [kdevtmpfs]
+     36 [kworker/R-inet_frag_wq]
+     37 [rcu_tasks_kthread]
+     38 [rcu_tasks_rude_kthread]
+     39 [rcu_tasks_trace_kthread]
+     40 [kauditd]
+     41 [khungtaskd]
+     42 [oom_reaper]
+     44 [kworker/R-writeback]
+     45 [kcompactd0]
+     46 [kworker/R-kblockd]
+     47 [kworker/R-blkcg_punt_bio]
+     48 [kworker/R-kintegrityd]
+     49 [kworker/u16:2-kvfree_rcu_reclaim]
+     51 [watchdogd]
+     55 [kworker/R-quota_events_unbound]
+     56 [kworker/1:1H-mmc_complete]
+     57 [kworker/R-rpciod]
+     58 [kworker/R-xprtiod]
+     59 [kswapd0]
+     60 [kworker/R-nfsiod]
+     61 [kworker/R-kthrotld]
+     62 [kworker/u17:0]
+     66 [kworker/3:1H-mmc_complete]
+     67 [kworker/0:1H-mmc_complete]
+     68 [hwrng]
+     69 [kworker/R-iscsi_conn_cleanup]
+     70 [kworker/R-nvme-wq]
+     71 [kworker/R-nvme-reset-wq]
+     72 [kworker/R-nvme-delete-wq]
+     73 [kworker/R-dwc_otg]
+     74 [kworker/R-DWC Notification WorkQ]
+     75 [kworker/R-uas]
+     76 [vchiq-slot/0]
+     77 [vchiq-recy/0]
+     78 [vchiq-sync/0]
+     79 [kworker/R-kstrp]
+     80 [pr/ttyAMA-1]
+     81 [irq/98-mmc0]
+    109 [kworker/R-mmc_complete]
+    112 [kworker/2:1H-mmc_complete]
+    128 [cec-vc4-hdmi]
+    129 [irq/82-vc4 hdmi cec]
+    130 [card0-crtc0]
+    131 [card0-crtc1]
+    132 [card0-crtc2]
+    133 [card0-crtc3]
+    159 [jbd2/mmcblk0p2-8]
+    160 [kworker/R-ext4-rsv-conversion]
+    179 [kworker/R-mld]
+    180 [kworker/R-ipv6_addrconf]
+    291 /usr/lib/systemd/systemd-journald
+    335 /usr/lib/systemd/systemd-timesyncd
+    345 /usr/lib/systemd/systemd-udevd
+    430 [vchiq-keep/0]
+    433 [spi1]
+    451 [SMIO]
+    455 [kworker/R-mmal-vchiq]
+    456 [kworker/R-mmal-vchiq]
+    457 [kworker/R-mmal-vchiq]
+    458 [kworker/R-mmal-vchiq]
+    461 [kworker/R-mmal-vchiq]
+    462 [kworker/R-mmal-vchiq]
+    463 [kworker/R-mmal-vchiq]
+    548 /usr/sbin/rpcbind -f -w
+    575 /usr/sbin/blkmapd
+    636 /usr/libexec/accounts-daemon
+    638 avahi-daemon: running [pi0a-trixie.local]
+    639 /usr/sbin/cron -f
+    640 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+    648 avahi-daemon: chroot helper
+    651 /usr/lib/systemd/systemd-logind
+    652 /usr/libexec/udisks2/udisksd
+    723 /usr/sbin/NetworkManager --no-daemon
+    724 /usr/sbin/wpa_supplicant -u -s -O DIR=/run/wpa_supplicant GROUP=netdev
+    733 /usr/lib/polkit-1/polkitd --no-debug --log-level=notice
+   1071 /usr/sbin/lightdm
+   1073 /usr/lib/systemd/systemd --user
+   1075 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+   1083 (sd-pam)
+   1100 login -- pi
+   1102 lightdm --session-child 10 14
+   1103 /sbin/agetty -o -- \u --noreset --noclear --keep-baud 115200,57600,38400,9600 - vt220
+   1130 /usr/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+   1131 /usr/bin/pipewire
+   1132 /usr/bin/pipewire -c filter-chain.conf
+   1134 /usr/bin/wireplumber
+   1135 /usr/bin/pipewire-pulse
+   1138 /usr/bin/labwc -m
+   1149 /usr/bin/mpris-proxy
+   1151 /usr/bin/rpi-connectd -socket /run/user/1000/rpi-connect-wayvnc.sock
+   1204 /usr/bin/ssh-agent /usr/bin/labwc-pi
+   1254 -bash
+   1292 /usr/libexec/xdg-permission-store
+   1294 /usr/bin/wayvnc --config /etc/rpi-connect/wayvnc.config --render-cursor --unix-socket --socket=/run/user/1000/rpi-connect-wayvnc-ctl.sock /run/user/1000/rpi-connect-wayvnc.sock
+   1306 /bin/sh /usr/bin/lwrespawn /usr/bin/pcmanfm-pi
+   1307 /bin/sh /usr/bin/lwrespawn /usr/bin/wf-panel-pi
+   1308 /usr/bin/kanshi
+   1338 systemd-inhibit --what=handle-power-key rpi-gui-nop
+   1347 /usr/bin/wf-panel-pi
+   1352 /bin/bash /usr/bin/pcmanfm-pi
+   1356 /usr/libexec/polkit-mate-authentication-agent-1
+   1357 rpi-gui-nop
+   1361 pcmanfm --desktop
+   1387 /usr/libexec/gvfsd
+   1393 /usr/libexec/gvfsd-fuse /run/user/1000/gvfs -f
+   1408 /usr/libexec/xdg-desktop-portal
+   1416 /usr/libexec/xdg-document-portal
+   1422 fusermount3 -o rw,nosuid,nodev,fsname=portal,auto_unmount,subtype=portal -- /run/user/1000/doc
+   1431 /usr/libexec/xdg-desktop-portal-gtk
+   1440 /usr/libexec/gvfs-udisks2-volume-monitor
+   1448 /usr/libexec/gvfs-mtp-volume-monitor
+   1453 /usr/libexec/gvfs-gphoto2-volume-monitor
+   1460 /usr/libexec/gvfs-goa-volume-monitor
+   1461 /usr/libexec/xdg-desktop-portal-wlr
+   1466 /usr/libexec/gvfs-afc-volume-monitor
+   1474 /usr/libexec/gvfsd-trash --spawner :1.21 /org/gtk/gvfs/exec_spaw/0
+   1491 /usr/lib/menu-cache/menu-cached /run/user/1000/menu-cached-:0
+   1512 [kworker/R-cfg80211]
+   1630 sshd-session: pi [priv]
+   1639 sshd-session: pi@pts/0
+   1640 -bash
+   1655 sshd-session: pi [priv]
+   1664 sshd-session: pi@pts/1
+   1665 -bash
+   1765 [kworker/0:0H]
+   2469 [kworker/1:0H]
+   2892 [kworker/3:0H]
+   5697 [kworker/2:2H]
+   5824 [kworker/u16:3-kvfree_rcu_reclaim]
+   6461 [kworker/2:1-events]
+   6939 [kworker/1:0-events]
+   7049 [kworker/3:1-events]
+   7276 [kworker/0:2-events]
+   7449 [kworker/0:1-events]
+   7478 [kworker/2:0-cgroup_release]
+   7552 [kworker/1:2-events]
+   7575 [kworker/3:0-events]
+   7637 [kworker/2:2-events]
+   7643 [kworker/0:0-events]
+   7724 sshd-session: pi [priv]
+   7732 sshd-session: pi@notty
+   7733 ps -eo pid,args

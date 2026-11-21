@@ -1,0 +1,1222 @@
+{
+  "status": "awaiting RF path confirmation and power increment",
+  "tx_host": "pi0a-trixie",
+  "tx_ip": "192.168.6.37",
+  "tx_board_uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+  "rx_host": "pi0b-trixie",
+  "rx_ip": "192.168.6.69",
+  "rx_board_uuid": "d8810044-c444-46f4-a548-703412cbf971",
+  "rx_tx_forbidden": true,
+  "frequencies": [
+    {
+      "point": 1,
+      "frequency_hz": 30000000,
+      "reason": "endpoint",
+      "bands": []
+    },
+    {
+      "point": 2,
+      "frequency_hz": 40670000,
+      "reason": "band-anchor",
+      "bands": [
+        "ISM-40MHz"
+      ]
+    },
+    {
+      "point": 3,
+      "frequency_hz": 40680000,
+      "reason": "band-anchor",
+      "bands": [
+        "ISM-40MHz"
+      ]
+    },
+    {
+      "point": 4,
+      "frequency_hz": 40690000,
+      "reason": "band-anchor",
+      "bands": [
+        "ISM-40MHz"
+      ]
+    },
+    {
+      "point": 5,
+      "frequency_hz": 50000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-6m"
+      ]
+    },
+    {
+      "point": 6,
+      "frequency_hz": 50100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-6m"
+      ]
+    },
+    {
+      "point": 7,
+      "frequency_hz": 51000000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-6m"
+      ]
+    },
+    {
+      "point": 8,
+      "frequency_hz": 51900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-6m"
+      ]
+    },
+    {
+      "point": 9,
+      "frequency_hz": 70050000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-4m"
+      ]
+    },
+    {
+      "point": 10,
+      "frequency_hz": 70250000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-4m"
+      ]
+    },
+    {
+      "point": 11,
+      "frequency_hz": 70450000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-4m"
+      ]
+    },
+    {
+      "point": 12,
+      "frequency_hz": 100000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 13,
+      "frequency_hz": 144100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-2m"
+      ]
+    },
+    {
+      "point": 14,
+      "frequency_hz": 145000000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-2m"
+      ]
+    },
+    {
+      "point": 15,
+      "frequency_hz": 145900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-2m"
+      ]
+    },
+    {
+      "point": 16,
+      "frequency_hz": 150000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 17,
+      "frequency_hz": 200000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 18,
+      "frequency_hz": 222100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-1p25m"
+      ]
+    },
+    {
+      "point": 19,
+      "frequency_hz": 223500000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-1p25m"
+      ]
+    },
+    {
+      "point": 20,
+      "frequency_hz": 224900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-1p25m"
+      ]
+    },
+    {
+      "point": 21,
+      "frequency_hz": 250000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 22,
+      "frequency_hz": 300000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 23,
+      "frequency_hz": 350000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 24,
+      "frequency_hz": 400000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 25,
+      "frequency_hz": 430100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-70cm"
+      ]
+    },
+    {
+      "point": 26,
+      "frequency_hz": 433100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-70cm",
+        "ISM-433MHz"
+      ]
+    },
+    {
+      "point": 27,
+      "frequency_hz": 433920000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-70cm",
+        "ISM-433MHz"
+      ]
+    },
+    {
+      "point": 28,
+      "frequency_hz": 434700000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-70cm",
+        "ISM-433MHz"
+      ]
+    },
+    {
+      "point": 29,
+      "frequency_hz": 435000000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-70cm"
+      ]
+    },
+    {
+      "point": 30,
+      "frequency_hz": 439900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-70cm"
+      ]
+    },
+    {
+      "point": 31,
+      "frequency_hz": 450000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 32,
+      "frequency_hz": 500000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 33,
+      "frequency_hz": 550000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 34,
+      "frequency_hz": 600000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 35,
+      "frequency_hz": 650000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 36,
+      "frequency_hz": 700000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 37,
+      "frequency_hz": 750000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 38,
+      "frequency_hz": 800000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 39,
+      "frequency_hz": 850000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "frequency_hz": 863100000,
+      "reason": "European-SRD-supplement",
+      "bands": [
+        "SRD-863-870MHz"
+      ],
+      "point": 40
+    },
+    {
+      "frequency_hz": 868100000,
+      "reason": "European-SRD-supplement",
+      "bands": [
+        "SRD-863-870MHz"
+      ],
+      "point": 41
+    },
+    {
+      "frequency_hz": 869900000,
+      "reason": "European-SRD-supplement",
+      "bands": [
+        "SRD-863-870MHz"
+      ],
+      "point": 42
+    },
+    {
+      "point": 43,
+      "frequency_hz": 900000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 44,
+      "frequency_hz": 902100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-33cm",
+        "ISM-915MHz"
+      ]
+    },
+    {
+      "point": 45,
+      "frequency_hz": 915000000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-33cm",
+        "ISM-915MHz"
+      ]
+    },
+    {
+      "point": 46,
+      "frequency_hz": 927900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-33cm",
+        "ISM-915MHz"
+      ]
+    },
+    {
+      "point": 47,
+      "frequency_hz": 950000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 48,
+      "frequency_hz": 1000000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 49,
+      "frequency_hz": 1050000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 50,
+      "frequency_hz": 1100000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 51,
+      "frequency_hz": 1150000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 52,
+      "frequency_hz": 1200000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 53,
+      "frequency_hz": 1240100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-23cm"
+      ]
+    },
+    {
+      "point": 54,
+      "frequency_hz": 1250000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-23cm"
+      ]
+    },
+    {
+      "point": 55,
+      "frequency_hz": 1270000000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-23cm"
+      ]
+    },
+    {
+      "point": 56,
+      "frequency_hz": 1299900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-23cm"
+      ]
+    },
+    {
+      "point": 57,
+      "frequency_hz": 1300000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-23cm"
+      ]
+    },
+    {
+      "point": 58,
+      "frequency_hz": 1350000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 59,
+      "frequency_hz": 1400000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 60,
+      "frequency_hz": 1450000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 61,
+      "frequency_hz": 1500000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 62,
+      "frequency_hz": 1550000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 63,
+      "frequency_hz": 1600000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 64,
+      "frequency_hz": 1650000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 65,
+      "frequency_hz": 1700000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 66,
+      "frequency_hz": 1750000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 67,
+      "frequency_hz": 1800000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 68,
+      "frequency_hz": 1850000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 69,
+      "frequency_hz": 1900000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 70,
+      "frequency_hz": 1950000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 71,
+      "frequency_hz": 2000000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 72,
+      "frequency_hz": 2050000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 73,
+      "frequency_hz": 2100000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 74,
+      "frequency_hz": 2150000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 75,
+      "frequency_hz": 2200000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 76,
+      "frequency_hz": 2250000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 77,
+      "frequency_hz": 2300000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-13cm"
+      ]
+    },
+    {
+      "point": 78,
+      "frequency_hz": 2300100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-13cm"
+      ]
+    },
+    {
+      "point": 79,
+      "frequency_hz": 2320100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-13cm"
+      ]
+    },
+    {
+      "point": 80,
+      "frequency_hz": 2350000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-13cm"
+      ]
+    },
+    {
+      "point": 81,
+      "frequency_hz": 2360000000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-13cm"
+      ]
+    },
+    {
+      "point": 82,
+      "frequency_hz": 2384900000,
+      "reason": "RF-path-boundary",
+      "bands": [
+        "amateur-13cm"
+      ]
+    },
+    {
+      "point": 83,
+      "frequency_hz": 2385000000,
+      "reason": "RF-path-boundary",
+      "bands": [
+        "amateur-13cm"
+      ]
+    },
+    {
+      "point": 84,
+      "frequency_hz": 2385100000,
+      "reason": "RF-path-boundary",
+      "bands": [
+        "amateur-13cm"
+      ]
+    },
+    {
+      "point": 85,
+      "frequency_hz": 2399900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-13cm"
+      ]
+    },
+    {
+      "point": 86,
+      "frequency_hz": 2400000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-13cm",
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 87,
+      "frequency_hz": 2400100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-13cm",
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 88,
+      "frequency_hz": 2425000000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-13cm",
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 89,
+      "frequency_hz": 2449900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-13cm",
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 90,
+      "frequency_hz": 2450000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-13cm",
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 91,
+      "frequency_hz": 2494900000,
+      "reason": "RF-path-boundary",
+      "bands": [
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 92,
+      "frequency_hz": 2495000000,
+      "reason": "RF-path-boundary",
+      "bands": [
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 93,
+      "frequency_hz": 2495100000,
+      "reason": "RF-path-boundary",
+      "bands": [
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 94,
+      "frequency_hz": 2499900000,
+      "reason": "band-anchor",
+      "bands": [
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 95,
+      "frequency_hz": 2500000000,
+      "reason": "base-grid",
+      "bands": [
+        "ISM-2p4GHz"
+      ]
+    },
+    {
+      "point": 96,
+      "frequency_hz": 2550000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 97,
+      "frequency_hz": 2600000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 98,
+      "frequency_hz": 2650000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 99,
+      "frequency_hz": 2700000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 100,
+      "frequency_hz": 2750000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 101,
+      "frequency_hz": 2800000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 102,
+      "frequency_hz": 2850000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 103,
+      "frequency_hz": 2900000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 104,
+      "frequency_hz": 2950000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 105,
+      "frequency_hz": 3000000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 106,
+      "frequency_hz": 3050000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 107,
+      "frequency_hz": 3100000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 108,
+      "frequency_hz": 3150000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 109,
+      "frequency_hz": 3200000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 110,
+      "frequency_hz": 3250000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 111,
+      "frequency_hz": 3300000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 112,
+      "frequency_hz": 3350000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 113,
+      "frequency_hz": 3400000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-9cm"
+      ]
+    },
+    {
+      "point": 114,
+      "frequency_hz": 3400100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-9cm"
+      ]
+    },
+    {
+      "point": 115,
+      "frequency_hz": 3405000000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-9cm"
+      ]
+    },
+    {
+      "point": 116,
+      "frequency_hz": 3409900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-9cm"
+      ]
+    },
+    {
+      "point": 117,
+      "frequency_hz": 3450000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 118,
+      "frequency_hz": 3500000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 119,
+      "frequency_hz": 3550000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 120,
+      "frequency_hz": 3600000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 121,
+      "frequency_hz": 3650000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 122,
+      "frequency_hz": 3700000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 123,
+      "frequency_hz": 3750000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 124,
+      "frequency_hz": 3800000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 125,
+      "frequency_hz": 3850000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 126,
+      "frequency_hz": 3900000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 127,
+      "frequency_hz": 3950000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 128,
+      "frequency_hz": 4000000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 129,
+      "frequency_hz": 4050000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 130,
+      "frequency_hz": 4100000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 131,
+      "frequency_hz": 4150000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 132,
+      "frequency_hz": 4200000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 133,
+      "frequency_hz": 4250000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 134,
+      "frequency_hz": 4300000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 135,
+      "frequency_hz": 4350000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 136,
+      "frequency_hz": 4400000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 137,
+      "frequency_hz": 4450000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 138,
+      "frequency_hz": 4500000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 139,
+      "frequency_hz": 4550000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 140,
+      "frequency_hz": 4600000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 141,
+      "frequency_hz": 4650000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 142,
+      "frequency_hz": 4700000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 143,
+      "frequency_hz": 4750000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 144,
+      "frequency_hz": 4800000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 145,
+      "frequency_hz": 4850000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 146,
+      "frequency_hz": 4900000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 147,
+      "frequency_hz": 4950000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 148,
+      "frequency_hz": 5000000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 149,
+      "frequency_hz": 5050000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 150,
+      "frequency_hz": 5100000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 151,
+      "frequency_hz": 5150000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 152,
+      "frequency_hz": 5200000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 153,
+      "frequency_hz": 5250000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 154,
+      "frequency_hz": 5300000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 155,
+      "frequency_hz": 5350000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 156,
+      "frequency_hz": 5400000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 157,
+      "frequency_hz": 5450000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 158,
+      "frequency_hz": 5500000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 159,
+      "frequency_hz": 5550000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 160,
+      "frequency_hz": 5600000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 161,
+      "frequency_hz": 5650000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-6cm"
+      ]
+    },
+    {
+      "point": 162,
+      "frequency_hz": 5650100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-6cm"
+      ]
+    },
+    {
+      "point": 163,
+      "frequency_hz": 5700000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-6cm"
+      ]
+    },
+    {
+      "point": 164,
+      "frequency_hz": 5725100000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-6cm",
+        "ISM-5p8GHz"
+      ]
+    },
+    {
+      "point": 165,
+      "frequency_hz": 5750000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-6cm",
+        "ISM-5p8GHz"
+      ]
+    },
+    {
+      "point": 166,
+      "frequency_hz": 5800000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-6cm",
+        "ISM-5p8GHz"
+      ]
+    },
+    {
+      "point": 167,
+      "frequency_hz": 5849900000,
+      "reason": "band-anchor",
+      "bands": [
+        "amateur-6cm",
+        "ISM-5p8GHz"
+      ]
+    },
+    {
+      "point": 168,
+      "frequency_hz": 5850000000,
+      "reason": "base-grid",
+      "bands": [
+        "amateur-6cm",
+        "ISM-5p8GHz"
+      ]
+    },
+    {
+      "point": 169,
+      "frequency_hz": 5874900000,
+      "reason": "band-anchor",
+      "bands": [
+        "ISM-5p8GHz"
+      ]
+    },
+    {
+      "point": 170,
+      "frequency_hz": 5900000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 171,
+      "frequency_hz": 5950000000,
+      "reason": "base-grid",
+      "bands": []
+    },
+    {
+      "point": 172,
+      "frequency_hz": 5999999000,
+      "reason": "upper-endpoint-below-exclusive-limit",
+      "bands": []
+    }
+  ],
+  "sample_rates_hz": [
+    4000000,
+    2000000,
+    1333333,
+    1000000,
+    800000,
+    666667,
+    500000,
+    400000
+  ],
+  "rate_pairing": "matched TX/RX rates",
+  "power_endpoints_dbm": [
+    -12,
+    9
+  ],
+  "mode": "nbfm",
+  "tone_hz": 1000,
+  "tone_amplitude": 0.4,
+  "tx_deviation_hz": 2500,
+  "settle_seconds": 2,
+  "measure_seconds": 5,
+  "upper_frequency_exclusive_hz": 6000000000,
+  "rx_squelch": "disabled",
+  "record": [
+    "RSSI",
+    "SINAD",
+    "SINAD validity",
+    "RX and TX transport counters",
+    "actual configuration",
+    "board identity",
+    "software hashes"
+  ]
+}
