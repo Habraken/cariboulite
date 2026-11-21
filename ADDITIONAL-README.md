@@ -47,41 +47,54 @@ and RX, then press `1`, `2` or `4` to select the RF sample rate. The later
 hardware-paced TX trials cover all three rates; the original installation
 report used 1 MS/s NBFM TX and 4 MS/s WBFM RX. ALSA audio remains at 48 kHz.
 
-The settings below were part of the installation recipe; their necessity for
-each launch method and login/session still needs checking. A Debian-wide policy
-change has not been established here. These settings change system-wide
-locked-memory limits; they do not by themselves establish device access or
-real-time scheduling permissions.
+## Backend startup failure: locked-memory limit
 
-## Step 1
-```bash
-sudo mkdir -p /etc/systemd/system.conf.d
+On November 21, 2026, `pi0b-trixie` failed to start the radio backend with:
+
+```text
+smi temporary buffers allocation failed
+Error setting up smi submodule
+Radio initialization failed (-4).
 ```
+
+Both Pi Zero 2 W hosts had identical backend binaries and SMI driver versions,
+but `pi0b-trixie` had an 8 MiB locked-memory limit (`ulimit -l` reported `8192`),
+while the working `pi0a-trixie` reported `unlimited`. The SMI initialization calls
+`mlockall(MCL_CURRENT | MCL_FUTURE)`. On pi0b this succeeded, but a subsequent
+buffer allocation failed with `EAGAIN` when it exceeded the locked-memory limit.
+Temporarily suppressing memory locking for one diagnostic launch allowed the
+backend to initialize with RX and TX stopped, confirming the cause.
+
+Apply the same systemd settings used on pi0a to the affected Pi:
+
 ```bash
-sudo tee /etc/systemd/system.conf.d/99-memlock.conf >/dev/null <<'EOF'
-[Manager]
-DefaultLimitMEMLOCK=infinity
-EOF
-```
-## Step 2
-```bash
-sudo mkdir -p /etc/systemd/user.conf.d
-```
-```bash
-sudo tee /etc/systemd/user.conf.d/99-memlock.conf >/dev/null <<'EOF'
-[Manager]
-DefaultLimitMEMLOCK=infinity
-EOF
-```
-## Step 3
-```bash
+sudo mkdir -p /etc/systemd/system.conf.d /etc/systemd/user.conf.d
+
+printf '[Manager]\nDefaultLimitMEMLOCK=infinity\n' |
+  sudo tee /etc/systemd/system.conf.d/99-memlock.conf \
+            /etc/systemd/user.conf.d/99-memlock.conf
+
 sudo reboot
 ```
-## Step 4
+
+After rebooting, reconnect over SSH and check the limits in the shell that will
+launch the backend:
+
 ```bash
 ulimit -l
 cat /proc/self/limits | grep -i "Max locked memory"
 ```
+
+`ulimit -l` should report `unlimited`, and both locked-memory limits in
+`/proc/self/limits` should be `unlimited`. Then retry the usual backend command.
+The settings change system-wide locked-memory limits; they do not themselves
+grant device access or real-time scheduling permissions. Other launch methods
+may have their own limits and should be checked separately.
+
+During this failure, the backend also logged `FPGA already operational - not
+programming`. That message indicates it detected a configured FPGA; it does not
+verify an earlier programming attempt or RX/TX performance. Diagnose the SMI
+allocation error separately from suspected FPGA programming problems.
 
 # Install CaribouLite with Raspberry Pi OS Bookworm (Lite) (64bit)
 
