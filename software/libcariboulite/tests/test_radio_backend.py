@@ -155,6 +155,26 @@ class RadioBackendTests(unittest.TestCase):
         self.assertIsNone(snap['rx']['sinad']['db']);self.assertFalse(snap['rx']['noise_enabled'])
         self.stop_backend(process)
 
+    def test_rx_gain_profile_follows_mode_and_keeps_live_volume(self):
+        self.start_backend("--rx-gain-profile", "matched", "--rx-mode-gain", "usb=20",
+                           "--rx-mode", "lsb", "--rx-gain", "4000", "--rx-volume", "-3")
+        controller = BACKEND.with_name("cariboulite_radio_controller")
+
+        def command(text):
+            result = subprocess.run(
+                [str(controller), "--socket", str(self.path.with_name("control.sock")),
+                 "--command", text], capture_output=True, text=True, timeout=3)
+            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+
+        for mode, db in (("lsb", 35.5), ("nbfm", -10), ("am", 18), ("usb", 20),
+                         ("wbfm", 0), ("lsb", 35.5)):
+            with self.subTest(mode=mode):
+                command(f"rx mode {mode}")
+                snap = self.once()
+                self.assertAlmostEqual(snap["config"]["pcm_gain"], 4000 * 10 ** (db / 20),
+                                       delta=.01)
+                self.assertEqual(snap["rx"]["audio_output"]["volume_db"], -3)
+
     def test_all_native_tx_cli_profiles(self):
         for rate,divider in [(4000000,1),(2000000,2),(1333333,3),(1000000,4),
                              (800000,5),(666667,6),(500000,8),(400000,10)]:

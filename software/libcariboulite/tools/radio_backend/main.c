@@ -35,6 +35,8 @@ typedef struct {
     const char *channel, *playback, *microphone, *socket_path, *control_socket_path;
     double frequency, seconds, status_hz;
     rx_params_t rx;
+    float rx_base_gain;
+    float rx_mode_gain_db[AUDIO_DEMOD_LSB + 1];
     tx_params_t tx;
     bool dry_run, start_stopped;
     bool rx_requested, control_fault, fpga_needs_programming;
@@ -46,6 +48,18 @@ typedef struct {
     int actual_tx_power;
     const char *tx_error;
 } options_t;
+
+/* 2026-11-21 bench profile at 430.100 MHz, 1 MS/s and requested -12 dBm TX. */
+static const float matched_rx_gain_db[AUDIO_DEMOD_LSB + 1] = {
+    [AUDIO_DEMOD_NBFM] = -10, [AUDIO_DEMOD_AM] = 18,
+    [AUDIO_DEMOD_USB] = 35.5f, [AUDIO_DEMOD_LSB] = 35.5f,
+};
+
+static void apply_rx_mode_gain(options_t *o)
+{
+    o->rx.pcm_gain = (float)(o->rx_base_gain *
+        pow(10.0, o->rx_mode_gain_db[o->rx.mode] / 20.0));
+}
 
 static cariboulite_channel_en options_channel(const options_t *o)
 {
@@ -115,6 +129,8 @@ static void usage(FILE *out, const char *program)
         "  --rx-noise-open RMS        default %.2f\n"
         "  --rx-noise-close RMS       default %.2f\n"
         "  --rx-volume DB|mute       calibrated playback volume (-60..12 dB), default 0\n"
+        "  --rx-gain-profile matched  apply the measured per-mode tone-matching trims\n"
+        "  --rx-mode-gain MODE=DB    set a mode's playback trim (-60..30 dB), repeatable\n"
         "  --rx-gain GAIN            legacy trim (8000 = unity), default 8000\n"
         "  --rx-am-rf-attenuation dB  AM fixed RF gain: 63 minus dB (0..63, steps of 3)\n"
         "  --rx-am-offset on|off     offset-tuned AM reception (default on)\n"
@@ -154,6 +170,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         .channel = "RF24", .playback = "plughw:Loopback,0,0",
         .microphone = "plughw:Loopback,1,1", .actual_tx_power = INT_MIN,
         .start_stopped = true,
+        .rx_base_gain = 8000,
         .frequency = 430125000, .status_hz = 5, .config_generation = 1,
         .tx = {.freq_hz = 430125000, .tx_power_dbm = -12, .rf_fs = 1000000,
             .tone_hz = 600, .tone_amp = .4f, .out_scale = 4000, .am_depth=.8f, .am_backoff_db=6,
@@ -161,7 +178,7 @@ static int parse_options(int argc, char **argv, options_t *o)
             .pacing_mode = TX_PACING_HARDWARE_REQUIRED},
         .rx = {.freq_hz = 430125000, .fs_rf = 1000000, .fs_audio = 48000,
             .nbfm_deviation_hz = NBFM_DEFAULT_DEVIATION_HZ,
-            .deemph_tau_s = 50e-6f, .pcm_gain = 8000, .calibrated_output=true,
+            .deemph_tau_s = 50e-6f, .calibrated_output=true,
             .noise_squelch_open_rms = NOISE_SQUELCH_OPEN_RMS,
             .noise_squelch_close_rms = NOISE_SQUELCH_CLOSE_RMS,
             .mode = AUDIO_DEMOD_NBFM, .am_offset_tuning_enabled=true},
@@ -169,11 +186,14 @@ static int parse_options(int argc, char **argv, options_t *o)
     enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
-        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH, TX_AM_BACKOFF, AM_RX_OFFSET, TX_AM_DAC_SHAPING };
+        RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH, TX_AM_BACKOFF, AM_RX_OFFSET, TX_AM_DAC_SHAPING,
+        RX_GAIN_PROFILE, RX_MODE_GAIN };
     static const struct option long_options[] = {
         {"channel", required_argument, NULL, CHANNEL},
         {"rx-sinad", no_argument, NULL, SINAD},
         {"rx-volume", required_argument, NULL, RX_VOLUME},
+        {"rx-gain-profile", required_argument, NULL, RX_GAIN_PROFILE},
+        {"rx-mode-gain", required_argument, NULL, RX_MODE_GAIN},
         {"rx-am-offset", required_argument, NULL, AM_RX_OFFSET},
         {"rx-am-agc", required_argument, NULL, AM_AGC},
         {"rx-am-rf-attenuation", required_argument, NULL, AM_RF_ATTENUATION},
@@ -308,6 +328,23 @@ static int parse_options(int argc, char **argv, options_t *o)
             if (number(optarg, &value, 0, 63) || value != (unsigned)value || (unsigned)value % 3) return -1;
             o->rx.am_rf_attenuation_db = (unsigned)value;
             break;
+        case RX_GAIN_PROFILE:
+            if (strcmp(optarg, "matched")) return -1;
+            memcpy(o->rx_mode_gain_db, matched_rx_gain_db, sizeof(o->rx_mode_gain_db));
+            break;
+        case RX_MODE_GAIN: {
+            const char *separator = strchr(optarg, '=');
+            char name[5];
+            audio_demod_mode_t mode;
+            if (!separator || (size_t)(separator - optarg) >= sizeof(name)) return -1;
+            size_t length = (size_t)(separator - optarg);
+            memcpy(name, optarg, length);
+            name[length] = '\0';
+            if (!audio_demod_mode_parse(name, &mode) ||
+                number(separator + 1, &value, -60, 30)) return -1;
+            o->rx_mode_gain_db[mode] = (float)value;
+            break;
+        }
         case AM_RX_OFFSET:
             if(!strcmp(optarg,"on"))o->rx.am_offset_tuning_enabled=true;
             else if(!strcmp(optarg,"off"))o->rx.am_offset_tuning_enabled=false;
@@ -327,7 +364,7 @@ static int parse_options(int argc, char **argv, options_t *o)
             break;
         case GAIN:
             if (number(optarg, &value, 0, 1000000)) return -1;
-            o->rx.pcm_gain = (float)value; break;
+            o->rx_base_gain = (float)value; break;
         case DEEMPH:
             if (number(optarg, &value, 50, 75) || (value != 50 && value != 75)) return -1;
             o->rx.deemph_tau_s = (float)(value * 1e-6); break;
@@ -349,6 +386,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         radio_profile_tx(o->tx.rf_fs, &profile))
         return -1;
     o->rx.freq_hz = o->frequency;
+    apply_rx_mode_gain(o);
     o->rx.pcm_dev = o->playback;
     o->tx.mic_dev = o->tx.tone_mode ? NULL : o->microphone;
     if (!radio_profile_tx_power_valid(options_channel(o), o->tx.tx_power_dbm)) return -1;
@@ -1182,7 +1220,11 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         audio_demod_mode_t mode = request->mode;
         if (radio_profile_rx(mode, (unsigned)o->rx.fs_rf, &profile)) code = "INVALID";
         else if (o->rx_requested) code = "RX_RUNNING";
-        else if (mode != o->rx.mode) { o->rx.mode = mode; changed = true; }
+        else if (mode != o->rx.mode) {
+            o->rx.mode = mode;
+            apply_rx_mode_gain(o);
+            changed = true;
+        }
         break;
     }
     case CONTROL_SAMPLE_RATE:

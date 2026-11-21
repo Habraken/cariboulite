@@ -53,6 +53,36 @@ The v2 request is `v2 ID rx_volume DB`, where −120 is the mute sentinel. Contr
 reply layouts are unchanged. Volume acknowledgements appear in the controller;
 the current saved setting and meter values are published in passive status.
 
+## Per-mode playback gain
+
+Add `--rx-gain-profile matched` to the backend launch command to reuse the
+2026-11-21 bench trims. They match the total received PCM RMS near −24.4 dBFS
+with pi4g-trixie transmitting and pi4f-trixie receiving at 430.100 MHz and
+1 MS/s. The test used `tx tone 1000 0.4` in each mode and requested −12 dBm
+TX power. The backend reported −11 dBm for the selected PA setting.
+
+| RX mode | Playback trim |
+| --- | ---: |
+| NBFM | −10 dB |
+| AM | +18 dB |
+| USB | +35.5 dB |
+| LSB | +35.5 dB |
+| WBFM | 0 dB |
+
+For a custom profile, add a repeatable `--rx-mode-gain MODE=DB` option for
+each mode you want to trim. For example,
+`--rx-gain-profile matched --rx-mode-gain usb=20` uses the bench preset
+with a +20 dB USB trim. Put overrides after the preset. Each trim can range
+from −60 to +30 dB. With neither option, every trim defaults to 0 dB.
+
+The selected trim multiplies the base `--rx-gain` and follows `rx mode`
+automatically. Status JSON reports the resulting linear trim in
+`config.pcm_gain`. The shared `rx volume` setting still controls playback
+live and carries across mode changes. These fixed gains also affect
+open-channel noise. To match idle noise, measure its RMS with squelch bypassed
+and set custom trims from those readings. Check clipping when using large
+positive trims with stronger signals.
+
 ## Level meter
 
 The passive monitor shows RX volume, mute, RMS and peak in dBFS, and the
