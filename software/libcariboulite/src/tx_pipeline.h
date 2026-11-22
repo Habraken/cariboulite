@@ -51,6 +51,7 @@ typedef struct {
     audio_mod_t*    fm;      // 48 kHz audio -> configured RF IQ rate
     audio_mod_mode_t mode;
     tx_dynamics_t dynamics; // producer-owned microphone processing
+    bool cdcss_enabled; // immutable; enables code acquisition lead-in
     bool ctcss_enabled; // immutable; enables tone acquisition lead-in
     bool conjugate_iq;      // Correct spectral inversion on the low HiF mixer route
     float*            a48k;    // 480-float scratch
@@ -113,6 +114,8 @@ typedef struct {
     // Backend-only checked pre-cue profile; preserves owner cancellation until
     // rebuild. Default false retains the legacy start/retry behavior.
     bool verify_start_profile;
+    cdcss_config_t cdcss;
+    float cdcss_deviation_hz; // zero selects 250 Hz
     float ctcss_hz; // zero disables; emitted only in NBFM
     float ctcss_deviation_hz; // zero selects 500 Hz
     tx_dynamics_config_t dynamics; // zero/default selects voice defaults; valid config can disable

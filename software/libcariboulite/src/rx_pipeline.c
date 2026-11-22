@@ -200,7 +200,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     if (deviation < NBFM_RX_MIN_DEVIATION_HZ || deviation > NBFM_RX_MAX_DEVIATION_HZ)
         return -1;
 
-    if (!ctcss_frequency_valid(par->ctcss_hz)) return -1;
+    if (!ctcss_frequency_valid(par->ctcss_hz) || !cdcss_config_valid(par->cdcss) ||
+        (par->ctcss_hz && par->cdcss.enabled)) return -1;
     uint32_t noise_levels = noise_squelch_default_levels();
     if ((par->noise_squelch_open_rms != 0 || par->noise_squelch_close_rms != 0) &&
         !noise_squelch_pack_levels(par->noise_squelch_open_rms,
@@ -258,6 +259,9 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     atomic_init(&p->demod.carrier_squelch_levels, par->carrier_squelch_levels);
     atomic_init(&p->demod.noise_squelch_levels, noise_levels);
     p->demod.sinad_enabled = par->sinad_enabled;
+    p->demod.cdcss=par->cdcss;
+    atomic_init(&p->demod.cdcss_spectrum_inverted,p->ssb_spectrum_inverted);
+    atomic_init(&p->demod.cdcss_status,0);
     p->demod.ctcss_hz=par->ctcss_hz;
     atomic_init(&p->demod.ctcss_status,0);
     atomic_init(&p->demod.sinad_db_milli, 0);
@@ -536,6 +540,7 @@ int rx_pipeline_set_freq(rx_pipeline_t* p, double freq_hz)
     HW_UNLOCK();
     if (rc != 0) return rc;
     p->am_tuner_offset_hz=offset;
+    atomic_store(&p->demod.cdcss_spectrum_inverted,radio_profile_rx_spectrum_inverted(p->radio->type,freq_hz));
     
     // If running, gently reset demod so clicks/flicker are avoided post-retune
     if (p->running) {

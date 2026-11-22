@@ -353,6 +353,13 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
         f"  hardware age={_age_label(_age(snapshot, 'hardware_monotonic_s', now))}",
         "",
     ]
+    cdcss = _mapping(config.get("cdcss"))
+    if cdcss:
+        lines.append(f"CDCSS: RX={'enabled' if cdcss.get('rx_enabled') else 'bypassed'}"
+                     f" {_label(cdcss.get('rx_code'))}  detected={_label(cdcss.get('detected'))}"
+                     f"  bit errors={_label(cdcss.get('bit_errors'))}  turn-off={_on(cdcss.get('turnoff'))}"
+                     f"  TX={'enabled' if cdcss.get('tx_enabled') else 'bypassed'} {_label(cdcss.get('tx_code'))}"
+                     f"  deviation={_formatted(cdcss.get('tx_deviation_hz'), '.0f')} Hz")
     ctcss = _mapping(config.get("ctcss"))
     if ctcss:
         lines.append(f"CTCSS: RX={'enabled' if ctcss.get('rx_enabled') else 'bypassed'}"

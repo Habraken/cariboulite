@@ -2,6 +2,7 @@
 """Real TX workers/queues; scripted radio and microphone, no RF hardware."""
 from pathlib import Path
 import subprocess
+import os
 import tempfile
 
 root = Path(__file__).resolve().parents[3]
@@ -31,3 +32,4 @@ with tempfile.TemporaryDirectory(prefix='tx-worker-parking-') as directory:
         '-lcariboulite', '-lasound', '-lm', '-pthread', '-o', str(binary),
     ], check=True)
     subprocess.run([str(binary)], check=True, timeout=50)
+    subprocess.run([str(binary)], check=True, timeout=60, env=dict(os.environ,CARIBOULITE_TEST_CDCSS="1"))

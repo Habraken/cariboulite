@@ -4,6 +4,7 @@
 #include "pipeline_transport.h"
 #include "demod_worker.h"
 #include "audio_sink.h"
+#include "cdcss.h"
 
 // Internal application handles. One control owner serializes lifecycle calls.
 typedef struct {
@@ -45,6 +46,7 @@ typedef struct {
     bool calibrated_output; // shared calibrated playback stage (backend default)
     float volume_db; // 0 dB default; -60..12 or -120=mute
     bool am_agc_disabled; // AM: manual IQ/4096 scaling when true; RX gain still applies
+    cdcss_config_t cdcss;
     float ctcss_hz; // zero disables; tone squelch applies only to NBFM
     bool sinad_enabled; // optional 1 kHz NBFM link-quality estimate
     bool noise_squelch_disabled; // zero/default enables noise squelch

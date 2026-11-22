@@ -567,6 +567,10 @@ squelch are implemented; physical interoperability and RF acceptance remain open
     matching-tone operation passed; a wrong tone kept RX muted (2026-11-22).
   - [ ] Complete external radio/repeater interoperability, weak-signal/false-open,
     RF deviation/spectrum and end-to-end tail-muting acceptance.
+- [x] Implement independent NBFM CDCSS TX encoding and RX code squelch,
+  with normal/inverted polarity, deviation control, turn-off signaling and
+  backend/controller/monitor integration. See [CDCSS](docs/cdcss.md).
+  - [ ] Complete external-radio code/polarity, weak-signal and RF/timing acceptance.
 - [ ] Add a WBFM multiplex interface, pilot recovery and true stereo DSP/audio
   transport with mono fallback. Measure separation, distortion and lock recovery.
 - [ ] Add independent RDS extraction, synchronization/checkwords and station

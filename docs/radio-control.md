@@ -19,7 +19,8 @@ the radio shared by RX and TX.
 Stereo decoding and RDS remain outside this implementation.
 
 For microphone level control, see the [TX compressor and limiter](tx-voice-dynamics.md).
-For NBFM tone access and receive tone squelch, see [CTCSS](ctcss.md).
+For NBFM selective squelch, see [CTCSS](ctcss.md) and [CDCSS](cdcss.md).
+Each direction can select one sub-audio system; both default to off.
 
 ## Build and start
 

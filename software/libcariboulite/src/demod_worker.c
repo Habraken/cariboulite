@@ -41,6 +41,8 @@ void* audio_demod_thread(void* arg)
     uint64_t levels = 0;
     noise_squelch_t noise = {0};
     ctcss_rx_t ctcss;
+    cdcss_rx_t cdcss;
+    const bool cdcss_enabled=c->mode==AUDIO_DEMOD_NBFM && c->cdcss.enabled;
     ctcss_voice_t voice={0};
     ctcss_notch_t notch={0};
     const bool ctcss_enabled=c->mode==AUDIO_DEMOD_NBFM && c->ctcss_hz>0;
@@ -66,6 +68,8 @@ void* audio_demod_thread(void* arg)
             noise_squelch_reset(&noise);
             carrier_squelch_reset(&carrier);
             ctcss_rx_reset(&ctcss,c->ctcss_hz);
+            cdcss_rx_reset(&cdcss,c->cdcss);
+            atomic_store(&c->cdcss_status,0);
             memset(&voice,0,sizeof(voice));
             ctcss_notch_reset(&notch,c->ctcss_hz);
             atomic_store(&c->ctcss_status,0);
@@ -83,6 +87,7 @@ void* audio_demod_thread(void* arg)
         rf10_frame_t frm;
         if (!rf10_fifo_get(c->fifo_in, &frm, -1)) continue;
         unsigned flags = atomic_load(&c->squelch_flags);
+        bool cdcss_inverted=atomic_load(&c->cdcss_spectrum_inverted);
         if (flags != previous_flags) {
             noise_squelch_reset(&noise);
             carrier_squelch_reset(&carrier);
@@ -173,14 +178,20 @@ void* audio_demod_thread(void* arg)
                 bool detector_open = noise_supported && noise_squelch_process(&noise, raw[i]);
                 bool noise_open = !noise_supported || !(flags & RX_SQUELCH_NOISE) || detector_open;
                 bool tone_open=!ctcss_enabled || ctcss_rx_sample(&ctcss,raw[i]);
-                open = noise_open && carrier_open && tone_open;
+                bool code_open=!cdcss_enabled || cdcss_rx_sample(&cdcss,cdcss_inverted ? -raw[i] : raw[i]);
+                open = noise_open && carrier_open && tone_open && code_open;
                 if (ctcss_enabled) {
                     if (c->calibrated_output) filtered[i]=ctcss_voice_sample(&voice,ctcss_notch_sample(&notch,filtered[i]));
                     else audio.pcm[nout+i]=(int16_t)lrintf(fmaxf(-32768,fminf(32767,
                         ctcss_voice_sample(&voice,ctcss_notch_sample(&notch,audio.pcm[nout+i])))));
                 }
+                if (cdcss_enabled) {
+                    if (c->calibrated_output) filtered[i]=ctcss_voice_sample(&voice,filtered[i]);
+                    else audio.pcm[nout+i]=(int16_t)lrintf(fmaxf(-32768,fminf(32767,
+                        ctcss_voice_sample(&voice,audio.pcm[nout+i]))));
+                }
                 // Keep clock/queues running while closed; ramp over 5 ms.
-                if (!flags && !ctcss_enabled) gate_gain = 1.0f; // exact bypass for diagnostics
+                if (!flags && !ctcss_enabled && !cdcss_enabled) gate_gain = 1.0f; // exact bypass for diagnostics
                 else if (open) gate_gain = fminf(1.0f, gate_gain + 1.0f/240);
                 else gate_gain = fmaxf(0.0f, gate_gain - 1.0f/240);
                 if (c->calibrated_output)
@@ -220,6 +231,9 @@ void* audio_demod_thread(void* arg)
                 }
             }
         }
+        if (cdcss_enabled) atomic_store(&c->cdcss_status,
+            (cdcss.valid ? 1u:0u) | (cdcss.open ? 2u:0u) | (cdcss.turnoff ? 4u:0u) |
+            ((cdcss.errors<=3 ? cdcss.errors : 255u)<<8));
         if (ctcss_enabled) atomic_store(&c->ctcss_status,
             (ctcss.valid ? 1u : 0u) | (ctcss.open ? 2u : 0u) |
             ((unsigned)lroundf(ctcss.coherence*1000)<<2));

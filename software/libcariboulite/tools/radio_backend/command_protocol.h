@@ -44,6 +44,9 @@ typedef enum control_command {
     CONTROL_RX_CTCSS,
     CONTROL_TX_CTCSS,
     CONTROL_TX_CTCSS_DEVIATION,
+    CONTROL_RX_CDCSS,
+    CONTROL_TX_CDCSS,
+    CONTROL_TX_CDCSS_DEVIATION,
     /* These are transport-generated requests, never valid wire commands. */
     CONTROL_INVALID,
     CONTROL_BUSY
@@ -75,6 +78,8 @@ typedef struct control_request {
     char tx_comp_parameter[16];
     float tx_comp_value;
     float ctcss_hz, ctcss_deviation_hz;
+    cdcss_config_t cdcss;
+    float cdcss_deviation_hz;
     bool fpga_led0, fpga_led1;
 } control_request_t;
 

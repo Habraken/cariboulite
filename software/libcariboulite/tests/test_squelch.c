@@ -49,13 +49,20 @@ bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* frame, int timeout)
         if (stage == 3) levels = (180u << 16) | 120u; // malformed update ignored
         atomic_store(&worker->noise_squelch_levels, levels);
     }
-    if (mode>=7 && block%60==0) {
+    if (mode>=7 && mode<=8 && block%60==0) {
         float hz=mode==7 ? (stage==1 ? 103.5f : stage==3 ? 0 : 100) : (stage==2 ? 103.5f : 100);
         assert(!audio_mod_set_ctcss(mod,hz,500));
     }
+    if (mode>=9 && mode<=12 && block%60==0) {
+        cdcss_config_t code={true,mode==12,023};
+        if ((mode==10 && stage==2) || (mode!=10 && stage==1))code.code=025;
+        assert(!audio_mod_set_cdcss(mod,code,250));
+    }
+    if (mode>=9 && mode<=11 && mode!=10 && stage==3)audio_mod_cdcss_tail(mod,true);
     float audio[480];
     for (unsigned i=0; i<480; ++i) {
         audio[i] = (mode == 6 ? 1.0f : 0.4f) * sinf(phase);
+        if ((mode==9 || mode==11) && stage==3)audio[i]=0; // real turn-off padding is silent
         phase += 2*M_PI*(mode == 6 ? 3000 : 600)/48000;
     }
     nbfm_result_t r=nbfm_process(mod,audio,480,frame->data,rate/100);
@@ -87,7 +94,8 @@ bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* frame, int timeout)
             atomic_store(&worker->carrier_squelch_levels,
                          stage == 1 ? carrier_squelch_pack_levels(-88, -92) : 0);
     }
-    if (mode==8) frame->rssi_dbm=stage==1 || stage==3 ? -115 : -80;
+    if (mode==11)for(unsigned i=0;i<rate/100;i++)frame->data[i].q=-frame->data[i].q;
+    if (mode==8 || mode==10) frame->rssi_dbm=stage==1 || stage==3 ? -115 : -80;
     // Exercise live bypass while noise is enabled and carrier blocks audio.
     if (mode == 2 && stage == 3) atomic_store(&worker->squelch_flags,0);
     ++block;
@@ -291,8 +299,11 @@ static void integration(audio_demod_mode_t rx_mode)
         .pcm_gain=8000,.deemph_tau=50e-6f};
     unsigned flags = mode == 4 ? 0 : mode == 0 || mode == 5 || mode == 6 ? RX_SQUELCH_NOISE :
         mode == 1 ? RX_SQUELCH_CARRIER : RX_SQUELCH_NOISE|RX_SQUELCH_CARRIER;
-    if (mode==7) flags=0;
-    c.ctcss_hz=mode>=7 || rx_mode!=AUDIO_DEMOD_NBFM ? 100 : 0;
+    if (mode==7 || mode==9 || mode>=11) flags=0;
+    c.ctcss_hz=mode>=9 ? 0 : mode>=7 || rx_mode!=AUDIO_DEMOD_NBFM ? 100 : 0;
+    c.cdcss=(cdcss_config_t){mode>=9,false,023};
+    atomic_init(&c.cdcss_spectrum_inverted,mode==11);
+    atomic_init(&c.cdcss_status,0);
     atomic_init(&c.ctcss_status,0);
     atomic_init(&c.alive,false);
     atomic_init(&c.last_error,0);
@@ -314,7 +325,19 @@ static void integration(audio_demod_mode_t rx_mode)
     nbfm_demod_thread(&c);
     assert(!atomic_load(&c.alive) && atomic_load(&c.scheduling.ready));
     assert(out_block>=239); // closed squelch must still enqueue audio on time
-    if (mode>=7) {
+    if (mode>=9 && mode<=12) {
+        if(mode==12){for(unsigned k=0;k<4;k++)assert(energy[k]==0);}
+        else {
+            assert(energy[0]>1e8 && energy[1]==0 && energy[3]==0);
+            if(mode==10)assert(energy[2]==0);else assert(energy[2]>1e8);
+        }
+        unsigned status=atomic_load(&c.cdcss_status);assert(status&1);
+        assert(!!(status&2)==(mode==10)); // matching CDCSS can coexist with closed carrier gate
+        if(mode==9 || mode==11)assert(status&4);
+    } else if (mode==13) {
+        for(unsigned k=0;k<4;k++)assert(energy[k]>1e5);
+        assert(atomic_load(&c.cdcss_status)==0);
+    } else if (mode>=7) {
         assert(energy[0]>1e8 && energy[1]==0 && energy[3]==0);
         if (mode==7) assert(energy[2]>1e8); else assert(energy[2]==0);
         unsigned tone_status=atomic_load(&c.ctcss_status);
@@ -355,12 +378,13 @@ int main(void)
     for(rate=1000000;rate<=4000000;rate*=2) {
         raw_tap();
         receive_deviation();
-        for (mode = 0; mode < 9; ++mode)
-            integration(mode == 5 ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM);
+        for (mode = 0; mode < (rate==1000000 ? 14u:9u); ++mode)
+            integration(mode == 5 || mode == 13 ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM);
         mode = 1; // Carrier squelch with live thresholds and invalid RSSI.
         integration(AUDIO_DEMOD_AM);
         integration(AUDIO_DEMOD_USB);
         integration(AUDIO_DEMOD_LSB);
+        if(rate==1000000){mode=13;integration(AUDIO_DEMOD_AM);integration(AUDIO_DEMOD_USB);integration(AUDIO_DEMOD_LSB);}
     }
     puts("Squelch detectors and RX worker integration pass at 1/2/4 MS/s");
 }

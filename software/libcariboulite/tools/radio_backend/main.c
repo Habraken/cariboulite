@@ -126,6 +126,7 @@ static void usage(FILE *out, const char *program)
         "  --rx-deviation HZ         NBFM audio normalization 1..24000 (default %.0f)\n"
         "  --rx-playback DEVICE      default plughw:Loopback,0,0\n"
         "  --rx-no-noise-squelch      bypass noise squelch\n"
+        "  --rx-cdcss CODE[N|I]|off    NBFM CDCSS, three octal digits; default off\n"
         "  --rx-ctcss HZ|off         NBFM tone squelch, 67..254.1 Hz (default off)\n"
         "  --rx-carrier-squelch       enable carrier squelch (default off)\n"
         "  --rx-noise-open RMS        default %.2f\n"
@@ -148,6 +149,8 @@ static void usage(FILE *out, const char *program)
         "  --tx-deviation HZ         nominal NBFM deviation 0..24000 (default %.0f)\n"
         "  --tx-sample-rate HZ       native 400000..4000000 (default 1000000)\n"
         "  --tx-source mic|tone      default mic; tone 600 Hz, amplitude 0.4\n"
+        "  --tx-cdcss CODE[N|I]|off    NBFM CDCSS (default off), exclusive with CTCSS\n"
+        "  --tx-cdcss-deviation HZ     50..1000 Hz peak deviation (default 250)\n"
         "  --tx-ctcss HZ|off         NBFM continuous tone (default off)\n"
         "  --tx-ctcss-deviation HZ   50..1000 Hz peak deviation (default 500)\n"
         "  --tx-compressor on|off    microphone compressor/limiter (default on)\n"
@@ -198,11 +201,12 @@ static int parse_options(int argc, char **argv, options_t *o)
     };
     o->tx.dynamics=tx_dynamics_defaults();
     o->tx.ctcss_deviation_hz=500;
+    o->tx.cdcss_deviation_hz=CDCSS_DEFAULT_DEVIATION_HZ;
     enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
         RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH, TX_AM_BACKOFF, AM_RX_OFFSET, TX_AM_DAC_SHAPING,
-        RX_CTCSS, TX_CTCSS, TX_CTCSS_DEVIATION,
+        RX_CTCSS, TX_CTCSS, TX_CTCSS_DEVIATION, RX_CDCSS, TX_CDCSS, TX_CDCSS_DEVIATION,
         RX_GAIN_PROFILE, RX_MODE_GAIN, TX_COMPRESSOR, TX_COMP_INPUT, TX_COMP_THRESHOLD,
         TX_COMP_RATIO, TX_COMP_KNEE, TX_COMP_ATTACK, TX_COMP_RELEASE, TX_COMP_MAKEUP, TX_COMP_CEILING };
     static const struct option long_options[] = {
@@ -226,6 +230,13 @@ static int parse_options(int argc, char **argv, options_t *o)
         {"rx-noise-close", required_argument, NULL, NOISE_CLOSE},
         {"rx-gain", required_argument, NULL, GAIN},
         {"rx-deemphasis-us", required_argument, NULL, DEEMPH},
+        /* Compatibility spellings; help uses CDCSS consistently. */
+        {"rx-dcs", required_argument, NULL, RX_CDCSS},
+        {"tx-dcs", required_argument, NULL, TX_CDCSS},
+        {"tx-dcs-deviation", required_argument, NULL, TX_CDCSS_DEVIATION},
+        {"rx-cdcss", required_argument, NULL, RX_CDCSS},
+        {"tx-cdcss", required_argument, NULL, TX_CDCSS},
+        {"tx-cdcss-deviation", required_argument, NULL, TX_CDCSS_DEVIATION},
         {"rx-ctcss", required_argument, NULL, RX_CTCSS},
         {"tx-ctcss", required_argument, NULL, TX_CTCSS},
         {"tx-ctcss-deviation", required_argument, NULL, TX_CTCSS_DEVIATION},
@@ -332,6 +343,12 @@ static int parse_options(int argc, char **argv, options_t *o)
                 || value != (unsigned)value
                 || radio_profile_tx((unsigned)value, &profile)) return -1;
             o->tx.rf_fs = profile.sample_rate_hz; break;
+        case RX_CDCSS: case TX_CDCSS:
+            if(!cdcss_parse(optarg,key==RX_CDCSS ? &o->rx.cdcss : &o->tx.cdcss))return -1;
+            break;
+        case TX_CDCSS_DEVIATION:
+            if(number(optarg,&value,50,1000))return -1;
+            o->tx.cdcss_deviation_hz=(float)value;break;
         case RX_CTCSS: case TX_CTCSS:
             value=0;
             if (strcmp(optarg,"off") && number(optarg,&value,67,254.1)) return -1;
@@ -421,6 +438,8 @@ static int parse_options(int argc, char **argv, options_t *o)
         default: return -1;
         }
     }
+    if ((o->tx.cdcss.enabled && o->tx.ctcss_hz) || (o->rx.cdcss.enabled && o->rx.ctcss_hz) ||
+        (o->tx.cdcss.enabled && o->tx.cdcss_deviation_hz>=o->tx.f_dev_hz))return -1;
     if (o->tx.ctcss_hz && o->tx.ctcss_deviation_hz>=o->tx.f_dev_hz) return -1;
     uint32_t levels;
     if (optind != argc || !noise_squelch_pack_levels(o->rx.noise_squelch_open_rms,
@@ -1403,15 +1422,38 @@ static void backend_control_command(void *opaque, const control_request_t *reque
             o->tx.am_backoff_db=request->tx_am_backoff_db;c->tx_configuration_dirty=true;changed=true;
         }
         break;
+    case CONTROL_RX_CDCSS:
+        if(!cdcss_config_valid(request->cdcss))code="INVALID";
+        else if(request->cdcss.enabled && o->rx.ctcss_hz)code="CONFLICT";
+        else if(o->rx_requested)code="RX_RUNNING";
+        else if(!cdcss_equal(o->rx.cdcss,request->cdcss)){o->rx.cdcss=request->cdcss;changed=true;}
+        break;
+    case CONTROL_TX_CDCSS:
+        if(!cdcss_config_valid(request->cdcss) ||
+            (request->cdcss.enabled && o->tx.cdcss_deviation_hz>=o->tx.f_dev_hz))code="INVALID";
+        else if(request->cdcss.enabled && o->tx.ctcss_hz)code="CONFLICT";
+        else if(!cdcss_equal(o->tx.cdcss,request->cdcss)){
+            o->tx.cdcss=request->cdcss;c->tx_configuration_dirty=true;changed=true;
+        }
+        break;
+    case CONTROL_TX_CDCSS_DEVIATION:
+        if(!ctcss_deviation_valid(request->cdcss_deviation_hz) ||
+            (o->tx.cdcss.enabled && request->cdcss_deviation_hz>=o->tx.f_dev_hz))code="INVALID";
+        else if(o->tx.cdcss_deviation_hz!=request->cdcss_deviation_hz){
+            o->tx.cdcss_deviation_hz=request->cdcss_deviation_hz;c->tx_configuration_dirty=true;changed=true;
+        }
+        break;
     case CONTROL_RX_CTCSS:
-        if (!ctcss_frequency_valid(request->ctcss_hz)) code="INVALID";
+        if (request->ctcss_hz && o->rx.cdcss.enabled) code="CONFLICT";
+        else if (!ctcss_frequency_valid(request->ctcss_hz)) code="INVALID";
         else if (o->rx_requested) code="RX_RUNNING";
         else if (o->rx.ctcss_hz!=request->ctcss_hz) {
             o->rx.ctcss_hz=request->ctcss_hz; changed=true;
         }
         break;
     case CONTROL_TX_CTCSS:
-        if (!ctcss_frequency_valid(request->ctcss_hz) ||
+        if (request->ctcss_hz && o->tx.cdcss.enabled) code="CONFLICT";
+        else if (!ctcss_frequency_valid(request->ctcss_hz) ||
             (request->ctcss_hz && o->tx.ctcss_deviation_hz>=o->tx.f_dev_hz)) code="INVALID";
         else if (o->tx.ctcss_hz!=request->ctcss_hz) {
             o->tx.ctcss_hz=request->ctcss_hz; c->tx_configuration_dirty=true; changed=true;
@@ -1820,6 +1862,20 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"window_ms\":100,\"reference_hz\":1000,\"reference_modulation\":0.5,\"reference_rms_dbfs\":-12}",
         (double)o->rx.volume_db,o->rx.volume_db==-120 ? "true":"false",
         audio_levels>>63 ? "true":"false",audio_rms,audio_peak,audio_clipped);
+    char cdcss_json[640],rx_cdcss_code[5],tx_cdcss_code[5];
+    cdcss_format(o->rx.cdcss,rx_cdcss_code);cdcss_format(o->tx.cdcss,tx_cdcss_code);
+    unsigned cdcss_status=live && !o->transition && pipeline->running && o->rx.mode==AUDIO_DEMOD_NBFM
+        ? atomic_load(&pipeline->demod.cdcss_status):0;
+    char cdcss_errors[16]="null";
+    if(cdcss_status&2)snprintf(cdcss_errors,sizeof(cdcss_errors),"%u",(cdcss_status>>8)&255);
+    snprintf(cdcss_json,sizeof(cdcss_json),
+        "{\"rx_code\":\"%s\",\"tx_code\":\"%s\",\"tx_deviation_hz\":%.3f,"
+        "\"rx_enabled\":%s,\"tx_enabled\":%s,\"valid\":%s,\"detected\":%s,\"turnoff\":%s,\"bit_errors\":%s}",
+        rx_cdcss_code,tx_cdcss_code,(double)o->tx.cdcss_deviation_hz,
+        o->rx.mode==AUDIO_DEMOD_NBFM && o->rx.cdcss.enabled ? "true":"false",
+        o->tx.mode==AUDIO_MOD_NBFM && o->tx.cdcss.enabled ? "true":"false",
+        cdcss_status&1 ? "true":"false",cdcss_status&1 ? (cdcss_status&2 ? "true":"false") : "null",
+        cdcss_status&4 ? "true":"false",cdcss_errors);
     char ctcss_json[640];
     unsigned ctcss_status=live && !o->transition && pipeline->running && o->rx.mode==AUDIO_DEMOD_NBFM
         ? atomic_load(&pipeline->demod.ctcss_status) : 0;
@@ -1851,7 +1907,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"tx_frequency_hz\":%.3f,\"tx_actual_frequency_hz\":%s,\"tx_power_dbm\":%d,"
         "\"tx_actual_power_dbm\":%s,\"tx_sample_rate_hz\":%u,\"tx_source\":\"%s\","
         "\"tx_mode\":\"%s\",\"tx_am_depth\":%.3f,\"tx_am_backoff_db\":%.3f,\"tx_am_dac_shaping\":%s,\"tx_am_carrier_fraction\":0.5,\"tx_tone_hz\":%.3f,\"tx_tone_amp\":%.3f,\"tx_deviation_hz\":%.3f,"
-        "\"ctcss\":%s,\"tx_compressor\":%s,\"profile\":%s,\"observed\":%s},"
+        "\"cdcss\":%s,\"ctcss\":%s,\"tx_compressor\":%s,\"profile\":%s,\"observed\":%s},"
         "\"rx\":{\"running\":%s,\"queue\":%s,\"noise_enabled\":%s,\"carrier_enabled\":%s,"
         "\"carrier_open_dbm\":%d,\"carrier_close_dbm\":%d,"
         "\"gate_open\":%s,\"noise\":{\"valid\":%s,\"detector_open\":%s,\"rms\":%s,"
@@ -1881,7 +1937,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         o->tx.freq_hz, tx_actual_freq, o->tx.tx_power_dbm, tx_actual_power,
         o->tx.rf_fs, o->tx.tone_mode ? "tone" : "mic", audio_mod_mode_name(o->tx.mode), (double)o->tx.am_depth, (double)o->tx.am_backoff_db, o->tx.am_dac_shaping ? "true" : "false", (double)o->tx.tone_hz,
         (double)o->tx.tone_amp, (double)o->tx.f_dev_hz,
-        ctcss_json, dynamics_json, desired_profile, observed_profile,
+        cdcss_json, ctcss_json, dynamics_json, desired_profile, observed_profile,
         live && rx_pipeline_running(pipeline) ? "true" : "false", queue,
         noise_enabled ? "true" : "false", o->rx.carrier_squelch_enabled ? "true" : "false",
         carrier_open_dbm, carrier_close_dbm,

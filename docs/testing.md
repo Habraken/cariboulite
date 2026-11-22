@@ -71,6 +71,11 @@ the DSP, RX worker, mocked PTT lifecycle and simulated backend tests.
 with CTCSS off/on and checks sub-tone bias in the raw SINAD estimate versus
 voice-headroom clipping at high test-tone amplitude. These checks transmit no RF.
 
+The [CDCSS validation notes](cdcss.md#validation) describe codeword/polarity,
+turn-off, RF-rate and RX/TX worker integration checks. `test_cdcss.py` exercises
+the actual modulator/demodulator under strict and production math;
+`test_cdcss_backend.py` covers the simulated backend/controller/status path.
+
 ## Physical and RF validation
 
 The following tools and procedures access hardware; they are separate from the

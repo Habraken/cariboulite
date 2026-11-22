@@ -434,6 +434,10 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
 
     unsigned rf_fs = par->rf_fs ? par->rf_fs : 4000000;
     radio_profile_t profile;
+    float cdcss_deviation=par->cdcss_deviation_hz ? par->cdcss_deviation_hz : CDCSS_DEFAULT_DEVIATION_HZ;
+    if(!cdcss_config_valid(par->cdcss) || !ctcss_deviation_valid(cdcss_deviation) ||
+        (par->cdcss.enabled && par->ctcss_hz) ||
+        (par->cdcss.enabled && par->mode==AUDIO_MOD_NBFM && cdcss_deviation>=par->f_dev_hz))return -1;
     float ctcss_deviation=par->ctcss_deviation_hz ? par->ctcss_deviation_hz : 500;
     if (!ctcss_frequency_valid(par->ctcss_hz) || !ctcss_deviation_valid(ctcss_deviation) ||
         (par->ctcss_hz && par->mode==AUDIO_MOD_NBFM && ctcss_deviation>=par->f_dev_hz)) return -1;
@@ -536,8 +540,10 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
         .linear_interp = 1,
     };
     p->tx_ctrl.mode = par->mode;
+    p->tx_ctrl.cdcss_enabled=par->mode==AUDIO_MOD_NBFM && par->cdcss.enabled;
     p->tx_ctrl.ctcss_enabled=par->mode==AUDIO_MOD_NBFM && par->ctcss_hz>0;
     p->tx_ctrl.fm   = audio_mod_create(par->mode,&cfg,par->am_depth);
+    if (p->tx_ctrl.fm && audio_mod_set_cdcss(p->tx_ctrl.fm,par->cdcss,cdcss_deviation)) goto fail;
     if (p->tx_ctrl.fm && audio_mod_set_ctcss(p->tx_ctrl.fm,par->ctcss_hz,ctcss_deviation)) goto fail;
     if (p->tx_ctrl.fm && par->mode==AUDIO_MOD_AM && par->am_dac_shaping &&
         audio_mod_set_am_dac_shaping(p->tx_ctrl.fm,true)) goto fail;
@@ -761,7 +767,8 @@ int tx_pipeline_start(tx_pipeline_t* p)
 
     tx_dynamics_reset(&p->tx_ctrl.dynamics);
     audio_mod_reset_ctcss(p->tx_ctrl.fm);
-    const unsigned lead_frames=p->tx_ctrl.ctcss_enabled ? 60 : 10;
+    audio_mod_reset_cdcss(p->tx_ctrl.fm);
+    const unsigned lead_frames=p->tx_ctrl.cdcss_enabled ? 80 : p->tx_ctrl.ctcss_enabled ? 60 : 10;
 
     // Disable RX if it was on and arm TX chain
     if (nbfm_rx_active) {
@@ -773,9 +780,10 @@ int tx_pipeline_start(tx_pipeline_t* p)
     }
 
     // The low HiF route uses RF = LO - IF, reversing sideband offsets.
-    // Correct SSB at the packet boundary after the producer is parked.
+    // Correct SSB and CDCSS NBFM polarity after the producer is parked.
     p->tx_ctrl.conjugate_iq =
-        (p->tx_ctrl.mode == AUDIO_MOD_USB || p->tx_ctrl.mode == AUDIO_MOD_LSB) &&
+        (p->tx_ctrl.mode == AUDIO_MOD_USB || p->tx_ctrl.mode == AUDIO_MOD_LSB ||
+         (p->tx_ctrl.mode == AUDIO_MOD_NBFM && p->tx_ctrl.cdcss_enabled)) &&
         p->radio->type == cariboulite_channel_hif &&
         p->sys->board_info.numeric_product_id == system_type_cariboulite_full &&
         p->radio->requested_rf_frequency < CARIBOULITE_2G4_MIN;
@@ -917,7 +925,7 @@ void tx_pipeline_stop(tx_pipeline_t* p)
     pthread_mutex_unlock(&g_tx_injection_lock);
     tx_audio_buffer_set_cue(p->tx_ctrl.audio_buffer, true);
     if (tx_inject_tone_with_zeros(p, 2475.0f, 250, 5,
-                                p->tx_ctrl.tail_padding_frames, true)) {
+                                p->tx_ctrl.tail_padding_frames + (p->tx_ctrl.cdcss_enabled ? 18 : 0), true)) {
         pthread_mutex_lock(&g_tx_injection_lock);
         uint64_t sequence = p->tx_ctrl.inj.last_sequence;
         pthread_mutex_unlock(&g_tx_injection_lock);

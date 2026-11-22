@@ -322,6 +322,7 @@ int main(void)
         .tx_power_dbm = -3, .f_dev_hz = 2500, .out_scale = 4000,
         .verify_start_profile = true, .pacing_mode = TX_PACING_LEGACY};
     params.ctcss_hz=100; params.ctcss_deviation_hz=500;
+    if(getenv("CARIBOULITE_TEST_CDCSS")){params.ctcss_hz=0;assert(cdcss_parse("023N",&params.cdcss));}
     params.dynamics=tx_dynamics_defaults();
     params.dynamics.enabled=true;
     assert(tx_pipeline_init(&pipeline, &sys, &sys.radio_high, &params) == 0);
@@ -330,6 +331,7 @@ int main(void)
     for (unsigned repeat = 0; repeat < 2; ++repeat) {
         pipeline.tx_ctrl.dynamics.reduction_db=99; // parked owner, must reset on PTT
         assert(tx_pipeline_start(&pipeline) == 0);
+        if(params.cdcss.enabled)assert(pipeline.tx_ctrl.conjugate_iq);
         assert(atomic_load(&start_tone_frames) == (repeat + 1) * 25);
         delay_ms(25);
         tx_pipeline_stats_t stats;

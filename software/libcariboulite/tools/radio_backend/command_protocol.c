@@ -283,6 +283,13 @@ int control_request_parse(const char *packet, size_t bytes,
                !parse_float(tokens[3],&request->tx_am_backoff_db) && request->tx_am_backoff_db>=0 && request->tx_am_backoff_db<=18)
         request->command=CONTROL_TX_AM_BACKOFF;
     else if (request->protocol_version==2 && count==4 &&
+             (!strcmp(tokens[2],"rx_cdcss") || !strcmp(tokens[2],"tx_cdcss") ||
+              !strcmp(tokens[2],"rx_dcs") || !strcmp(tokens[2],"tx_dcs")) && cdcss_parse(tokens[3],&request->cdcss))
+        request->command=(!strcmp(tokens[2],"rx_cdcss") || !strcmp(tokens[2],"rx_dcs")) ? CONTROL_RX_CDCSS : CONTROL_TX_CDCSS;
+    else if (request->protocol_version==2 && count==4 && (!strcmp(tokens[2],"tx_cdcss_deviation") || !strcmp(tokens[2],"tx_dcs_deviation")) &&
+             !parse_float(tokens[3],&request->cdcss_deviation_hz) && ctcss_deviation_valid(request->cdcss_deviation_hz))
+        request->command=CONTROL_TX_CDCSS_DEVIATION;
+    else if (request->protocol_version==2 && count==4 &&
              (!strcmp(tokens[2],"rx_ctcss") || !strcmp(tokens[2],"tx_ctcss")) &&
              !parse_float(tokens[3],&request->ctcss_hz) && ctcss_frequency_valid(request->ctcss_hz))
         request->command=!strcmp(tokens[2],"rx_ctcss") ? CONTROL_RX_CTCSS : CONTROL_TX_CTCSS;
@@ -315,7 +322,7 @@ static int valid_code(const char *code)
     static const char *const codes[] = {
         "OK", "BUSY", "PROTOCOL", "RX_RUNNING", "INVALID", "FREQ_RANGE",
         "HARDWARE", "FAULT", "WBFM_NOISE", "AM_NOISE", "SSB_NOISE", "ACCEPTED", "TRANSITION",
-        "TX_RUNNING", "LOOPBACK", "TX_FAILED", "FIRMWARE_FILE", "FPGA_REQUIRED"
+        "TX_RUNNING", "LOOPBACK", "TX_FAILED", "FIRMWARE_FILE", "FPGA_REQUIRED", "CONFLICT"
     };
     size_t i;
     for (i = 0; i < sizeof(codes) / sizeof(codes[0]); ++i)
@@ -556,6 +563,17 @@ int control_request_format(const control_request_t *request,
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " tx_source %s\n",
                          version, request->id, request->tx_tone_mode ? "tone" : "mic");
         break;
+    case CONTROL_RX_CDCSS:
+    case CONTROL_TX_CDCSS: {
+        if(version!=2 || !cdcss_config_valid(request->cdcss))break;
+        char code[5];cdcss_format(request->cdcss,code);
+        bytes=snprintf(packet,capacity,"v2 %" PRIu64 " %s %s\n",request->id,
+            request->command==CONTROL_RX_CDCSS ? "rx_cdcss":"tx_cdcss",code);break;
+    }
+    case CONTROL_TX_CDCSS_DEVIATION:
+        if(version!=2 || !ctcss_deviation_valid(request->cdcss_deviation_hz))break;
+        bytes=snprintf(packet,capacity,"v2 %" PRIu64 " tx_cdcss_deviation %.9g\n",
+            request->id,(double)request->cdcss_deviation_hz);break;
     case CONTROL_RX_CTCSS:
     case CONTROL_TX_CTCSS:
         if (version!=2 || !ctcss_frequency_valid(request->ctcss_hz)) break;

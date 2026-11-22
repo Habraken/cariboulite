@@ -1,6 +1,7 @@
 #pragma once
 #include "nbfm_mod.h"
 #include "ctcss.h"
+#include "cdcss.h"
 #include <stdbool.h>
 #include <string.h>
 
@@ -55,6 +56,10 @@ audio_mod_t* audio_mod_create(audio_mod_mode_t, const nbfm_cfg_t*, float depth);
 int audio_mod_set_am_dac_shaping(audio_mod_t*, bool enabled);
 // Configure while stopped. Only NBFM emits CTCSS; other modes retain bypass.
 int audio_mod_set_ctcss(audio_mod_t*, float frequency_hz, float deviation_hz);
+// CDCSS and CTCSS are exclusive. Configure while stopped; only NBFM emits CDCSS.
+int audio_mod_set_cdcss(audio_mod_t*, cdcss_config_t, float deviation_hz);
+void audio_mod_reset_cdcss(audio_mod_t*);
+void audio_mod_cdcss_tail(audio_mod_t*, bool tail);
 // Single modulator owner only: retained starts reset CTCSS; the stop cue/tail mutes it.
 void audio_mod_reset_ctcss(audio_mod_t*);
 void audio_mod_mute_ctcss(audio_mod_t*, bool muted);

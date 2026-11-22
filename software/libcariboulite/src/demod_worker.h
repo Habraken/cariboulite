@@ -6,6 +6,7 @@
 #define RX_SQUELCH_CARRIER 2u
 #include "audio_sink.h"
 #include "audio_demod.h"
+#include "cdcss.h"
 #include "pipeline_runtime.h"
 
 typedef struct rf10_fifo_s rf10_fifo_t;
@@ -27,6 +28,9 @@ typedef struct {
     atomic_uint noise_squelch_rms_milli; // worker telemetry, raw detector RMS * 1000
     atomic_uint noise_squelch_detector_open; // detector decision even while bypassed
     atomic_uint noise_squelch_valid; // telemetry available for NBFM; zero before data/WBFM
+    cdcss_config_t cdcss; // immutable during worker lifetime
+    atomic_bool cdcss_spectrum_inverted; // RF route polarity compensation
+    atomic_uint cdcss_status; // bit0 valid, bit1 open, bit2 turnoff; errors in bits 8..15
     float ctcss_hz; // immutable during worker lifetime
     atomic_uint ctcss_status; // bit0 valid, bit1 detected; coherence milli in upper bits
     bool sinad_enabled; // immutable while running; 1 kHz NBFM measurement
