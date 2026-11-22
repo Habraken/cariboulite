@@ -1,0 +1,29 @@
+[
+  {
+    "case": "carrier",
+    "carrier_offset_hz": -190.73486328125,
+    "iq_dc_window_peak_hz": 0.0,
+    "iq_dc_window_band_dbc": -44.85261200289197,
+    "dc_beat_hz": 190.73486328125,
+    "strongest_raw_audio_hz": 5854.98046875,
+    "strongest_pcm_audio_hz": 2961.181640625
+  },
+  {
+    "case": "carrier_rx_plus5k",
+    "carrier_offset_hz": -5233.7646484375,
+    "iq_dc_window_peak_hz": 0.0,
+    "iq_dc_window_band_dbc": -44.923342954500626,
+    "dc_beat_hz": 5233.7646484375,
+    "strongest_raw_audio_hz": 5233.154296875,
+    "strongest_pcm_audio_hz": 5230.224609375
+  },
+  {
+    "case": "carrier_rx_minus5k",
+    "carrier_offset_hz": 4783.63037109375,
+    "iq_dc_window_peak_hz": 0.0,
+    "iq_dc_window_band_dbc": -45.309921511850995,
+    "dc_beat_hz": 4783.63037109375,
+    "strongest_raw_audio_hz": 4784.912109375,
+    "strongest_pcm_audio_hz": 4783.447265625
+  }
+]

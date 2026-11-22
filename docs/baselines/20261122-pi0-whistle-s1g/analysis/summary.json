@@ -1,0 +1,2769 @@
+[
+  {
+    "case": "carrier",
+    "config": {
+      "name": "carrier",
+      "tone_amp": 0,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": 0,
+      "rate": 1000000
+    },
+    "iq_samples": 4000000,
+    "pcm_frames": 288000,
+    "pcm_rms_dbfs": -46.19646925080876,
+    "carrier_offset_hz": -190.73486328125,
+    "pcm_peaks": [
+      {
+        "hz": 2961.181640625,
+        "db_per_hz": -78.66589240192839
+      },
+      {
+        "hz": 2238.28125,
+        "db_per_hz": -78.66872703222113
+      },
+      {
+        "hz": 4703.61328125,
+        "db_per_hz": -78.89974105477418
+      },
+      {
+        "hz": 3480.46875,
+        "db_per_hz": -79.02614264558308
+      },
+      {
+        "hz": 3962.40234375,
+        "db_per_hz": -79.22982323363793
+      },
+      {
+        "hz": 3681.15234375,
+        "db_per_hz": -79.24485918736187
+      },
+      {
+        "hz": 4457.51953125,
+        "db_per_hz": -79.42292266420527
+      },
+      {
+        "hz": 3446.044921875,
+        "db_per_hz": -79.42758510371908
+      }
+    ],
+    "raw_peaks": [
+      {
+        "hz": 5854.98046875,
+        "db_per_hz": -53.322025299072266
+      },
+      {
+        "hz": 6273.193359375,
+        "db_per_hz": -53.50132751464844
+      },
+      {
+        "hz": 5640.380859375,
+        "db_per_hz": -53.99334716796875
+      },
+      {
+        "hz": 6361.083984375,
+        "db_per_hz": -54.131675720214844
+      },
+      {
+        "hz": 6539.794921875,
+        "db_per_hz": -54.271942138671875
+      },
+      {
+        "hz": 7113.28125,
+        "db_per_hz": -54.85741424560547
+      },
+      {
+        "hz": 5997.0703125,
+        "db_per_hz": -54.90043640136719
+      },
+      {
+        "hz": 5756.103515625,
+        "db_per_hz": -54.92611312866211
+      }
+    ],
+    "independent_peaks": [
+      {
+        "hz": 6272.888183593749,
+        "db_per_hz": -52.68542791513734
+      },
+      {
+        "hz": 5855.560302734374,
+        "db_per_hz": -52.81391304517598
+      },
+      {
+        "hz": 5640.411376953124,
+        "db_per_hz": -53.4093674649407
+      },
+      {
+        "hz": 6361.389160156249,
+        "db_per_hz": -53.44765420076307
+      },
+      {
+        "hz": 6237.030029296874,
+        "db_per_hz": -53.847637728283715
+      },
+      {
+        "hz": 6566.619873046874,
+        "db_per_hz": -54.003625483349566
+      },
+      {
+        "hz": 5977.630615234374,
+        "db_per_hz": -54.54579048448589
+      },
+      {
+        "hz": 5756.378173828124,
+        "db_per_hz": -54.620148930930284
+      }
+    ],
+    "iq_peaks": [
+      {
+        "hz": -190.73486328125,
+        "db_per_hz": 20.310989924389414
+      },
+      {
+        "hz": -10032.65380859375,
+        "db_per_hz": -30.282282337617772
+      },
+      {
+        "hz": 0.0,
+        "db_per_hz": -30.49406494635712
+      },
+      {
+        "hz": 11184.6923828125,
+        "db_per_hz": -34.800409339603235
+      },
+      {
+        "hz": -13767.242431640625,
+        "db_per_hz": -34.81903316900737
+      },
+      {
+        "hz": 13549.8046875,
+        "db_per_hz": -35.06915209574997
+      },
+      {
+        "hz": 12264.251708984375,
+        "db_per_hz": -35.16576870639528
+      },
+      {
+        "hz": -3856.658935546875,
+        "db_per_hz": -35.35344692740055
+      }
+    ],
+    "rx_status": {
+      "running": true,
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 1146,
+        "gets": 1146,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": true,
+      "noise": {
+        "valid": true,
+        "detector_open": true,
+        "rms": 0.028,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 0,
+        "emitted_samples": 11468800,
+        "stream_resets": 21
+      },
+      "sinad": {
+        "enabled": true,
+        "db": null,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": true,
+        "rms_dbfs": -46.366,
+        "peak_dbfs": -34.996,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 1146,
+        "gets": 1146,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 2,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 1146,
+        "frames_requested": 550080,
+        "frames_written": 550080,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 1386,
+        "samples": 11468800,
+        "short_reads": 69,
+        "zero_reads": 171,
+        "errors": 0,
+        "last_error": 0
+      },
+      "workers": {
+        "reader": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 70,
+            "requested_cpu": 2,
+            "applied_cpu": 2,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "2",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "demod": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 55,
+            "requested_cpu": 1,
+            "applied_cpu": 1,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "1",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "audio": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 46,
+            "requested_cpu": 0,
+            "applied_cpu": 0,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "0",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "carrier_2m",
+    "config": {
+      "name": "carrier_2m",
+      "tone_amp": 0,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": 0,
+      "rate": 2000000
+    },
+    "iq_samples": 8000000,
+    "pcm_frames": 288000,
+    "pcm_rms_dbfs": -44.8607783228972,
+    "carrier_offset_hz": -175.47607421875,
+    "pcm_peaks": [
+      {
+        "hz": 6708.984375,
+        "db_per_hz": -73.14710172120228
+      },
+      {
+        "hz": 2622.802734375,
+        "db_per_hz": -77.0466979847305
+      },
+      {
+        "hz": 3005.126953125,
+        "db_per_hz": -77.80934762385243
+      },
+      {
+        "hz": 3184.5703125,
+        "db_per_hz": -77.93163319559542
+      },
+      {
+        "hz": 2422.119140625,
+        "db_per_hz": -77.96613898903051
+      },
+      {
+        "hz": 3666.50390625,
+        "db_per_hz": -78.0258373748387
+      },
+      {
+        "hz": 3091.552734375,
+        "db_per_hz": -78.09002195422377
+      },
+      {
+        "hz": 2319.580078125,
+        "db_per_hz": -78.13528599359132
+      }
+    ],
+    "raw_peaks": [
+      {
+        "hz": 6737.548828125,
+        "db_per_hz": -45.11499786376953
+      },
+      {
+        "hz": 6059.326171875,
+        "db_per_hz": -53.2942008972168
+      },
+      {
+        "hz": 6601.318359375,
+        "db_per_hz": -53.673316955566406
+      },
+      {
+        "hz": 5466.064453125,
+        "db_per_hz": -53.71670150756836
+      },
+      {
+        "hz": 6557.373046875,
+        "db_per_hz": -53.80351638793945
+      },
+      {
+        "hz": 6232.91015625,
+        "db_per_hz": -53.95104217529297
+      },
+      {
+        "hz": 5288.0859375,
+        "db_per_hz": -53.98109436035156
+      },
+      {
+        "hz": 6501.708984375,
+        "db_per_hz": -54.05492401123047
+      }
+    ],
+    "independent_peaks": [
+      {
+        "hz": 6743.621826171874,
+        "db_per_hz": -46.16768001640941
+      },
+      {
+        "hz": 6059.265136718749,
+        "db_per_hz": -53.056787836380536
+      },
+      {
+        "hz": 6233.215332031249,
+        "db_per_hz": -53.281058269269565
+      },
+      {
+        "hz": 6547.546386718749,
+        "db_per_hz": -53.31569891942635
+      },
+      {
+        "hz": 6600.952148437499,
+        "db_per_hz": -53.42087963109789
+      },
+      {
+        "hz": 5613.708496093749,
+        "db_per_hz": -53.56671904623948
+      },
+      {
+        "hz": 5465.698242187499,
+        "db_per_hz": -53.63107322648876
+      },
+      {
+        "hz": 5287.933349609374,
+        "db_per_hz": -53.70612008109301
+      }
+    ],
+    "iq_peaks": [
+      {
+        "hz": -175.47607421875,
+        "db_per_hz": 18.12619735202176
+      },
+      {
+        "hz": -6904.60205078125,
+        "db_per_hz": -22.304760960569805
+      }
+    ],
+    "rx_status": {
+      "running": true,
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 1087,
+        "gets": 1087,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1
+      },
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": true,
+      "noise": {
+        "valid": true,
+        "detector_open": true,
+        "rms": 0.035,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 0,
+        "emitted_samples": 21757952,
+        "stream_resets": 21
+      },
+      "sinad": {
+        "enabled": true,
+        "db": null,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": true,
+        "rms_dbfs": -45.144,
+        "peak_dbfs": -32.762,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 1087,
+        "gets": 1087,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 2,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 1087,
+        "frames_requested": 521760,
+        "frames_written": 521760,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 1266,
+        "samples": 21740000,
+        "short_reads": 65,
+        "zero_reads": 114,
+        "errors": 0,
+        "last_error": 0
+      },
+      "workers": {
+        "reader": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 70,
+            "requested_cpu": 2,
+            "applied_cpu": 2,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "2",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "demod": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 55,
+            "requested_cpu": 1,
+            "applied_cpu": 1,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "1",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "audio": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 46,
+            "requested_cpu": 0,
+            "applied_cpu": 0,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "0",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "carrier_rx_minus5k",
+    "config": {
+      "name": "carrier_rx_minus5k",
+      "tone_amp": 0,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": -5000,
+      "rate": 1000000
+    },
+    "iq_samples": 4000000,
+    "pcm_frames": 288000,
+    "pcm_rms_dbfs": -47.17147846787479,
+    "carrier_offset_hz": 4783.63037109375,
+    "pcm_peaks": [
+      {
+        "hz": 4783.447265625,
+        "db_per_hz": -75.86560488188596
+      },
+      {
+        "hz": 2830.810546875,
+        "db_per_hz": -78.94918870362683
+      },
+      {
+        "hz": 2156.982421875,
+        "db_per_hz": -80.27353531329452
+      },
+      {
+        "hz": 2221.435546875,
+        "db_per_hz": -80.30121916455458
+      },
+      {
+        "hz": 1938.720703125,
+        "db_per_hz": -80.42742757898004
+      },
+      {
+        "hz": 2022.94921875,
+        "db_per_hz": -80.45292648409948
+      },
+      {
+        "hz": 2522.4609375,
+        "db_per_hz": -80.50255861971536
+      },
+      {
+        "hz": 2071.2890625,
+        "db_per_hz": -80.6676363966414
+      }
+    ],
+    "raw_peaks": [
+      {
+        "hz": 4784.912109375,
+        "db_per_hz": -51.71165084838867
+      },
+      {
+        "hz": 10089.84375,
+        "db_per_hz": -53.710418701171875
+      },
+      {
+        "hz": 10315.4296875,
+        "db_per_hz": -53.77850341796875
+      },
+      {
+        "hz": 10524.90234375,
+        "db_per_hz": -53.91865158081055
+      },
+      {
+        "hz": 10992.919921875,
+        "db_per_hz": -54.3791618347168
+      },
+      {
+        "hz": 9634.27734375,
+        "db_per_hz": -54.39073944091797
+      },
+      {
+        "hz": 8729.736328125,
+        "db_per_hz": -54.43537139892578
+      },
+      {
+        "hz": 9698.73046875,
+        "db_per_hz": -54.501014709472656
+      }
+    ],
+    "independent_peaks": [
+      {
+        "hz": 4785.156249999999,
+        "db_per_hz": -52.21125078783742
+      },
+      {
+        "hz": 10524.749755859373,
+        "db_per_hz": -52.403885933445125
+      },
+      {
+        "hz": 10089.874267578123,
+        "db_per_hz": -52.71359111177016
+      },
+      {
+        "hz": 10462.951660156248,
+        "db_per_hz": -52.815349784381915
+      },
+      {
+        "hz": 10740.661621093748,
+        "db_per_hz": -52.85680073385478
+      },
+      {
+        "hz": 10932.922363281248,
+        "db_per_hz": -52.89063109572859
+      },
+      {
+        "hz": 10797.119140624998,
+        "db_per_hz": -52.973614915632695
+      },
+      {
+        "hz": 11365.509033203123,
+        "db_per_hz": -53.03002413557383
+      }
+    ],
+    "iq_peaks": [
+      {
+        "hz": 4783.63037109375,
+        "db_per_hz": 20.51050678366075
+      },
+      {
+        "hz": 0.0,
+        "db_per_hz": -30.14725575434555
+      },
+      {
+        "hz": -13416.290283203125,
+        "db_per_hz": -32.88272525915644
+      },
+      {
+        "hz": -8632.659912109375,
+        "db_per_hz": -33.052850644666385
+      },
+      {
+        "hz": -14457.70263671875,
+        "db_per_hz": -34.21616682178096
+      },
+      {
+        "hz": 11474.609375,
+        "db_per_hz": -34.43163211440759
+      },
+      {
+        "hz": 6767.27294921875,
+        "db_per_hz": -34.776356221142194
+      },
+      {
+        "hz": -2643.585205078125,
+        "db_per_hz": -34.78851424153431
+      }
+    ],
+    "rx_status": {
+      "running": true,
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 1107,
+        "gets": 1107,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": true,
+      "noise": {
+        "valid": true,
+        "detector_open": true,
+        "rms": 0.06,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 0,
+        "emitted_samples": 11075584,
+        "stream_resets": 24
+      },
+      "sinad": {
+        "enabled": true,
+        "db": null,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": true,
+        "rms_dbfs": -47.305,
+        "peak_dbfs": -35.629,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 1107,
+        "gets": 1107,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 1107,
+        "frames_requested": 531360,
+        "frames_written": 531360,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 1342,
+        "samples": 11070000,
+        "short_reads": 66,
+        "zero_reads": 169,
+        "errors": 0,
+        "last_error": 0
+      },
+      "workers": {
+        "reader": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 70,
+            "requested_cpu": 2,
+            "applied_cpu": 2,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "2",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "demod": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 55,
+            "requested_cpu": 1,
+            "applied_cpu": 1,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "1",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "audio": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 46,
+            "requested_cpu": 0,
+            "applied_cpu": 0,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "0",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "carrier_rx_plus5k",
+    "config": {
+      "name": "carrier_rx_plus5k",
+      "tone_amp": 0,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": 5000,
+      "rate": 1000000
+    },
+    "iq_samples": 4000000,
+    "pcm_frames": 288000,
+    "pcm_rms_dbfs": -47.35422282367155,
+    "carrier_offset_hz": -5233.7646484375,
+    "pcm_peaks": [
+      {
+        "hz": 5230.224609375,
+        "db_per_hz": -74.71817133583818
+      },
+      {
+        "hz": 1644.287109375,
+        "db_per_hz": -80.20526424917422
+      },
+      {
+        "hz": 1697.021484375,
+        "db_per_hz": -80.51362961517428
+      },
+      {
+        "hz": 2227.294921875,
+        "db_per_hz": -80.75083719470445
+      },
+      {
+        "hz": 3149.4140625,
+        "db_per_hz": -80.79136975358678
+      },
+      {
+        "hz": 3006.591796875,
+        "db_per_hz": -81.1243129174681
+      },
+      {
+        "hz": 1779.052734375,
+        "db_per_hz": -81.39637294634736
+      },
+      {
+        "hz": 1532.958984375,
+        "db_per_hz": -81.5126000634777
+      }
+    ],
+    "raw_peaks": [
+      {
+        "hz": 5233.154296875,
+        "db_per_hz": -50.93490982055664
+      },
+      {
+        "hz": 8330.56640625,
+        "db_per_hz": -51.559730529785156
+      },
+      {
+        "hz": 10277.34375,
+        "db_per_hz": -51.927490234375
+      },
+      {
+        "hz": 10158.69140625,
+        "db_per_hz": -52.98027420043945
+      },
+      {
+        "hz": 11124.755859375,
+        "db_per_hz": -53.05107498168945
+      },
+      {
+        "hz": 10377.685546875,
+        "db_per_hz": -53.260555267333984
+      },
+      {
+        "hz": 11961.9140625,
+        "db_per_hz": -53.373016357421875
+      },
+      {
+        "hz": 10877.9296875,
+        "db_per_hz": -53.39291000366211
+      }
+    ],
+    "independent_peaks": [
+      {
+        "hz": 5233.001708984374,
+        "db_per_hz": -49.90314989666781
+      },
+      {
+        "hz": 8330.535888671873,
+        "db_per_hz": -50.86052394548194
+      },
+      {
+        "hz": 11124.420166015623,
+        "db_per_hz": -50.87410557338798
+      },
+      {
+        "hz": 10276.794433593748,
+        "db_per_hz": -51.01890998391657
+      },
+      {
+        "hz": 10169.982910156248,
+        "db_per_hz": -52.12404129277079
+      },
+      {
+        "hz": 11961.364746093748,
+        "db_per_hz": -52.22700163491783
+      },
+      {
+        "hz": 10975.646972656248,
+        "db_per_hz": -52.27631363974532
+      },
+      {
+        "hz": 10736.083984374998,
+        "db_per_hz": -52.28331947558399
+      }
+    ],
+    "iq_peaks": [
+      {
+        "hz": -5233.7646484375,
+        "db_per_hz": 21.168019241667793
+      },
+      {
+        "hz": 0.0,
+        "db_per_hz": -30.28345552938832
+      },
+      {
+        "hz": 13832.09228515625,
+        "db_per_hz": -31.369153144388125
+      },
+      {
+        "hz": 10452.2705078125,
+        "db_per_hz": -31.3983949661238
+      },
+      {
+        "hz": 11428.8330078125,
+        "db_per_hz": -33.081213486977774
+      },
+      {
+        "hz": -11192.32177734375,
+        "db_per_hz": -33.61279281833303
+      },
+      {
+        "hz": -8407.5927734375,
+        "db_per_hz": -34.4282321908633
+      },
+      {
+        "hz": -9994.5068359375,
+        "db_per_hz": -34.61828248768447
+      }
+    ],
+    "rx_status": {
+      "running": true,
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 1107,
+        "gets": 1107,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": true,
+      "noise": {
+        "valid": true,
+        "detector_open": true,
+        "rms": 0.067,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 1,
+        "emitted_samples": 11075583,
+        "stream_resets": 24
+      },
+      "sinad": {
+        "enabled": true,
+        "db": null,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": true,
+        "rms_dbfs": -47.316,
+        "peak_dbfs": -35.956,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 1107,
+        "gets": 1107,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 2,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 1107,
+        "frames_requested": 531360,
+        "frames_written": 531360,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 1340,
+        "samples": 11070000,
+        "short_reads": 66,
+        "zero_reads": 167,
+        "errors": 0,
+        "last_error": 0
+      },
+      "workers": {
+        "reader": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 70,
+            "requested_cpu": 2,
+            "applied_cpu": 2,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "2",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "demod": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 55,
+            "requested_cpu": 1,
+            "applied_cpu": 1,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "1",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "audio": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 46,
+            "requested_cpu": 0,
+            "applied_cpu": 0,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "0",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "ctcss_only_rx_off",
+    "config": {
+      "name": "ctcss_only_rx_off",
+      "tone_amp": 0,
+      "tx_ctcss": 88.5,
+      "rx_ctcss": 0,
+      "offset": 0,
+      "rate": 1000000
+    },
+    "iq_samples": 4000000,
+    "pcm_frames": 288000,
+    "pcm_rms_dbfs": -36.70086345097035,
+    "carrier_offset_hz": -95.367431640625,
+    "pcm_peaks": [
+      {
+        "hz": 442.3828125,
+        "db_per_hz": -72.28852065587469
+      },
+      {
+        "hz": 265.13671875,
+        "db_per_hz": -72.33280800113967
+      },
+      {
+        "hz": 177.24609375,
+        "db_per_hz": -76.79341687911301
+      },
+      {
+        "hz": 3267.333984375,
+        "db_per_hz": -78.59673066389429
+      },
+      {
+        "hz": 4891.845703125,
+        "db_per_hz": -78.63422572589917
+      },
+      {
+        "hz": 4402.587890625,
+        "db_per_hz": -78.67917031305049
+      },
+      {
+        "hz": 2356.93359375,
+        "db_per_hz": -78.75550511977403
+      },
+      {
+        "hz": 5573.73046875,
+        "db_per_hz": -78.96503204537818
+      }
+    ],
+    "raw_peaks": [
+      {
+        "hz": 6448.974609375,
+        "db_per_hz": -52.083770751953125
+      },
+      {
+        "hz": 5887.939453125,
+        "db_per_hz": -53.34562301635742
+      },
+      {
+        "hz": 5401.611328125,
+        "db_per_hz": -53.77525329589844
+      },
+      {
+        "hz": 6350.830078125,
+        "db_per_hz": -54.237518310546875
+      },
+      {
+        "hz": 6188.232421875,
+        "db_per_hz": -54.653282165527344
+      },
+      {
+        "hz": 6574.951171875,
+        "db_per_hz": -54.66790771484375
+      },
+      {
+        "hz": 5630.859375,
+        "db_per_hz": -54.71378707885742
+      },
+      {
+        "hz": 6541.9921875,
+        "db_per_hz": -54.86598205566406
+      }
+    ],
+    "independent_peaks": [
+      {
+        "hz": 6449.127197265624,
+        "db_per_hz": -52.15210281846599
+      },
+      {
+        "hz": 5887.603759765624,
+        "db_per_hz": -53.0223840907744
+      },
+      {
+        "hz": 6350.708007812499,
+        "db_per_hz": -53.38075588250335
+      },
+      {
+        "hz": 5401.611328124999,
+        "db_per_hz": -53.530452792207406
+      },
+      {
+        "hz": 5630.493164062499,
+        "db_per_hz": -53.63372642032793
+      },
+      {
+        "hz": 5136.871337890624,
+        "db_per_hz": -53.67045305391006
+      },
+      {
+        "hz": 6223.297119140624,
+        "db_per_hz": -53.91370355905484
+      },
+      {
+        "hz": 6544.494628906249,
+        "db_per_hz": -54.63384197237784
+      }
+    ],
+    "iq_peaks": [
+      {
+        "hz": -95.367431640625,
+        "db_per_hz": 16.266955847246255
+      },
+      {
+        "hz": -274.658203125,
+        "db_per_hz": 14.9811155027555
+      },
+      {
+        "hz": -7.62939453125,
+        "db_per_hz": 13.337587027258522
+      },
+      {
+        "hz": -362.396240234375,
+        "db_per_hz": 12.910494757337446
+      },
+      {
+        "hz": -450.13427734375,
+        "db_per_hz": 6.307327319938882
+      },
+      {
+        "hz": 80.108642578125,
+        "db_per_hz": 5.89485743349201
+      },
+      {
+        "hz": -183.10546875,
+        "db_per_hz": -0.1071611027903813
+      },
+      {
+        "hz": -537.872314453125,
+        "db_per_hz": -4.485467812528137
+      }
+    ],
+    "rx_status": {
+      "running": true,
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 1146,
+        "gets": 1146,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": true,
+      "noise": {
+        "valid": true,
+        "detector_open": true,
+        "rms": 0.027,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 2,
+        "emitted_samples": 11468799,
+        "stream_resets": 21
+      },
+      "sinad": {
+        "enabled": true,
+        "db": null,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": true,
+        "rms_dbfs": -36.647,
+        "peak_dbfs": -28.893,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 1146,
+        "gets": 1146,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 1146,
+        "frames_requested": 550080,
+        "frames_written": 550080,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 1387,
+        "samples": 11468799,
+        "short_reads": 69,
+        "zero_reads": 172,
+        "errors": 0,
+        "last_error": 0
+      },
+      "workers": {
+        "reader": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 70,
+            "requested_cpu": 2,
+            "applied_cpu": 2,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "2",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "demod": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 55,
+            "requested_cpu": 1,
+            "applied_cpu": 1,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "1",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "audio": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 46,
+            "requested_cpu": 0,
+            "applied_cpu": 0,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "0",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "ctcss_only_rx_on",
+    "config": {
+      "name": "ctcss_only_rx_on",
+      "tone_amp": 0,
+      "tx_ctcss": 88.5,
+      "rx_ctcss": 88.5,
+      "offset": 0,
+      "rate": 1000000
+    },
+    "iq_samples": 4000000,
+    "pcm_frames": 288000,
+    "pcm_rms_dbfs": -46.12860267234783,
+    "carrier_offset_hz": -270.843505859375,
+    "pcm_peaks": [
+      {
+        "hz": 442.3828125,
+        "db_per_hz": -71.8788391842664
+      },
+      {
+        "hz": 2597.900390625,
+        "db_per_hz": -77.64021988267727
+      },
+      {
+        "hz": 265.13671875,
+        "db_per_hz": -77.84906580893521
+      },
+      {
+        "hz": 3697.998046875,
+        "db_per_hz": -78.01169069408576
+      },
+      {
+        "hz": 2361.328125,
+        "db_per_hz": -78.81716269511864
+      },
+      {
+        "hz": 3314.94140625,
+        "db_per_hz": -79.15436362101386
+      },
+      {
+        "hz": 3139.892578125,
+        "db_per_hz": -79.1670158938445
+      },
+      {
+        "hz": 2885.7421875,
+        "db_per_hz": -79.19183564463839
+      }
+    ],
+    "raw_peaks": [
+      {
+        "hz": 5419.189453125,
+        "db_per_hz": -53.54135513305664
+      },
+      {
+        "hz": 6169.921875,
+        "db_per_hz": -53.8774299621582
+      },
+      {
+        "hz": 6336.181640625,
+        "db_per_hz": -54.11846160888672
+      },
+      {
+        "hz": 6473.14453125,
+        "db_per_hz": -54.21861267089844
+      },
+      {
+        "hz": 6552.24609375,
+        "db_per_hz": -54.4025993347168
+      },
+      {
+        "hz": 6033.69140625,
+        "db_per_hz": -54.60136795043945
+      },
+      {
+        "hz": 5365.72265625,
+        "db_per_hz": -54.61779022216797
+      },
+      {
+        "hz": 6671.630859375,
+        "db_per_hz": -54.74017333984375
+      }
+    ],
+    "independent_peaks": [
+      {
+        "hz": 5419.158935546874,
+        "db_per_hz": -53.18849980758037
+      },
+      {
+        "hz": 6336.212158203124,
+        "db_per_hz": -53.330030791757885
+      },
+      {
+        "hz": 6473.541259765624,
+        "db_per_hz": -53.57254158849101
+      },
+      {
+        "hz": 6169.891357421874,
+        "db_per_hz": -53.731438244383476
+      },
+      {
+        "hz": 6247.711181640624,
+        "db_per_hz": -53.75338217915146
+      },
+      {
+        "hz": 6552.124023437499,
+        "db_per_hz": -54.14230643031847
+      },
+      {
+        "hz": 5365.753173828124,
+        "db_per_hz": -54.24177623774122
+      },
+      {
+        "hz": 6033.325195312499,
+        "db_per_hz": -54.345324569665905
+      }
+    ],
+    "iq_peaks": [
+      {
+        "hz": -270.843505859375,
+        "db_per_hz": 15.94581987671276
+      },
+      {
+        "hz": -91.552734375,
+        "db_per_hz": 15.69803218095059
+      },
+      {
+        "hz": -358.58154296875,
+        "db_per_hz": 13.348658380220016
+      },
+      {
+        "hz": -3.814697265625,
+        "db_per_hz": 13.262749983582884
+      },
+      {
+        "hz": 83.92333984375,
+        "db_per_hz": 6.344057130562675
+      },
+      {
+        "hz": -446.319580078125,
+        "db_per_hz": 6.281119155424111
+      },
+      {
+        "hz": -183.10546875,
+        "db_per_hz": -0.7525465392124635
+      },
+      {
+        "hz": 171.661376953125,
+        "db_per_hz": -4.847292362678041
+      }
+    ],
+    "rx_status": {
+      "running": true,
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 1146,
+        "gets": 1146,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": true,
+      "noise": {
+        "valid": true,
+        "detector_open": true,
+        "rms": 0.028,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 2,
+        "emitted_samples": 11468799,
+        "stream_resets": 21
+      },
+      "sinad": {
+        "enabled": true,
+        "db": null,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": true,
+        "rms_dbfs": -46.313,
+        "peak_dbfs": -34.892,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 1146,
+        "gets": 1146,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 1,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 1146,
+        "frames_requested": 550080,
+        "frames_written": 550080,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 1383,
+        "samples": 11468799,
+        "short_reads": 69,
+        "zero_reads": 168,
+        "errors": 0,
+        "last_error": 0
+      },
+      "workers": {
+        "reader": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 70,
+            "requested_cpu": 2,
+            "applied_cpu": 2,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "2",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "demod": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 55,
+            "requested_cpu": 1,
+            "applied_cpu": 1,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "1",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "audio": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 46,
+            "requested_cpu": 0,
+            "applied_cpu": 0,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "0",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "no_tx",
+    "config": {
+      "name": "no_tx",
+      "tone_amp": 0,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": 0,
+      "rate": 1000000,
+      "no_tx": true
+    },
+    "iq_samples": 4000000,
+    "pcm_frames": 288000,
+    "pcm_rms_dbfs": -10.624531962330494,
+    "carrier_offset_hz": -37487.030029296875,
+    "pcm_peaks": [
+      {
+        "hz": 338.37890625,
+        "db_per_hz": -39.43327949474929
+      },
+      {
+        "hz": 250.48828125,
+        "db_per_hz": -39.707177014892906
+      },
+      {
+        "hz": 837.158203125,
+        "db_per_hz": -39.917523980042404
+      },
+      {
+        "hz": 802.734375,
+        "db_per_hz": -40.01849869585588
+      },
+      {
+        "hz": 284.912109375,
+        "db_per_hz": -40.10949135067415
+      },
+      {
+        "hz": 587.40234375,
+        "db_per_hz": -40.40733932213348
+      },
+      {
+        "hz": 101.806640625,
+        "db_per_hz": -40.452802023008765
+      },
+      {
+        "hz": 202.880859375,
+        "db_per_hz": -40.645676248386266
+      }
+    ],
+    "raw_peaks": [
+      {
+        "hz": 837.890625,
+        "db_per_hz": -24.723386764526367
+      },
+      {
+        "hz": 1177.001953125,
+        "db_per_hz": -25.60208511352539
+      },
+      {
+        "hz": 239.501953125,
+        "db_per_hz": -25.69911766052246
+      },
+      {
+        "hz": 320.80078125,
+        "db_per_hz": -26.396169662475586
+      },
+      {
+        "hz": 1390.13671875,
+        "db_per_hz": -26.49639892578125
+      },
+      {
+        "hz": 476.07421875,
+        "db_per_hz": -26.615266799926758
+      },
+      {
+        "hz": 1939.453125,
+        "db_per_hz": -26.64412498474121
+      },
+      {
+        "hz": 2048.583984375,
+        "db_per_hz": -26.686323165893555
+      }
+    ],
+    "independent_peaks": [
+      {
+        "hz": 476.07421874999994,
+        "db_per_hz": -25.982022684082516
+      },
+      {
+        "hz": 1154.3273925781248,
+        "db_per_hz": -26.109645393867197
+      },
+      {
+        "hz": 968.9331054687499,
+        "db_per_hz": -26.234272651214724
+      },
+      {
+        "hz": 1316.0705566406248,
+        "db_per_hz": -26.353386094830928
+      },
+      {
+        "hz": 177.76489257812497,
+        "db_per_hz": -26.370931596214998
+      },
+      {
+        "hz": 1285.5529785156248,
+        "db_per_hz": -26.41338561908818
+      },
+      {
+        "hz": 837.7075195312499,
+        "db_per_hz": -26.555166053546277
+      },
+      {
+        "hz": 111.38916015624999,
+        "db_per_hz": -26.717661578739197
+      }
+    ],
+    "iq_peaks": [
+      {
+        "hz": 0.0,
+        "db_per_hz": -23.218761014397394
+      },
+      {
+        "hz": -6736.75537109375,
+        "db_per_hz": -26.922457630116526
+      },
+      {
+        "hz": 4920.95947265625,
+        "db_per_hz": -34.2023849132191
+      },
+      {
+        "hz": -3658.294677734375,
+        "db_per_hz": -34.405825087131305
+      },
+      {
+        "hz": 8701.324462890625,
+        "db_per_hz": -34.725930934016155
+      },
+      {
+        "hz": 1476.287841796875,
+        "db_per_hz": -35.114625622026225
+      },
+      {
+        "hz": 617.98095703125,
+        "db_per_hz": -35.262031093315706
+      },
+      {
+        "hz": 11196.136474609375,
+        "db_per_hz": -35.270796466277126
+      }
+    ],
+    "rx_status": {
+      "running": true,
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 1068,
+        "gets": 1068,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 4
+      },
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": true,
+      "noise": {
+        "valid": true,
+        "detector_open": false,
+        "rms": 1.242,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 1,
+        "emitted_samples": 10682367,
+        "stream_resets": 21
+      },
+      "sinad": {
+        "enabled": true,
+        "db": null,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": true,
+        "rms_dbfs": -10.47,
+        "peak_dbfs": -1.26,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 1068,
+        "gets": 1068,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 2,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 1068,
+        "frames_requested": 512640,
+        "frames_written": 512640,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 1302,
+        "samples": 10680000,
+        "short_reads": 65,
+        "zero_reads": 169,
+        "errors": 0,
+        "last_error": 0
+      },
+      "workers": {
+        "reader": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 70,
+            "requested_cpu": 2,
+            "applied_cpu": 2,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "2",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "demod": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 55,
+            "requested_cpu": 1,
+            "applied_cpu": 1,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "1",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "audio": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 46,
+            "requested_cpu": 0,
+            "applied_cpu": 0,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "0",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "tone_1k",
+    "config": {
+      "name": "tone_1k",
+      "tone_amp": 0.4,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": 0,
+      "rate": 1000000
+    },
+    "iq_samples": 4000000,
+    "pcm_frames": 288000,
+    "pcm_rms_dbfs": -24.236133951364316,
+    "carrier_offset_hz": -179.290771484375,
+    "pcm_peaks": [
+      {
+        "hz": 999.755859375,
+        "db_per_hz": -25.35982136115218
+      },
+      {
+        "hz": 1998.779296875,
+        "db_per_hz": -60.77275925375211
+      },
+      {
+        "hz": 2998.53515625,
+        "db_per_hz": -65.41648565687498
+      },
+      {
+        "hz": 3431.396484375,
+        "db_per_hz": -77.75814635373277
+      },
+      {
+        "hz": 4110.3515625,
+        "db_per_hz": -78.05403134268991
+      },
+      {
+        "hz": 2799.31640625,
+        "db_per_hz": -78.64626096812688
+      },
+      {
+        "hz": 3644.53125,
+        "db_per_hz": -79.00915742490737
+      },
+      {
+        "hz": 2049.31640625,
+        "db_per_hz": -79.02705385823998
+      }
+    ],
+    "raw_peaks": [
+      {
+        "hz": 999.755859375,
+        "db_per_hz": -12.329678535461426
+      },
+      {
+        "hz": 2000.244140625,
+        "db_per_hz": -45.857547760009766
+      },
+      {
+        "hz": 3000.0,
+        "db_per_hz": -48.12693786621094
+      },
+      {
+        "hz": 5581.0546875,
+        "db_per_hz": -54.6827507019043
+      },
+      {
+        "hz": 6442.3828125,
+        "db_per_hz": -54.76701736450195
+      },
+      {
+        "hz": 6287.841796875,
+        "db_per_hz": -54.9368896484375
+      },
+      {
+        "hz": 5989.013671875,
+        "db_per_hz": -55.04692459106445
+      },
+      {
+        "hz": 5611.083984375,
+        "db_per_hz": -55.107826232910156
+      }
+    ],
+    "independent_peaks": [
+      {
+        "hz": 1000.2136230468749,
+        "db_per_hz": -12.307203268695243
+      },
+      {
+        "hz": 1999.6643066406248,
+        "db_per_hz": -46.49957136719923
+      },
+      {
+        "hz": 2999.8779296874995,
+        "db_per_hz": -47.96811554338879
+      },
+      {
+        "hz": 5580.902099609374,
+        "db_per_hz": -54.32638432601693
+      },
+      {
+        "hz": 6238.555908203124,
+        "db_per_hz": -55.15585414364484
+      },
+      {
+        "hz": 5696.868896484374,
+        "db_per_hz": -55.23578042339483
+      },
+      {
+        "hz": 6287.384033203124,
+        "db_per_hz": -55.258295859968584
+      },
+      {
+        "hz": 6336.975097656249,
+        "db_per_hz": -55.31296341767205
+      }
+    ],
+    "iq_peaks": [
+      {
+        "hz": -179.290771484375,
+        "db_per_hz": 18.711566839785
+      },
+      {
+        "hz": 820.159912109375,
+        "db_per_hz": 13.823886212285839
+      },
+      {
+        "hz": -1178.741455078125,
+        "db_per_hz": 12.772034836802712
+      },
+      {
+        "hz": 1819.610595703125,
+        "db_per_hz": 2.6531004001279923
+      },
+      {
+        "hz": -2182.0068359375,
+        "db_per_hz": 1.8123841114979802
+      },
+      {
+        "hz": 2819.061279296875,
+        "db_per_hz": -13.149226556527038
+      },
+      {
+        "hz": -3181.45751953125,
+        "db_per_hz": -13.37753514557759
+      },
+      {
+        "hz": -8148.193359375,
+        "db_per_hz": -29.27604555722486
+      }
+    ],
+    "rx_status": {
+      "running": true,
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 1087,
+        "gets": 1087,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": true,
+      "noise": {
+        "valid": true,
+        "detector_open": true,
+        "rms": 0.028,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 1,
+        "emitted_samples": 10878975,
+        "stream_resets": 21
+      },
+      "sinad": {
+        "enabled": true,
+        "db": 20.722,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": true,
+        "rms_dbfs": -24.227,
+        "peak_dbfs": -19.907,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 1087,
+        "gets": 1087,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 2,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 1087,
+        "frames_requested": 521760,
+        "frames_written": 521760,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 1320,
+        "samples": 10870000,
+        "short_reads": 65,
+        "zero_reads": 168,
+        "errors": 0,
+        "last_error": 0
+      },
+      "workers": {
+        "reader": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 70,
+            "requested_cpu": 2,
+            "applied_cpu": 2,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "2",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "demod": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 55,
+            "requested_cpu": 1,
+            "applied_cpu": 1,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "1",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "audio": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 46,
+            "requested_cpu": 0,
+            "applied_cpu": 0,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "0",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "tone_1k_ctcss",
+    "config": {
+      "name": "tone_1k_ctcss",
+      "tone_amp": 0.4,
+      "tx_ctcss": 88.5,
+      "rx_ctcss": 88.5,
+      "offset": 0,
+      "rate": 1000000
+    },
+    "iq_samples": 4000000,
+    "pcm_frames": 288000,
+    "pcm_rms_dbfs": -24.016947577100744,
+    "carrier_offset_hz": -267.02880859375,
+    "pcm_peaks": [
+      {
+        "hz": 999.755859375,
+        "db_per_hz": -25.144589932551625
+      },
+      {
+        "hz": 1353.515625,
+        "db_per_hz": -63.8533515934338
+      },
+      {
+        "hz": 2264.6484375,
+        "db_per_hz": -64.78282421802207
+      },
+      {
+        "hz": 1733.642578125,
+        "db_per_hz": -65.53097711063403
+      },
+      {
+        "hz": 2087.40234375,
+        "db_per_hz": -66.59319491218832
+      },
+      {
+        "hz": 911.1328125,
+        "db_per_hz": -66.91864670150557
+      },
+      {
+        "hz": 1087.646484375,
+        "db_per_hz": -66.99399110850456
+      },
+      {
+        "hz": 1910.888671875,
+        "db_per_hz": -67.63078681498857
+      }
+    ],
+    "raw_peaks": [
+      {
+        "hz": 999.755859375,
+        "db_per_hz": -12.113386154174805
+      },
+      {
+        "hz": 2265.380859375,
+        "db_per_hz": -48.669437408447266
+      },
+      {
+        "hz": 1354.248046875,
+        "db_per_hz": -50.69267272949219
+      },
+      {
+        "hz": 1734.375,
+        "db_per_hz": -51.977882385253906
+      },
+      {
+        "hz": 1911.62109375,
+        "db_per_hz": -52.109466552734375
+      },
+      {
+        "hz": 2088.8671875,
+        "db_per_hz": -52.685855865478516
+      },
+      {
+        "hz": 1088.37890625,
+        "db_per_hz": -53.316898345947266
+      },
+      {
+        "hz": 2442.626953125,
+        "db_per_hz": -54.076568603515625
+      }
+    ],
+    "independent_peaks": [
+      {
+        "hz": 1000.2136230468749,
+        "db_per_hz": -12.093383229739768
+      },
+      {
+        "hz": 2265.1672363281245,
+        "db_per_hz": -49.627909148433204
+      },
+      {
+        "hz": 1354.2175292968748,
+        "db_per_hz": -50.69091302983366
+      },
+      {
+        "hz": 2088.1652832031245,
+        "db_per_hz": -52.62015481383662
+      },
+      {
+        "hz": 1734.1613769531248,
+        "db_per_hz": -53.16472210425722
+      },
+      {
+        "hz": 1911.1633300781248,
+        "db_per_hz": -53.24973225880778
+      },
+      {
+        "hz": 1088.7145996093748,
+        "db_per_hz": -53.715821746503494
+      },
+      {
+        "hz": 911.7126464843749,
+        "db_per_hz": -54.49403245284353
+      }
+    ],
+    "iq_peaks": [
+      {
+        "hz": -267.02880859375,
+        "db_per_hz": 13.522508932644026
+      },
+      {
+        "hz": -87.738037109375,
+        "db_per_hz": 13.51537673074651
+      },
+      {
+        "hz": -354.766845703125,
+        "db_per_hz": 11.010979267679401
+      },
+      {
+        "hz": 0.0,
+        "db_per_hz": 10.976434224469472
+      },
+      {
+        "hz": -1266.4794921875,
+        "db_per_hz": 8.674790647080759
+      },
+      {
+        "hz": 911.712646484375,
+        "db_per_hz": 8.666023278667135
+      },
+      {
+        "hz": 732.421875,
+        "db_per_hz": 7.700176453362295
+      },
+      {
+        "hz": -1087.188720703125,
+        "db_per_hz": 7.688678826529996
+      }
+    ],
+    "rx_status": {
+      "running": true,
+      "queue": {
+        "capacity": 64,
+        "depth": 0,
+        "puts": 1146,
+        "gets": 1146,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 3
+      },
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": true,
+      "noise": {
+        "valid": true,
+        "detector_open": true,
+        "rms": 0.029,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 1,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 3,
+        "emitted_samples": 11468799,
+        "stream_resets": 21
+      },
+      "sinad": {
+        "enabled": true,
+        "db": 20.378,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": true,
+        "rms_dbfs": -24.013,
+        "peak_dbfs": -19.565,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": {
+        "capacity": 24,
+        "depth": 0,
+        "puts": 1146,
+        "gets": 1146,
+        "drops": 0,
+        "timeouts_put": 0,
+        "timeouts_get": 0,
+        "min_depth": 0,
+        "max_depth": 2,
+        "shutdown_puts": 0,
+        "shutdown_gets": 0
+      },
+      "playback": {
+        "valid": true,
+        "write_calls": 1146,
+        "frames_requested": 550080,
+        "frames_written": 550080,
+        "partial_writes": 0,
+        "would_block": 0,
+        "zero_writes": 0,
+        "underruns": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "recovery_failures": 0,
+        "write_errors": 0,
+        "last_error": 0
+      },
+      "reader": {
+        "calls": 1388,
+        "samples": 11468799,
+        "short_reads": 69,
+        "zero_reads": 173,
+        "errors": 0,
+        "last_error": 0
+      },
+      "workers": {
+        "reader": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 70,
+            "requested_cpu": 2,
+            "applied_cpu": 2,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "2",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "demod": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 55,
+            "requested_cpu": 1,
+            "applied_cpu": 1,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "1",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        },
+        "audio": {
+          "created": true,
+          "alive": true,
+          "last_error": 0,
+          "scheduling": {
+            "valid": true,
+            "requested_priority": 46,
+            "requested_cpu": 0,
+            "applied_cpu": 0,
+            "policy": 0,
+            "policy_name": "SCHED_OTHER",
+            "priority": 0,
+            "affinity": "0",
+            "affinity_truncated": false,
+            "rt_error": 1,
+            "fallback_error": 0,
+            "affinity_error": 0,
+            "mlock_attempted": true,
+            "mlock_error": 0,
+            "query_error": 0
+          }
+        }
+      }
+    }
+  }
+]

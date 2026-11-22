@@ -1,0 +1,22 @@
+[
+  {
+    "channel": "HiF (previous run)",
+    "carrier_offset_hz": 49.591064453125,
+    "audio_300_3000_dbfs": -47.02661306706489,
+    "audio_1200_2000_dbfs": -47.42560674204895,
+    "previous_whistle_band_dbfs": -47.63852907444391,
+    "strongest_audio_300_3000_hz": 1534.423828125,
+    "strongest_audio_density_dbfs_per_hz": -52.2659337441616,
+    "iq_1000_2200_dbc": -26.350200813195926
+  },
+  {
+    "channel": "S1G (current run)",
+    "carrier_offset_hz": -190.73486328125,
+    "audio_300_3000_dbfs": -50.99713276001559,
+    "audio_1200_2000_dbfs": -56.04927738624997,
+    "previous_whistle_band_dbfs": -64.44515283319318,
+    "strongest_audio_300_3000_hz": 2961.181640625,
+    "strongest_audio_density_dbfs_per_hz": -78.66589240192839,
+    "iq_1000_2200_dbc": -36.276769739922976
+  }
+]

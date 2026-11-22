@@ -1,0 +1,9 @@
+{
+  "commit": "1514ab062636696b701eb2ebd2b407e31370729c",
+  "tx": "pi0a",
+  "rx": "pi0b",
+  "channel": "RF24",
+  "rf_hz": 2450000000,
+  "timing_workaround": false,
+  "expected_frontend_mode": 1
+}

@@ -131,3 +131,11 @@ receiver-relative IQ spur and audible whistle. The user reported clean TX audio
 on an independent RSP2pro listening check. This symptom therefore provides no
 evidence of a fabrication fault unique to the reconstructed receiver; the exact
 source remains unresolved and the oscillator mismatch remains a separate defect.
+
+## S1G follow-up
+
+The [S1G experiment](../20261122-pi0-whistle-s1g/README.md) repeated the original
+pi0a-TX/pi0b-RX sequence through the low-band ports. The strong HiF IQ spur and
+approximately 1.5 kHz whistle were not reproduced. Smaller residuals and a
+higher noise floor remained; the result narrows the investigation without
+identifying a component or providing a hardware fix.

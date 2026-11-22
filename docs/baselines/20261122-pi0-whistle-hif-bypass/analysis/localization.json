@@ -1,0 +1,29 @@
+[
+  {
+    "case": "carrier",
+    "carrier_offset_hz": 816.34521484375,
+    "tracked_iq_line_hz": 5947.113037109375,
+    "line_band_dbc": -36.10859097952555,
+    "carrier_to_line_hz": 5130.767822265625,
+    "strongest_raw_audio_hz": 5126.953125,
+    "strongest_pcm_audio_hz": 5124.755859375
+  },
+  {
+    "case": "carrier_rx_plus5k",
+    "carrier_offset_hz": 6355.28564453125,
+    "tracked_iq_line_hz": 11569.976806640625,
+    "line_band_dbc": -35.05752413543289,
+    "carrier_to_line_hz": 5214.691162109375,
+    "strongest_raw_audio_hz": 6635.7421875,
+    "strongest_pcm_audio_hz": 6632.8125
+  },
+  {
+    "case": "carrier_rx_minus5k",
+    "carrier_offset_hz": -3566.741943359375,
+    "tracked_iq_line_hz": 1670.83740234375,
+    "line_band_dbc": -35.32039163701409,
+    "carrier_to_line_hz": 5237.579345703125,
+    "strongest_raw_audio_hz": 5239.013671875,
+    "strongest_pcm_audio_hz": 5226.5625
+  }
+]

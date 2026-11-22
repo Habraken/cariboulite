@@ -1,0 +1,1336 @@
+[
+  {
+    "log": "carrier/rx/backend.log",
+    "bypass_selections": 4,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  },
+  {
+    "log": "carrier_2m/rx/backend.log",
+    "bypass_selections": 4,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  },
+  {
+    "log": "carrier_rx_minus5k/rx/backend.log",
+    "bypass_selections": 5,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  },
+  {
+    "log": "carrier_rx_plus5k/rx/backend.log",
+    "bypass_selections": 5,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  },
+  {
+    "log": "ctcss_only_rx_off/rx/backend.log",
+    "bypass_selections": 4,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  },
+  {
+    "log": "ctcss_only_rx_on/rx/backend.log",
+    "bypass_selections": 4,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  },
+  {
+    "log": "no_tx/rx/backend.log",
+    "bypass_selections": 4,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  },
+  {
+    "log": "tone_1k/rx/backend.log",
+    "bypass_selections": 4,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  },
+  {
+    "log": "tone_1k_ctcss/rx/backend.log",
+    "bypass_selections": 4,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  },
+  {
+    "log": "tx-session/tx/backend.log",
+    "bypass_selections": 25,
+    "events": [
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 1,
+        "set_rc": 0,
+        "actual": 1,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      },
+      {
+        "requested": 0,
+        "set_rc": 0,
+        "actual": 0,
+        "debug": 0,
+        "read_rc": 0
+      }
+    ]
+  }
+]

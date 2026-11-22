@@ -18,6 +18,8 @@ retain their original revision and test conditions. See the
 - [CTCSS TX tone and RX tone squelch](ctcss.md)
 - [CDCSS TX encoding and RX code squelch](cdcss.md)
 - [Receiver whistle IQ/audio investigation](baselines/20261122-pi0-whistle/README.md) and [reversed-link comparison](baselines/20261122-pi0-whistle-reversed/README.md)
+- [S1G channel follow-up to the whistle investigation](baselines/20261122-pi0-whistle-s1g/README.md)
+- [HiF mixer-bypass whistle test at 2450 MHz](baselines/20261122-pi0-whistle-hif-bypass/README.md)
 - [Raw SMI RX capture and framing analysis](smi-raw-capture.md)
 - [Board #4 raw SMI framing comparison](board4-smi-framing-2026-11-17.md)
 - [Board #4 LED1 pin, route and circuit audit](board4-led1-route-audit-2026-11-17.md)
