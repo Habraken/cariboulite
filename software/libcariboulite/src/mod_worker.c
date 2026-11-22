@@ -244,6 +244,10 @@ void* nbfm_mod_thread(void* arg)
         // ============================================================
         // 2) Modulate 10 ms of audio at the selected RF rate
         // ============================================================
+        /* Condition microphone audio only. Calibration tones, Quindar cues
+         * and finite stop padding retain their original levels and timing. */
+        if (inj_left <= 0 && !hold_silence && !ctrl->tx->tone_mode && ctrl->tx->mic)
+            tx_dynamics_process(&ctrl->tx->dynamics, ctrl->tx->a48k, 480);
         rf10_frame_t frm;
         int error = tx_generate_frame(ctrl->tx, &frm);
         if (error) {

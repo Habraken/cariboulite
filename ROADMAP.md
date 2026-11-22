@@ -168,6 +168,58 @@ do not close that demonstration milestone.
   speech and limit loud peaks before modulation. Verify recovered speech levels
   and each mode's modulation limits over the attenuated bench link.
 
+### Predictable listening levels and fewer operator commands — 2026-11-22
+
+The radio currently has a terminal interface rather than a physical control
+panel. Typing commands and repeatedly adjusting settings takes operator time.
+The agreed goal is **select frequency and mode, then listen**, with predictable
+speech loudness and minimal intervention while retaining advanced controls.
+This is an operational goal for milestone C, not a completed feature.
+
+- [ ] Keep one operator-selected `rx volume` setting across mode, frequency and
+  station changes. Make normal operation possible without iterative per-mode
+  gain adjustments; retain RF gain, normalization and trim overrides for unusual
+  conditions and diagnosis.
+- [ ] Separate mode calibration from automatic leveling. Calibrate comparable
+  modulation to comparable playback levels, then add bounded received-speech
+  leveling for differences between stations and modulation levels. Keep RX
+  leveling separate from the TX microphone compressor/limiter.
+- [ ] Make leveling aware of squelch and signal presence. Do not chase or boost
+  empty-channel noise during pauses or loss of carrier. Define gain limits,
+  attack/release, startup and reacquisition behavior, and readable status.
+- [ ] Treat the existing `matched` profile as a dated bench reference, not a
+  universal listening profile. Account for AM carrier-normalization gain limits,
+  mode-specific receive behavior, and the difference between antenna reception
+  and the nominal 90 dB attenuated coax fixture.
+- [ ] Validate perceived speech loudness, intelligibility, clipping, noise
+  behavior and required operator interventions across NBFM, AM, USB and LSB.
+  Include quiet/loud talkers, weak/strong stations, empty channels, mode changes
+  and signal loss/recovery. Distinguish digital PCM levels from ALSA/headset
+  playback levels; compare Pi Zero 2 W and Pi 4 with matched software/settings.
+  Agree and record acceptable loudness variation and intervention counts before
+  declaring operational acceptance; equal meter readings alone are insufficient.
+
+Jan's current user-selected Jabra listening override is:
+
+```sh
+./build/radio-backend/cariboulite_radio_backend \
+  --rx-playback plughw:CARD=USB,DEV=0 \
+  --tx-microphone plughw:CARD=USB,DEV=0 \
+  --tx-source mic --rx-sinad \
+  --rx-gain-profile matched \
+  --rx-mode-gain am=-7 \
+  --rx-mode-gain usb=0 \
+  --rx-mode-gain lsb=0
+```
+
+The effective mode trims are NBFM −10 dB, AM −7 dB, USB/LSB 0 dB and WBFM
+0 dB. Overrides follow `matched` so they replace its corresponding values.
+This records a practical listening preference for the current setup, not a
+new measured calibration or acceptance of automatic leveling. See
+[RX audio levels and current listening override](docs/rx-audio-levels.md#current-listening-override--2026-11-22)
+for the distinction from RF gain and live volume. These launch settings do not
+start TX.
+
 ## Existing foundation
 
 - Hardware modules already live under `software/libcariboulite/src/`:
@@ -309,6 +361,9 @@ physical acceptance of this addition is pending.
     software checks and recorded RF24 listening/measurement acceptance.
   - [x] Implement backend calibrated playback, live volume and level metering
     across NBFM, mono WBFM and AM; preserve legacy standalone PCM scaling.
+  - [ ] Deliver predictable listening levels with minimal operator commands;
+    acceptance and Jan's current override are recorded in the
+    [2026-11-22 operational goals](#predictable-listening-levels-and-fewer-operator-commands--2026-11-22).
   - [x] Qualify the opt-in AM DAC-shaping option on the recorded fixture;
     default remains off and no universal RF-linearity claim is made.
   - [ ] Complete remaining AM route/operational qualification; add broadcast AM

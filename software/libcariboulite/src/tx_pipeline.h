@@ -8,6 +8,7 @@
 #include "alsa_source.h"
 #include "pipeline_runtime.h"
 #include "tx_audio_buffer.h"
+#include "tx_dynamics.h"
 #include <stdatomic.h>
 
 // Internal application handles. One control owner serializes lifecycle calls.
@@ -48,6 +49,7 @@ typedef struct {
     tx_audio_buffer_t* audio_buffer; // Independent capture and clock adaptation
     audio_mod_t*    fm;      // 48 kHz audio -> configured RF IQ rate
     audio_mod_mode_t mode;
+    tx_dynamics_t dynamics; // producer-owned microphone processing
     bool conjugate_iq;      // Correct spectral inversion on the low HiF mixer route
     float*            a48k;    // 480-float scratch
     iq16_t*           iq_rf;    // One RF frame of IQ scratch
@@ -109,6 +111,7 @@ typedef struct {
     // Backend-only checked pre-cue profile; preserves owner cancellation until
     // rebuild. Default false retains the legacy start/retry behavior.
     bool verify_start_profile;
+    tx_dynamics_config_t dynamics; // zero/default selects voice defaults; valid config can disable
     tx_pacing_mode_t pacing_mode;
 } tx_params_t;
 

@@ -147,6 +147,15 @@ static void usage(FILE *out, const char *program)
         "  --tx-deviation HZ         nominal NBFM deviation 0..24000 (default %.0f)\n"
         "  --tx-sample-rate HZ       native 400000..4000000 (default 1000000)\n"
         "  --tx-source mic|tone      default mic; tone 600 Hz, amplitude 0.4\n"
+        "  --tx-compressor on|off    microphone compressor/limiter (default on)\n"
+        "  --tx-comp-input DB        input gain -24..24 (default 0)\n"
+        "  --tx-comp-threshold DBFS  RMS threshold -60..0 (default -24)\n"
+        "  --tx-comp-ratio RATIO     compression 1..10 (default 3)\n"
+        "  --tx-comp-knee DB         soft knee 0..24 (default 6)\n"
+        "  --tx-comp-attack MS       gain-reduction attack 0.1..100 (default 5)\n"
+        "  --tx-comp-release MS      release 10..2000 (default 200)\n"
+        "  --tx-comp-makeup DB       makeup gain 0..24 (default 6)\n"
+        "  --tx-comp-ceiling DBFS    audio peak ceiling -12..0 (default -1)\n"
         "  --tx-microphone DEVICE    default plughw:Loopback,1,1\n"
         "Legacy unprefixed RX options, --microphone and --start-stopped remain accepted.\n",
         program, (double)NBFM_DEFAULT_DEVIATION_HZ,
@@ -184,11 +193,13 @@ static int parse_options(int argc, char **argv, options_t *o)
             .noise_squelch_close_rms = NOISE_SQUELCH_CLOSE_RMS,
             .mode = AUDIO_DEMOD_NBFM, .am_offset_tuning_enabled=true},
     };
+    o->tx.dynamics=tx_dynamics_defaults();
     enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
         RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH, TX_AM_BACKOFF, AM_RX_OFFSET, TX_AM_DAC_SHAPING,
-        RX_GAIN_PROFILE, RX_MODE_GAIN };
+        RX_GAIN_PROFILE, RX_MODE_GAIN, TX_COMPRESSOR, TX_COMP_INPUT, TX_COMP_THRESHOLD,
+        TX_COMP_RATIO, TX_COMP_KNEE, TX_COMP_ATTACK, TX_COMP_RELEASE, TX_COMP_MAKEUP, TX_COMP_CEILING };
     static const struct option long_options[] = {
         {"channel", required_argument, NULL, CHANNEL},
         {"rx-sinad", no_argument, NULL, SINAD},
@@ -210,6 +221,15 @@ static int parse_options(int argc, char **argv, options_t *o)
         {"rx-noise-close", required_argument, NULL, NOISE_CLOSE},
         {"rx-gain", required_argument, NULL, GAIN},
         {"rx-deemphasis-us", required_argument, NULL, DEEMPH},
+        {"tx-compressor", required_argument, NULL, TX_COMPRESSOR},
+        {"tx-comp-input", required_argument, NULL, TX_COMP_INPUT},
+        {"tx-comp-threshold", required_argument, NULL, TX_COMP_THRESHOLD},
+        {"tx-comp-ratio", required_argument, NULL, TX_COMP_RATIO},
+        {"tx-comp-knee", required_argument, NULL, TX_COMP_KNEE},
+        {"tx-comp-attack", required_argument, NULL, TX_COMP_ATTACK},
+        {"tx-comp-release", required_argument, NULL, TX_COMP_RELEASE},
+        {"tx-comp-makeup", required_argument, NULL, TX_COMP_MAKEUP},
+        {"tx-comp-ceiling", required_argument, NULL, TX_COMP_CEILING},
         {"tx-microphone", required_argument, NULL, MICROPHONE},
         {"tx-frequency", required_argument, NULL, TX_FREQ},
         {"tx-power", required_argument, NULL, TX_POWER},
@@ -304,6 +324,16 @@ static int parse_options(int argc, char **argv, options_t *o)
                 || value != (unsigned)value
                 || radio_profile_tx((unsigned)value, &profile)) return -1;
             o->tx.rf_fs = profile.sample_rate_hz; break;
+        case TX_COMPRESSOR:
+            if (strcmp(optarg,"on") && strcmp(optarg,"off")) return -1;
+            o->tx.dynamics.enabled=!strcmp(optarg,"on"); break;
+        case TX_COMP_INPUT: case TX_COMP_THRESHOLD: case TX_COMP_RATIO: case TX_COMP_KNEE:
+        case TX_COMP_ATTACK: case TX_COMP_RELEASE: case TX_COMP_MAKEUP: case TX_COMP_CEILING: {
+            static const char *names[]={"input","threshold","ratio","knee","attack","release","makeup","ceiling"};
+            if (number(optarg,&value,-2000,2000) ||
+                !tx_dynamics_set(&o->tx.dynamics,names[key-TX_COMP_INPUT],(float)value)) return -1;
+            break;
+        }
         case TX_SOURCE:
             if (strcmp(optarg, "mic") && strcmp(optarg, "tone")) return -1;
             o->tx.tone_mode = !strcmp(optarg, "tone"); break;
@@ -1355,6 +1385,14 @@ static void backend_control_command(void *opaque, const control_request_t *reque
             o->tx.am_backoff_db=request->tx_am_backoff_db;c->tx_configuration_dirty=true;changed=true;
         }
         break;
+    case CONTROL_TX_COMPRESSOR: {
+        tx_dynamics_config_t next=o->tx.dynamics;
+        if (!tx_dynamics_set(&next,request->tx_comp_parameter,request->tx_comp_value)) code="INVALID";
+        else if (!tx_dynamics_equal(next,o->tx.dynamics)) {
+            o->tx.dynamics=next; c->tx_configuration_dirty=true; changed=true;
+        }
+        break;
+    }
     case CONTROL_TX_SOURCE:
         if (o->tx.tone_mode != request->tx_tone_mode) {
             o->tx.tone_mode = request->tx_tone_mode;
@@ -1743,6 +1781,15 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"window_ms\":100,\"reference_hz\":1000,\"reference_modulation\":0.5,\"reference_rms_dbfs\":-12}",
         (double)o->rx.volume_db,o->rx.volume_db==-120 ? "true":"false",
         audio_levels>>63 ? "true":"false",audio_rms,audio_peak,audio_clipped);
+    char dynamics_json[512];
+    const tx_dynamics_config_t *dc=&o->tx.dynamics;
+    snprintf(dynamics_json,sizeof(dynamics_json),
+        "{\"enabled\":%s,\"input_db\":%.3f,\"threshold_dbfs\":%.3f,\"ratio\":%.3f,"
+        "\"knee_db\":%.3f,\"attack_ms\":%.3f,\"release_ms\":%.3f,\"makeup_db\":%.3f,"
+        "\"ceiling_dbfs\":%.3f,\"lookahead_ms\":1,\"microphone_only\":true}",
+        dc->enabled ? "true":"false",(double)dc->input_db,(double)dc->threshold_db,
+        (double)dc->ratio,(double)dc->knee_db,(double)dc->attack_ms,(double)dc->release_ms,
+        (double)dc->makeup_db,(double)dc->ceiling_db);
     int result = snprintf(out, capacity,
         "{\"version\":1,\"session\":\"%s\",\"sequence\":%" PRIu64 ","
         "\"monotonic_s\":%.9f,\"realtime_s\":%.6f,\"hardware_monotonic_s\":%.9f,"
@@ -1754,7 +1801,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"tx_frequency_hz\":%.3f,\"tx_actual_frequency_hz\":%s,\"tx_power_dbm\":%d,"
         "\"tx_actual_power_dbm\":%s,\"tx_sample_rate_hz\":%u,\"tx_source\":\"%s\","
         "\"tx_mode\":\"%s\",\"tx_am_depth\":%.3f,\"tx_am_backoff_db\":%.3f,\"tx_am_dac_shaping\":%s,\"tx_am_carrier_fraction\":0.5,\"tx_tone_hz\":%.3f,\"tx_tone_amp\":%.3f,\"tx_deviation_hz\":%.3f,"
-        "\"profile\":%s,\"observed\":%s},"
+        "\"tx_compressor\":%s,\"profile\":%s,\"observed\":%s},"
         "\"rx\":{\"running\":%s,\"queue\":%s,\"noise_enabled\":%s,\"carrier_enabled\":%s,"
         "\"carrier_open_dbm\":%d,\"carrier_close_dbm\":%d,"
         "\"gate_open\":%s,\"noise\":{\"valid\":%s,\"detector_open\":%s,\"rms\":%s,"
@@ -1784,7 +1831,7 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         o->tx.freq_hz, tx_actual_freq, o->tx.tx_power_dbm, tx_actual_power,
         o->tx.rf_fs, o->tx.tone_mode ? "tone" : "mic", audio_mod_mode_name(o->tx.mode), (double)o->tx.am_depth, (double)o->tx.am_backoff_db, o->tx.am_dac_shaping ? "true" : "false", (double)o->tx.tone_hz,
         (double)o->tx.tone_amp, (double)o->tx.f_dev_hz,
-        desired_profile, observed_profile,
+        dynamics_json, desired_profile, observed_profile,
         live && rx_pipeline_running(pipeline) ? "true" : "false", queue,
         noise_enabled ? "true" : "false", o->rx.carrier_squelch_enabled ? "true" : "false",
         carrier_open_dbm, carrier_close_dbm,

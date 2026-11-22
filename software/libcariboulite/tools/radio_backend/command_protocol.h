@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "audio_demod.h"
 #include "audio_mod.h"
+#include "tx_dynamics.h"
 #include <stddef.h>
 #include <stdint.h>
 #include "caribou_fpga/caribou_fpga_regs.h"
@@ -39,6 +40,7 @@ typedef enum control_command {
     CONTROL_BOTH_FREQUENCY,
     CONTROL_BOTH_MODE,
     CONTROL_BOTH_SAMPLE_RATE,
+    CONTROL_TX_COMPRESSOR,
     /* These are transport-generated requests, never valid wire commands. */
     CONTROL_INVALID,
     CONTROL_BUSY
@@ -67,6 +69,8 @@ typedef struct control_request {
     float tx_am_backoff_db;
     float tx_tone_hz;
     float tx_tone_amp;
+    char tx_comp_parameter[16];
+    float tx_comp_value;
     bool fpga_led0, fpga_led1;
 } control_request_t;
 

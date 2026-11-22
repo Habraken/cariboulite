@@ -353,6 +353,19 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
         f"  hardware age={_age_label(_age(snapshot, 'hardware_monotonic_s', now))}",
         "",
     ]
+    compressor = _mapping(config.get("tx_compressor"))
+    if compressor:
+        active = compressor.get("enabled") and config.get("tx_source") == "mic"
+        lines.append(f"TX microphone compressor: {'enabled' if active else 'bypassed'}"
+                     f"  input={_formatted(compressor.get('input_db'), '.1f')} dB"
+                     f"  threshold={_formatted(compressor.get('threshold_dbfs'), '.1f')} dBFS"
+                     f"  ratio={_formatted(compressor.get('ratio'), 'g')}:1"
+                     f"  knee={_formatted(compressor.get('knee_db'), '.1f')} dB"
+                     f"  attack/release={_formatted(compressor.get('attack_ms'), 'g')}/"
+                     f"{_formatted(compressor.get('release_ms'), 'g')} ms"
+                     f"  makeup={_formatted(compressor.get('makeup_db'), '.1f')} dB"
+                     f"  ceiling={_formatted(compressor.get('ceiling_dbfs'), '.1f')} dBFS"
+                     "  lookahead=1 ms")
     if snapshot.get("rx_mode") == "AM voice":
         lines.append(f"AM voice: 300–3000 Hz  offset tuning={_on(config.get('am_offset_tuning_enabled'))}  carrier normalization={_on(config.get('am_agc_enabled'))}"
                      f"  fixed RF gain={_formatted(config.get('am_rf_gain_db'), '.0f')} dB"

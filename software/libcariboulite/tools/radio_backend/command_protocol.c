@@ -282,6 +282,14 @@ int control_request_parse(const char *packet, size_t bytes,
     else if (request->protocol_version==2 && !strcmp(tokens[2],"tx_am_backoff") && count==4 &&
                !parse_float(tokens[3],&request->tx_am_backoff_db) && request->tx_am_backoff_db>=0 && request->tx_am_backoff_db<=18)
         request->command=CONTROL_TX_AM_BACKOFF;
+    else if (request->protocol_version == 2 && !strcmp(tokens[2], "tx_compressor") && count == 5) {
+        tx_dynamics_config_t c=tx_dynamics_defaults();
+        if (strlen(tokens[3])>=sizeof(request->tx_comp_parameter) ||
+            parse_float(tokens[4],&request->tx_comp_value) ||
+            !tx_dynamics_set(&c,tokens[3],request->tx_comp_value)) return -1;
+        strcpy(request->tx_comp_parameter,tokens[3]);
+        request->command=CONTROL_TX_COMPRESSOR;
+    }
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "tx_source") && count == 4 &&
              (!strcmp(tokens[3], "mic") || !strcmp(tokens[3], "tone"))) {
         request->command = CONTROL_TX_SOURCE;
@@ -541,6 +549,15 @@ int control_request_format(const control_request_t *request,
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " tx_source %s\n",
                          version, request->id, request->tx_tone_mode ? "tone" : "mic");
         break;
+    case CONTROL_TX_COMPRESSOR: {
+        if (version!=2) break;
+        tx_dynamics_config_t c=tx_dynamics_defaults();
+        if (!memchr(request->tx_comp_parameter,'\0',sizeof(request->tx_comp_parameter)) ||
+            !tx_dynamics_set(&c,request->tx_comp_parameter,request->tx_comp_value)) break;
+        bytes=snprintf(packet,capacity,"v%u %" PRIu64 " tx_compressor %s %.9g\n",
+            version,request->id,request->tx_comp_parameter,(double)request->tx_comp_value);
+        break;
+    }
     case CONTROL_TX_TONE:
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " tx_tone %.9g %.9g\n",
                          version, request->id, (double)request->tx_tone_hz,

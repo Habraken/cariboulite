@@ -14,6 +14,7 @@ retain their original revision and test conditions. See the
 - [Examples](../examples/README.md)
 - [Hardware-free tests and physical validation entry points](testing.md)
 - [Standalone backend, controller and radio commands](radio-control.md)
+- [TX microphone compressor and limiter](tx-voice-dynamics.md)
 - [Raw SMI RX capture and framing analysis](smi-raw-capture.md)
 - [Board #4 raw SMI framing comparison](board4-smi-framing-2026-11-17.md)
 - [Board #4 LED1 pin, route and circuit audit](board4-led1-route-audit-2026-11-17.md)
@@ -55,6 +56,7 @@ retain their original revision and test conditions. See the
 - [Reserved-pad cleanup and serial qualification](fpga-warning-cleanup-2026-10-17.md)
 - [CE2 candidate programming and physical-test status](fpga-ce2-programming-2026-10-17.md)
 - [Rev2.8 quotation package and manufacturing holds](../manufacturing/rev2.8-full-eurocircuits/README.md)
+
 
 ## Recorded investigations and measurements
 

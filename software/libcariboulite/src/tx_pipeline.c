@@ -434,7 +434,8 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
 
     unsigned rf_fs = par->rf_fs ? par->rf_fs : 4000000;
     radio_profile_t profile;
-    if (!audio_mod_mode_valid(par->mode) ||
+    if ((par->dynamics.enabled && !tx_dynamics_valid(&par->dynamics)) ||
+        !audio_mod_mode_valid(par->mode) ||
         !radio_profile_finite(par->am_backoff_db) || par->am_backoff_db<0 || par->am_backoff_db>18 ||
         !radio_profile_finite(par->am_depth) || par->am_depth<0 || par->am_depth>1 ||
         radio_profile_tx(rf_fs, &profile) != 0 ||
@@ -501,6 +502,10 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     p->inited = true; // FIFO synchronization is ready for staged cleanup.
     int error = -2;
     if (!p->txq.q) goto fail;
+
+    tx_dynamics_config_t dynamics = par->dynamics;
+    if (!dynamics.enabled && !tx_dynamics_valid(&dynamics)) dynamics=tx_dynamics_defaults();
+    if (!tx_dynamics_init(&p->tx_ctrl.dynamics, dynamics)) goto fail;
 
     // tx_ctrl wiring (reuse your structures/threads)
     p->tx_ctrl.active         = true;
@@ -748,6 +753,8 @@ int tx_pipeline_start(tx_pipeline_t* p)
         if (tx_audio_buffer_resume(p->tx_ctrl.audio_buffer) < 0) return -3;
         tx_audio_buffer_set_cue(p->tx_ctrl.audio_buffer, true);
     } else if (p->tx_ctrl.mic && alsa_source_reset(p->tx_ctrl.mic, true) < 0) return -3;
+
+    tx_dynamics_reset(&p->tx_ctrl.dynamics);
 
     // Disable RX if it was on and arm TX chain
     if (nbfm_rx_active) {

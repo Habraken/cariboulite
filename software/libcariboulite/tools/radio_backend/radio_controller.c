@@ -93,6 +93,8 @@ static void command_help(void)
          "  tx mode nbfm|am|usb|lsb   saved TX modulation (change while TX is stopped)\n"
          "  tx am-backoff DB      extra AM IQ backoff: 0..18 dB, TX stopped\n"
          "  tx am-depth VALUE     nominal AM modulation 0..1, default 0.8\n"
+         "  tx compressor on|off  microphone compressor/limiter, TX stopped\n"
+         "  tx compressor PARAM VALUE  input/threshold/ratio/knee/attack/release/makeup/ceiling\n"
          "  tx source mic|tone    saved TX audio source\n"
          "  tx tone HZ AMP        0 < HZ <= 3000, 0 < AMP <= 1\n"
          "  fpga registers        explicit read-only snapshot; RX/TX stopped\n"
@@ -262,6 +264,19 @@ static int parse_command(const char *input, ui_command_t *command)
     } else if (count == 2 && !strcmp(name, "tx") &&
                (!strcmp(tokens[1], "start") || !strcmp(tokens[1], "stop"))) {
         command->request.command = !strcmp(tokens[1], "start") ? CONTROL_TX_START : CONTROL_TX_STOP;
+    } else if ((count==3 || count==4) && !strcmp(name,"tx") && !strcmp(tokens[1],"compressor")) {
+        const char *parameter=count==3 ? "enabled" : tokens[2];
+        double value;
+        if (count==3) {
+            if (strcmp(tokens[2],"on") && strcmp(tokens[2],"off")) return -1;
+            value=!strcmp(tokens[2],"on");
+        } else if (parse_number(tokens[3],&value)) return -1;
+        tx_dynamics_config_t c=tx_dynamics_defaults();
+        if (strlen(parameter)>=sizeof(command->request.tx_comp_parameter) ||
+            !tx_dynamics_set(&c,parameter,(float)value)) return -1;
+        command->request.command=CONTROL_TX_COMPRESSOR;
+        strcpy(command->request.tx_comp_parameter,parameter);
+        command->request.tx_comp_value=(float)value;
     } else if (count == 3 && !strcmp(name, "tx") &&
                (!strcmp(tokens[1], "frequency") || !strcmp(tokens[1], "freq"))) {
         double value;
@@ -620,6 +635,9 @@ static int execute_command(controller_t *controller, ui_command_t *command)
                command->request.carrier_open_dbm, command->request.carrier_close_dbm);
     if(!result && command->request.command==CONTROL_TX_MODE)
         printf("TX mode: %s\n",audio_mod_mode_name(command->request.tx_mode));
+    if (!result && command->request.command==CONTROL_TX_COMPRESSOR)
+        printf("TX compressor %s: %.3g\n",command->request.tx_comp_parameter,
+               (double)command->request.tx_comp_value);
     if(!result && command->request.command==CONTROL_TX_AM_BACKOFF)
         printf("TX AM backoff: %.1f dB\n",(double)command->request.tx_am_backoff_db);
     if(!result && command->request.command==CONTROL_TX_AM_DEPTH)

@@ -321,10 +321,13 @@ int main(void)
         .mic_dev = "mock", .tone_hz = 600, .tone_amp = .4f,
         .tx_power_dbm = -3, .f_dev_hz = 2500, .out_scale = 4000,
         .verify_start_profile = true, .pacing_mode = TX_PACING_LEGACY};
+    params.dynamics=tx_dynamics_defaults();
+    params.dynamics.enabled=true;
     assert(tx_pipeline_init(&pipeline, &sys, &sys.radio_high, &params) == 0);
     for (unsigned i = 0; i < 100 && !tx_pipeline_healthy(&pipeline); ++i) delay_ms(1);
     assert_parked(&pipeline, true);
     for (unsigned repeat = 0; repeat < 2; ++repeat) {
+        pipeline.tx_ctrl.dynamics.reduction_db=99; // parked owner, must reset on PTT
         assert(tx_pipeline_start(&pipeline) == 0);
         assert(atomic_load(&start_tone_frames) == (repeat + 1) * 25);
         delay_ms(25);
@@ -336,6 +339,8 @@ int main(void)
         tx_pipeline_stop(&pipeline);
         assert(atomic_load(&stop_tone_frames) == (repeat + 1) * 25);
         assert_parked(&pipeline, true);
+        assert(pipeline.tx_ctrl.dynamics.rms_squared>0);
+        assert(pipeline.tx_ctrl.dynamics.reduction_db>0 && pipeline.tx_ctrl.dynamics.reduction_db<50);
     }
     /* Missing nonblocking capture must not prevent fault cancellation. */
     atomic_store(&missing_mic, true);
@@ -347,6 +352,7 @@ int main(void)
     assert(atomic_load(&start_tone_frames) == 75 && atomic_load(&stop_tone_frames) == 50);
     assert(mono_ns() - before < 250000000);
     assert_parked(&pipeline, true);
+    assert(pipeline.tx_ctrl.dynamics.rms_squared==0 && pipeline.tx_ctrl.dynamics.reduction_db==0);
     /* An owner abort while profile setup is in progress must survive start.
      * Reject a retained strict pipeline before the cue or any sample write. */
     unsigned aborted_writes = atomic_load(&accepted_writes);
@@ -445,6 +451,21 @@ int main(void)
     profile_failure = PROFILE_OK;
     params.rf_fs = 1000000;
     sys.radio_high.type = cariboulite_channel_hif;
+    /* Synthesized normal test tones must not enter the default-on microphone
+     * processor; the same check covers opening/closing cues and padding. */
+    params.tone_mode = true;
+    assert(tx_pipeline_init(&pipeline, &sys, &sys.radio_high, &params) == 0);
+    for (unsigned i = 0; i < 100 && !tx_pipeline_healthy(&pipeline); ++i) delay_ms(1);
+    assert(tx_pipeline_start(&pipeline) == 0);
+    delay_ms(25);
+    tx_pipeline_stop(&pipeline);
+    assert_parked(&pipeline, true);
+    assert(pipeline.tx_ctrl.dynamics.config.enabled);
+    assert(pipeline.tx_ctrl.dynamics.rms_squared == 0);
+    assert(pipeline.tx_ctrl.dynamics.reduction_db == 0);
+    assert(pipeline.tx_ctrl.dynamics.position == 0);
+    tx_pipeline_destroy(&pipeline);
+    params.tone_mode = false;
     atomic_store(&fail_writer, true);
     assert(tx_pipeline_init(&pipeline, &sys, &sys.radio_high, &params) == 0);
     for (unsigned i = 0; i < 100 && !tx_pipeline_healthy(&pipeline); ++i) delay_ms(1);

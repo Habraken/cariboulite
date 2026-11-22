@@ -83,6 +83,29 @@ open-channel noise. To match idle noise, measure its RMS with squelch bypassed
 and set custom trims from those readings. Check clipping when using large
 positive trims with stronger signals.
 
+### Current listening override — 2026-11-22
+
+For the current antenna-connected setup, Jan selected these overrides after
+`--rx-gain-profile matched`:
+
+```sh
+--rx-gain-profile matched \
+  --rx-mode-gain am=-7 \
+  --rx-mode-gain usb=0 \
+  --rx-mode-gain lsb=0
+```
+
+This leaves NBFM at −10 dB and WBFM at 0 dB, while replacing the bench AM
+boost with −7 dB and the USB/LSB boosts with 0 dB. These are user-selected
+listening trims, not a newly measured calibration. They do not change RF gain,
+AM carrier normalization or the separate live `rx volume` setting, and they do
+not automatically level received speech or suppress empty-channel noise.
+
+The [roadmap's operational goals](../ROADMAP.md#predictable-listening-levels-and-fewer-operator-commands--2026-11-22)
+record the full Jabra launch command and the intended progression from fixed
+trims to calibrated, bounded, signal-aware listening levels with fewer operator
+adjustments.
+
 ## Level meter
 
 The passive monitor shows RX volume, mute, RMS and peak in dBFS, and the
