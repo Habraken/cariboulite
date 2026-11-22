@@ -6,6 +6,7 @@
 #include "pipeline_runtime.h"
 #include "alsa_sink.h"
 #include "noise_squelch.h"
+#include "ctcss.h"
 #include "radio_rates.h"
 #include "radio_profile.h"
 #include <stdio.h>
@@ -199,6 +200,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     if (deviation < NBFM_RX_MIN_DEVIATION_HZ || deviation > NBFM_RX_MAX_DEVIATION_HZ)
         return -1;
 
+    if (!ctcss_frequency_valid(par->ctcss_hz)) return -1;
     uint32_t noise_levels = noise_squelch_default_levels();
     if ((par->noise_squelch_open_rms != 0 || par->noise_squelch_close_rms != 0) &&
         !noise_squelch_pack_levels(par->noise_squelch_open_rms,
@@ -256,6 +258,8 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     atomic_init(&p->demod.carrier_squelch_levels, par->carrier_squelch_levels);
     atomic_init(&p->demod.noise_squelch_levels, noise_levels);
     p->demod.sinad_enabled = par->sinad_enabled;
+    p->demod.ctcss_hz=par->ctcss_hz;
+    atomic_init(&p->demod.ctcss_status,0);
     atomic_init(&p->demod.sinad_db_milli, 0);
     atomic_init(&p->demod.noise_squelch_rms_milli, 0);
     atomic_init(&p->demod.noise_squelch_detector_open, 0);

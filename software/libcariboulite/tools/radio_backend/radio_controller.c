@@ -93,6 +93,9 @@ static void command_help(void)
          "  tx mode nbfm|am|usb|lsb   saved TX modulation (change while TX is stopped)\n"
          "  tx am-backoff DB      extra AM IQ backoff: 0..18 dB, TX stopped\n"
          "  tx am-depth VALUE     nominal AM modulation 0..1, default 0.8\n"
+         "  rx ctcss HZ|off  NBFM tone squelch; stop RX before changing\n"
+         "  tx ctcss HZ|off  NBFM continuous tone; stop TX before changing\n"
+         "  tx ctcss deviation HZ  50..1000 Hz (default 500)\n"
          "  tx compressor on|off  microphone compressor/limiter, TX stopped\n"
          "  tx compressor PARAM VALUE  input/threshold/ratio/knee/attack/release/makeup/ceiling\n"
          "  tx source mic|tone    saved TX audio source\n"
@@ -173,7 +176,7 @@ static int parse_command(const char *input, ui_command_t *command)
         if (strcmp(name, "start") && strcmp(name, "stop")
             && strcmp(name, "frequency") && strcmp(name, "freq")
             && strcmp(name, "mode") && strcmp(name, "rate")
-            && strcmp(name, "volume") && strcmp(name, "sample-rate") && strcmp(name, "divider") && strcmp(name, "squelch")) return -1;
+            && strcmp(name, "ctcss") && strcmp(name, "volume") && strcmp(name, "sample-rate") && strcmp(name, "divider") && strcmp(name, "squelch")) return -1;
     }
     if (!strcmp(name, "squelch")) {
         if (count < 2) return -1;
@@ -218,6 +221,20 @@ static int parse_command(const char *input, ui_command_t *command)
                (!strcmp(tokens[1], "soft") || !strcmp(tokens[1], "hard"))) {
         command->request.command = !strcmp(tokens[1], "soft") ? CONTROL_FPGA_SOFT_RESET
                                                               : CONTROL_FPGA_HARD_RESET;
+    } else if ((rx_only && count==2 && !strcmp(name,"ctcss")) ||
+               (count==3 && !strcmp(name,"tx") && !strcmp(tokens[1],"ctcss"))) {
+        const char *argument=tokens[count-1];
+        double hz=0;
+        if (strcmp(argument,"off") && parse_number(argument,&hz)) return -1;
+        if (!ctcss_frequency_valid((float)hz)) return -1;
+        command->request.command=rx_only ? CONTROL_RX_CTCSS : CONTROL_TX_CTCSS;
+        command->request.ctcss_hz=(float)hz;
+    } else if (count==4 && !strcmp(name,"tx") && !strcmp(tokens[1],"ctcss") &&
+               !strcmp(tokens[2],"deviation")) {
+        double hz;
+        if (parse_number(tokens[3],&hz) || !ctcss_deviation_valid((float)hz)) return -1;
+        command->request.command=CONTROL_TX_CTCSS_DEVIATION;
+        command->request.ctcss_deviation_hz=(float)hz;
     } else if (rx_only && count==2 && !strcmp(name,"volume")) {
         double db=-120;
         if (strcmp(tokens[1],"mute") && parse_number(tokens[1],&db)) return -1;
@@ -635,6 +652,11 @@ static int execute_command(controller_t *controller, ui_command_t *command)
                command->request.carrier_open_dbm, command->request.carrier_close_dbm);
     if(!result && command->request.command==CONTROL_TX_MODE)
         printf("TX mode: %s\n",audio_mod_mode_name(command->request.tx_mode));
+    if (!result && (command->request.command==CONTROL_RX_CTCSS || command->request.command==CONTROL_TX_CTCSS))
+        printf("%s CTCSS: %.1f Hz (0 = off; NBFM only)\n",
+            command->request.command==CONTROL_RX_CTCSS ? "RX":"TX",(double)command->request.ctcss_hz);
+    if (!result && command->request.command==CONTROL_TX_CTCSS_DEVIATION)
+        printf("TX CTCSS deviation: %.1f Hz\n",(double)command->request.ctcss_deviation_hz);
     if (!result && command->request.command==CONTROL_TX_COMPRESSOR)
         printf("TX compressor %s: %.3g\n",command->request.tx_comp_parameter,
                (double)command->request.tx_comp_value);

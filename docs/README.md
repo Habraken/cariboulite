@@ -15,6 +15,7 @@ retain their original revision and test conditions. See the
 - [Hardware-free tests and physical validation entry points](testing.md)
 - [Standalone backend, controller and radio commands](radio-control.md)
 - [TX microphone compressor and limiter](tx-voice-dynamics.md)
+- [CTCSS TX tone and RX tone squelch](ctcss.md)
 - [Raw SMI RX capture and framing analysis](smi-raw-capture.md)
 - [Board #4 raw SMI framing comparison](board4-smi-framing-2026-11-17.md)
 - [Board #4 LED1 pin, route and circuit audit](board4-led1-route-audit-2026-11-17.md)

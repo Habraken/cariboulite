@@ -353,6 +353,15 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
         f"  hardware age={_age_label(_age(snapshot, 'hardware_monotonic_s', now))}",
         "",
     ]
+    ctcss = _mapping(config.get("ctcss"))
+    if ctcss:
+        lines.append(f"CTCSS: RX={'enabled' if ctcss.get('rx_enabled') else 'bypassed'}"
+                     f" {_formatted(ctcss.get('rx_frequency_hz'), '.1f')} Hz"
+                     f"  detected={_label(ctcss.get('detected'))}"
+                     f"  coherence={_formatted(ctcss.get('coherence'), '.3f')}"
+                     f"  TX={'enabled' if ctcss.get('tx_enabled') else 'bypassed'}"
+                     f" {_formatted(ctcss.get('tx_frequency_hz'), '.1f')} Hz"
+                     f"  deviation={_formatted(ctcss.get('tx_deviation_hz'), '.0f')} Hz")
     compressor = _mapping(config.get("tx_compressor"))
     if compressor:
         active = compressor.get("enabled") and config.get("tx_source") == "mic"

@@ -41,6 +41,9 @@ typedef enum control_command {
     CONTROL_BOTH_MODE,
     CONTROL_BOTH_SAMPLE_RATE,
     CONTROL_TX_COMPRESSOR,
+    CONTROL_RX_CTCSS,
+    CONTROL_TX_CTCSS,
+    CONTROL_TX_CTCSS_DEVIATION,
     /* These are transport-generated requests, never valid wire commands. */
     CONTROL_INVALID,
     CONTROL_BUSY
@@ -71,6 +74,7 @@ typedef struct control_request {
     float tx_tone_amp;
     char tx_comp_parameter[16];
     float tx_comp_value;
+    float ctcss_hz, ctcss_deviation_hz;
     bool fpga_led0, fpga_led1;
 } control_request_t;
 

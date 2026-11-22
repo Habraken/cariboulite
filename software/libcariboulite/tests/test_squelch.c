@@ -5,6 +5,7 @@
 #include "demod_worker.h"
 #include "pipeline_transport.h"
 #include "nbfm_mod.h"
+#include "audio_mod.h"
 #include <assert.h>
 #include <errno.h>
 #include <math.h>
@@ -48,6 +49,10 @@ bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* frame, int timeout)
         if (stage == 3) levels = (180u << 16) | 120u; // malformed update ignored
         atomic_store(&worker->noise_squelch_levels, levels);
     }
+    if (mode>=7 && block%60==0) {
+        float hz=mode==7 ? (stage==1 ? 103.5f : stage==3 ? 0 : 100) : (stage==2 ? 103.5f : 100);
+        assert(!audio_mod_set_ctcss(mod,hz,500));
+    }
     float audio[480];
     for (unsigned i=0; i<480; ++i) {
         audio[i] = (mode == 6 ? 1.0f : 0.4f) * sinf(phase);
@@ -82,6 +87,7 @@ bool rf10_fifo_get(rf10_fifo_t* f, rf10_frame_t* frame, int timeout)
             atomic_store(&worker->carrier_squelch_levels,
                          stage == 1 ? carrier_squelch_pack_levels(-88, -92) : 0);
     }
+    if (mode==8) frame->rssi_dbm=stage==1 || stage==3 ? -115 : -80;
     // Exercise live bypass while noise is enabled and carrier blocks audio.
     if (mode == 2 && stage == 3) atomic_store(&worker->squelch_flags,0);
     ++block;
@@ -91,7 +97,7 @@ bool aud10_fifo_put(aud10_fifo_t* f, const aud10_frame_t* frame, int timeout)
 {
     (void)f; (void)timeout;
     unsigned stage=out_block/60, offset=out_block%60;
-    if (offset>=40 && stage<4)
+    if (offset>=(mode>=7 ? 55u : 40u) && stage<4)
         for (unsigned i=0;i<480;++i) energy[stage]+=(double)frame->pcm[i]*frame->pcm[i];
     ++out_block;
     return true;
@@ -285,6 +291,9 @@ static void integration(audio_demod_mode_t rx_mode)
         .pcm_gain=8000,.deemph_tau=50e-6f};
     unsigned flags = mode == 4 ? 0 : mode == 0 || mode == 5 || mode == 6 ? RX_SQUELCH_NOISE :
         mode == 1 ? RX_SQUELCH_CARRIER : RX_SQUELCH_NOISE|RX_SQUELCH_CARRIER;
+    if (mode==7) flags=0;
+    c.ctcss_hz=mode>=7 || rx_mode!=AUDIO_DEMOD_NBFM ? 100 : 0;
+    atomic_init(&c.ctcss_status,0);
     atomic_init(&c.alive,false);
     atomic_init(&c.last_error,0);
     atomic_init(&c.scheduling.ready,false);
@@ -305,7 +314,13 @@ static void integration(audio_demod_mode_t rx_mode)
     nbfm_demod_thread(&c);
     assert(!atomic_load(&c.alive) && atomic_load(&c.scheduling.ready));
     assert(out_block>=239); // closed squelch must still enqueue audio on time
-    if (mode < 4 || mode == 6) {
+    if (mode>=7) {
+        assert(energy[0]>1e8 && energy[1]==0 && energy[3]==0);
+        if (mode==7) assert(energy[2]>1e8); else assert(energy[2]==0);
+        unsigned tone_status=atomic_load(&c.ctcss_status);
+        assert(tone_status&1);
+        assert(!!(tone_status&2)==(mode==8)); // carrier can close despite matching tone
+    } else if (mode < 4 || mode == 6) {
         assert(energy[0]>1e8 && energy[1]==0 && energy[2]>1e8);
         if(mode==1 || mode==3) assert(energy[3]==0); else assert(energy[3]>1e8);
     } else {
@@ -340,7 +355,7 @@ int main(void)
     for(rate=1000000;rate<=4000000;rate*=2) {
         raw_tap();
         receive_deviation();
-        for (mode = 0; mode < 7; ++mode)
+        for (mode = 0; mode < 9; ++mode)
             integration(mode == 5 ? AUDIO_DEMOD_WBFM : AUDIO_DEMOD_NBFM);
         mode = 1; // Carrier squelch with live thresholds and invalid RSSI.
         integration(AUDIO_DEMOD_AM);

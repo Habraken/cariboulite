@@ -82,6 +82,10 @@ struct nbfm_mod {
     float  out_scale; int lin;
     double phase, dphi_cur, dphi_next, interp_step, interp_acc;
     preemph_t pe;
+    float ctcss_hz, ctcss_deviation;
+    bool ctcss_muted;
+    double ctcss_phase;
+    ctcss_voice_t ctcss_voice;
     audio_mod_mode_t mode;
     bool am_dac_shaping;
     float am_depth;
@@ -149,6 +153,7 @@ void nbfm_reset(nbfm_mod_t* m)
     memset(&m->am_shaper, 0, sizeof(m->am_shaper));
     m->interp_step=0; m->interp_acc=1;
     m->pe.x1=0;
+    audio_mod_reset_ctcss(m);
     ssb_reset(&m->ssb);
     for(unsigned k=0;k<3;k++)m->voice[k].z1=m->voice[k].z2=0;
 }
@@ -200,8 +205,17 @@ static int fetch_audio(nbfm_mod_t* m) {
             ssb_audio(&m->ssb, x, m->mode == AUDIO_MOD_LSB, &m->dphi_next);
         return 1;
     }
-    float xp=preemph_run(&m->pe,x); 
-    m->dphi_next=m->k*(double)xp; 
+    if (m->ctcss_hz) x=ctcss_voice_sample(&m->ctcss_voice,x);
+    float xp=preemph_run(&m->pe,x);
+    double deviation=m->f_dev*xp;
+    if (m->ctcss_hz) {
+        double headroom=m->f_dev-m->ctcss_deviation;
+        deviation=fmax(-headroom,fmin(headroom,deviation));
+        if (!m->ctcss_muted) deviation+=m->ctcss_deviation*sin(m->ctcss_phase);
+        m->ctcss_phase+=2*M_PI*m->ctcss_hz/48000;
+        if (m->ctcss_phase>=2*M_PI) m->ctcss_phase-=2*M_PI;
+        m->dphi_next=2*M_PI*deviation/m->fs_rf;
+    } else m->dphi_next=m->k*(double)xp;
     return 1;
 }
 
@@ -288,6 +302,25 @@ nbfm_result_t nbfm_process(nbfm_mod_t* m, const audio_f32_t* audio, size_t frame
     result.consumed = enqueue_audio(m, audio, frames);
     result.produced = generate_iq(m, output, capacity, &result.held_audio);
     return result;
+}
+
+void audio_mod_reset_ctcss(audio_mod_t* m)
+{
+    if (!m) return;
+    m->ctcss_phase=0; m->ctcss_muted=false;
+    memset(&m->ctcss_voice,0,sizeof(m->ctcss_voice));
+}
+void audio_mod_mute_ctcss(audio_mod_t* m, bool muted)
+{ if (m) m->ctcss_muted=muted; }
+
+int audio_mod_set_ctcss(audio_mod_t* m, float hz, float deviation)
+{
+    if (!m || !ctcss_frequency_valid(hz) || !ctcss_deviation_valid(deviation) ||
+        (hz && m->mode==AUDIO_MOD_NBFM && deviation>=m->f_dev)) { errno=EINVAL; return -1; }
+    m->ctcss_hz=m->mode==AUDIO_MOD_NBFM ? hz : 0;
+    m->ctcss_deviation=deviation;
+    audio_mod_reset_ctcss(m);
+    return 0;
 }
 
 int audio_mod_set_am_dac_shaping(audio_mod_t* m, bool enabled)

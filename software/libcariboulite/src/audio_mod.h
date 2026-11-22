@@ -1,5 +1,6 @@
 #pragma once
 #include "nbfm_mod.h"
+#include "ctcss.h"
 #include <stdbool.h>
 #include <string.h>
 
@@ -52,6 +53,11 @@ audio_mod_t* audio_mod_create(audio_mod_mode_t, const nbfm_cfg_t*, float depth);
 // AM only. Configure while stopped, before processing; reset retains selection.
 // Experimental 40 kHz DAC error feedback, limited to out_scale <= 4032.
 int audio_mod_set_am_dac_shaping(audio_mod_t*, bool enabled);
+// Configure while stopped. Only NBFM emits CTCSS; other modes retain bypass.
+int audio_mod_set_ctcss(audio_mod_t*, float frequency_hz, float deviation_hz);
+// Single modulator owner only: retained starts reset CTCSS; the stop cue/tail mutes it.
+void audio_mod_reset_ctcss(audio_mod_t*);
+void audio_mod_mute_ctcss(audio_mod_t*, bool muted);
 
 #ifdef __cplusplus
 }

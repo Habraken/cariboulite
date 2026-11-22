@@ -84,8 +84,9 @@ passive monitor, live RX controls, half-duplex NBFM TX, FPGA controls and
 hardware-paced TX. The
 [Pi Zero 2 W](docs/pi-zero-tx-queue-test-2026-10-15.md) and
 [Pi 4](docs/pi4-tx-validation-2026-10-15.md) reports record the completed transport
-and listening checks. Other receive modes, stereo/RDS, DAB+, configurable CTCSS,
-network audio/PTT and the external-PA sequencer remain open. The
+and listening checks. At that review, other receive modes, stereo/RDS, DAB+,
+configurable CTCSS, network audio/PTT and the external-PA sequencer remained
+open; see the current implementation status below. The
 [2026-10-16 documentation audit](docs/documentation-audit-2026-10-16.md) records
 this source review; it is not a new hardware qualification.
 
@@ -511,7 +512,8 @@ and WBFM listening is reported free of obvious gaps or pops. The
 [runtime review and decoder plan](docs/runtime-profiling-and-decoder-plan.md)
 records implemented instrumentation and the remaining decoder work. The local
 backend/controller/monitor and TX transport changes below are implemented;
-stereo/RDS, DAB+ and adjustable CTCSS are not.
+stereo/RDS and DAB+ are not. Adjustable NBFM CTCSS TX encoding and RX tone
+squelch are implemented; physical interoperability and RF acceptance remain open.
 
 - [x] **Separate local control and instrumentation terminals.** Implement one
   radio-owning backend with serialized commands, cached bounded telemetry, a
@@ -557,9 +559,14 @@ stereo/RDS, DAB+ and adjustable CTCSS are not.
   - [ ] Validate clean installation and permanent deployment across the supported
     Pi/OS matrix. Matched builds on two existing Pi 4 installations do not close
     this requirement; backend autostart remains deferred at the user's request.
-- [ ] Add adjustable CTCSS TX encoding and optional RX tone squelch, including
-  explicit tone deviation, total ±2.5 kHz modulation budget, tone rejection
-  from listening audio and compatible Quindar/PTT/tail timing.
+- [x] Implement adjustable NBFM CTCSS TX encoding and optional RX tone squelch,
+  including explicit tone deviation, a shared voice/tone deviation budget
+  (default ±2.5 kHz), playback tone rejection and Quindar/PTT/tail handling.
+  See [CTCSS implementation and checks](docs/ctcss.md).
+  - [x] User-reported two-Pi physical link check through 90 dB attenuation:
+    matching-tone operation passed; a wrong tone kept RX muted (2026-11-22).
+  - [ ] Complete external radio/repeater interoperability, weak-signal/false-open,
+    RF deviation/spectrum and end-to-end tail-muting acceptance.
 - [ ] Add a WBFM multiplex interface, pilot recovery and true stereo DSP/audio
   transport with mono fallback. Measure separation, distortion and lock recovery.
 - [ ] Add independent RDS extraction, synchronization/checkwords and station

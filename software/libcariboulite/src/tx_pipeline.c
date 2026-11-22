@@ -434,6 +434,9 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
 
     unsigned rf_fs = par->rf_fs ? par->rf_fs : 4000000;
     radio_profile_t profile;
+    float ctcss_deviation=par->ctcss_deviation_hz ? par->ctcss_deviation_hz : 500;
+    if (!ctcss_frequency_valid(par->ctcss_hz) || !ctcss_deviation_valid(ctcss_deviation) ||
+        (par->ctcss_hz && par->mode==AUDIO_MOD_NBFM && ctcss_deviation>=par->f_dev_hz)) return -1;
     if ((par->dynamics.enabled && !tx_dynamics_valid(&par->dynamics)) ||
         !audio_mod_mode_valid(par->mode) ||
         !radio_profile_finite(par->am_backoff_db) || par->am_backoff_db<0 || par->am_backoff_db>18 ||
@@ -533,7 +536,9 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
         .linear_interp = 1,
     };
     p->tx_ctrl.mode = par->mode;
+    p->tx_ctrl.ctcss_enabled=par->mode==AUDIO_MOD_NBFM && par->ctcss_hz>0;
     p->tx_ctrl.fm   = audio_mod_create(par->mode,&cfg,par->am_depth);
+    if (p->tx_ctrl.fm && audio_mod_set_ctcss(p->tx_ctrl.fm,par->ctcss_hz,ctcss_deviation)) goto fail;
     if (p->tx_ctrl.fm && par->mode==AUDIO_MOD_AM && par->am_dac_shaping &&
         audio_mod_set_am_dac_shaping(p->tx_ctrl.fm,true)) goto fail;
     p->tx_ctrl.a48k = (float*) calloc(480,    sizeof(float));
@@ -755,6 +760,8 @@ int tx_pipeline_start(tx_pipeline_t* p)
     } else if (p->tx_ctrl.mic && alsa_source_reset(p->tx_ctrl.mic, true) < 0) return -3;
 
     tx_dynamics_reset(&p->tx_ctrl.dynamics);
+    audio_mod_reset_ctcss(p->tx_ctrl.fm);
+    const unsigned lead_frames=p->tx_ctrl.ctcss_enabled ? 60 : 10;
 
     // Disable RX if it was on and arm TX chain
     if (nbfm_rx_active) {
@@ -780,12 +787,13 @@ int tx_pipeline_start(tx_pipeline_t* p)
     pthread_mutex_unlock(&p->txq.m);
     pthread_mutex_lock(&g_tx_injection_lock);
     p->tx_ctrl.inj.hold_silence = true;
+    p->tx_ctrl.inj.ctcss_mute = false;
     p->tx_ctrl.inj.fast_padding = false;
     pthread_mutex_unlock(&g_tx_injection_lock);
 
     if (p->tx_ctrl.hardware_paced) {
         /* The owner is the sole FM user after tx_park_workers acknowledges the
-         * producer. Precompute one of the ten opening zero-audio frames before
+         * producer. Precompute the first opening zero-voice frame before
          * DMA activation; the writer stays gated until the hardware profile is
          * verified. This supplies its first refill without waiting for DSP. */
         memset(p->tx_ctrl.a48k, 0, 480 * sizeof(float));
@@ -798,7 +806,7 @@ int tx_pipeline_start(tx_pipeline_t* p)
         }
         pthread_mutex_lock(&g_tx_injection_lock);
         p->tx_ctrl.inj.hz = 0.0f;
-        p->tx_ctrl.inj.frames_left = 9;
+        p->tx_ctrl.inj.frames_left = (int)lead_frames-1;
         pthread_cond_broadcast(&g_tx_injection_changed);
         pthread_mutex_unlock(&g_tx_injection_lock);
     }
@@ -851,12 +859,12 @@ int tx_pipeline_start(tx_pipeline_t* p)
     // --- Quindar "start" tone: 2525 Hz for 250 ms with 5 frames of padding ---
     bool cue_ok;
     if (p->tx_ctrl.hardware_paced) {
-        const uint64_t deadline = mono_ns() + 1000000000ULL;
+        const uint64_t deadline = mono_ns() + (lead_frames+90)*10000000ULL;
         cue_ok = tx_wait_injection(p, deadline) &&
             tx_inject_frames(p, 2525.0f, 25, deadline, false) &&
             tx_inject_frames(p, 0.0f, 5, deadline, false);
     } else {
-        cue_ok = tx_inject_tone_with_zeros(p, 2525.0f, 250, 10, 5, false);
+        cue_ok = tx_inject_tone_with_zeros(p, 2525.0f, 250, (int)lead_frames, 5, false);
     }
     if (!cue_ok) {
         fprintf(stderr, "TX start tone aborted; stopping TX\n");
@@ -905,6 +913,7 @@ void tx_pipeline_stop(tx_pipeline_t* p)
     // writer backpressure, rather than worst-case FIFO capacity, sets the wait.
     pthread_mutex_lock(&g_tx_injection_lock);
     p->tx_ctrl.inj.hold_silence = true;
+    p->tx_ctrl.inj.ctcss_mute = true;
     pthread_mutex_unlock(&g_tx_injection_lock);
     tx_audio_buffer_set_cue(p->tx_ctrl.audio_buffer, true);
     if (tx_inject_tone_with_zeros(p, 2475.0f, 250, 5,

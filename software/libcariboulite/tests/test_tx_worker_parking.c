@@ -321,6 +321,7 @@ int main(void)
         .mic_dev = "mock", .tone_hz = 600, .tone_amp = .4f,
         .tx_power_dbm = -3, .f_dev_hz = 2500, .out_scale = 4000,
         .verify_start_profile = true, .pacing_mode = TX_PACING_LEGACY};
+    params.ctcss_hz=100; params.ctcss_deviation_hz=500;
     params.dynamics=tx_dynamics_defaults();
     params.dynamics.enabled=true;
     assert(tx_pipeline_init(&pipeline, &sys, &sys.radio_high, &params) == 0);

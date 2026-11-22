@@ -3,6 +3,7 @@
 #endif
 #include "demod_worker.h"
 #include "noise_squelch.h"
+#include "ctcss.h"
 #include "sinad.h"
 #include "rx_audio_output.h"
 #include "carrier_squelch.h"
@@ -39,6 +40,10 @@ void* audio_demod_thread(void* arg)
     rx_audio_output_t output = {0};
     uint64_t levels = 0;
     noise_squelch_t noise = {0};
+    ctcss_rx_t ctcss;
+    ctcss_voice_t voice={0};
+    ctcss_notch_t notch={0};
+    const bool ctcss_enabled=c->mode==AUDIO_DEMOD_NBFM && c->ctcss_hz>0;
     sinad_t sinad;
     carrier_squelch_t carrier = {0};
     const bool noise_supported =
@@ -60,6 +65,10 @@ void* audio_demod_thread(void* arg)
             atomic_store(&c->sinad_db_milli, 0);
             noise_squelch_reset(&noise);
             carrier_squelch_reset(&carrier);
+            ctcss_rx_reset(&ctcss,c->ctcss_hz);
+            memset(&voice,0,sizeof(voice));
+            ctcss_notch_reset(&notch,c->ctcss_hz);
+            atomic_store(&c->ctcss_status,0);
             gate_gain = 0.0f;
             atomic_store(&c->squelch_open, 0);
             atomic_store(&c->noise_squelch_valid, 0);
@@ -163,9 +172,15 @@ void* audio_demod_thread(void* arg)
                         ? (unsigned)lround(sinad.db * 1000) : 0);
                 bool detector_open = noise_supported && noise_squelch_process(&noise, raw[i]);
                 bool noise_open = !noise_supported || !(flags & RX_SQUELCH_NOISE) || detector_open;
-                open = noise_open && carrier_open;
+                bool tone_open=!ctcss_enabled || ctcss_rx_sample(&ctcss,raw[i]);
+                open = noise_open && carrier_open && tone_open;
+                if (ctcss_enabled) {
+                    if (c->calibrated_output) filtered[i]=ctcss_voice_sample(&voice,ctcss_notch_sample(&notch,filtered[i]));
+                    else audio.pcm[nout+i]=(int16_t)lrintf(fmaxf(-32768,fminf(32767,
+                        ctcss_voice_sample(&voice,ctcss_notch_sample(&notch,audio.pcm[nout+i])))));
+                }
                 // Keep clock/queues running while closed; ramp over 5 ms.
-                if (!flags) gate_gain = 1.0f; // exact bypass for diagnostics
+                if (!flags && !ctcss_enabled) gate_gain = 1.0f; // exact bypass for diagnostics
                 else if (open) gate_gain = fminf(1.0f, gate_gain + 1.0f/240);
                 else gate_gain = fmaxf(0.0f, gate_gain - 1.0f/240);
                 if (c->calibrated_output)
@@ -205,6 +220,9 @@ void* audio_demod_thread(void* arg)
                 }
             }
         }
+        if (ctcss_enabled) atomic_store(&c->ctcss_status,
+            (ctcss.valid ? 1u : 0u) | (ctcss.open ? 2u : 0u) |
+            ((unsigned)lroundf(ctcss.coherence*1000)<<2));
         // Publish at RF-block rate; no square root in the sample loop.
         if (noise_supported) {
             atomic_store(&c->noise_squelch_rms_milli,

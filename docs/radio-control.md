@@ -16,10 +16,10 @@ RX launch settings use `--rx-` options; TX settings use `--tx-` options, with
 `--tx-deviation HZ` selecting the TX NBFM deviation. `--rx-deviation HZ`
 independently selects NBFM receive audio normalization. `--channel` selects
 the radio shared by RX and TX.
-Stereo decoding, RDS, CTCSS and adjustable carrier RSSI thresholds remain
-outside this implementation.
+Stereo decoding and RDS remain outside this implementation.
 
 For microphone level control, see the [TX compressor and limiter](tx-voice-dynamics.md).
+For NBFM tone access and receive tone squelch, see [CTCSS](ctcss.md).
 
 ## Build and start
 

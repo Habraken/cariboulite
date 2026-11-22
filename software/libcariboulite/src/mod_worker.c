@@ -192,6 +192,7 @@ void* nbfm_mod_thread(void* arg)
         volatile int inj_left = 0;
         volatile float inj_hz = 0.0f;
         volatile bool hold_silence = false;
+        volatile bool ctcss_muted = false;
         pthread_mutex_lock(&g_tx_injection_lock);
         pthread_cleanup_push(injection_unlock, &g_tx_injection_lock);
         /* Hardware-paced cues have exact sample counts. When a stage is fully
@@ -204,6 +205,7 @@ void* nbfm_mod_thread(void* arg)
         inj_left = ctrl->tx->inj.frames_left;
         inj_hz = ctrl->tx->inj.hz;
         hold_silence = ctrl->tx->inj.hold_silence;
+        ctcss_muted = ctrl->tx->inj.ctcss_mute;
         pthread_cleanup_pop(1);
         if (!nbfm_tx_active || atomic_load(&ctrl->tx->abort_requested)) {
             tx_worker_end(ctrl->tx, true);
@@ -248,6 +250,7 @@ void* nbfm_mod_thread(void* arg)
          * and finite stop padding retain their original levels and timing. */
         if (inj_left <= 0 && !hold_silence && !ctrl->tx->tone_mode && ctrl->tx->mic)
             tx_dynamics_process(&ctrl->tx->dynamics, ctrl->tx->a48k, 480);
+        audio_mod_mute_ctcss(ctrl->tx->fm,ctcss_muted);
         rf10_frame_t frm;
         int error = tx_generate_frame(ctrl->tx, &frm);
         if (error) {

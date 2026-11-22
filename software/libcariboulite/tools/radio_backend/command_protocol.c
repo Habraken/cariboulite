@@ -282,6 +282,13 @@ int control_request_parse(const char *packet, size_t bytes,
     else if (request->protocol_version==2 && !strcmp(tokens[2],"tx_am_backoff") && count==4 &&
                !parse_float(tokens[3],&request->tx_am_backoff_db) && request->tx_am_backoff_db>=0 && request->tx_am_backoff_db<=18)
         request->command=CONTROL_TX_AM_BACKOFF;
+    else if (request->protocol_version==2 && count==4 &&
+             (!strcmp(tokens[2],"rx_ctcss") || !strcmp(tokens[2],"tx_ctcss")) &&
+             !parse_float(tokens[3],&request->ctcss_hz) && ctcss_frequency_valid(request->ctcss_hz))
+        request->command=!strcmp(tokens[2],"rx_ctcss") ? CONTROL_RX_CTCSS : CONTROL_TX_CTCSS;
+    else if (request->protocol_version==2 && count==4 && !strcmp(tokens[2],"tx_ctcss_deviation") &&
+             !parse_float(tokens[3],&request->ctcss_deviation_hz) && ctcss_deviation_valid(request->ctcss_deviation_hz))
+        request->command=CONTROL_TX_CTCSS_DEVIATION;
     else if (request->protocol_version == 2 && !strcmp(tokens[2], "tx_compressor") && count == 5) {
         tx_dynamics_config_t c=tx_dynamics_defaults();
         if (strlen(tokens[3])>=sizeof(request->tx_comp_parameter) ||
@@ -548,6 +555,17 @@ int control_request_format(const control_request_t *request,
     case CONTROL_TX_SOURCE:
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " tx_source %s\n",
                          version, request->id, request->tx_tone_mode ? "tone" : "mic");
+        break;
+    case CONTROL_RX_CTCSS:
+    case CONTROL_TX_CTCSS:
+        if (version!=2 || !ctcss_frequency_valid(request->ctcss_hz)) break;
+        bytes=snprintf(packet,capacity,"v2 %" PRIu64 " %s %.9g\n",request->id,
+            request->command==CONTROL_RX_CTCSS ? "rx_ctcss" : "tx_ctcss",(double)request->ctcss_hz);
+        break;
+    case CONTROL_TX_CTCSS_DEVIATION:
+        if (version!=2 || !ctcss_deviation_valid(request->ctcss_deviation_hz)) break;
+        bytes=snprintf(packet,capacity,"v2 %" PRIu64 " tx_ctcss_deviation %.9g\n",
+            request->id,(double)request->ctcss_deviation_hz);
         break;
     case CONTROL_TX_COMPRESSOR: {
         if (version!=2) break;

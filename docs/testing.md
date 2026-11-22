@@ -65,6 +65,12 @@ Additional RTL sequence/reset/loopback simulations and their exact commands are
 in [FPGA simulation checks](../firmware/tests/README.md). A passing behavioral
 simulation does not establish physical LVDS timing or complete clock-domain coverage.
 
+For NBFM CTCSS, the [CTCSS validation notes](ctcss.md#validation) describe
+the DSP, RX worker, mocked PTT lifecycle and simulated backend tests.
+`test_ctcss_sinad.py` additionally compares the actual modulator/demodulator
+with CTCSS off/on and checks sub-tone bias in the raw SINAD estimate versus
+voice-headroom clipping at high test-tone amplitude. These checks transmit no RF.
+
 ## Physical and RF validation
 
 The following tools and procedures access hardware; they are separate from the
