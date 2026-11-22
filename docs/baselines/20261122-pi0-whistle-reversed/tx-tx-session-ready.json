@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "ready": true,
+  "metadata": {
+    "args": [
+      "/home/pi/src/cariboulite/build/whistle-reverse/backend",
+      "--socket",
+      "/tmp/wh-735725e9a1c7/status.sock",
+      "--seconds",
+      "900",
+      "--rx-frequency",
+      "430100000",
+      "--tx-frequency",
+      "430100000",
+      "--tx-power",
+      "0",
+      "--tx-source",
+      "tone",
+      "--rx-playback",
+      "plughw:CARD=USB,DEV=0",
+      "--rx-sinad",
+      "--rx-no-noise-squelch",
+      "--rx-gain-profile",
+      "matched",
+      "--rx-mode-gain",
+      "am=-7",
+      "--rx-mode-gain",
+      "usb=0",
+      "--rx-mode-gain",
+      "lsb=0"
+    ],
+    "role": "tx",
+    "host": "pi0b-trixie",
+    "uuid": "d8810044-c444-46f4-a548-703412cbf971",
+    "boot_id": "6b7137e4-084f-47c8-a538-4ae18e5c77d5",
+    "kernel": "6.18.60+rpt-rpi-v8",
+    "binary_sha256": "578cd2d465002c8e4fe67ad5f774641da5b0b19c09f82b53b5b0616e99353f5e",
+    "diagnostic_environment": {
+      "LD_PRELOAD": "/home/pi/src/cariboulite/build/whistle-reverse/tx_timing_probe.so",
+      "CARIBOULITE_TX_WRITE_TIMING": "2,12,6"
+    }
+  }
+}

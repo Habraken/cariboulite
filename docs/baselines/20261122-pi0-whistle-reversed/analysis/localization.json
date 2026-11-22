@@ -1,0 +1,29 @@
+[
+  {
+    "case": "carrier",
+    "carrier_offset_hz": 514.984130859375,
+    "iq_spur_hz": -1125.335693359375,
+    "iq_spur_dbc": -26.608559320893516,
+    "predicted_beat_hz": 1640.31982421875,
+    "measured_raw_hz": 1642.822265625,
+    "measured_pcm_hz": 1636.962890625
+  },
+  {
+    "case": "carrier_rx_plus5k",
+    "carrier_offset_hz": -4482.269287109375,
+    "iq_spur_hz": -1144.4091796875,
+    "iq_spur_dbc": -25.39962603460523,
+    "predicted_beat_hz": 3337.860107421875,
+    "measured_raw_hz": 3339.111328125,
+    "measured_pcm_hz": 3337.646484375
+  },
+  {
+    "case": "carrier_rx_minus5k",
+    "carrier_offset_hz": 5519.866943359375,
+    "iq_spur_hz": -1148.223876953125,
+    "iq_spur_dbc": -26.050721144083823,
+    "predicted_beat_hz": 6668.0908203125,
+    "measured_raw_hz": 6672.36328125,
+    "measured_pcm_hz": 6661.376953125
+  }
+]

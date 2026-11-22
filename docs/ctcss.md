@@ -197,3 +197,10 @@ deviation at 88.5 Hz. Reported SINAD was 19.0 dB with CTCSS off and 18.9 dB
 with CTCSS on: nearly unchanged at the reported precision. Repeatability and
 measurement uncertainty were not specified, so this does not establish a
 quantitative upper bound on added distortion.
+
+A separate receiver whistle was reported with CTCSS both enabled and disabled.
+Physical IQ/PCM capture subsequently reproduced it and localized it to a
+receiver-relative line already present in IQ; see the
+[whistle spectrum report](baselines/20261122-pi0-whistle/README.md) and
+[reversed-link comparison](baselines/20261122-pi0-whistle-reversed/README.md).
+The exact hardware/FPGA/SMI source remains unresolved.

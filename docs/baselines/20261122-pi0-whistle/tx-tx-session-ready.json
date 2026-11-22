@@ -1,0 +1,39 @@
+{
+  "ok": true,
+  "ready": true,
+  "metadata": {
+    "args": [
+      "/home/pi/src/cariboulite/build/whistle-probe/backend",
+      "--socket",
+      "/tmp/wh-735725e9a1c7/status.sock",
+      "--seconds",
+      "900",
+      "--rx-frequency",
+      "430100000",
+      "--tx-frequency",
+      "430100000",
+      "--tx-power",
+      "0",
+      "--tx-source",
+      "tone",
+      "--rx-playback",
+      "plughw:CARD=H650e,DEV=0",
+      "--rx-sinad",
+      "--rx-no-noise-squelch",
+      "--rx-gain-profile",
+      "matched",
+      "--rx-mode-gain",
+      "am=-7",
+      "--rx-mode-gain",
+      "usb=0",
+      "--rx-mode-gain",
+      "lsb=0"
+    ],
+    "role": "tx",
+    "host": "pi0a-trixie",
+    "uuid": "c132d0e7-d7dd-457a-b105-4a5cd97e7e80",
+    "boot_id": "ee34c79c-d0d2-4073-8c75-fcb41623577c",
+    "kernel": "6.18.60+rpt-rpi-v8",
+    "binary_sha256": "e8d4dc926de07acc896d0865dcc934a6c265d42cbd805db8fd5676a267ea69fb"
+  }
+}

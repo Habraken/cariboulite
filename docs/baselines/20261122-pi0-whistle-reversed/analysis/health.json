@@ -1,0 +1,101 @@
+[
+  {
+    "case": "carrier",
+    "rx.queue.drops": 0,
+    "rx.audio_queue.drops": 0,
+    "rx.playback.underruns": 0,
+    "rx.playback.write_errors": 0,
+    "rx.reader.errors": 0,
+    "tx.writer.errors": 0,
+    "tx.driver.underrun_periods": 0,
+    "rx_clipped_samples": 0
+  },
+  {
+    "case": "ctcss_only_rx_off",
+    "rx.queue.drops": 0,
+    "rx.audio_queue.drops": 0,
+    "rx.playback.underruns": 0,
+    "rx.playback.write_errors": 0,
+    "rx.reader.errors": 0,
+    "tx.writer.errors": 0,
+    "tx.driver.underrun_periods": 0,
+    "rx_clipped_samples": 0
+  },
+  {
+    "case": "ctcss_only_rx_on",
+    "rx.queue.drops": 0,
+    "rx.audio_queue.drops": 0,
+    "rx.playback.underruns": 0,
+    "rx.playback.write_errors": 0,
+    "rx.reader.errors": 0,
+    "tx.writer.errors": 0,
+    "tx.driver.underrun_periods": 0,
+    "rx_clipped_samples": 0
+  },
+  {
+    "case": "tone_1k",
+    "rx.queue.drops": 0,
+    "rx.audio_queue.drops": 0,
+    "rx.playback.underruns": 0,
+    "rx.playback.write_errors": 0,
+    "rx.reader.errors": 0,
+    "tx.writer.errors": 0,
+    "tx.driver.underrun_periods": 0,
+    "rx_clipped_samples": 0
+  },
+  {
+    "case": "tone_1k_ctcss",
+    "rx.queue.drops": 0,
+    "rx.audio_queue.drops": 0,
+    "rx.playback.underruns": 0,
+    "rx.playback.write_errors": 0,
+    "rx.reader.errors": 0,
+    "tx.writer.errors": 0,
+    "tx.driver.underrun_periods": 0,
+    "rx_clipped_samples": 0
+  },
+  {
+    "case": "carrier_rx_plus5k",
+    "rx.queue.drops": 0,
+    "rx.audio_queue.drops": 0,
+    "rx.playback.underruns": 0,
+    "rx.playback.write_errors": 0,
+    "rx.reader.errors": 0,
+    "tx.writer.errors": 0,
+    "tx.driver.underrun_periods": 0,
+    "rx_clipped_samples": 0
+  },
+  {
+    "case": "carrier_rx_minus5k",
+    "rx.queue.drops": 0,
+    "rx.audio_queue.drops": 0,
+    "rx.playback.underruns": 0,
+    "rx.playback.write_errors": 0,
+    "rx.reader.errors": 0,
+    "tx.writer.errors": 0,
+    "tx.driver.underrun_periods": 0,
+    "rx_clipped_samples": 0
+  },
+  {
+    "case": "carrier_2m",
+    "rx.queue.drops": 0,
+    "rx.audio_queue.drops": 0,
+    "rx.playback.underruns": 0,
+    "rx.playback.write_errors": 0,
+    "rx.reader.errors": 0,
+    "tx.writer.errors": 0,
+    "tx.driver.underrun_periods": 0,
+    "rx_clipped_samples": 0
+  },
+  {
+    "case": "no_tx",
+    "rx.queue.drops": 0,
+    "rx.audio_queue.drops": 0,
+    "rx.playback.underruns": 0,
+    "rx.playback.write_errors": 0,
+    "rx.reader.errors": 0,
+    "tx.writer.errors": 0,
+    "tx.driver.underrun_periods": 0,
+    "rx_clipped_samples": 0
+  }
+]

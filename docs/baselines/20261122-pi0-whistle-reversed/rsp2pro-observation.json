@@ -1,0 +1,17 @@
+{
+  "observer": "user",
+  "case": "65-second clean-carrier source check",
+  "tx_host": "pi0b-trixie",
+  "rf_hz": 430100000,
+  "tx_power_dbm": 0,
+  "synthetic_tone_amplitude": 0,
+  "tx_ctcss_hz": 0,
+  "tx_sample_rate_hz": 1000000,
+  "smi_write_timing": [
+    2,
+    12,
+    6
+  ],
+  "observation": "Clean audio; no whistle",
+  "scope": "Auditory check of RSP2pro demodulated audio; no RSP2pro IQ recording or calibrated spur limit supplied"
+}

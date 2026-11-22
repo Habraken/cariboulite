@@ -16,6 +16,7 @@ retain their original revision and test conditions. See the
 - [Standalone backend, controller and radio commands](radio-control.md)
 - [TX microphone compressor and limiter](tx-voice-dynamics.md)
 - [CTCSS TX tone and RX tone squelch](ctcss.md)
+- [Receiver whistle IQ/audio investigation](baselines/20261122-pi0-whistle/README.md) and [reversed-link comparison](baselines/20261122-pi0-whistle-reversed/README.md)
 - [Raw SMI RX capture and framing analysis](smi-raw-capture.md)
 - [Board #4 raw SMI framing comparison](board4-smi-framing-2026-11-17.md)
 - [Board #4 LED1 pin, route and circuit audit](board4-led1-route-audit-2026-11-17.md)
