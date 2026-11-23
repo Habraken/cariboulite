@@ -1,0 +1,110 @@
+{
+  "run": "pi0-board2-tx-20261123T125747Z",
+  "state": "complete_with_failures",
+  "completed": 1376,
+  "planned": 1376,
+  "preflight_completed": 8,
+  "failures": [
+    {
+      "point": 103,
+      "frequency_hz": 2900000000,
+      "sample_rate_hz": 4000000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 557, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 111, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 260,
+      "frequency_hz": 2425000000,
+      "sample_rate_hz": 2000000,
+      "frequency_reason": "band-anchor",
+      "bands": [
+        "amateur-13cm",
+        "ISM-2p4GHz"
+      ],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 792, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 158, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 302,
+      "frequency_hz": 4100000000,
+      "sample_rate_hz": 2000000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 216, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 43, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 506,
+      "frequency_hz": 5650100000,
+      "sample_rate_hz": 1333333,
+      "frequency_reason": "band-anchor",
+      "bands": [
+        "amateur-6cm"
+      ],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 1027, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 205, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 559,
+      "frequency_hz": 900000000,
+      "sample_rate_hz": 1000000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 272, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 54, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 565,
+      "frequency_hz": 1050000000,
+      "sample_rate_hz": 1000000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 35, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 7, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 868,
+      "frequency_hz": 51900000,
+      "sample_rate_hz": 666667,
+      "frequency_reason": "band-anchor",
+      "bands": [
+        "amateur-6m"
+      ],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 1522, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 304, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 1005,
+      "frequency_hz": 4850000000,
+      "sample_rate_hz": 666667,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 691, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 138, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 1037,
+      "frequency_hz": 50000000,
+      "sample_rate_hz": 500000,
+      "frequency_reason": "base-grid",
+      "bands": [
+        "amateur-6m"
+      ],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 167, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 33, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 1079,
+      "frequency_hz": 950000000,
+      "sample_rate_hz": 500000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 216, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 43, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    }
+  ],
+  "updated_utc": "2026-11-23T16:28:32Z",
+  "transport_flagged": 2
+}

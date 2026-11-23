@@ -1,0 +1,128 @@
+Pi Zero / repaired device #2 TX conducted NBFM frequency and sample-rate sweep
+Run: pi0-board2-tx-20261123T125747Z
+State: complete_with_failures
+TX: pi0b-trixie, repaired device #2; RX only: pi0a-trixie, original reference.
+Nominal link attenuation: 90 dB; requested TX power: 0 dBm (uncalibrated).
+Signal: 1 kHz tone, amplitude 0.4; NBFM deviation setting 2500 Hz.
+Matched TX/RX sample rates; 2 s settling, 5 s measurement per point.
+Frequency grid: 172 points, 30 MHz to 5999.999 MHz; 6 GHz is exclusive.
+SINAD is the backend estimate over 300-3000 Hz; unavailable values remain blank.
+Transport-clean flags mean no counter increases/resets within the measurement window.
+Measurements describe the complete TX / attenuator / RX link, not calibrated receiver sensitivity.
+
+Completed matrix points: 1376 / 1376
+Independent raw-snapshot verification: PASS
+Receiver TX commands found: 0
+
+Rate Hz | points | points with numeric SINAD | transport flagged | RSSI mean range dBm | SINAD mean range dB
+4000000 | 172 | 163 | 0 | -94.46 to -57.75 | 2.15 to 24.00
+2000000 | 172 | 164 | 1 | -102.96 to -58.06 | 1.01 to 24.03
+1333333 | 172 | 164 | 0 | -112.42 to -58.00 | 1.04 to 24.76
+1000000 | 172 | 164 | 0 | -112.74 to -58.00 | 1.04 to 24.26
+800000 | 172 | 164 | 0 | -111.09 to -58.00 | 1.04 to 24.94
+666667 | 172 | 164 | 1 | -112.50 to -58.00 | 1.04 to 24.83
+500000 | 172 | 164 | 0 | -113.26 to -58.00 | 1.04 to 24.61
+400000 | 172 | 163 | 0 | -112.58 to -58.00 | 1.02 to 25.02
+
+Failed points:
+[
+  {
+    "point": 103,
+    "frequency_hz": 2900000000,
+    "sample_rate_hz": 4000000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 557, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 111, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 260,
+    "frequency_hz": 2425000000,
+    "sample_rate_hz": 2000000,
+    "frequency_reason": "band-anchor",
+    "bands": [
+      "amateur-13cm",
+      "ISM-2p4GHz"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 792, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 158, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 302,
+    "frequency_hz": 4100000000,
+    "sample_rate_hz": 2000000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 216, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 43, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 506,
+    "frequency_hz": 5650100000,
+    "sample_rate_hz": 1333333,
+    "frequency_reason": "band-anchor",
+    "bands": [
+      "amateur-6cm"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 1027, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 205, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 559,
+    "frequency_hz": 900000000,
+    "sample_rate_hz": 1000000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 272, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 54, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 565,
+    "frequency_hz": 1050000000,
+    "sample_rate_hz": 1000000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 35, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 7, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 868,
+    "frequency_hz": 51900000,
+    "sample_rate_hz": 666667,
+    "frequency_reason": "band-anchor",
+    "bands": [
+      "amateur-6m"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 1522, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 304, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 1005,
+    "frequency_hz": 4850000000,
+    "sample_rate_hz": 666667,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 691, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 138, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 1037,
+    "frequency_hz": 50000000,
+    "sample_rate_hz": 500000,
+    "frequency_reason": "base-grid",
+    "bands": [
+      "amateur-6m"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 167, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 33, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 1079,
+    "frequency_hz": 950000000,
+    "sample_rate_hz": 500000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 216, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 43, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  }
+]

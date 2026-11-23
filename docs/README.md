@@ -66,6 +66,7 @@ retain their original revision and test conditions. See the
 
 ## Recorded investigations and measurements
 
+- [Repaired device #2 TX on pi0b → pi0a RX: 30 MHz to 6 GHz at all rates, 0 dBm](baselines/20261123-pi0-board2-tx-frequency-rate-sweep/REPORT.md)
 - [Pi Zero board #1 frequency and sample-rate sweep: 30 MHz to 6 GHz, 0 dBm](baselines/20261121-pi0-board1-frequency-rate-sweep/REPORT.md)
 - [Board #1 frequency sweep with laptop distant: paired placement comparison](board1-laptop-distant-frequency-sweep-2026-11-18.md)
 

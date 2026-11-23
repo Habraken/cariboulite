@@ -1,0 +1,246 @@
+{
+  "passed": true,
+  "errors": [],
+  "matrix_points": 1376,
+  "host_audits": {
+    "rx": [
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume1079-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume565-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/session1/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume1005-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume1037-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume868-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume260-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume302-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume559-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume506-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume103-2/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      }
+    ],
+    "tx": [
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume1079-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume565-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/session1/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume1005-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume1037-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume868-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume260-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume302-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume559-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume506-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      },
+      {
+        "path": "pi0-board2-tx-20261123T125747Z/resume103-2/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      }
+    ]
+  },
+  "planned_points": 1376,
+  "total_result_rows": 1384,
+  "raw_paired_snapshots": 32142,
+  "transport_flagged": [
+    [
+      "matrix",
+      273
+    ],
+    [
+      "matrix",
+      975
+    ]
+  ],
+  "recovered_setup_failures": [
+    {
+      "point": 103,
+      "frequency_hz": 2900000000,
+      "sample_rate_hz": 4000000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 557, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 111, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 260,
+      "frequency_hz": 2425000000,
+      "sample_rate_hz": 2000000,
+      "frequency_reason": "band-anchor",
+      "bands": [
+        "amateur-13cm",
+        "ISM-2p4GHz"
+      ],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 792, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 158, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 302,
+      "frequency_hz": 4100000000,
+      "sample_rate_hz": 2000000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 216, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 43, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 506,
+      "frequency_hz": 5650100000,
+      "sample_rate_hz": 1333333,
+      "frequency_reason": "band-anchor",
+      "bands": [
+        "amateur-6cm"
+      ],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 1027, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 205, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 559,
+      "frequency_hz": 900000000,
+      "sample_rate_hz": 1000000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 272, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 54, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 565,
+      "frequency_hz": 1050000000,
+      "sample_rate_hz": 1000000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 35, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 7, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 868,
+      "frequency_hz": 51900000,
+      "sample_rate_hz": 666667,
+      "frequency_reason": "band-anchor",
+      "bands": [
+        "amateur-6m"
+      ],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 1522, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 304, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 1005,
+      "frequency_hz": 4850000000,
+      "sample_rate_hz": 666667,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 691, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 138, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 1037,
+      "frequency_hz": 50000000,
+      "sample_rate_hz": 500000,
+      "frequency_reason": "base-grid",
+      "bands": [
+        "amateur-6m"
+      ],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 167, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 33, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    },
+    {
+      "point": 1079,
+      "frequency_hz": 950000000,
+      "sample_rate_hz": 500000,
+      "frequency_reason": "base-grid",
+      "bands": [],
+      "attempt": 1,
+      "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 216, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 43, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+    }
+  ]
+}
