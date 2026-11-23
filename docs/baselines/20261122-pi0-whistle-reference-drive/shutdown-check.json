@@ -1,0 +1,22 @@
+[
+  {
+    "host": "pi0a-trixie",
+    "radio_owners": [],
+    "hashes": {
+      "build/radio-backend/cariboulite_radio_backend": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+      "build/whistle-drive/drive_probe.so": "84482cf1516524f946ff9d45ffaf9f8c298182241213c819cbd76b54a5ca38c6",
+      "build/whistle-drive/route_probe.so": "480c8754d8ac59e5c996a6aa6a58d32dc0da8aba3bda2a832deb723f6879f3c4",
+      "build/whistle-drive/capture_tap.so": "895855e0866684fc324e1003660046dd96de75eee152e1573852f02e418a60ff"
+    }
+  },
+  {
+    "host": "pi0b-trixie",
+    "radio_owners": [],
+    "hashes": {
+      "build/radio-backend/cariboulite_radio_backend": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+      "build/whistle-drive/drive_probe.so": "84482cf1516524f946ff9d45ffaf9f8c298182241213c819cbd76b54a5ca38c6",
+      "build/whistle-drive/route_probe.so": "480c8754d8ac59e5c996a6aa6a58d32dc0da8aba3bda2a832deb723f6879f3c4",
+      "build/whistle-drive/capture_tap.so": "895855e0866684fc324e1003660046dd96de75eee152e1573852f02e418a60ff"
+    }
+  }
+]

@@ -1,0 +1,58 @@
+{
+  "channel": "RF24",
+  "rf_hz": 430100000,
+  "tx_power_dbm": 0,
+  "attenuation_db_nominal": 90,
+  "capture_seconds_pcm": 6,
+  "capture_seconds_iq": 4,
+  "cases": [
+    {
+      "name": "e8__carrier",
+      "tone_amp": 0,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": 0,
+      "rate": 1000000,
+      "base_case": "carrier",
+      "drive_ma": 8,
+      "block": "e8",
+      "confirmation": true
+    },
+    {
+      "name": "f2__carrier",
+      "tone_amp": 0,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": 0,
+      "rate": 1000000,
+      "base_case": "carrier",
+      "drive_ma": 2,
+      "block": "f2",
+      "confirmation": true
+    },
+    {
+      "name": "g4__carrier",
+      "tone_amp": 0,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": 0,
+      "rate": 1000000,
+      "base_case": "carrier",
+      "drive_ma": 4,
+      "block": "g4",
+      "confirmation": true
+    },
+    {
+      "name": "h8__carrier",
+      "tone_amp": 0,
+      "tx_ctcss": 0,
+      "rx_ctcss": 0,
+      "offset": 0,
+      "rate": 1000000,
+      "base_case": "carrier",
+      "drive_ma": 8,
+      "block": "h8",
+      "confirmation": true
+    }
+  ]
+}

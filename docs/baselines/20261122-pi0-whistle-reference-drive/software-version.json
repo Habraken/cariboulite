@@ -1,0 +1,20 @@
+{
+  "commit": "a2b66c779bbb4370deb119756c90f155a68a4145",
+  "tx": "pi0a",
+  "rx": "pi0b",
+  "channel": "RF24",
+  "rf_hz": 430100000,
+  "tx_reference_drive_ma": 8,
+  "rx_reference_drive_ma_sequence": [
+    8,
+    4,
+    2,
+    8
+  ],
+  "reference_hz": 32000000,
+  "timing_workaround": false,
+  "expected_frontend_modes": {
+    "tx": 4,
+    "rx": 2
+  }
+}

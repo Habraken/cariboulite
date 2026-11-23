@@ -16,3 +16,6 @@ docs/baselines/20261118-board1-frequency-sweep/*.svg whitespace=-blank-at-eol
 docs/baselines/20261118-board1-frequency-sweep/*.csv whitespace=cr-at-eol
 docs/baselines/20261118-board1-laptop-distant-frequency-sweep/*.svg whitespace=-blank-at-eol
 docs/baselines/20261118-board1-laptop-distant-frequency-sweep/*.csv whitespace=cr-at-eol
+
+# Preserve qualification CSV line endings in the retained measurement evidence.
+docs/baselines/20261122-pi0-whistle-reference-drive/analysis/*.csv whitespace=cr-at-eol
