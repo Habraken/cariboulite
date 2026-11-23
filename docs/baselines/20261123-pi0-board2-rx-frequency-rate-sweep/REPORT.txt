@@ -1,0 +1,25 @@
+Pi Zero / repaired device #2 RX conducted NBFM frequency and sample-rate sweep
+Run: pi0-board2-rx-20261123T165729Z
+State: complete
+TX: pi0a-trixie, original reference; RX only: pi0b-trixie, repaired device #2.
+Nominal link attenuation: 90 dB; requested TX power: 0 dBm (uncalibrated).
+Signal: 1 kHz tone, amplitude 0.4; NBFM deviation setting 2500 Hz.
+Matched TX/RX sample rates; 2 s settling, 5 s measurement per point.
+Frequency grid: 172 points, 30 MHz to 5999.999 MHz; 6 GHz is exclusive.
+SINAD is the backend estimate over 300-3000 Hz; unavailable values remain blank.
+Transport-clean flags mean no counter increases/resets within the measurement window.
+Measurements describe the complete TX / attenuator / RX link, not calibrated receiver sensitivity.
+
+Completed matrix points: 1376 / 1376
+Independent raw-snapshot verification: PASS
+Receiver TX commands found: 0
+
+Rate Hz | points | points with numeric SINAD | transport flagged | RSSI mean range dBm | SINAD mean range dB
+4000000 | 172 | 166 | 0 | -92.27 to -56.67 | 1.36 to 20.84
+2000000 | 172 | 167 | 0 | -100.96 to -56.33 | 1.08 to 20.84
+1333333 | 172 | 167 | 0 | -112.43 to -56.21 | 1.09 to 21.63
+1000000 | 172 | 166 | 0 | -110.55 to -56.38 | 1.17 to 21.46
+800000 | 172 | 168 | 0 | -111.25 to -56.38 | 1.19 to 21.82
+666667 | 172 | 168 | 0 | -111.00 to -56.30 | 1.29 to 21.64
+500000 | 172 | 168 | 0 | -111.00 to -56.17 | 1.28 to 21.59
+400000 | 172 | 168 | 0 | -110.54 to -56.30 | 1.29 to 21.88

@@ -1,0 +1,14 @@
+{
+  "state": "complete",
+  "planned": 1376,
+  "completed": 1376,
+  "errors": [],
+  "raw_paired_snapshots": 31915,
+  "receiver_tx_commands": 0,
+  "role_logs_collected": {
+    "tx": true,
+    "rx": true
+  },
+  "results_verified": 1384,
+  "passed": true
+}

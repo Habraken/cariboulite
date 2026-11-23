@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "errors": [],
+  "matrix_points": 1376,
+  "host_audits": {
+    "rx": [
+      {
+        "path": "pi0-board2-rx-20261123T165729Z/session1/rx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      }
+    ],
+    "tx": [
+      {
+        "path": "pi0-board2-rx-20261123T165729Z/session1/tx/metadata.json",
+        "binary_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      }
+    ]
+  },
+  "planned_points": 1376,
+  "total_result_rows": 1384,
+  "raw_paired_snapshots": 31915,
+  "transport_flagged": [],
+  "recovered_setup_failures": []
+}

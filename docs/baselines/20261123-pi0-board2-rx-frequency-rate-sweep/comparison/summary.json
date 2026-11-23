@@ -1,0 +1,118 @@
+{
+  "direction_clean_full_pairs": 1269,
+  "median_reverse_minus_forward_sinad_db": -1.177458333333334,
+  "board1_clean_full_pairs": 1310,
+  "median_board2rx_minus_board1rx_sinad_db": 0.14660144927536134,
+  "rate_summary": [
+    {
+      "rate_hz": 4000000,
+      "clean_full_direction_pairs": 158,
+      "median_reverse_minus_forward_sinad_db": -1.2074833333333332,
+      "median_reverse_minus_forward_rssi_db": 1.2708333333333357,
+      "clean_full_board1_pairs": 163,
+      "median_board2rx_minus_board1rx_sinad_db": 0.16290217391304296
+    },
+    {
+      "rate_hz": 2000000,
+      "clean_full_direction_pairs": 157,
+      "median_reverse_minus_forward_sinad_db": -1.318083333333334,
+      "median_reverse_minus_forward_rssi_db": 1.3977272727272663,
+      "clean_full_board1_pairs": 163,
+      "median_board2rx_minus_board1rx_sinad_db": 0.3397371541501979
+    },
+    {
+      "rate_hz": 1333333,
+      "clean_full_direction_pairs": 158,
+      "median_reverse_minus_forward_sinad_db": -1.1513642598343683,
+      "median_reverse_minus_forward_rssi_db": 1.4855889724310742,
+      "clean_full_board1_pairs": 162,
+      "median_board2rx_minus_board1rx_sinad_db": 0.3184981060606056
+    },
+    {
+      "rate_hz": 1000000,
+      "clean_full_direction_pairs": 158,
+      "median_reverse_minus_forward_sinad_db": -1.1211534090909088,
+      "median_reverse_minus_forward_rssi_db": 1.4929226475279052,
+      "clean_full_board1_pairs": 163,
+      "median_board2rx_minus_board1rx_sinad_db": -0.0971666666666664
+    },
+    {
+      "rate_hz": 800000,
+      "clean_full_direction_pairs": 160,
+      "median_reverse_minus_forward_sinad_db": -1.0841249999999998,
+      "median_reverse_minus_forward_rssi_db": 1.4263833992094845,
+      "clean_full_board1_pairs": 165,
+      "median_board2rx_minus_board1rx_sinad_db": 0.09878947368421187
+    },
+    {
+      "rate_hz": 666667,
+      "clean_full_direction_pairs": 159,
+      "median_reverse_minus_forward_sinad_db": -1.1682826086956517,
+      "median_reverse_minus_forward_rssi_db": 1.411231884057969,
+      "clean_full_board1_pairs": 165,
+      "median_board2rx_minus_board1rx_sinad_db": 0.12783333333333324
+    },
+    {
+      "rate_hz": 500000,
+      "clean_full_direction_pairs": 160,
+      "median_reverse_minus_forward_sinad_db": -1.2037409090909095,
+      "median_reverse_minus_forward_rssi_db": 1.4433465085638986,
+      "clean_full_board1_pairs": 165,
+      "median_board2rx_minus_board1rx_sinad_db": 0.1464431818181815
+    },
+    {
+      "rate_hz": 400000,
+      "clean_full_direction_pairs": 159,
+      "median_reverse_minus_forward_sinad_db": -1.2750416666666666,
+      "median_reverse_minus_forward_rssi_db": 1.3769409937888213,
+      "clean_full_board1_pairs": 164,
+      "median_board2rx_minus_board1rx_sinad_db": 0.08979545454545423
+    }
+  ],
+  "acquisition_quality": {
+    "Earlier direction": {
+      "points": 1376,
+      "no_numeric_sinad": 66,
+      "partial_sinad": 7,
+      "transport_flagged": 2,
+      "failed_setup_attempts": 10
+    },
+    "Reverse direction": {
+      "points": 1376,
+      "no_numeric_sinad": 38,
+      "partial_sinad": 2,
+      "transport_flagged": 0,
+      "failed_setup_attempts": 0
+    },
+    "Historical board #1": {
+      "points": 1376,
+      "no_numeric_sinad": 35,
+      "partial_sinad": 3,
+      "transport_flagged": 0,
+      "failed_setup_attempts": 0
+    }
+  },
+  "frequency_regions": [
+    {
+      "region": "Below 2385 MHz",
+      "direction_pairs": 576,
+      "median_reverse_minus_forward_sinad_db": -10.25034329710145,
+      "board1_pairs": 606,
+      "median_board2rx_minus_board1rx_sinad_db": -1.7982708333333326
+    },
+    {
+      "region": "2385 to below 2495 MHz",
+      "direction_pairs": 63,
+      "median_reverse_minus_forward_sinad_db": 3.4562083333333344,
+      "board1_pairs": 64,
+      "median_board2rx_minus_board1rx_sinad_db": 5.196713257575758
+    },
+    {
+      "region": "2495 MHz and above",
+      "direction_pairs": 630,
+      "median_reverse_minus_forward_sinad_db": 0.15104166666666607,
+      "board1_pairs": 640,
+      "median_board2rx_minus_board1rx_sinad_db": 8.233767045454545
+    }
+  ]
+}

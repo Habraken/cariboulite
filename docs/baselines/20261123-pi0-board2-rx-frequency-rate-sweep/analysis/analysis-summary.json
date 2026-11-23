@@ -1,0 +1,160 @@
+{
+  "transport_flagged": 0,
+  "matrix_points": 1376,
+  "matrix_snapshots": 31727,
+  "numeric_sinad": 1338,
+  "full_sinad": 1336,
+  "common_full_frequencies": 166,
+  "median_sinad_rate_span_db": 0.47484940191387626,
+  "max_sinad_rate_span_db": 3.5089495614035098,
+  "history": {
+    "rx": {
+      "peak": {
+        "alignment.invalid_frames": 21
+      },
+      "positive_increments": {
+        "alignment.invalid_frames": 21
+      },
+      "final_snapshot": {
+        "monotonic_s": 27912.737114836,
+        "state": "IDLE",
+        "tx_running": false
+      }
+    },
+    "tx": {
+      "peak": {
+        "driver.underrun_periods": 4
+      },
+      "positive_increments": {
+        "driver.underrun_periods": 15
+      },
+      "final_snapshot": {
+        "monotonic_s": 44220.911945234,
+        "state": "IDLE",
+        "tx_running": false
+      }
+    }
+  },
+  "rate_summary": [
+    {
+      "rate_hz": 4000000,
+      "points": 172,
+      "transport_flagged": 0,
+      "numeric_sinad": 166,
+      "full_sinad": 166,
+      "median_rssi_dbm": -90.375,
+      "median_sinad_db": 12.116195652173914,
+      "sinad_ge_12_db": 85,
+      "paired_full_points": 166,
+      "median_sinad_difference_vs_1m_db": -0.022712121212121072,
+      "rssi_min_dbm": -92.27272727272727,
+      "rssi_max_dbm": -56.666666666666664
+    },
+    {
+      "rate_hz": 2000000,
+      "points": 172,
+      "transport_flagged": 0,
+      "numeric_sinad": 167,
+      "full_sinad": 166,
+      "median_rssi_dbm": -93.13068181818181,
+      "median_sinad_db": 11.85617391304348,
+      "sinad_ge_12_db": 83,
+      "paired_full_points": 166,
+      "median_sinad_difference_vs_1m_db": -0.06722500000000031,
+      "rssi_min_dbm": -100.95833333333333,
+      "rssi_max_dbm": -56.333333333333336
+    },
+    {
+      "rate_hz": 1333333,
+      "points": 172,
+      "transport_flagged": 0,
+      "numeric_sinad": 167,
+      "full_sinad": 166,
+      "median_rssi_dbm": -93.57954545454545,
+      "median_sinad_db": 12.013541666666667,
+      "sinad_ge_12_db": 84,
+      "paired_full_points": 166,
+      "median_sinad_difference_vs_1m_db": 0.06499456521739111,
+      "rssi_min_dbm": -112.43478260869566,
+      "rssi_max_dbm": -56.208333333333336
+    },
+    {
+      "rate_hz": 1000000,
+      "points": 172,
+      "transport_flagged": 0,
+      "numeric_sinad": 166,
+      "full_sinad": 166,
+      "median_rssi_dbm": -93.33333333333333,
+      "median_sinad_db": 12.037660714285714,
+      "sinad_ge_12_db": 83,
+      "paired_full_points": 166,
+      "median_sinad_difference_vs_1m_db": 0.0,
+      "rssi_min_dbm": -110.55,
+      "rssi_max_dbm": -56.375
+    },
+    {
+      "rate_hz": 800000,
+      "points": 172,
+      "transport_flagged": 0,
+      "numeric_sinad": 168,
+      "full_sinad": 168,
+      "median_rssi_dbm": -93.28598484848484,
+      "median_sinad_db": 12.142702898550725,
+      "sinad_ge_12_db": 85,
+      "paired_full_points": 166,
+      "median_sinad_difference_vs_1m_db": 0.2503333333333324,
+      "rssi_min_dbm": -111.25,
+      "rssi_max_dbm": -56.375
+    },
+    {
+      "rate_hz": 666667,
+      "points": 172,
+      "transport_flagged": 0,
+      "numeric_sinad": 168,
+      "full_sinad": 168,
+      "median_rssi_dbm": -93.4715909090909,
+      "median_sinad_db": 12.171108333333333,
+      "sinad_ge_12_db": 85,
+      "paired_full_points": 166,
+      "median_sinad_difference_vs_1m_db": 0.22694351119894618,
+      "rssi_min_dbm": -111,
+      "rssi_max_dbm": -56.30434782608695
+    },
+    {
+      "rate_hz": 500000,
+      "points": 172,
+      "transport_flagged": 0,
+      "numeric_sinad": 168,
+      "full_sinad": 168,
+      "median_rssi_dbm": -93.13068181818181,
+      "median_sinad_db": 12.17773814229249,
+      "sinad_ge_12_db": 85,
+      "paired_full_points": 166,
+      "median_sinad_difference_vs_1m_db": 0.198901515151515,
+      "rssi_min_dbm": -111,
+      "rssi_max_dbm": -56.17391304347826
+    },
+    {
+      "rate_hz": 400000,
+      "points": 172,
+      "transport_flagged": 0,
+      "numeric_sinad": 168,
+      "full_sinad": 168,
+      "median_rssi_dbm": -93.25,
+      "median_sinad_db": 12.203884963768116,
+      "sinad_ge_12_db": 85,
+      "paired_full_points": 166,
+      "median_sinad_difference_vs_1m_db": 0.2847950428194981,
+      "rssi_min_dbm": -110.54166666666667,
+      "rssi_max_dbm": -56.3
+    }
+  ],
+  "largest_rssi_rate_span": {
+    "frequency_hz": 2550000000,
+    "min_dbm": -112.43478260869566,
+    "max_dbm": -91.91304347826087,
+    "span_db": 20.52173913043478,
+    "numeric_sinad_min_db": 4.156916666666667,
+    "numeric_sinad_max_db": 6.827041666666666
+  }
+}

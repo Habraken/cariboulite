@@ -20,3 +20,4 @@ docs/baselines/20261118-board1-laptop-distant-frequency-sweep/*.csv whitespace=c
 # Preserve qualification CSV line endings in the retained measurement evidence.
 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/*.csv whitespace=cr-at-eol
 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/*.csv whitespace=cr-at-eol
+docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/*.csv whitespace=cr-at-eol
