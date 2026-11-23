@@ -1,0 +1,67 @@
+pi0b TX startup stall and FPGA reload recovery — 24 November 2026
+
+Repaired device #2, UUID 36b67ac4-b313-4369-99bd-4b3e09caabfa, on pi0b-trixie.
+The operator confirmed the nominal 90 dB attenuated HiF link before any TX test.
+Checks performed while the antenna was connected were read-only.
+
+The original log's rt_error=1 was a Linux real-time scheduling permission
+failure. Running the backend as root granted SCHED_FIFO worker priorities.
+The subsequent TX_PIPELINE_START failure was a separate, reproduced stall.
+
+Valid conducted tests used 430.1 MHz, requested -12 dBm (reported -11 dBm),
+NBFM, internal 1 kHz tone at amplitude 0.4 and deviation setting 2500 Hz.
+All eight supported native sample rates were exercised. The application and
+shared-library hashes stayed identical throughout the comparison.
+
+Phase                         Starts  Startup failures
+Before FPGA reload                26                 1
+After FPGA reload                 60                 0
+After normal backend restart      26                 0
+
+The reproduced failure was cycle 10 of the first phase, at 1 MS/s. Its kernel
+TX FIFO reached its 262144-byte admission limit, with no completed DMA periods
+and no bytes dequeued. The opening cue timed out. After clearing the latched
+FAULT using the global Stop command, the next start succeeded without a Pi
+reboot. TX Stop alone does not clear this latched control fault.
+
+The installed firmware/top.bin was explicitly reloaded through the backend's
+fpga_program lifecycle operation. Programming succeeded. Its SHA-256 is:
+dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6
+
+All 86 post-reload starts reached TX with modem STATE=4, writer progress and
+DMA retirement. Their recorded driver underrun counters remained zero. Each
+phase ended IDLE with TX off; final process/device-owner checks confirmed that
+pi0b had no radio backend, controller or /dev/smi owner. Software production
+sources, binaries, installed FPGA image file and flash were not modified.
+The programming operation reloads volatile FPGA configuration.
+
+Interpretation: FPGA reload is a demonstrated recovery under these conditions.
+This finite run does not establish a permanent fix or a confirmed root cause.
+The FPGA image active before reloading was not read back, so stale-image and
+state-reset explanations are not distinguished. Power-cycle persistence was
+not tested. The source's synchronous dual-clock FIFO reset behavior is a
+possible investigation lead; no candidate HDL change was built or deployed.
+These tests did not measure SINAD or establish a cause for the whistle.
+
+User-facing recovery: stop RX/TX and use "fpga program" in the interactive
+controller. This uses the installed firmware/top.bin. Continue launching both
+backend and controller with sudo for matching socket paths and RT scheduling.
+At release, the H650e headset was on pi0a; pi0b microphone/playback operation
+requires reconnecting it or selecting another available audio device.
+
+Evidence and verification
+
+host-artifacts.tar.gz preserves before/after metadata, full status snapshots,
+command/reply traces, backend logs and filtered kernel logs. summary.json is
+recomputed by running: python3 verify_evidence.py
+release.json records the final device-owner check. acquire_startup_test.py is
+the final acquisition harness: executing it transmits RF and requires hardware
+availability and a confirmed conducted link. Verification never accesses RF.
+
+Excluded setup attempts remain in the archive. The initial standalone harness
+retained microphone mode while the headset was on pi0a, producing 31 TX_INIT
+audio-device failures. Those attempts never exercised the original DMA stall
+and are excluded from all three comparison rows. Earlier existing-session
+probes include a successful retry followed by a diagnostic-command rejection;
+they are also excluded from the formal counts. The final acquisition source
+reflects the corrected tone setup, not those preliminary harness revisions.
