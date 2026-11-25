@@ -1,0 +1,49 @@
+{
+  "passed": true,
+  "rows": [
+    {
+      "rate_hz": 4000000,
+      "auto_selected": true,
+      "samples": 39944192,
+      "measurement_seconds": 9.96808686500026,
+      "observed_samples_per_second": 4007207.455249133,
+      "packets": 2438,
+      "maximum_packet_gap_seconds": 0.008687784000358079,
+      "passed": true
+    },
+    {
+      "rate_hz": 2000000,
+      "auto_selected": true,
+      "samples": 5941008,
+      "measurement_seconds": 2.9773566349995235,
+      "observed_samples_per_second": 1995396.832936324,
+      "packets": 726,
+      "maximum_packet_gap_seconds": 0.016602486999545363,
+      "passed": true
+    },
+    {
+      "rate_hz": 4000000,
+      "auto_selected": true,
+      "samples": 19922944,
+      "measurement_seconds": 4.968438769999921,
+      "observed_samples_per_second": 4009900.276983854,
+      "packets": 1217,
+      "maximum_packet_gap_seconds": 0.008519952999449742,
+      "passed": true
+    }
+  ],
+  "auto_bandwidth_log_results": [
+    [
+      "4000000.000000",
+      "2000000.000000"
+    ],
+    [
+      "2000000.000000",
+      "2000000.000000"
+    ],
+    [
+      "4000000.000000",
+      "2000000.000000"
+    ]
+  ]
+}

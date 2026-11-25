@@ -1,0 +1,70 @@
+SDR++ sample-rate change investigation — 25 November 2026
+
+Reported symptom: changing sample rate when using the Raspberry Pi 4 radios
+with SDR++ locks up the UI. Direct Pi UI versus remote SDR++ server use,
+triggering rate pair, installed versions and loaded plugin are not yet known.
+
+Confirmed source defect in the CaribouLite Soapy adapter:
+software/libcariboulite/src/soapy_api/Cariboulite.cpp, setSampleRate.
+An assignment followed the single-line 1333000 Hz condition, leaving the
+following block unconditional. That block overwrote all earlier selections
+with the 4e6/3 divider and emitted the rounded-rate warning on every call.
+Requests for 400000, 500000, 2e6/3, 800000 and 1000000 Hz were consequently
+programmed as 4e6/3. Later conditions restored 2 MS/s and 4 MS/s selections.
+This is consistent with the unexplained rounded-rate warning recorded in
+docs/code-review-2026-09-12.md, but that historical log is not a live reproduction.
+
+Local fix: make the 1333000 Hz block conditional. Preserve the existing
+supported native rates, legacy aliases and all other selection behavior.
+No plugin or application has been deployed or restarted.
+
+Validation: python3 software/libcariboulite/tests/test_soapy_rates.py passes.
+The harness compiles the actual production set/get/list rate method bodies
+with real radio types and mock setters/getters. It checks the 1 MS/s regression,
+all eight native rates in RX/TX with forward/reverse transitions, cutoff and
+opposite-direction preservation, and warnings only for legacy aliases.
+The original source fails the regression. No hardware or RF is used.
+This isolated check does not replace a full Linux Soapy build or UI test.
+
+The UI lockup remains unresolved. A rate mismatch alone does not establish
+a deadlock. Upstream SDR++ Soapy source currently disables its rate selection
+while running and its stop path deactivates/closes the stream before joining
+the reader thread. The installed version and remote-server path must be
+checked before attributing the freeze to that sequence.
+Reference inspected 25 November 2026:
+https://github.com/AlexandreRouma/SDRPlusPlus/blob/master/source_modules/soapy_source/src/main.cpp
+
+Neither pi4f-trixie nor pi4g-trixie resolved by bare or .local hostname from
+this workstation. Next: identify the accessible Pi and direct/server topology;
+record SDR++/Soapy/plugin build identities; reproduce a specific rate change;
+collect logs and all thread stacks at the freeze; separate the rate mapping
+fix from any stop/reconfigure/network/UI fault. Receiving only is sufficient.
+
+Remote-client follow-up:
+Operator uses SDR++ on the MacBook with sdrpp --server. Working interpretation
+is Mac client -> Pi server; exact server host/address is still needed.
+Local SDRPlusPlus checkout aa2b4b1c5814cc2f832898a9e4a1bdfc38e7ac8d was inspected
+read-only; it is not yet established as either installed executable's source.
+Its client showMenu waits synchronously for a UI action acknowledgement
+with a 10000 ms protocol timeout. The server's rate-selection callback sends
+a sample-rate notification, and the client's network worker applies it via
+core::setInputSampleRate before receiving subsequent packets. This supplies
+a separate UI/DSP/network path to investigate; no deadlock is proved by this
+static trace. The Soapy rate setter is called on stream start, rather than
+by the stopped source's rate-selection callback in this inspected version.
+Therefore a freeze while selecting a rate before starting RX may occur
+without reaching the defective Soapy setter at all. Need installed versions,
+exact click/start sequence, logs and thread stacks to distinguish these cases.
+
+Resolution of lower-rate pitch mismatch:
+The operator clarified that rate selection itself works, but the lower rates
+have incorrect audio pitch. Original installed plugin measured ~4e6/3 samples/s
+for every affected lower-rate setting. The corrected plugin passed all eight
+reported-rate/throughput checks and was installed on pi4f-trixie with backup;
+the normal server was restarted and its mapped module and listening socket
+verified. See baselines/20261125-pi4f-soapy-rate-investigation/REPORT.txt and
+its deployment evidence. Mac listening verification is still for the operator.
+
+Final operator confirmation: patched SDR++ Auto bandwidth works. The separate
+SDR++ source commit is 14926d32a4012ef23722d0c43096d67719ee32cd. See the
+20261125-pi4f-sdrpp-auto-bandwidth evidence package for deployment and tests.

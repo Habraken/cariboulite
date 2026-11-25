@@ -66,6 +66,8 @@ retain their original revision and test conditions. See the
 
 ## Recorded investigations and measurements
 
+- [SDR++ Auto-bandwidth fix for 4 MS/s on pi4f](baselines/20261125-pi4f-sdrpp-auto-bandwidth/REPORT.txt)
+- [Pi4f Soapy sample-rate mismatch and deployed pitch fix](baselines/20261125-pi4f-soapy-rate-investigation/REPORT.txt)
 - [Two-Pi demodulated audio and IF/LO coupling investigation](baselines/20261125-pi0-demodulated-audio/REPORT.txt)
 - [Physical separation and rotation repeat: whistle suppression](baselines/20261125-pi0-physical-separation/REPORT.txt)
 - [Pi0b TX startup stall and FPGA reload recovery](baselines/20261124-pi0b-tx-startup-recovery/REPORT.txt)

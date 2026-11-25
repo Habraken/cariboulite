@@ -1,0 +1,14 @@
+{
+  "pid": 3240,
+  "loaded_correct_module": true,
+  "listening": true,
+  "installed_sha256": "89ab47b10a21c9fc3c103e8b82635a72f385fd8cccf6ad36984fe9399673913b",
+  "socket_status": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                          \nLISTEN 0      4096         0.0.0.0:5259      0.0.0.0:*    users:((\"sdrpp\",pid=3240,fd=13))\n",
+  "mapped_module": [
+    "7fb3e50000-7fb3e66000 r-xp 00000000 b3:02 524404                         /usr/lib/sdrpp/plugins/soapy_source.so",
+    "7fb3e66000-7fb3e7f000 ---p 00016000 b3:02 524404                         /usr/lib/sdrpp/plugins/soapy_source.so",
+    "7fb3e7f000-7fb3e80000 r--p 0001f000 b3:02 524404                         /usr/lib/sdrpp/plugins/soapy_source.so",
+    "7fb3e80000-7fb3e81000 rw-p 00020000 b3:02 524404                         /usr/lib/sdrpp/plugins/soapy_source.so"
+  ],
+  "cariboulite_plugin_sha256": "f82c118c09086a0eebfab654d85ccb6882e8369bcc780a4d1a3f6aed56798766"
+}

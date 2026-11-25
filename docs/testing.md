@@ -24,6 +24,16 @@ terminals and a writable temporary directory.
 
 ## Hardware-free regression checks
 
+The focused Soapy rate-selection check runs without SoapySDR or a built library:
+
+```sh
+python3 software/libcariboulite/tests/test_soapy_rates.py
+```
+
+It compiles the production rate methods against mock radio calls and checks
+all eight advertised RX/TX rates, repeated transitions, cutoff preservation
+and deprecated rounded-rate aliases. It does not exercise SDR++ or live streams.
+
 For the focused backend/controller suite:
 
 ```sh

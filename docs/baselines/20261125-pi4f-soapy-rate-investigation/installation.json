@@ -1,0 +1,10 @@
+{
+  "installed": "/usr/local/lib/SoapySDR/modules0.8-3/libSoapyCariboulite.so",
+  "installed_sha256": "f82c118c09086a0eebfab654d85ccb6882e8369bcc780a4d1a3f6aed56798766",
+  "source_sha256": "11868ea4aba9e55528bcbc80f0c3354b121ccd449400baa325de7491b56b2c2c",
+  "backup_plugin": "/home/pi/src/cariboulite/build/soapy-rate-fix-20261125/backup/libSoapyCariboulite.so",
+  "backup_source": "/home/pi/src/cariboulite/build/soapy-rate-fix-20261125/backup/Cariboulite.cpp",
+  "time_unix": 1795642454.1331346,
+  "hardware_rates_passed": 8,
+  "mock_tests_passed": true
+}

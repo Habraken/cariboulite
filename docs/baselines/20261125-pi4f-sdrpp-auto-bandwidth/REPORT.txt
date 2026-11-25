@@ -1,0 +1,66 @@
+SDR++ Soapy Auto-bandwidth fix — 25 November 2026
+
+Installed on pi4f-trixie (192.168.6.163), board #2 HiF, for the Mac SDR++
+client / Pi SDR++ server setup. This is a separate SDR++ source-module fix;
+the earlier CaribouLite Soapy sample-rate fix remains installed unchanged.
+
+Problem: SDR++ selectBwBySr initializes its fallback to bandwidthList[1],
+the narrowest real bandwidth after the Auto sentinel. With 4 MS/s selected,
+no advertised CaribouLite bandwidth reaches that rate (maximum 2 MHz), so
+Auto fell back to 20 kHz and enabled narrow software filtering. The operator
+confirmed selecting 2 MHz manually allowed the stream to start.
+
+Fix: initialize the fallback to bandwidthList.back(), the widest available
+bandwidth. Retain the existing reverse search for the smallest bandwidth
+that reaches the requested rate. When no such bandwidth exists, clamp to
+the widest available. The method retains its existing sorted-list contract
+and nonempty-list precondition; its caller requires more than two entries.
+Manual bandwidth selections do not invoke this method.
+
+Validation:
+- The source-level regression compiles the actual selection method with mock
+  logging. It fails on original code and passes on corrected code on both
+  the Mac and Pi. It covers all eight native rates, exact/below/above limits,
+  forward/reverse transitions and a different device's bandwidth ceiling.
+- Built only the source module against the installed SDR++ core; ldd -r
+  found no undefined symbols. Build commands/hashes retained in build.json.
+- A temporary localhost server using the candidate module and copied test
+  configuration received HiF at 430.1 MHz, Int8, no compression, Auto selected.
+  Tested 4 MS/s for 10 s, 2 MS/s for 3 s, then 4 MS/s for 5 s. Each start
+  logged Auto bandwidth 2000000 Hz. UI snapshots confirmed Auto remained
+  selected throughout. Throughput matched requested rate within 0.3%, and
+  maximum inter-packet gaps were below 17 ms. No TX was performed.
+- Normal server restarted as pi (PID 3240), listening at 0.0.0.0:5259.
+  Verified its mapped module inode matches the replacement file.
+
+Installed module:
+  /usr/lib/sdrpp/plugins/soapy_source.so
+SHA256 89ab47b10a21c9fc3c103e8b82635a72f385fd8cccf6ad36984fe9399673913b
+Rollback module and original source:
+  /home/pi/src/SDRPlusPlus/build/auto-bandwidth-fix-20261125/backup/
+Pi source revision before fix: 65a0e11d3d0c2a6484988fe0a5855eee036f743a
+Applied the same scoped source edit to its source_modules/soapy_source/src/main.cpp
+and the adjacent SDRPlusPlus checkout on the Mac. Pre-existing unrelated
+Mac core/libcorrect/CMakeLists.txt modifications were preserved.
+
+Only the SDR++ Soapy source module was installed, atomically with backup.
+The installed SDR++ core and other source modules were not replaced. Normal
+user configuration was not changed: the Mac client can reconnect and select
+Auto. The previous Int8 / compression-off operating settings still apply.
+No new subjective Mac listening check was conducted during this deployment;
+the preceding manual-bandwidth setup already had operator-confirmed clean
+4 MS/s audio. This patch addresses Auto selection, not the earlier shutdown
+handler issue or general network throughput limits.
+
+Evidence: deployment.tar.gz retains build/test/installation metadata, original
+and corrected source, candidate and rollback modules. sdrpp-auto-bandwidth.patch
+can be applied to the corresponding upstream source. The build/install/server
+test scripts operate the Pi and are not offline checks.
+
+Offline regression from the repository root:
+  python3 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/test_auto_bandwidth.py \
+    --source /path/to/SDRPlusPlus/source_modules/soapy_source/src/main.cpp
+
+Post-deployment acceptance: the operator confirmed that the patched Auto
+bandwidth works. SDR++ source fix committed in the adjacent repository as
+14926d32a4012ef23722d0c43096d67719ee32cd.

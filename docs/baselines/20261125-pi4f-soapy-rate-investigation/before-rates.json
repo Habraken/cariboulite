@@ -1,0 +1,85 @@
+{
+  "exit_code": 2,
+  "rates": [
+    {
+      "requested_hz": 4000000.0,
+      "reported_hz": 4000000.0,
+      "samples": 6029312,
+      "elapsed_seconds": 1.50732,
+      "observed_samples_per_second": 4000020.0,
+      "errors": 0,
+      "timeouts": 0,
+      "passed": true
+    },
+    {
+      "requested_hz": 2000000.0,
+      "reported_hz": 2000000.0,
+      "samples": 3014656,
+      "elapsed_seconds": 1.50732,
+      "observed_samples_per_second": 2000010.0,
+      "errors": 0,
+      "timeouts": 0,
+      "passed": true
+    },
+    {
+      "requested_hz": 1333330.0,
+      "reported_hz": 1333330.0,
+      "samples": 2031616,
+      "elapsed_seconds": 1.52412,
+      "observed_samples_per_second": 1332980.0,
+      "errors": 0,
+      "timeouts": 0,
+      "passed": true
+    },
+    {
+      "requested_hz": 1000000.0,
+      "reported_hz": 1333330.0,
+      "samples": 2031616,
+      "elapsed_seconds": 1.52369,
+      "observed_samples_per_second": 1333350.0,
+      "errors": 0,
+      "timeouts": 0,
+      "passed": false
+    },
+    {
+      "requested_hz": 800000,
+      "reported_hz": 1333330.0,
+      "samples": 2031616,
+      "elapsed_seconds": 1.5237,
+      "observed_samples_per_second": 1333350.0,
+      "errors": 0,
+      "timeouts": 0,
+      "passed": false
+    },
+    {
+      "requested_hz": 666667,
+      "reported_hz": 1333330.0,
+      "samples": 2031616,
+      "elapsed_seconds": 1.52371,
+      "observed_samples_per_second": 1333330.0,
+      "errors": 0,
+      "timeouts": 0,
+      "passed": false
+    },
+    {
+      "requested_hz": 500000,
+      "reported_hz": 1333330.0,
+      "samples": 2031616,
+      "elapsed_seconds": 1.52377,
+      "observed_samples_per_second": 1333280.0,
+      "errors": 0,
+      "timeouts": 0,
+      "passed": false
+    },
+    {
+      "requested_hz": 400000,
+      "reported_hz": 1333330.0,
+      "samples": 2031616,
+      "elapsed_seconds": 1.52366,
+      "observed_samples_per_second": 1333380.0,
+      "errors": 0,
+      "timeouts": 0,
+      "passed": false
+    }
+  ]
+}

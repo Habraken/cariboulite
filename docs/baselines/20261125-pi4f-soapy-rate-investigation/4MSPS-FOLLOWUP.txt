@@ -1,0 +1,53 @@
+4 MS/s SDR++ follow-up — 25 November 2026
+
+Operator initially reported an immediate IQ stall at 4 MS/s. Pi4f log showed
+SDR++ Auto bandwidth selected 20000 Hz at that rate. The maximum advertised
+analog bandwidth is 2000000 Hz, below the 4000000 Hz sample rate. The source
+module's selectBwBySr initializes its fallback to bandwidthList[1] (20 kHz),
+then exits immediately when no bandwidth is >= the requested sample rate.
+This also enables a sixth-order software filter in the CaribouLite adapter.
+The operator confirmed explicitly selecting 2 MHz bandwidth starts the stream.
+This is an independently demonstrated Auto-bandwidth selection defect; no
+SDR++ source-module patch has been deployed. bw-before.cpp and bw-fixed.cpp
+are isolated method checks illustrating the current and capped fallback
+behavior, not complete replacement module sources.
+
+Operator next reported garbled audio. A live server snapshot showed a TCP
+send queue of 3935664 bytes and 3789416 bytes not yet sent. The sender thread
+was inside net::ConnClass::write, with the compressor and Soapy producer
+waiting behind it. Kernel RX counters increased from missed:2623 to 2645
+in the inspected earlier receive run. The kernel callback increments this
+counter when the RX FIFO lacks space for a DMA chunk. These observations
+support transport backpressure causing receive sample loss; they do not
+identify a calibrated maximum capacity for the network or Mac.
+
+After a client reconnection, passive inspection of actual packet headers
+confirmed 4000000 Hz, signed 8-bit I/Q, compression disabled. TCP delivered
+63.67 Mbit/s over the recorded five-second interval. Unsent bytes remained
+0–936, rather than a growing multi-megabyte backlog. RX missed-buffer counts
+were zero at each observation (driver log timestamps 7864.57–7869.49 seconds,
+within the receive run starting around 7824.42 seconds). The operator then
+confirmed: audio is clean.
+
+Working 4 MS/s configuration:
+  Soapy sample rate: 4 MS/s
+  Soapy bandwidth: explicit 2.00 MHz (Auto has the defect described above)
+  SDR++ Server sample type: Int8
+  SDR++ Server compression: disabled
+
+Conclusion: the deployed Soapy rate mapping fix remains in place. This
+configuration works at 4 MS/s through the Mac client with operator-confirmed
+clean audio. The earlier backlog and RX losses explain a plausible mechanism
+for garbling, but no controlled one-setting-at-a-time experiment separated
+sample-type selection, compression and reconnection effects. Compression
+alone is not established as the cause. No further binary was installed and
+neither application was restarted or stopped by this follow-up inspection.
+
+4msps-followup.tar.gz retains live observation metadata, driver counters and
+server log. observe_stream.py reads packet-format metadata from /proc/PID/mem
+without stopping the process. check_transport.py retains the earlier GDB-based
+check; its subsequent TCP samples were idle and are not used as a throughput
+measurement. GDB snapshots briefly pause the server and must not be treated
+as undisturbed performance measurements; earlier stalled snapshots coincided
+with stream stops and are not proof of a live hardware deadlock. The final
+healthy stream measurements used the passive method instead.

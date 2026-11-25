@@ -1,0 +1,123 @@
+Pi4f SDR++ server / sample-rate investigation — 25 November 2026
+
+Host pi4f-trixie, 192.168.6.163; HAT UUID
+36b67ac4-b313-4369-99bd-4b3e09caabfa (repaired board #2).
+SDR++ reports 1.2.1; Pi source checkout 65a0e11d3d0c2a6484988fe0a5855eee036f743a.
+SoapySDR v0.8.1-gdb0fae7c, API 0.8.200, ABI 0.8-3, /usr/local.
+Installed plugin /usr/local/lib/SoapySDR/modules0.8-3/libSoapyCariboulite.so
+SHA256 c0f83354839b23a1b582b1c3346dd8b387e37f922d28b1d163a8b0e31400cea9.
+Installed plugin differs from the Pi build-tree plugin. The Pi checkout has
+pre-existing modifications and has not been changed by this investigation.
+
+A separate /tmp configuration, copied from the user's SDR++ configuration,
+selected SoapySDR on localhost port 5259. Initial saved device labels referred
+to different HAT identities; selection fell back to the first enumerated device
+(S1G). Probe explicitly selected current HiF[3831373b] before receiving.
+
+Stopped-state rate selections at all eight advertised rates acknowledged in
+about 44 ms. Nine HiF RX cycles at 430.1 MHz (2M, 1M, 4M, 400k, 666.67k,
+1.333M, 800k, 500k, 2M) each delivered baseband packets and stopped with a
+responsive GET_UI acknowledgement. No TX command exists in the probe.
+The installed setup did not reproduce the reported UI freeze with this
+headless client. Similar ~5.2 MB byte totals for nominal lower-rate one-second
+runs are consistent with the confirmed 4e6/3 rate-selection defect. Startup
+latency, framing overhead and variable run duration preclude treating these
+byte totals as calibrated sample-rate measurements.
+
+probe_server.py retains the final probe. server-baseline.tar.gz retains its
+server log, packet metadata and UI snapshots. Initial probe iterations exposed
+a connection-handshake race when GET_UI was sent before consuming the initial
+sample-rate packet; the final probe waits for that notification. These early
+probe failures are not evidence of the operator's rate-change freeze.
+
+Local Mac UI automation failed to launch SDR++ (timeout), so end-to-end Mac
+client reproduction remains outstanding. A separate logged server was started
+on LAN port 5259, limited by timeout to 900 seconds, using the test configuration
+and original installed plugin. User configuration and installed plugins remain
+unchanged. Receive hardware is idle until the client starts it.
+
+The local source fix and hardware-free regression are described in
+../../soapy-sample-rate-investigation-2026-11-25.txt. Neither that fix nor a new
+plugin was installed on pi4f. Need Mac reproduction, logs and thread stacks
+before diagnosing or claiming resolution of the UI freeze.
+
+Fix deployment — same evening, 25 November 2026
+
+Operator clarified the repeatable symptom: changing rates works, but lower
+rates have incorrect demodulated audio pitch. Authorized installing the fix.
+
+The exact source bug is an assignment after the 1333000 Hz if condition,
+leaving its following block unconditional. The one-line correction makes
+that block conditional. The Pi source matched the workstation's original
+source SHA256 before this scoped edit. All other Pi checkout edits remain.
+
+The candidate recompiles only Cariboulite.cpp and relinks the existing Pi
+Soapy build objects/static radio libraries using its recorded CMake link
+command. This uses the existing November build dependencies, rather than
+reproducing the older October installed binary. build.json retains all
+commands, link-input hashes and final identities. No system shared library,
+installed FPGA image file or kernel module was replaced. Tests initialize
+hardware through the normal SDK path.
+
+Hardware comparison explicitly loaded each module, selected board #2 HiF,
+received at 430.1 MHz, and checked reported rate plus sample throughput at
+each advertised rate. No TX was performed. After 0.3 s settling, samples
+were counted for at least 1.5 s per rate; wall-clock throughput is a diagnostic,
+not calibrated clock metrology. Every before/after window had zero stream
+errors and zero timeouts.
+
+Original installed plugin:
+  4M, 2M and 4M/3 behaved correctly.
+  Requests for 1M, 800k, 2M/3, 500k and 400k all reported and delivered ~4M/3.
+Corrected candidate:
+  All eight rates reported correctly and throughput agreed within 0.25%.
+  Examples: 1M request -> ~1000000 samples/s;
+            400k request -> ~400008 samples/s.
+
+Linux hardware-free checks compiled production Soapy stream code with mocks,
+including the corrected Cariboulite.cpp: inactive waits, failed activation,
+deadlines, partial counts, conversion, errors, flags and close/restart passed.
+SMI timed transfer checks (EINTR, deadlines, partial writes, RX corruption)
+and all-rate RX/TX selection/alias regression passed. The new rate regression
+also passes locally on the Mac. TX hardware behavior was not tested.
+
+Installed the corrected module atomically at:
+  /usr/local/lib/SoapySDR/modules0.8-3/libSoapyCariboulite.so
+SHA256 f82c118c09086a0eebfab654d85ccb6882e8369bcc780a4d1a3f6aed56798766
+Applied the same one-line source correction on pi4f for future builds.
+Rollback plugin and original source remain at:
+  /home/pi/src/cariboulite/build/soapy-rate-fix-20261125/backup/
+
+Restarted /usr/bin/sdrpp --server as user pi (PID 2667). Verified its actual
+loaded plugin inode matches the replacement file and its socket is listening
+on 0.0.0.0:5259. Server log is retained on the Pi at:
+  /home/pi/src/cariboulite/build/soapy-rate-fix-20261125/server-after-install.log
+The active server had exited before the hardware-check phase, so no existing
+server needed termination at that point (previous-servers.json is empty).
+
+Conclusion: the lower-rate pitch error is explained by the hardware/client
+sample-rate mismatch. The installed fix corrects that mismatch on all eight
+rates. Final listening verification through the Mac client remains for the
+operator; no claim of subjective audio verification or resolution of the
+separate earlier shutdown hang is made.
+
+fix-deployment.tar.gz contains before/after logs, actual plugin binaries,
+rollback source/plugin and build/deployment metadata. Top-level JSON files
+provide the key measured results without unpacking the archive. The supplied
+build/install/check scripts operate the Pi and must not be used as offline
+verification commands.
+
+4 MS/s Mac-client follow-up: operator-confirmed clean audio with explicit
+2 MHz bandwidth, Int8 server samples and compression disabled. Actual wire
+format, ~64 Mbit/s delivery and zero RX missed-buffer counters verified.
+SDR++ Auto bandwidth incorrectly selects 20 kHz at 4 MS/s; that separate
+module defect has not been patched. See 4MSPS-FOLLOWUP.txt for evidence and
+limits, including the earlier backpressure/garbling observations.
+
+Auto-bandwidth fix subsequently deployed and validated on the same evening.
+See ../20261125-pi4f-sdrpp-auto-bandwidth/REPORT.txt for the separate SDR++
+source-module patch, live Auto-selection tests and rollback identity.
+
+Operator subsequently confirmed that the deployed SDR++ Auto-bandwidth fix
+works. The end-to-end rate/pitch investigation now has operator acceptance
+for the working 4 MS/s configuration, including Auto bandwidth.

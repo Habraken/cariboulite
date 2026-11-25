@@ -1,0 +1,74 @@
+[
+  {
+    "time": 7864.689143747,
+    "sample_rate_hz": 4000000.0,
+    "wire_bits": 8,
+    "compressed": false,
+    "wire_packet_bytes": 25552,
+    "samples_per_packet": 12768,
+    "ss": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port \nESTAB 0      65568  192.168.6.163:5259 192.168.6.168:58121\n\t cubic wscale:6,11 rto:208 rtt:5.716/1.747 ato:48 mss:1448 pmtu:1500 rcvmss:536 advmss:1448 cwnd:245 ssthresh:121 bytes_sent:323382026 bytes_acked:323317394 bytes_received:166 segs_out:226771 segs_in:23910 data_segs_out:226765 data_segs_in:9 send 496515045bps lastsnd:4 lastrcv:40372 lastack:4 pacing_rate 595752912bps delivery_rate 80081752bps delivered:226721 app_limited busy:40220ms rwnd_limited:16ms(0.0%) unacked:45 rcv_space:14480 rcv_ssthresh:64088 notsent:936 minrtt:1.466 snd_wnd:577088 rcv_wnd:65536\n",
+    "latest_rx_counter": "[ 7864.569861] smi-stream-dev soc:smi_dev: init programmed read. missed:0, sema 4900",
+    "bytes_acked": 323317394,
+    "notsent": 936
+  },
+  {
+    "time": 7865.726058731,
+    "sample_rate_hz": 4000000.0,
+    "wire_bits": 8,
+    "compressed": false,
+    "wire_packet_bytes": 25552,
+    "samples_per_packet": 12768,
+    "ss": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port \nESTAB 0      11992  192.168.6.163:5259 192.168.6.168:58121\n\t cubic wscale:6,11 rto:208 rtt:5.743/1.71 ato:48 mss:1448 pmtu:1500 rcvmss:536 advmss:1448 cwnd:245 ssthresh:121 bytes_sent:331683626 bytes_acked:331632538 bytes_received:166 segs_out:232595 segs_in:24512 data_segs_out:232589 data_segs_in:9 send 494180742bps lastrcv:41408 pacing_rate 592926552bps delivery_rate 77820928bps delivered:232554 app_limited busy:41248ms rwnd_limited:16ms(0.0%) unacked:36 rcv_space:14480 rcv_ssthresh:64088 notsent:920 minrtt:1.466 snd_wnd:577088 rcv_wnd:65536\n",
+    "latest_rx_counter": "[ 7865.388983] smi-stream-dev soc:smi_dev: init programmed read. missed:0, sema 5000",
+    "bytes_acked": 331632538,
+    "notsent": 920
+  },
+  {
+    "time": 7866.762495611,
+    "sample_rate_hz": 4000000.0,
+    "wire_bits": 8,
+    "compressed": false,
+    "wire_packet_bytes": 25552,
+    "samples_per_packet": 12768,
+    "ss": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port \nESTAB 0      58328  192.168.6.163:5259 192.168.6.168:58121\n\t cubic wscale:6,11 rto:208 rtt:5.535/2.13 ato:48 mss:1448 pmtu:1500 rcvmss:536 advmss:1448 cwnd:245 ssthresh:121 bytes_sent:339971666 bytes_acked:339913338 bytes_received:166 segs_out:238408 segs_in:25097 data_segs_out:238402 data_segs_in:9 send 512751581bps lastsnd:4 lastrcv:42444 pacing_rate 615260208bps delivery_rate 87608984bps delivered:238362 app_limited busy:42264ms rwnd_limited:16ms(0.0%) unacked:41 rcv_space:14480 rcv_ssthresh:64088 minrtt:1.466 snd_wnd:577088 rcv_wnd:65536\n",
+    "latest_rx_counter": "[ 7866.208192] smi-stream-dev soc:smi_dev: init programmed read. missed:0, sema 5100",
+    "bytes_acked": 339913338,
+    "notsent": 0
+  },
+  {
+    "time": 7867.798684273,
+    "sample_rate_hz": 4000000.0,
+    "wire_bits": 8,
+    "compressed": false,
+    "wire_packet_bytes": 25552,
+    "samples_per_packet": 12768,
+    "ss": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port \nESTAB 0      36608  192.168.6.163:5259 192.168.6.168:58121\n\t cubic wscale:6,11 rto:208 rtt:5.293/1.981 ato:48 mss:1448 pmtu:1500 rcvmss:536 advmss:1448 cwnd:245 ssthresh:121 bytes_sent:348233234 bytes_acked:348196626 bytes_received:166 segs_out:244202 segs_in:25675 data_segs_out:244196 data_segs_in:9 send 536194974bps lastsnd:4 lastrcv:43480 lastack:4 pacing_rate 643327616bps delivery_rate 35472800bps delivered:244171 app_limited busy:43284ms rwnd_limited:16ms(0.0%) unacked:26 rcv_space:14480 rcv_ssthresh:64088 minrtt:1.452 snd_wnd:577088 rcv_wnd:65536\n",
+    "latest_rx_counter": "[ 7867.846617] smi-stream-dev soc:smi_dev: init programmed read. missed:0, sema 5300",
+    "bytes_acked": 348196626,
+    "notsent": 0
+  },
+  {
+    "time": 7868.833645397,
+    "sample_rate_hz": 4000000.0,
+    "wire_bits": 8,
+    "compressed": false,
+    "wire_packet_bytes": 25552,
+    "samples_per_packet": 12768,
+    "ss": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port \nESTAB 0      58328  192.168.6.163:5259 192.168.6.168:58121\n\t cubic wscale:6,11 rto:208 rtt:5.158/1.852 ato:48 mss:1448 pmtu:1500 rcvmss:536 advmss:1448 cwnd:245 ssthresh:121 bytes_sent:356559434 bytes_acked:356502042 bytes_received:166 segs_out:250040 segs_in:26256 data_segs_out:250034 data_segs_in:9 send 550228771bps lastrcv:44516 pacing_rate 660226520bps delivery_rate 86719144bps delivered:249995 app_limited busy:44320ms rwnd_limited:16ms(0.0%) unacked:40 rcv_space:14480 rcv_ssthresh:64088 notsent:936 minrtt:1.452 snd_wnd:577088 rcv_wnd:65536\n",
+    "latest_rx_counter": "[ 7868.665830] smi-stream-dev soc:smi_dev: init programmed read. missed:0, sema 5400",
+    "bytes_acked": 356502042,
+    "notsent": 936
+  },
+  {
+    "time": 7869.904342625,
+    "sample_rate_hz": 4000000.0,
+    "wire_bits": 8,
+    "compressed": false,
+    "wire_packet_bytes": 25552,
+    "samples_per_packet": 12768,
+    "ss": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port \nESTAB 0      65568  192.168.6.163:5259 192.168.6.168:58121\n\t cubic wscale:6,11 rto:208 rtt:6.481/2.058 ato:48 mss:1448 pmtu:1500 rcvmss:536 advmss:1448 cwnd:245 ssthresh:121 bytes_sent:364887506 bytes_acked:364821938 bytes_received:166 segs_out:255881 segs_in:26876 data_segs_out:255875 data_segs_in:9 send 437907730bps lastsnd:4 lastrcv:45560 lastack:4 pacing_rate 525428472bps delivery_rate 88559744bps delivered:255830 app_limited busy:45360ms rwnd_limited:16ms(0.0%) unacked:46 rcv_space:14480 rcv_ssthresh:64088 minrtt:1.452 snd_wnd:577088 rcv_wnd:65536\n",
+    "latest_rx_counter": "[ 7869.485042] smi-stream-dev soc:smi_dev: init programmed read. missed:0, sema 5500",
+    "bytes_acked": 364821938,
+    "notsent": 0
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "pid": 2667,
+  "loaded_installed_plugin": true,
+  "listening": true,
+  "installed_sha256": "f82c118c09086a0eebfab654d85ccb6882e8369bcc780a4d1a3f6aed56798766",
+  "socket_status": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                          \nLISTEN 0      4096         0.0.0.0:5259      0.0.0.0:*    users:((\"sdrpp\",pid=2667,fd=13))\n",
+  "mapped_plugin": [
+    "7f75500000-7f75545000 r-xp 00000000 b3:02 524394                         /usr/local/lib/SoapySDR/modules0.8-3/libSoapyCariboulite.so",
+    "7f75545000-7f7555f000 ---p 00045000 b3:02 524394                         /usr/local/lib/SoapySDR/modules0.8-3/libSoapyCariboulite.so",
+    "7f7555f000-7f75560000 r--p 0004f000 b3:02 524394                         /usr/local/lib/SoapySDR/modules0.8-3/libSoapyCariboulite.so",
+    "7f75560000-7f75569000 rw-p 00050000 b3:02 524394                         /usr/local/lib/SoapySDR/modules0.8-3/libSoapyCariboulite.so"
+  ]
+}

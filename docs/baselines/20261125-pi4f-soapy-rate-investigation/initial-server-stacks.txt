@@ -1,0 +1,212 @@
+[New LWP 2794]
+[New LWP 2779]
+[New LWP 2778]
+[New LWP 2690]
+[New LWP 2688]
+[New LWP 2685]
+[New LWP 2681]
+[New LWP 2680]
+[New LWP 2679]
+[New LWP 2678]
+[New LWP 2677]
+[New LWP 2675]
+[New LWP 2674]
+[New LWP 2673]
+[New LWP 2672]
+[New LWP 2671]
+[New LWP 2670]
+[New LWP 2668]
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
+0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 19 (Thread 0x7f8c6e1120 (LWP 2668) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 18 (Thread 0x7f837ef120 (LWP 2670) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca564c in pthread_cond_wait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95f702b0 in dsp::sink::Handler<unsigned char>::run() () from /lib/libsdrpp_core.so
+#5  0x0000007f95f6dfe0 in dsp::block::workerLoop() () from /lib/libsdrpp_core.so
+#6  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#7  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 17 (Thread 0x7f82fdf120 (LWP 2671) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 16 (Thread 0x7f827cf120 (LWP 2672) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 15 (Thread 0x7f81fbf120 (LWP 2673) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 14 (Thread 0x7f817af120 (LWP 2674) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 13 (Thread 0x7f80f9f120 (LWP 2675) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 12 (Thread 0x7f7f8ef120 (LWP 2677) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 11 (Thread 0x7f7f09f120 (LWP 2678) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 10 (Thread 0x7f7e84f120 (LWP 2679) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 9 (Thread 0x7f7dfff120 (LWP 2680) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 8 (Thread 0x7f7d79f120 (LWP 2681) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca5a8c in pthread_cond_clockwait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e42d9c in ConfigManager::autoSaveWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 7 (Thread 0x7f74bdf120 (LWP 2685) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca28fc in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95d0b6a0 in select () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f754826d4 in SoapyRPCSocket::selectRecvMultiple(std::vector<SoapyRPCSocket*, std::allocator<SoapyRPCSocket*> > const&, std::vector<bool, std::allocator<bool> >&, long) () from /usr/local/lib/SoapySDR/modules0.8-3/libremoteSupport.so
+#5  0x0000007f75490afc in SoapySSDPEndpoint::handlerLoop() () from /usr/local/lib/SoapySDR/modules0.8-3/libremoteSupport.so
+#6  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#7  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 6 (Thread 0x7f6efdf120 (LWP 2688) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca28fc in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95d038a0 in poll () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f75428140 in avahi_simple_poll_run () from /lib/aarch64-linux-gnu/libavahi-common.so.3
+#5  0x0000007f75428394 in avahi_simple_poll_iterate () from /lib/aarch64-linux-gnu/libavahi-common.so.3
+#6  0x0000007f75428590 in avahi_simple_poll_loop () from /lib/aarch64-linux-gnu/libavahi-common.so.3
+#7  0x0000007f754987e8 in std::_Function_handler<std::unique_ptr<std::__future_base::_Result_base, std::__future_base::_Result_base::_Deleter> (), std::__future_base::_Task_setter<std::unique_ptr<std::__future_base::_Result<int>, std::__future_base::_Result_base::_Deleter>, std::thread::_Invoker<std::tuple<int (*)(AvahiSimplePoll*), AvahiSimplePoll*> >, int> >::_M_invoke(std::_Any_data const&) () from /usr/local/lib/SoapySDR/modules0.8-3/libremoteSupport.so
+
+Thread 5 (Thread 0x7f6ffff120 (LWP 2690) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca28fc in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95d101c4 in accept () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95f964c4 in net::ListenerClass::accept() () from /lib/libsdrpp_core.so
+#5  0x0000007f95f97170 in net::ListenerClass::worker() () from /lib/libsdrpp_core.so
+#6  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#7  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 4 (Thread 0x7f753ef120 (LWP 2778) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca28fc in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95f95dbc in net::ConnClass::read(int, unsigned char*, bool) () from /lib/libsdrpp_core.so
+#4  0x0000007f95f96e1c in net::ConnClass::readWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 3 (Thread 0x7f6f7ef120 (LWP 2779) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca564c in pthread_cond_wait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95f97008 in net::ConnClass::writeWorker() () from /lib/libsdrpp_core.so
+#5  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#6  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95d0e15c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 2 (Thread 0x7f83fff120 (LWP 2794) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95ca2c50 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ca564c in pthread_cond_wait () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95f70450 in dsp::compression::SampleStreamCompressor::run() () from /lib/libsdrpp_core.so
+#5  0x0000007f95f6dfe0 in dsp::block::workerLoop() () from /lib/libsdrpp_core.so
+#6  0x0000007f9565b4e0 in ?? () from /lib/aarch64-linux-gnu/libstdc++.so.6
+#7  0x0000007f95ca61d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+Thread 1 (Thread 0x7f96469820 (LWP 2667) "sdrpp"):
+#0  0x0000007f95caf228 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#1  0x0000007f95ca28b8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000007f95cde51c in clock_nanosleep () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000007f95ce8b40 in nanosleep () from /lib/aarch64-linux-gnu/libc.so.6
+#4  0x0000007f95e3b628 in server::main() () from /lib/libsdrpp_core.so
+#5  0x0000007f95e5e520 in sdrpp_main(int, char**) () from /lib/libsdrpp_core.so
+#6  0x0000007f95c4225c in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000007f95c4233c in __libc_start_main () from /lib/aarch64-linux-gnu/libc.so.6
+[Inferior 1 (process 2667) detached]

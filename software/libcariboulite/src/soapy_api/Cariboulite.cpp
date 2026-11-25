@@ -252,7 +252,7 @@ void Cariboulite::setSampleRate( const int direction, const size_t channel, cons
     if (std::fabs(rate - (2000000.0/3)) < 1) fs = cariboulite_radio_rx_sample_rate_666khz;
     if (std::fabs(rate - (800000.0)) < 1) fs = cariboulite_radio_rx_sample_rate_800khz;
     if (std::fabs(rate - (1000000.0)) < 1) fs = cariboulite_radio_rx_sample_rate_1000khz;
-    if (std::fabs(rate - (1333000.0)) < 1) fs = cariboulite_radio_rx_sample_rate_1333khz;
+    if (std::fabs(rate - (1333000.0)) < 1)
     {
         fs = cariboulite_radio_rx_sample_rate_1333khz;
         SoapySDR_logf(SOAPY_SDR_WARNING, "setSampleRate: using rounded rate 1333000 is deprecated; use 4e6/3 or 1333333.3.");
