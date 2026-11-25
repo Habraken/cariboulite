@@ -1,0 +1,23 @@
+{
+  "source_revision": "bd1ac340ca65e5d758ecf885bbbba7934d3c09a1",
+  "source_hashes": {
+    "software/libcariboulite/src/nbfm_demod.c": "2c26919b60ef894d33beb9e3e67803f22aaafd79b1a7e6c38d94180843cf02f4",
+    "software/libcariboulite/src/nbfm_demod_dsp.c": "4424063bf41559da1e2e22241fce7842f78d29b619aca192f213fb350524e5b6",
+    "software/libcariboulite/src/wbfm_demod.c": "8c9a307f0c67fd5c5b6ead184fce836320f0bc2ba6d0c61948b9f0c5785f2603",
+    "software/libcariboulite/src/am_demod.c": "01c62eb8f6b70e5e392c9d3284807ef7cacbfeac6bf21e309651c9bb919bdec7",
+    "software/libcariboulite/src/audio_demod.h": "caac26897f78a2b3a0ee2b02a18ac49f1669b94b0af0ca055c58404941bbc9c6",
+    "software/libcariboulite/src/nbfm_demod.h": "ed1c9a3297265d381bc38ee76c98cc5389984236c0e84ad66c41021442cfb58a",
+    "software/libcariboulite/src/fm_demod_internal.h": "cdf594ebdb53f37a6b7422fb80948e6f49c9db1f8d94c11dfd56d8aae92d7e17",
+    "software/libcariboulite/src/nbfm_channel_filter.h": "bcc461bb162288498370b07aa0ae9e17d5f92c55e5ff20c82ac3fcd85ebdf294",
+    "software/libcariboulite/src/nbfm_channel_coeffs.h": "fea32e96df8902523c00d2d6dfd551c47d10bcfe2b1b2c3bd6dcd8ad4b494ee2",
+    "software/libcariboulite/src/fm_audio.h": "404fcf3934e5da5ff56cef95fa9079a0ce19b095e923474c984ace31dd6dd884",
+    "software/libcariboulite/src/fm_discriminator.h": "e71eac4da7a11679a3944d29647f9a7a862c853d51e7f3d0a420b38d8edbaab2",
+    "software/libcariboulite/src/radio_rates.h": "20921b7c562818ba60cc82a6554557504d9a8febe21f59d447fdd85d8e9fad65",
+    "software/libcariboulite/src/rf_resampler.h": "1ce9052a0e0b0832717d9c287b7f0903723685373fc95c0e46fac87ba9f36a2e",
+    "software/libcariboulite/src/math_compat.h": "4770ca3d2213959bd3be09e1b7c810573221706b5b712c2c515b03babc5bba99",
+    "software/libcariboulite/src/iq16.h": "db8ced1c9deb41712717d0f5f562665d8849cd77f550c013df66f19f407a9d33"
+  },
+  "replay_binary_sha256": "d4a574c3ae7d3d0df394aacaeb5385e52f94f9e7b5d66ce78397b5fd5fa4b984",
+  "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+  "binary_path_at_analysis": "build/demod-audio-20261125/decode-iq"
+}

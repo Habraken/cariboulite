@@ -1,0 +1,903 @@
+[
+  {
+    "case": "atx_brx_195343_noise",
+    "phase": "atx_brx",
+    "rx_node": "b",
+    "tx_node": "a",
+    "name": "noise",
+    "tx_if_control_hz": null,
+    "rssi_after_dbm": -110,
+    "carrier_offset_in_decoded_iq_hz": null,
+    "raw_audio_dc_equivalent_hz_nominal": -60.087235848972114,
+    "live_sinad_after_db": null,
+    "production_replay_frames": 383999,
+    "raw_fixed_notch_sinad_db": null,
+    "raw_tracked_notch_sinad_db": null,
+    "replay_fixed_notch_sinad_db": null,
+    "replay_tracked_notch_sinad_db": null,
+    "centered_replay_tracked_notch_sinad_db": null,
+    "raw_tone_frequency_hz": null,
+    "replay_tone_frequency_hz": null,
+    "pcm_tone_frequency_hz": null,
+    "raw_one_second_frequency_estimates_hz": [],
+    "raw_correction_ppm_min_mean_max": [
+      500.0,
+      500.0,
+      500.0
+    ],
+    "pcm_rms_dbfs": -10.963953490088926,
+    "residual_lines": [
+      {
+        "frequency_hz": 839.35546875,
+        "psd_db_per_hz": -28.077604321947295
+      },
+      {
+        "frequency_hz": 680.419921875,
+        "psd_db_per_hz": -28.437099594117647
+      },
+      {
+        "frequency_hz": 647.4609375,
+        "psd_db_per_hz": -28.72191352920136
+      },
+      {
+        "frequency_hz": 1090.576171875,
+        "psd_db_per_hz": -28.827158180895736
+      },
+      {
+        "frequency_hz": 1001.953125,
+        "psd_db_per_hz": -28.957916848259735
+      },
+      {
+        "frequency_hz": 1308.10546875,
+        "psd_db_per_hz": -29.314022414669356
+      },
+      {
+        "frequency_hz": 1272.94921875,
+        "psd_db_per_hz": -29.507771656469824
+      },
+      {
+        "frequency_hz": 714.111328125,
+        "psd_db_per_hz": -29.52472507562575
+      }
+    ],
+    "estimator_residual_power_fraction_above_3khz": 0.17514443859468004,
+    "raw_3000_3800hz_power_db_normalized": -4.511844678142656,
+    "strict_300_3000hz_spectral_ratio_db": null,
+    "iq_lines": [
+      {
+        "frequency_hz": 122.0703125,
+        "psd_db_per_hz": -20.740695569560806
+      },
+      {
+        "frequency_hz": -5813.5986328125,
+        "psd_db_per_hz": -29.897655734595787
+      }
+    ],
+    "raw_fullband_lines": [
+      {
+        "frequency_hz": 839.35546875,
+        "psd_db_per_hz": -27.98237739491502
+      },
+      {
+        "frequency_hz": 680.419921875,
+        "psd_db_per_hz": -28.265391900794693
+      },
+      {
+        "frequency_hz": 647.4609375,
+        "psd_db_per_hz": -28.516691624202114
+      },
+      {
+        "frequency_hz": 1090.576171875,
+        "psd_db_per_hz": -28.73054775307562
+      },
+      {
+        "frequency_hz": 1001.953125,
+        "psd_db_per_hz": -28.872008729600687
+      },
+      {
+        "frequency_hz": 288.57421875,
+        "psd_db_per_hz": -28.894985355832333
+      },
+      {
+        "frequency_hz": 1308.10546875,
+        "psd_db_per_hz": -29.154220806845956
+      },
+      {
+        "frequency_hz": 342.7734375,
+        "psd_db_per_hz": -29.240224845748696
+      }
+    ],
+    "independent_lines": [
+      {
+        "frequency_hz": 714.1113281249999,
+        "psd_db_per_hz": -28.071918742630544
+      },
+      {
+        "frequency_hz": 839.2333984374999,
+        "psd_db_per_hz": -28.464044134617637
+      },
+      {
+        "frequency_hz": 2239.2272949218745,
+        "psd_db_per_hz": -28.906300615356557
+      },
+      {
+        "frequency_hz": 662.9943847656249,
+        "psd_db_per_hz": -28.965422410582107
+      },
+      {
+        "frequency_hz": 466.15600585937494,
+        "psd_db_per_hz": -29.269181140791606
+      },
+      {
+        "frequency_hz": 1197.8149414062498,
+        "psd_db_per_hz": -29.277538556799616
+      },
+      {
+        "frequency_hz": 534.0576171874999,
+        "psd_db_per_hz": -29.30025883610304
+      },
+      {
+        "frequency_hz": 923.9196777343749,
+        "psd_db_per_hz": -29.333248968462577
+      }
+    ],
+    "health_deltas": {
+      "queue.drops": 0,
+      "audio_queue.drops": 0,
+      "reader.errors": 0,
+      "playback.underruns": 0,
+      "playback.write_errors": 0,
+      "alignment.invalid_frames": 0,
+      "audio_output.clipped_samples": 0
+    },
+    "harmonics": {}
+  },
+  {
+    "case": "atx_brx_195343_carrier",
+    "phase": "atx_brx",
+    "rx_node": "b",
+    "tx_node": "a",
+    "name": "carrier",
+    "tx_if_control_hz": null,
+    "rssi_after_dbm": -90,
+    "carrier_offset_in_decoded_iq_hz": -216.2170260636802,
+    "raw_audio_dc_equivalent_hz_nominal": -216.21991974941415,
+    "live_sinad_after_db": null,
+    "production_replay_frames": 383999,
+    "raw_fixed_notch_sinad_db": null,
+    "raw_tracked_notch_sinad_db": null,
+    "replay_fixed_notch_sinad_db": null,
+    "replay_tracked_notch_sinad_db": null,
+    "centered_replay_tracked_notch_sinad_db": null,
+    "raw_tone_frequency_hz": null,
+    "replay_tone_frequency_hz": null,
+    "pcm_tone_frequency_hz": null,
+    "raw_one_second_frequency_estimates_hz": [],
+    "raw_correction_ppm_min_mean_max": [
+      500.0,
+      500.0,
+      500.0
+    ],
+    "pcm_rms_dbfs": -50.95847024587515,
+    "residual_lines": [
+      {
+        "frequency_hz": 927.978515625,
+        "psd_db_per_hz": -57.120061035299805
+      },
+      {
+        "frequency_hz": 5150.390625,
+        "psd_db_per_hz": -58.761893156283975
+      },
+      {
+        "frequency_hz": 1791.50390625,
+        "psd_db_per_hz": -61.34228538679662
+      },
+      {
+        "frequency_hz": 5165.0390625,
+        "psd_db_per_hz": -61.527065915147105
+      },
+      {
+        "frequency_hz": 3341.30859375,
+        "psd_db_per_hz": -62.209455162664156
+      },
+      {
+        "frequency_hz": 2686.5234375,
+        "psd_db_per_hz": -62.973628520765146
+      },
+      {
+        "frequency_hz": 5182.6171875,
+        "psd_db_per_hz": -64.23493743788887
+      },
+      {
+        "frequency_hz": 895.751953125,
+        "psd_db_per_hz": -64.27008232594181
+      }
+    ],
+    "estimator_residual_power_fraction_above_3khz": 0.5061818439513356,
+    "raw_3000_3800hz_power_db_normalized": -41.27608018395361,
+    "strict_300_3000hz_spectral_ratio_db": null,
+    "iq_lines": [
+      {
+        "frequency_hz": -213.623046875,
+        "psd_db_per_hz": 26.70856885275063
+      },
+      {
+        "frequency_hz": -1144.4091796875,
+        "psd_db_per_hz": -16.559701780540305
+      },
+      {
+        "frequency_hz": 717.1630859375,
+        "psd_db_per_hz": -17.32801853672941
+      },
+      {
+        "frequency_hz": -5371.09375,
+        "psd_db_per_hz": -18.085941075696244
+      },
+      {
+        "frequency_hz": 122.0703125,
+        "psd_db_per_hz": -19.11392241588871
+      },
+      {
+        "frequency_hz": 518.798828125,
+        "psd_db_per_hz": -22.935216069323104
+      },
+      {
+        "frequency_hz": -946.044921875,
+        "psd_db_per_hz": -23.313242592615616
+      },
+      {
+        "frequency_hz": 3128.0517578125,
+        "psd_db_per_hz": -24.323034245844553
+      }
+    ],
+    "raw_fullband_lines": [
+      {
+        "frequency_hz": 5150.390625,
+        "psd_db_per_hz": -48.493599993337455
+      },
+      {
+        "frequency_hz": 5165.0390625,
+        "psd_db_per_hz": -51.211132943836276
+      },
+      {
+        "frequency_hz": 5182.6171875,
+        "psd_db_per_hz": -53.86051761269428
+      },
+      {
+        "frequency_hz": 6041.748046875,
+        "psd_db_per_hz": -56.65294327794622
+      },
+      {
+        "frequency_hz": 5581.787109375,
+        "psd_db_per_hz": -56.94871535365551
+      },
+      {
+        "frequency_hz": 927.978515625,
+        "psd_db_per_hz": -57.035323259010696
+      },
+      {
+        "frequency_hz": 5608.154296875,
+        "psd_db_per_hz": -57.04766660902148
+      },
+      {
+        "frequency_hz": 6000.732421875,
+        "psd_db_per_hz": -57.66843776679835
+      }
+    ],
+    "independent_lines": [
+      {
+        "frequency_hz": 5152.893066406249,
+        "psd_db_per_hz": -48.71033861853572
+      },
+      {
+        "frequency_hz": 5167.388916015624,
+        "psd_db_per_hz": -50.35433410134875
+      },
+      {
+        "frequency_hz": 5184.936523437499,
+        "psd_db_per_hz": -53.65396608453308
+      },
+      {
+        "frequency_hz": 6044.769287109374,
+        "psd_db_per_hz": -56.101905096006504
+      },
+      {
+        "frequency_hz": 6015.777587890624,
+        "psd_db_per_hz": -56.45783440979393
+      },
+      {
+        "frequency_hz": 5600.738525390624,
+        "psd_db_per_hz": -56.875547949667016
+      },
+      {
+        "frequency_hz": 928.4973144531249,
+        "psd_db_per_hz": -56.88774054239972
+      },
+      {
+        "frequency_hz": 5584.716796874999,
+        "psd_db_per_hz": -56.95761220271963
+      }
+    ],
+    "health_deltas": {
+      "queue.drops": 0,
+      "audio_queue.drops": 0,
+      "reader.errors": 0,
+      "playback.underruns": 0,
+      "playback.write_errors": 0,
+      "alignment.invalid_frames": 0,
+      "audio_output.clipped_samples": 0,
+      "tx.writer.errors": 0,
+      "tx.driver.underrun_periods": 0,
+      "tx.queue.drops": 0
+    },
+    "harmonics": {}
+  },
+  {
+    "case": "atx_brx_195343_tone_a",
+    "phase": "atx_brx",
+    "rx_node": "b",
+    "tx_node": "a",
+    "name": "tone_a",
+    "tx_if_control_hz": null,
+    "rssi_after_dbm": -90,
+    "carrier_offset_in_decoded_iq_hz": -214.65949631421788,
+    "raw_audio_dc_equivalent_hz_nominal": -214.62146678933635,
+    "live_sinad_after_db": 24.593,
+    "production_replay_frames": 383999,
+    "raw_fixed_notch_sinad_db": 24.645180600001417,
+    "raw_tracked_notch_sinad_db": 25.974024608531693,
+    "replay_fixed_notch_sinad_db": 25.96549991734338,
+    "replay_tracked_notch_sinad_db": 25.96550382406243,
+    "centered_replay_tracked_notch_sinad_db": 25.959944232688855,
+    "raw_tone_frequency_hz": 999.499567298289,
+    "replay_tone_frequency_hz": 999.9993171922055,
+    "pcm_tone_frequency_hz": 999.4995674031721,
+    "raw_one_second_frequency_estimates_hz": [
+      999.4995024896207,
+      999.4996975295144,
+      999.499629364916,
+      999.4994526966343,
+      999.4996783491362,
+      999.4993905502063,
+      999.499503381758
+    ],
+    "raw_correction_ppm_min_mean_max": [
+      500.0,
+      500.0,
+      500.0
+    ],
+    "pcm_rms_dbfs": -24.17718833927616,
+    "residual_lines": [
+      {
+        "frequency_hz": 1998.779296875,
+        "psd_db_per_hz": -55.34392989729356
+      },
+      {
+        "frequency_hz": 940.4296875,
+        "psd_db_per_hz": -55.48852475921733
+      },
+      {
+        "frequency_hz": 2998.53515625,
+        "psd_db_per_hz": -60.46671249284995
+      },
+      {
+        "frequency_hz": 3331.0546875,
+        "psd_db_per_hz": -61.269511172604545
+      },
+      {
+        "frequency_hz": 3986.572265625,
+        "psd_db_per_hz": -62.86646558216512
+      },
+      {
+        "frequency_hz": 1880.859375,
+        "psd_db_per_hz": -63.05283860234038
+      },
+      {
+        "frequency_hz": 1335.9375,
+        "psd_db_per_hz": -64.74671848851249
+      },
+      {
+        "frequency_hz": 4013.671875,
+        "psd_db_per_hz": -64.92666332570144
+      }
+    ],
+    "estimator_residual_power_fraction_above_3khz": 0.4897780684279389,
+    "raw_3000_3800hz_power_db_normalized": -41.156200049649655,
+    "strict_300_3000hz_spectral_ratio_db": 28.88263867061344,
+    "iq_lines": [
+      {
+        "frequency_hz": -213.623046875,
+        "psd_db_per_hz": 24.36743459992178
+      },
+      {
+        "frequency_hz": -1220.703125,
+        "psd_db_per_hz": 18.357530473099228
+      },
+      {
+        "frequency_hz": 778.1982421875,
+        "psd_db_per_hz": 18.008658782085266
+      },
+      {
+        "frequency_hz": 1785.2783203125,
+        "psd_db_per_hz": 7.608918985777251
+      },
+      {
+        "frequency_hz": -2212.5244140625,
+        "psd_db_per_hz": 7.514122949701313
+      },
+      {
+        "frequency_hz": -3219.6044921875,
+        "psd_db_per_hz": -8.23906921255601
+      },
+      {
+        "frequency_hz": 2792.3583984375,
+        "psd_db_per_hz": -8.976407402229977
+      },
+      {
+        "frequency_hz": 122.0703125,
+        "psd_db_per_hz": -18.891594618841072
+      }
+    ],
+    "raw_fullband_lines": [
+      {
+        "frequency_hz": 5985.3515625,
+        "psd_db_per_hz": -53.421835600219026
+      },
+      {
+        "frequency_hz": 1998.779296875,
+        "psd_db_per_hz": -54.57865661149604
+      },
+      {
+        "frequency_hz": 940.4296875,
+        "psd_db_per_hz": -55.092543565901934
+      },
+      {
+        "frequency_hz": 5416.259765625,
+        "psd_db_per_hz": -55.62486161263527
+      },
+      {
+        "frequency_hz": 6003.662109375,
+        "psd_db_per_hz": -55.95708583813927
+      },
+      {
+        "frequency_hz": 3986.572265625,
+        "psd_db_per_hz": -56.58547172812768
+      },
+      {
+        "frequency_hz": 6985.107421875,
+        "psd_db_per_hz": -56.61550128873708
+      },
+      {
+        "frequency_hz": 5970.703125,
+        "psd_db_per_hz": -56.82671170839653
+      }
+    ],
+    "independent_lines": [
+      {
+        "frequency_hz": 5988.311767578124,
+        "psd_db_per_hz": -51.5512664208499
+      },
+      {
+        "frequency_hz": 5419.158935546874,
+        "psd_db_per_hz": -54.33329150722493
+      },
+      {
+        "frequency_hz": 940.7043457031249,
+        "psd_db_per_hz": -54.90037645915584
+      },
+      {
+        "frequency_hz": 6023.406982421874,
+        "psd_db_per_hz": -55.16358193273473
+      },
+      {
+        "frequency_hz": 1999.6643066406248,
+        "psd_db_per_hz": -55.32797961705924
+      },
+      {
+        "frequency_hz": 4000.0915527343745,
+        "psd_db_per_hz": -56.03730801280076
+      },
+      {
+        "frequency_hz": 6988.525390624999,
+        "psd_db_per_hz": -57.092828567573655
+      },
+      {
+        "frequency_hz": 3332.5195312499995,
+        "psd_db_per_hz": -57.28262100506146
+      }
+    ],
+    "health_deltas": {
+      "queue.drops": 0,
+      "audio_queue.drops": 0,
+      "reader.errors": 0,
+      "playback.underruns": 0,
+      "playback.write_errors": 0,
+      "alignment.invalid_frames": 0,
+      "audio_output.clipped_samples": 0,
+      "tx.writer.errors": 0,
+      "tx.driver.underrun_periods": 0,
+      "tx.queue.drops": 0
+    },
+    "harmonics": {
+      "fundamental_peak_normalized": 0.3886742873786403,
+      "fundamental_peak_deviation_hz_nominal": 971.6857184466007,
+      "second_harmonic_dbc": -42.50636673677512,
+      "third_harmonic_dbc": -46.74333858855647,
+      "second_third_thd_percent": 0.8793127253500165
+    }
+  },
+  {
+    "case": "atx_brx_195343_tone_b",
+    "phase": "atx_brx",
+    "rx_node": "b",
+    "tx_node": "a",
+    "name": "tone_b",
+    "tx_if_control_hz": null,
+    "rssi_after_dbm": -91,
+    "carrier_offset_in_decoded_iq_hz": -216.603472811868,
+    "raw_audio_dc_equivalent_hz_nominal": -216.58756360255776,
+    "live_sinad_after_db": 24.546,
+    "production_replay_frames": 383999,
+    "raw_fixed_notch_sinad_db": 24.578633692168914,
+    "raw_tracked_notch_sinad_db": 25.884233139210387,
+    "replay_fixed_notch_sinad_db": 25.897138186255873,
+    "replay_tracked_notch_sinad_db": 25.897143443867332,
+    "centered_replay_tracked_notch_sinad_db": 25.891688884017874,
+    "raw_tone_frequency_hz": 999.4995650307992,
+    "replay_tone_frequency_hz": 999.9993156967968,
+    "pcm_tone_frequency_hz": 999.4995650482256,
+    "raw_one_second_frequency_estimates_hz": [
+      999.4998392726199,
+      999.4995635185371,
+      999.4997503789713,
+      999.4995344273939,
+      999.4999542266588,
+      999.4998858086182,
+      999.499631427775
+    ],
+    "raw_correction_ppm_min_mean_max": [
+      500.0,
+      500.0,
+      500.0
+    ],
+    "pcm_rms_dbfs": -24.18221196035251,
+    "residual_lines": [
+      {
+        "frequency_hz": 957.275390625,
+        "psd_db_per_hz": -54.44626956989001
+      },
+      {
+        "frequency_hz": 1998.779296875,
+        "psd_db_per_hz": -55.33934006607048
+      },
+      {
+        "frequency_hz": 3802.001953125,
+        "psd_db_per_hz": -60.585734606027806
+      },
+      {
+        "frequency_hz": 1913.818359375,
+        "psd_db_per_hz": -61.766449764180145
+      },
+      {
+        "frequency_hz": 2998.53515625,
+        "psd_db_per_hz": -61.97034407335185
+      },
+      {
+        "frequency_hz": 3343.505859375,
+        "psd_db_per_hz": -62.64392444547265
+      },
+      {
+        "frequency_hz": 1895.5078125,
+        "psd_db_per_hz": -64.05746255968364
+      },
+      {
+        "frequency_hz": 5800.78125,
+        "psd_db_per_hz": -64.18174867489519
+      }
+    ],
+    "estimator_residual_power_fraction_above_3khz": 0.48851350613289946,
+    "raw_3000_3800hz_power_db_normalized": -40.95003236294714,
+    "strict_300_3000hz_spectral_ratio_db": 28.791903224317664,
+    "iq_lines": [
+      {
+        "frequency_hz": -213.623046875,
+        "psd_db_per_hz": 24.06869550499715
+      },
+      {
+        "frequency_hz": -1220.703125,
+        "psd_db_per_hz": 18.71838616222698
+      },
+      {
+        "frequency_hz": 778.1982421875,
+        "psd_db_per_hz": 18.475060073856465
+      },
+      {
+        "frequency_hz": 1785.2783203125,
+        "psd_db_per_hz": 7.412181872567288
+      },
+      {
+        "frequency_hz": -2212.5244140625,
+        "psd_db_per_hz": 7.090513877960014
+      },
+      {
+        "frequency_hz": -3219.6044921875,
+        "psd_db_per_hz": -7.976786949703218
+      },
+      {
+        "frequency_hz": 2777.099609375,
+        "psd_db_per_hz": -8.808518634130769
+      },
+      {
+        "frequency_hz": -5020.1416015625,
+        "psd_db_per_hz": -18.299696974946137
+      }
+    ],
+    "raw_fullband_lines": [
+      {
+        "frequency_hz": 5800.78125,
+        "psd_db_per_hz": -51.827319357184514
+      },
+      {
+        "frequency_hz": 957.275390625,
+        "psd_db_per_hz": -53.76486401879234
+      },
+      {
+        "frequency_hz": 1998.779296875,
+        "psd_db_per_hz": -54.57408515733547
+      },
+      {
+        "frequency_hz": 3802.001953125,
+        "psd_db_per_hz": -54.9460024875352
+      },
+      {
+        "frequency_hz": 5829.345703125,
+        "psd_db_per_hz": -55.265210628536124
+      },
+      {
+        "frequency_hz": 5235.3515625,
+        "psd_db_per_hz": -55.33543585110999
+      },
+      {
+        "frequency_hz": 6800.537109375,
+        "psd_db_per_hz": -55.50917862592249
+      },
+      {
+        "frequency_hz": 5260.986328125,
+        "psd_db_per_hz": -57.35600322731476
+      }
+    ],
+    "independent_lines": [
+      {
+        "frequency_hz": 5803.680419921874,
+        "psd_db_per_hz": -51.093467961195586
+      },
+      {
+        "frequency_hz": 957.4890136718749,
+        "psd_db_per_hz": -53.29833193171363
+      },
+      {
+        "frequency_hz": 5237.579345703124,
+        "psd_db_per_hz": -54.27811861069446
+      },
+      {
+        "frequency_hz": 5832.672119140624,
+        "psd_db_per_hz": -54.28380248843453
+      },
+      {
+        "frequency_hz": 3804.0161132812495,
+        "psd_db_per_hz": -54.93175318273088
+      },
+      {
+        "frequency_hz": 1999.6643066406248,
+        "psd_db_per_hz": -55.277073544967664
+      },
+      {
+        "frequency_hz": 6803.894042968749,
+        "psd_db_per_hz": -55.78951771578783
+      },
+      {
+        "frequency_hz": 5263.519287109374,
+        "psd_db_per_hz": -56.995971116180606
+      }
+    ],
+    "health_deltas": {
+      "queue.drops": 0,
+      "audio_queue.drops": 0,
+      "reader.errors": 0,
+      "playback.underruns": 0,
+      "playback.write_errors": 0,
+      "alignment.invalid_frames": 0,
+      "audio_output.clipped_samples": 0,
+      "tx.writer.errors": 0,
+      "tx.driver.underrun_periods": 0,
+      "tx.queue.drops": 0
+    },
+    "harmonics": {
+      "fundamental_peak_normalized": 0.3884418523307318,
+      "fundamental_peak_deviation_hz_nominal": 971.1046308268295,
+      "second_harmonic_dbc": -42.45693357256584,
+      "third_harmonic_dbc": -47.757736648250074,
+      "second_third_thd_percent": 0.8576287510985631
+    }
+  },
+  {
+    "case": "atx_brx_195343_carrier_end",
+    "phase": "atx_brx",
+    "rx_node": "b",
+    "tx_node": "a",
+    "name": "carrier_end",
+    "tx_if_control_hz": null,
+    "rssi_after_dbm": -90,
+    "carrier_offset_in_decoded_iq_hz": -219.27169836519312,
+    "raw_audio_dc_equivalent_hz_nominal": -219.26529001324934,
+    "live_sinad_after_db": null,
+    "production_replay_frames": 383999,
+    "raw_fixed_notch_sinad_db": null,
+    "raw_tracked_notch_sinad_db": null,
+    "replay_fixed_notch_sinad_db": null,
+    "replay_tracked_notch_sinad_db": null,
+    "centered_replay_tracked_notch_sinad_db": null,
+    "raw_tone_frequency_hz": null,
+    "replay_tone_frequency_hz": null,
+    "pcm_tone_frequency_hz": null,
+    "raw_one_second_frequency_estimates_hz": [],
+    "raw_correction_ppm_min_mean_max": [
+      500.0,
+      500.0,
+      500.0
+    ],
+    "pcm_rms_dbfs": -50.34860249000998,
+    "residual_lines": [
+      {
+        "frequency_hz": 966.064453125,
+        "psd_db_per_hz": -54.43673192836986
+      },
+      {
+        "frequency_hz": 1932.12890625,
+        "psd_db_per_hz": -59.0233536850624
+      },
+      {
+        "frequency_hz": 3358.154296875,
+        "psd_db_per_hz": -60.92656634249803
+      },
+      {
+        "frequency_hz": 1675.048828125,
+        "psd_db_per_hz": -63.19733582850774
+      },
+      {
+        "frequency_hz": 4432.6171875,
+        "psd_db_per_hz": -63.39887149219741
+      },
+      {
+        "frequency_hz": 834.228515625,
+        "psd_db_per_hz": -63.72983889716455
+      },
+      {
+        "frequency_hz": 1973.14453125,
+        "psd_db_per_hz": -64.58055394223554
+      },
+      {
+        "frequency_hz": 4550.537109375,
+        "psd_db_per_hz": -65.00716572415752
+      }
+    ],
+    "estimator_residual_power_fraction_above_3khz": 0.5115679694214676,
+    "raw_3000_3800hz_power_db_normalized": -40.83074359952191,
+    "strict_300_3000hz_spectral_ratio_db": null,
+    "iq_lines": [
+      {
+        "frequency_hz": -213.623046875,
+        "psd_db_per_hz": 25.70381954341407
+      },
+      {
+        "frequency_hz": 122.0703125,
+        "psd_db_per_hz": -16.03887022865242
+      },
+      {
+        "frequency_hz": 747.6806640625,
+        "psd_db_per_hz": -16.185256070821147
+      },
+      {
+        "frequency_hz": -1190.185546875,
+        "psd_db_per_hz": -16.25978528620011
+      },
+      {
+        "frequency_hz": -1052.8564453125,
+        "psd_db_per_hz": -21.458034665907174
+      },
+      {
+        "frequency_hz": 610.3515625,
+        "psd_db_per_hz": -21.980470546034358
+      },
+      {
+        "frequency_hz": 3143.310546875,
+        "psd_db_per_hz": -24.22140412689138
+      },
+      {
+        "frequency_hz": -4577.63671875,
+        "psd_db_per_hz": -24.268436834666755
+      }
+    ],
+    "raw_fullband_lines": [
+      {
+        "frequency_hz": 966.064453125,
+        "psd_db_per_hz": -54.3526123791426
+      },
+      {
+        "frequency_hz": 4432.6171875,
+        "psd_db_per_hz": -55.5638573375716
+      },
+      {
+        "frequency_hz": 4550.537109375,
+        "psd_db_per_hz": -56.76508574502208
+      },
+      {
+        "frequency_hz": 3358.154296875,
+        "psd_db_per_hz": -56.792149563685264
+      },
+      {
+        "frequency_hz": 4403.3203125,
+        "psd_db_per_hz": -57.87364287915075
+      },
+      {
+        "frequency_hz": 4494.140625,
+        "psd_db_per_hz": -58.26422830132118
+      },
+      {
+        "frequency_hz": 4357.177734375,
+        "psd_db_per_hz": -58.29273146990328
+      },
+      {
+        "frequency_hz": 1932.12890625,
+        "psd_db_per_hz": -58.350654096254274
+      }
+    ],
+    "independent_lines": [
+      {
+        "frequency_hz": 966.6442871093749,
+        "psd_db_per_hz": -54.12253395373624
+      },
+      {
+        "frequency_hz": 4434.967041015624,
+        "psd_db_per_hz": -55.84501032049297
+      },
+      {
+        "frequency_hz": 4553.222656249999,
+        "psd_db_per_hz": -56.160672297694404
+      },
+      {
+        "frequency_hz": 3359.2224121093745,
+        "psd_db_per_hz": -56.95132598356297
+      },
+      {
+        "frequency_hz": 4370.880126953124,
+        "psd_db_per_hz": -57.26776992108627
+      },
+      {
+        "frequency_hz": 4496.002197265624,
+        "psd_db_per_hz": -57.714024634336276
+      },
+      {
+        "frequency_hz": 4462.432861328124,
+        "psd_db_per_hz": -58.527364589997205
+      },
+      {
+        "frequency_hz": 1933.2885742187498,
+        "psd_db_per_hz": -58.5592603273315
+      }
+    ],
+    "health_deltas": {
+      "queue.drops": 0,
+      "audio_queue.drops": 0,
+      "reader.errors": 0,
+      "playback.underruns": 0,
+      "playback.write_errors": 0,
+      "alignment.invalid_frames": 0,
+      "audio_output.clipped_samples": 0,
+      "tx.writer.errors": 0,
+      "tx.driver.underrun_periods": 0,
+      "tx.queue.drops": 0
+    },
+    "harmonics": {}
+  }
+]

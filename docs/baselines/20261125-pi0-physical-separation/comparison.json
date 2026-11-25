@@ -1,0 +1,42 @@
+[
+  {
+    "name": "noise",
+    "before_live_sinad_db": null,
+    "after_live_sinad_db": null,
+    "before_rssi_dbm": -116,
+    "after_rssi_dbm": -110,
+    "whistle_band_3000_3800hz_reduction_db": -0.21321248157946648
+  },
+  {
+    "name": "carrier",
+    "before_live_sinad_db": null,
+    "after_live_sinad_db": null,
+    "before_rssi_dbm": -91,
+    "after_rssi_dbm": -90,
+    "whistle_band_3000_3800hz_reduction_db": 25.30296823547871
+  },
+  {
+    "name": "tone_a",
+    "before_live_sinad_db": 9.287,
+    "after_live_sinad_db": 24.593,
+    "before_rssi_dbm": -92,
+    "after_rssi_dbm": -90,
+    "whistle_band_3000_3800hz_reduction_db": 25.220437634666734
+  },
+  {
+    "name": "tone_b",
+    "before_live_sinad_db": 9.278,
+    "after_live_sinad_db": 24.546,
+    "before_rssi_dbm": -90,
+    "after_rssi_dbm": -91,
+    "whistle_band_3000_3800hz_reduction_db": 25.095750751980056
+  },
+  {
+    "name": "carrier_end",
+    "before_live_sinad_db": null,
+    "after_live_sinad_db": null,
+    "before_rssi_dbm": -91,
+    "after_rssi_dbm": -90,
+    "whistle_band_3000_3800hz_reduction_db": 25.05495944131416
+  }
+]

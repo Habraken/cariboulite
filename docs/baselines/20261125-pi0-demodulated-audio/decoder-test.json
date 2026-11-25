@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "synthetic_carrier_offset_hz": 500,
+  "synthetic_tone_hz": 1000,
+  "metrics": {
+    "original": {
+      "dc": 0.19999996972848028,
+      "tone_amplitude": 0.3990464099213289,
+      "fit_sinad_db": 69.67115846655618
+    },
+    "centered": {
+      "dc": -2.8688536693242023e-08,
+      "tone_amplitude": 0.39906011508278105,
+      "fit_sinad_db": 69.5926248097413
+    }
+  }
+}

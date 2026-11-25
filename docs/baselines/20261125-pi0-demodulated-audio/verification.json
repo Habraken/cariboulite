@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "recordings": 18,
+  "receiver_sessions": 18,
+  "transmitter_sessions": 6,
+  "decoded_iq_samples": 144000000,
+  "frames_per_audio_tap": 6912000,
+  "zero_capture_window_error_deltas": true,
+  "all_rt_scheduling_applied": true,
+  "ctcss_cdcss_off": true,
+  "tx_start_retries": 0,
+  "release_verified": true,
+  "production_software_unchanged": true
+}

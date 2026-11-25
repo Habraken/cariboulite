@@ -1,0 +1,42 @@
+[
+  {
+    "case": "atx_brx_183933_tone_a",
+    "wanted_iq_frequency_hz": -223.54282942189877,
+    "spur_iq_bin_hz": 3158.5693359375,
+    "wanted_isolated_tone_amplitude_hz": 887.38850722355,
+    "spur_isolated_tone_amplitude_hz": 889.2181599549576,
+    "spur_to_wanted_modulation_amplitude_ratio": 1.0020618395623944,
+    "relative_modulation_phase_deg": -0.11625582501512557,
+    "modulation_difference_relative_percent": 0.28942531043529
+  },
+  {
+    "case": "atx_brx_183933_tone_b",
+    "wanted_iq_frequency_hz": -226.57518544304304,
+    "spur_iq_bin_hz": 3189.0869140625,
+    "wanted_isolated_tone_amplitude_hz": 886.6941819087932,
+    "spur_isolated_tone_amplitude_hz": 888.0069422346589,
+    "spur_to_wanted_modulation_amplitude_ratio": 1.0014805108149463,
+    "relative_modulation_phase_deg": -0.11067581658684049,
+    "modulation_difference_relative_percent": 0.243489951733934
+  },
+  {
+    "case": "btx_arx_183422_tone_a",
+    "wanted_iq_frequency_hz": 769.9579794953498,
+    "spur_iq_bin_hz": -2593.994140625,
+    "wanted_isolated_tone_amplitude_hz": 908.4566890617466,
+    "spur_isolated_tone_amplitude_hz": 905.7059531113256,
+    "spur_to_wanted_modulation_amplitude_ratio": 0.996972078048914,
+    "relative_modulation_phase_deg": -0.14500799100617723,
+    "modulation_difference_relative_percent": 0.3943881389182725
+  },
+  {
+    "case": "btx_arx_183422_tone_b",
+    "wanted_iq_frequency_hz": 775.1362897501037,
+    "spur_iq_bin_hz": -2624.51171875,
+    "wanted_isolated_tone_amplitude_hz": 908.6106697371397,
+    "spur_isolated_tone_amplitude_hz": 904.7559364612231,
+    "spur_to_wanted_modulation_amplitude_ratio": 0.9957575522670984,
+    "relative_modulation_phase_deg": -0.0521448158725651,
+    "modulation_difference_relative_percent": 0.4338562949308187
+  }
+]

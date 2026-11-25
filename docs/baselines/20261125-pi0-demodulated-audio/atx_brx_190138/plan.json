@@ -1,0 +1,27 @@
+{
+  "run": "atx_brx_190138",
+  "phase": "atx_brx",
+  "tx_node": "a",
+  "rx_node": "b",
+  "frequency_hz": 430100000,
+  "rate_hz": 1000000,
+  "tx_requested_dbm": 0,
+  "attenuation_db_nominal": 90,
+  "capture_seconds": 8,
+  "settle_seconds": 3,
+  "tx_if_control_hz": 2495000000,
+  "cases": [
+    {
+      "name": "carrier_probe",
+      "amplitude": 0,
+      "tx_on": true,
+      "rx_offset_hz": 0
+    },
+    {
+      "name": "tone_probe",
+      "amplitude": 0.4,
+      "tx_on": true,
+      "rx_offset_hz": 0
+    }
+  ]
+}

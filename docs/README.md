@@ -66,6 +66,8 @@ retain their original revision and test conditions. See the
 
 ## Recorded investigations and measurements
 
+- [Two-Pi demodulated audio and IF/LO coupling investigation](baselines/20261125-pi0-demodulated-audio/REPORT.txt)
+- [Physical separation and rotation repeat: whistle suppression](baselines/20261125-pi0-physical-separation/REPORT.txt)
 - [Pi0b TX startup stall and FPGA reload recovery](baselines/20261124-pi0b-tx-startup-recovery/REPORT.txt)
 - [Repaired device #2 RX on pi0b ← pi0a TX: 30 MHz to 6 GHz at all rates, 0 dBm](baselines/20261123-pi0-board2-rx-frequency-rate-sweep/REPORT.md)
 - [Repaired device #2 TX on pi0b → pi0a RX: 30 MHz to 6 GHz at all rates, 0 dBm](baselines/20261123-pi0-board2-tx-frequency-rate-sweep/REPORT.md)

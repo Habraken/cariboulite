@@ -1,0 +1,39 @@
+{
+  "run": "btx_arx_183422",
+  "phase": "btx_arx",
+  "tx_node": "b",
+  "rx_node": "a",
+  "frequency_hz": 430100000,
+  "rate_hz": 1000000,
+  "tx_requested_dbm": 0,
+  "attenuation_db_nominal": 90,
+  "capture_seconds": 8,
+  "settle_seconds": 3,
+  "cases": [
+    {
+      "name": "noise",
+      "amplitude": 0,
+      "tx_on": false
+    },
+    {
+      "name": "carrier",
+      "amplitude": 0,
+      "tx_on": true
+    },
+    {
+      "name": "tone_a",
+      "amplitude": 0.4,
+      "tx_on": true
+    },
+    {
+      "name": "tone_b",
+      "amplitude": 0.4,
+      "tx_on": true
+    },
+    {
+      "name": "carrier_end",
+      "amplitude": 0,
+      "tx_on": true
+    }
+  ]
+}

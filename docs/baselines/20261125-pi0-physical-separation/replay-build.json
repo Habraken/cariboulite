@@ -1,0 +1,11 @@
+{
+  "revision": "bd1ac340ca65e5d758ecf885bbbba7934d3c09a1",
+  "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+  "source_sha256": {
+    "software/libcariboulite/src/nbfm_demod.c": "2c26919b60ef894d33beb9e3e67803f22aaafd79b1a7e6c38d94180843cf02f4",
+    "software/libcariboulite/src/nbfm_demod_dsp.c": "4424063bf41559da1e2e22241fce7842f78d29b619aca192f213fb350524e5b6",
+    "software/libcariboulite/src/wbfm_demod.c": "8c9a307f0c67fd5c5b6ead184fce836320f0bc2ba6d0c61948b9f0c5785f2603",
+    "software/libcariboulite/src/am_demod.c": "01c62eb8f6b70e5e392c9d3284807ef7cacbfeac6bf21e309651c9bb919bdec7"
+  },
+  "binary_sha256": "d4a574c3ae7d3d0df394aacaeb5385e52f94f9e7b5d66ce78397b5fd5fa4b984"
+}

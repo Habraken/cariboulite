@@ -1,0 +1,26 @@
+[
+  {
+    "host": "pi0a-trixie",
+    "time": 1795633794.6615574,
+    "owners": [],
+    "fuser_exit": 1,
+    "fuser_stdout": "",
+    "fuser_stderr": "",
+    "throttled": "throttled=0x0",
+    "installed_backend_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+    "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+    "fpga_file_sha256": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6"
+  },
+  {
+    "host": "pi0b-trixie",
+    "time": 1795633794.6915524,
+    "owners": [],
+    "fuser_exit": 1,
+    "fuser_stdout": "",
+    "fuser_stderr": "",
+    "throttled": "throttled=0x0",
+    "installed_backend_sha256": "0fb395c1a95ff810b1cfa7e8909a5a995532c341ddf656823d670cbbb79bc859",
+    "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+    "fpga_file_sha256": "dcdf0733ef1ee8088b82381148475a6e4de87c6f00b8d14480a46d48621d31f6"
+  }
+]

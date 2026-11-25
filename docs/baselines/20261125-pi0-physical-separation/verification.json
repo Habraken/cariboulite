@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "captures": 5,
+  "complete_iq_samples": 40000000,
+  "complete_frames_per_audio_tap": 1920000,
+  "capture_health_deltas_all_zero": true,
+  "no_start_retries": true,
+  "standard_if_only": true,
+  "clean_shutdown_all_sessions": true
+}

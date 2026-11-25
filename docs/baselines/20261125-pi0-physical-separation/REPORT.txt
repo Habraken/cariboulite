@@ -1,0 +1,70 @@
+Physical separation / orientation repeat — 25 November 2026
+
+Result: changing only the reported physical arrangement strongly suppressed
+this bench link's whistle while retaining the standard 2495 MHz IF plan.
+Pi0a transmitted to repaired board #2 on pi0b. The operator increased physical
+separation and rotated one Pi by 90 degrees, and confirmed the same nominal
+90 dB attenuated HiF cable link remained connected. Distance, rotated node,
+and detailed cable placement were not recorded.
+
+The original five-case procedure was repeated: no TX, clean carrier, two
+1 kHz tones, final clean carrier; eight seconds per capture, three-second
+settling windows. Requested RF 430.1 MHz, TX power 0 dBm, TX/RX 1 MS/s,
+NBFM, synthetic amplitude 0.4, deviation 2500 Hz. The existing isolated
+backend, FPGA reload procedure, gains, disabled squelch/CTCSS/CDCSS and
+H650e playback on pi0b were reused. No TX IF override was active. Installed
+applications, libraries and firmware were not modified.
+
+Comparison with original same-direction standard-IF run atx_brx_183933:
+
+Case           Before SINAD    After SINAD    Before RSSI    After RSSI
+Tone A          9.287 dB       24.593 dB        -92 dBm       -90 dBm
+Tone B          9.278 dB       24.546 dB        -90 dBm       -91 dBm
+
+These are live fixed-1-kHz-notch readings: improvement 15.306 / 15.268 dB.
+Offline fixed-notch readings after the change were 24.645 / 24.579 dB;
+tracking the approximately 999.500 Hz raw audio tone gave 25.974 / 25.884 dB.
+Production replay and independent FM demodulation cross-check the recordings.
+
+Raw-audio integrated power in the original 3000–3800 Hz whistle band fell
+25.30 dB for the first carrier, 25.22 / 25.10 dB for the tones, and 25.05 dB
+for the final carrier. No-TX power in that band changed only +0.21 dB.
+Wanted-carrier frequency offsets remained about -215 to -219 Hz. Carrier
+RSSI was -90 dBm after, versus -91 dBm before. These are uncalibrated readings;
+the tone-window input levels differ by up to 2 dB from the reference.
+
+Interpretation: this repeat strongly supports geometry-dependent coupling
+between the two radios, consistent with the earlier IF/LO intervention.
+It does not identify the exact radiating or pickup component, distinguish
+separation from rotation or cable movement, or prove a particular near-field
+or far-field mechanism. There was no return to the original geometry in this
+session, so this is a before/after comparison rather than a geometry A/B/A.
+Only pi0a TX -> pi0b RX was repeated; no reciprocal run was performed.
+
+Working conclusion: the whistle investigation is resolved as coupling in
+the two-radio bench arrangement. We are no longer pursuing an intrinsic
+physical radio defect as the explanation for this whistle. This conclusion
+is scoped to this impairment and does not supersede separate hardware-test
+findings or establish that every aspect of either radio is fault-free.
+
+All five captures contain 8 million decoded IQ samples and 384000 frames
+per audio tap (raw, filtered, accepted playback PCM). Capture-window queue,
+reader, alignment, playback, TX writer/driver and clipping deltas were zero.
+All starts succeeded without retries; all six backend sessions exited zero
+without cleanup warnings or forced termination. An independent privileged
+/proc executable scan found no radio owners on either host after the test.
+
+Evidence: atx_brx_195343/{plan,sessions,measurements}.json, three host archives,
+analysis/summary.json, per-case plots, comparison.json, capture-sha256.json,
+verification.json and release.json. Previous evidence is retained separately
+in ../20261125-pi0-demodulated-audio. Times embedded in run names are UTC.
+
+Offline reproduction (no radio access):
+  python3 unpack.py
+  python3 build_decode.py
+  python3 -m pip install -r requirements.txt  (appropriate environment)
+  python3 analyze.py --plot
+  python3 compare.py
+
+Acquisition sources are retained for provenance. run_direction.py and
+radio_helper.py operate live RF hardware; do not use them as offline checks.

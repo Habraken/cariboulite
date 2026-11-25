@@ -1,0 +1,188 @@
+Two-radio demodulated-audio comparison and IF/LO coupling control
+25 November 2026 — conducted HiF link, 430.1 MHz
+
+The principal finding is an unwanted, modulated IQ component associated with
+the radios' common conversion-frequency arrangement. Moving only the TX
+frequency plan from a 2495 MHz IF to a 2385 MHz IF strongly suppressed the
+whistle while retaining the requested 430.1 MHz RF signal. Returning to the
+standard plan restored the impairment. This is strong evidence for unwanted
+coupling involving the two radios' IF/LO paths. The physical coupling route
+and the particular component are not established by these measurements.
+
+The test used the operator-confirmed nominal 90 dB attenuated HiF link,
+requested/reported 0 dBm, 1 MS/s TX/RX, NBFM, and a 1 kHz synthetic tone of
+amplitude 0.4 with deviation setting 2500 Hz. The actual RF power/attenuation
+and reference frequencies were not independently calibrated. CTCSS/CDCSS
+were disabled. The compressor is microphone-only and does not process the
+synthetic source. RX used matched gain with am=-7, usb=0 and lsb=0, volume 0,
+50 us de-emphasis and disabled carrier/noise squelch. RX LED1 was held low;
+original LED states were restored. The same H650e headset was moved to the
+receiving Pi for each direction. All workers obtained SCHED_FIFO scheduling.
+
+Pi0a is the original board, UUID c132d0e7-d7dd-457a-b105-4a5cd97e7e80.
+Pi0b is repaired device #2, UUID 36b67ac4-b313-4369-99bd-4b3e09caabfa.
+The installed FPGA image was reloaded at the documented session boundaries;
+the standard reference output remained 32 MHz / 8 mA (RF_CLKO=0x1A).
+
+Controlled TX-IF experiment: pi0a TX, repaired #2 on pi0b RX
+
+Stage       TX IF MHz   TX LO MHz*  RX IF MHz  RSSI dBm**  Live SINAD dB
+A             2495       2925.1       2495        -89          9.307
+B             2385       2815.1       2495        -87         25.158
+A return      2495       2925.1       2495        -90          9.269
+
+* Nominal mixer LO; the unchanged SDK computes it from the actual modem
+frequency so requested RF remains LO minus IF = 430.1 MHz. Changing IF
+necessarily changes this LO too; this experiment does not separate IF pickup
+from other coupling associated with the TX LO arrangement.
+** Final tone-window RSSI. The 2–3 dB level difference remains a limitation;
+this was not a calibrated constant-input-power substitution test.
+
+The 3000–3800 Hz raw-audio power fell by 24.1 dB for the clean carrier and
+26.6 dB for the tone when changing A to B. The strong narrow component and
+its harmonic returned in the final A stage. Both stages A and B retained
+the wanted RF carrier and modulation. RX tuning registers were identical
+throughout; TX tuning registers changed for B and returned to A's values.
+The IF probe recorded selected 2385000000 Hz / SDK actual 2384999680 Hz.
+
+The IF intervention was tested in this direction only. It was an isolated,
+process-local diagnostic, not an installed application feature or permanent
+fix. The standard IF plan was restored before final release.
+
+Main reciprocal recordings and estimator checks
+
+Five eight-second captures per direction recorded no-TX noise, clean carrier,
+two 1 kHz tones and a final clean carrier. Representative first-tone results:
+
+Receiver/link             Fixed notch  Tracked notch  Centered IQ replay***
+Original RX, #2 TX           7.296 dB      7.313 dB          7.325 dB
+Repaired #2 RX, original TX  9.268 dB      9.298 dB          9.306 dB
+
+*** Production DSP replay after digitally centering the same captured IQ,
+with a notch centered on the recovered tone. These are combined processing
+changes, so the full live-to-centered difference is not a pure CFO effect.
+Compare replay_tracked_notch_sinad_db with centered_replay_tracked_notch_sinad_db
+in analysis/summary.json to isolate carrier centering: less than 0.012 dB for
+these two captures. No physical RF frequency retuning is involved in that check.
+
+The dominant unwanted audio tone was around 3.3–3.4 kHz. It exists in the
+raw received IQ, the live raw discriminator tap, production offline replay,
+independent float64 FM demodulation and accepted playback PCM. Thus it is
+not explained by the playback stage or by a misleading live meter alone.
+
+The live test tone was approximately 999.500–999.502 Hz. The recorded audio
+rate correction was +500 ppm during the capture windows. Unclocked production
+IQ replay recovered approximately 1000.000–1000.002 Hz. This agrees with the
+resampler correction, rather than a multi-hertz error in the transmitted tone.
+Tracking the tone changes the shared-IF SINAD by only 0.017–0.030 dB. After
+the whistle is suppressed in stage B, tracking improves 25.179 to 26.715 dB,
+so the fixed notch does affect higher-quality readings.
+
+The estimator uses a second-order 3000 Hz low-pass, not a hard spectral cutoff.
+About 99% of its residual power in the original shared-IF tone captures lies
+above 3 kHz. Restricting spectrum integration to 300–3000 Hz gives diagnostic
+ratios of approximately 28–29 dB for both directions. These restricted-band
+figures are a separate diagnostic, not replacement standardized SINAD values.
+The audible narrow signal remains a real impairment. Fitted second/third
+1 kHz harmonics were relatively small; the dominant tone is nonharmonic.
+
+Localization and modulation evidence
+
+With pi0a TX held at 430.1 MHz and pi0b RX moved by +/-5 kHz, the unwanted
+IQ line remained near +3.18 kHz while the wanted carrier moved by 10 kHz:
+
+RX offset    Wanted IQ carrier    Unwanted IQ bin*    Strongest raw audio
++5 kHz          -5226 Hz              +3174 Hz              8395 Hz
+-5 kHz          +4775 Hz              +3174 Hz              1588 Hz
+
+* This summary uses the retained 15.26 Hz IQ peak-bin resolution. Line drift,
+different averaging and peak-bin selection explain small discrepancies from
+an exact carrier-to-line difference. The main localization is the roughly
+10 kHz wanted-carrier shift with a stationary unwanted component. The line
+is receiver-relative, but that alone cannot prove it is generated inside RX:
+an external signal coupling directly into the IF can have this behavior.
+
+Isolating the wanted and unwanted IQ components in the four original tone
+captures found the same 1 kHz modulation, with fitted modulation-amplitude
+ratios 0.996–1.002 and phase differences below 0.15 degree. This strongly
+connects the unwanted component to the transmitted signal. Isolation keeps
+only the carrier/first sidebands; its amplitudes are not deviation calibration.
+See analysis/modulation-correlation.json for the method's measured outputs.
+
+Reciprocal frequency shifts provide another clue. In the first-tone pair,
+half the wanted-carrier separation is 496.75 Hz at 430.1 MHz, or 1.155 ppm.
+Half the unwanted-line separation is 2876.28 Hz at 2495 MHz, or 1.153 ppm.
+The second-tone pair similarly gives 1.165 / 1.165 ppm. This scaling is
+consistent with a signal tied to the modem IF. A roughly 1.15 ppm reference
+difference at a 2925.1 MHz LO corresponds to an audible beat near 3.36 kHz.
+These are inferences from nominal sample rates, not absolute metrology or a
+new RSP2pro frequency measurement. IF/LO coupling is the leading explanation;
+shielding/separation, port termination or an independent RF source would
+help determine the actual route. No enclosure or antenna-isolation test ran.
+
+The no-TX captures did not show the strong corresponding IQ component. Clean
+repeater listening and earlier RSP2pro observations can fit an interaction
+specific to this two-CaribouLite bench setup. That interpretation remains
+conditional. These data do not establish receiver sensitivity, reject every
+hardware defect, or supersede the separately recorded 23 November sweeps.
+
+Physical-layout follow-up and working conclusion
+
+A subsequent repeat with increased physical separation and one Pi rotated
+90 degrees, retaining the same nominal 90 dB attenuated HiF link and standard
+IF plan, improved live SINAD from 9.29/9.28 to 24.59/24.55 dB. Power in the
+original 3000–3800 Hz whistle band fell about 25 dB. This supports coupling
+in the two-radio bench arrangement as the explanation for the whistle.
+We are no longer pursuing an intrinsic physical radio defect for this
+impairment; separate hardware-test findings remain independent. See
+../20261125-pi0-physical-separation/REPORT.txt for the evidence and limits.
+
+Capture, analysis, verification and reproduction
+
+Eighteen captures retain 144 million decoded IQ samples and 6.912 million
+frames for each of three audio taps: raw pre-volume/pre-de-emphasis float32,
+post-filter/pre-gain float32 and accepted ALSA playback PCM. Raw captures are
+eight seconds at nominal 1 MS/s / 48 kHz. The WAV exports preserve playback
+samples and gain without normalization. One fresh production replay can end
+one sample short at its fractional phase boundary; no padding is introduced.
+
+Bounded buffers were prefaulted and recorded in RAM, then written after
+streaming shutdown. Actual production DSP objects were reused in isolated
+diagnostic backends. Additional code forwards IQ/audio/PCM unchanged and
+permits zero-amplitude synthetic tone. Native mock tests checked forwarding,
+signal arming, capture limits, partial ALSA writes and correction metadata.
+The optional IF probe was separately tested for scoped override, unchanged
+other channels/frequencies, return propagation and invalid-input rejection.
+Installed applications, shared libraries, firmware files and flash were not
+modified. Both radios were independently confirmed released after all tests.
+
+All capture-window queue/frame/playback/driver error deltas and clipping
+counts were zero. All starts succeeded without retries. Recording completeness,
+role/settings checks, applied scheduling, metadata and release checks pass.
+Each raw capture file has a retained SHA-256; top-level SHA256SUMS protects
+the complete package. Verification is offline and never transmits RF.
+
+Plots: analysis/direction-comparison.png; analysis/receiver-offset-localization.png;
+analysis/tx-if-aba-comparison.png. Per-case spectra and analysis/summary.json
+retain complete results. The *-host.tar.gz archives retain the raw recordings,
+status histories, commands, metadata, build identities and transmitter logs.
+
+Offline reproduction from this directory:
+  python3 verify.py
+  python3 unpack.py
+  python3 build_decode.py
+  python3 -m pip install -r requirements.txt  (in an appropriate environment)
+  python3 analyze.py --plot
+  python3 analyze_modulation.py
+
+PSD estimation uses SciPy Welch with Hann windows and 50% overlap:
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html
+SINAD filter coefficients reproduce software/libcariboulite/src/sinad.h.
+Unchanged production DSP replay and an independent discriminator cross-check
+the recordings. decoder-test.json records a synthetic 500 Hz CFO test that
+preserves a 1 kHz modulation tone while carrier centering removes its DC term.
+
+Acquisition sources are supplied for provenance. Executing run_direction.py or
+radio_helper.py operates RF hardware and requires the correct conducted link,
+available radios, headset and privileges. Their final source includes the
+later offset/IF controls; actual plans and command traces are authoritative.
