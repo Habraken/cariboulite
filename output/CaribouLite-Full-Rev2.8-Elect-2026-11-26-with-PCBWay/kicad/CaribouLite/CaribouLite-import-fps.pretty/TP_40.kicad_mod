@@ -1,0 +1,82 @@
+(footprint "TP_40"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(locked yes)
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 1.19761 -0.3683 270)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "5a80eb73-ec35-422d-8b08-bf612f44e96c")
+		(effects
+			(font
+				(size 1.524 1.524)
+				(thickness 0.254)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Value" "5V0"
+		(at -3.09499 -0.3683 270)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "6eb9129c-b8f0-4e03-85ea-b534a72aa52b")
+		(effects
+			(font
+				(size 1.524 1.524)
+				(thickness 0.254)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2bec44ab-87e7-41b5-84ac-c4f2b2a7d004")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2e481b50-f52b-4451-a810-71ce40950e80")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(sheetname "Top\\U_DIG_INTERFACES")
+	(sheetfile "Top\\U_DIG_INTERFACES.kicad_sch")
+	(duplicate_pad_numbers_are_jumpers no)
+	(pad "1" smd circle
+		(at 0 0)
+		(size 1 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(solder_mask_margin 0.0254)
+		(solder_paste_margin -99.0694)
+		(thermal_bridge_angle 90)
+		(uuid "d3847548-96c5-4876-a324-20872e67ad24")
+	)
+	(variant
+		(name "CaribouLite")
+		(dnp yes)
+		(exclude_from_bom yes)
+		(exclude_from_pos_files yes)
+	)
+	(variant
+		(name "CaribouLite_ISM")
+		(dnp yes)
+		(exclude_from_bom yes)
+		(exclude_from_pos_files yes)
+	)
+	(embedded_fonts no)
+)

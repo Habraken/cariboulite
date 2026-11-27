@@ -1,0 +1,33 @@
+PCBWay returned fabrication data — read first
+
+This revised package adds PCBWay's returned CAM files to the original design
+reference package. Start with pcbway/EQ3/CAM/ when inspecting the supplier's
+panelized fabrication geometry. The original supplier ZIP is included unchanged.
+The EQ3 engineering-question workbook and CA45470C04A0 stack-up/impedance PDF
+are also included unchanged. These were recovered directly from the local
+manufacturing-and-working-files backup archive.
+
+The local 24 September EQ3 review records describe:
+- L1-L2 and L3-L4 blind-via laser holes changed to 0.127 mm.
+- One GND stitching via near U19/C40/J4 shifted +0.0334 mm in X, repeated
+  in all six panel copies; affected copper and drill features moved together.
+- Revised Shengyi S1000H/S1000HB stack-up, Er1 4.09, 106+106 outer prepreg,
+  nominal finished thickness 1.60 mm +/-0.16 mm.
+- Calculated impedances: L1/L4 exposed RF 48.62/48.46 ohms; covered RF
+  47.14/46.96 ohms; L4 differential 91.81 ohms. See supplier report for
+  construction, models and production tolerances.
+- EQ3's 14 CAM files are recorded as identical to the preceding EQ2 CAM files.
+
+Status: the saved final confirmation email is marked DRAFT - NOT SENT.
+These are the latest returned supplier CAM files found in this local archive;
+this package does not establish that they were the exact production files.
+The values above describe the returned proposal and recorded review, not
+measurements of the delivered boards. The original KiCad project does not
+incorporate these supplier CAM changes.
+
+Use schematics/ for the original circuit reference and pcb/ for comparison
+with original released fabrication data. Do not confuse the original
+single-board data with the PCBWay panel data. Assembly data remains the
+original reference; no final supplier as-built BOM is established here.
+
+Internal email drafts, complaints and commercial quotations are omitted.
