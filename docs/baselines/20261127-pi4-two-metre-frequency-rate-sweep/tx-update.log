@@ -1,0 +1,1613 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8): No such file or directory
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8): No such file or directory
+Updating files:  13% (95/710)Updating files:  14% (100/710)Updating files:  15% (107/710)Updating files:  16% (114/710)Updating files:  17% (121/710)Updating files:  18% (128/710)Updating files:  19% (135/710)Updating files:  20% (142/710)Updating files:  21% (150/710)Updating files:  22% (157/710)Updating files:  23% (164/710)Updating files:  23% (167/710)Updating files:  24% (171/710)Updating files:  25% (178/710)Updating files:  26% (185/710)Updating files:  27% (192/710)Updating files:  28% (199/710)Updating files:  29% (206/710)Updating files:  30% (213/710)Updating files:  31% (221/710)Updating files:  32% (228/710)Updating files:  33% (235/710)Updating files:  34% (242/710)Updating files:  35% (249/710)Updating files:  36% (256/710)Updating files:  37% (263/710)Updating files:  38% (270/710)Updating files:  39% (277/710)Updating files:  40% (284/710)Updating files:  41% (292/710)Updating files:  42% (299/710)Updating files:  42% (303/710)Updating files:  43% (306/710)Updating files:  44% (313/710)Updating files:  45% (320/710)Updating files:  46% (327/710)Updating files:  47% (334/710)Updating files:  48% (341/710)Updating files:  49% (348/710)Updating files:  50% (355/710)Updating files:  51% (363/710)Updating files:  52% (370/710)Updating files:  53% (377/710)Updating files:  54% (384/710)Updating files:  55% (391/710)Updating files:  55% (396/710)Updating files:  56% (398/710)Updating files:  57% (405/710)Updating files:  58% (412/710)Updating files:  59% (419/710)Updating files:  60% (426/710)Updating files:  61% (434/710)Updating files:  62% (441/710)Updating files:  63% (448/710)Updating files:  64% (455/710)Updating files:  65% (462/710)Updating files:  66% (469/710)Updating files:  67% (476/710)Updating files:  68% (483/710)Updating files:  69% (490/710)Updating files:  70% (497/710)Updating files:  71% (505/710)Updating files:  72% (512/710)Updating files:  73% (519/710)Updating files:  74% (526/710)Updating files:  75% (533/710)Updating files:  76% (540/710)Updating files:  76% (541/710)Updating files:  77% (547/710)Updating files:  78% (554/710)Updating files:  79% (561/710)Updating files:  80% (568/710)Updating files:  80% (571/710)Updating files:  81% (576/710)Updating files:  82% (583/710)Updating files:  83% (590/710)Updating files:  84% (597/710)Updating files:  85% (604/710)Updating files:  86% (611/710)Updating files:  87% (618/710)Updating files:  88% (625/710)Updating files:  89% (632/710)Updating files:  90% (639/710)Updating files:  91% (647/710)Updating files:  92% (654/710)Updating files:  93% (661/710)Updating files:  94% (668/710)Updating files:  95% (675/710)Updating files:  96% (682/710)Updating files:  97% (689/710)Updating files:  98% (696/710)Updating files:  99% (703/710)Updating files: 100% (710/710)Updating files: 100% (710/710), done.
+Updating 951a62e..a997ec4
+Fast-forward
+ .gitattributes                                     |     5 +
+ ADDITIONAL-README.md                               |    65 +-
+ ROADMAP.md                                         |    78 +-
+ docs/README.md                                     |    16 +
+ .../README.md                                      |    11 +
+ .../REPORT.md                                      |   147 +
+ .../REPORT.txt                                     |    25 +
+ .../SHA256SUMS                                     |    35 +
+ .../SOURCE-SHA256SUMS                              |    18 +
+ .../analysis/SHA256SUMS                            |    14 +
+ .../analysis/analysis-summary.json                 |   133 +
+ .../analysis/analyze_sweep.py                      |   176 +
+ .../analysis/environment.txt                       |     3 +
+ .../analysis/frequency-overview.png                |   Bin 0 -> 484079 bytes
+ .../analysis/frequency-overview.svg                |  6256 ++
+ .../analysis/frequency-rate-heatmaps.png           |   Bin 0 -> 112883 bytes
+ .../analysis/frequency-rate-heatmaps.svg           |   665 +
+ .../analysis/path-boundary-zooms.png               |   Bin 0 -> 296918 bytes
+ .../analysis/path-boundary-zooms.svg               |  1420 +
+ .../analysis/rate-profiles.png                     |   Bin 0 -> 157656 bytes
+ .../analysis/rate-profiles.svg                     |   908 +
+ .../analysis/rate-summary.csv                      |     9 +
+ .../analysis/requirements.txt                      |     2 +
+ .../draft-plan.json                                |  1222 +
+ .../finalize_sweep.py                              |    82 +
+ .../paired-snapshots.jsonl.gz                      |   Bin 0 -> 26316648 bytes
+ .../plan.json                                      | 12030 ++++
+ .../progress.json                                  |    10 +
+ .../radio_helper.py                                |   199 +
+ .../results.csv                                    |  1385 +
+ .../results.jsonl                                  |  1384 +
+ .../run_sweep.py                                   |   152 +
+ .../rx-final-processes.txt                         |   172 +
+ .../rx-host-artifacts.tar.gz                       |   Bin 0 -> 21603778 bytes
+ .../rx-session1-ready.json                         |    54 +
+ .../telemetry.jsonl                                |   110 +
+ .../tx-final-processes.txt                         |   169 +
+ .../tx-host-artifacts.tar.gz                       |   Bin 0 -> 21888933 bytes
+ .../tx-session1-ready.json                         |    46 +
+ .../verification.json                              |    14 +
+ .../20261122-pi0-whistle-hif-bypass/README.md      |   135 +
+ .../20261122-pi0-whistle-hif-bypass/SHA256SUMS     |    49 +
+ .../analysis/carrier.png                           |   Bin 0 -> 244605 bytes
+ .../analysis/carrier.wav                           |   Bin 0 -> 576044 bytes
+ .../analysis/carrier_2m.png                        |   Bin 0 -> 223697 bytes
+ .../analysis/carrier_rx_minus5k.png                |   Bin 0 -> 242303 bytes
+ .../analysis/carrier_rx_plus5k.png                 |   Bin 0 -> 245250 bytes
+ .../analysis/channel-comparison.json               |    32 +
+ .../analysis/channel-comparison.png                |   Bin 0 -> 289169 bytes
+ .../analysis/comparison.png                        |   Bin 0 -> 301920 bytes
+ .../analysis/ctcss_only_rx_off.png                 |   Bin 0 -> 230689 bytes
+ .../analysis/ctcss_only_rx_on.png                  |   Bin 0 -> 231614 bytes
+ .../analysis/ctcss_only_rx_on.wav                  |   Bin 0 -> 576044 bytes
+ .../analysis/health.json                           |   101 +
+ .../analysis/localization.csv                      |     4 +
+ .../analysis/localization.json                     |    29 +
+ .../analysis/localization.png                      |   Bin 0 -> 265874 bytes
+ .../analysis/no_tx.png                             |   Bin 0 -> 264032 bytes
+ .../analysis/requirements.txt                      |     3 +
+ .../analysis/summary.json                          |  2794 +
+ .../analysis/tone_1k.png                           |   Bin 0 -> 227120 bytes
+ .../analysis/tone_1k.wav                           |   Bin 0 -> 576044 bytes
+ .../analysis/tone_1k_ctcss.png                     |   Bin 0 -> 245578 bytes
+ .../20261122-pi0-whistle-hif-bypass/analyze.py     |    59 +
+ .../build_tx_probe.py                              |    13 +
+ .../20261122-pi0-whistle-hif-bypass/capture_tap.c  |    75 +
+ .../captures.tar.gz                                |   Bin 0 -> 57598898 bytes
+ .../check_routes.py                                |    19 +
+ .../compare_channels.py                            |    28 +
+ .../20261122-pi0-whistle-hif-bypass/decode_iq.c    |    23 +
+ .../measurements.json                              | 14259 +++++
+ .../20261122-pi0-whistle-hif-bypass/plan.json      |    83 +
+ .../radio_helper.py                                |    88 +
+ .../route-verification.json                        |  1336 +
+ .../20261122-pi0-whistle-hif-bypass/route_probe.c  |    23 +
+ .../run_measurements.py                            |    82 +
+ .../rx-carrier-ready.json                          |    44 +
+ .../rx-carrier_2m-ready.json                       |    44 +
+ .../rx-carrier_rx_minus5k-ready.json               |    44 +
+ .../rx-carrier_rx_plus5k-ready.json                |    44 +
+ .../rx-ctcss_only_rx_off-ready.json                |    44 +
+ .../rx-ctcss_only_rx_on-ready.json                 |    44 +
+ .../rx-no_tx-ready.json                            |    44 +
+ .../rx-tone_1k-ready.json                          |    44 +
+ .../rx-tone_1k_ctcss-ready.json                    |    44 +
+ .../shutdown-check.json                            |    10 +
+ .../software-version.json                          |     9 +
+ .../20261122-pi0-whistle-hif-bypass/summarize.py   |    41 +
+ .../20261122-pi0-whistle-hif-bypass/tx-build.json  |     4 +
+ .../tx-tx-session-ready.json                       |    43 +
+ .../20261122-pi0-whistle-reference-drive/README.md |   178 +
+ .../SHA256SUMS                                     |   137 +
+ .../analysis/a8__carrier.png                       |   Bin 0 -> 238209 bytes
+ .../analysis/a8__carrier.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/a8__carrier_2m.png                    |   Bin 0 -> 230257 bytes
+ .../analysis/a8__carrier_rx_minus5k.png            |   Bin 0 -> 236788 bytes
+ .../analysis/a8__carrier_rx_plus5k.png             |   Bin 0 -> 234576 bytes
+ .../analysis/a8__ctcss_only_rx_off.png             |   Bin 0 -> 242698 bytes
+ .../analysis/a8__ctcss_only_rx_on.png              |   Bin 0 -> 242929 bytes
+ .../analysis/a8__ctcss_only_rx_on.wav              |   Bin 0 -> 576044 bytes
+ .../analysis/a8__no_tx.png                         |   Bin 0 -> 260922 bytes
+ .../analysis/a8__tone_1k.png                       |   Bin 0 -> 244535 bytes
+ .../analysis/a8__tone_1k.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/a8__tone_1k_ctcss.png                 |   Bin 0 -> 254257 bytes
+ .../analysis/b4__carrier.png                       |   Bin 0 -> 236457 bytes
+ .../analysis/b4__carrier.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/b4__carrier_2m.png                    |   Bin 0 -> 230866 bytes
+ .../analysis/b4__carrier_rx_minus5k.png            |   Bin 0 -> 239120 bytes
+ .../analysis/b4__carrier_rx_plus5k.png             |   Bin 0 -> 233986 bytes
+ .../analysis/b4__ctcss_only_rx_off.png             |   Bin 0 -> 244870 bytes
+ .../analysis/b4__ctcss_only_rx_on.png              |   Bin 0 -> 242935 bytes
+ .../analysis/b4__ctcss_only_rx_on.wav              |   Bin 0 -> 576044 bytes
+ .../analysis/b4__no_tx.png                         |   Bin 0 -> 262666 bytes
+ .../analysis/b4__tone_1k.png                       |   Bin 0 -> 250040 bytes
+ .../analysis/b4__tone_1k.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/b4__tone_1k_ctcss.png                 |   Bin 0 -> 256714 bytes
+ .../analysis/c2__carrier.png                       |   Bin 0 -> 236587 bytes
+ .../analysis/c2__carrier.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/c2__carrier_2m.png                    |   Bin 0 -> 233183 bytes
+ .../analysis/c2__carrier_rx_minus5k.png            |   Bin 0 -> 235217 bytes
+ .../analysis/c2__carrier_rx_plus5k.png             |   Bin 0 -> 234034 bytes
+ .../analysis/c2__ctcss_only_rx_off.png             |   Bin 0 -> 244396 bytes
+ .../analysis/c2__ctcss_only_rx_on.png              |   Bin 0 -> 243400 bytes
+ .../analysis/c2__ctcss_only_rx_on.wav              |   Bin 0 -> 576044 bytes
+ .../analysis/c2__no_tx.png                         |   Bin 0 -> 263652 bytes
+ .../analysis/c2__tone_1k.png                       |   Bin 0 -> 243979 bytes
+ .../analysis/c2__tone_1k.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/c2__tone_1k_ctcss.png                 |   Bin 0 -> 255370 bytes
+ .../analysis/carrier-drive-comparison.png          |   Bin 0 -> 273521 bytes
+ .../analysis/carrier_2m-drive-comparison.png       |   Bin 0 -> 261318 bytes
+ .../carrier_rx_minus5k-drive-comparison.png        |   Bin 0 -> 275736 bytes
+ .../carrier_rx_plus5k-drive-comparison.png         |   Bin 0 -> 273277 bytes
+ .../analysis/confirmation-drive-comparison.png     |   Bin 0 -> 264463 bytes
+ .../analysis/d8__carrier.png                       |   Bin 0 -> 234582 bytes
+ .../analysis/d8__carrier.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/d8__carrier_2m.png                    |   Bin 0 -> 229092 bytes
+ .../analysis/d8__carrier_rx_minus5k.png            |   Bin 0 -> 233441 bytes
+ .../analysis/d8__carrier_rx_plus5k.png             |   Bin 0 -> 232810 bytes
+ .../analysis/d8__ctcss_only_rx_off.png             |   Bin 0 -> 246920 bytes
+ .../analysis/d8__ctcss_only_rx_on.png              |   Bin 0 -> 245640 bytes
+ .../analysis/d8__ctcss_only_rx_on.wav              |   Bin 0 -> 576044 bytes
+ .../analysis/d8__no_tx.png                         |   Bin 0 -> 264114 bytes
+ .../analysis/d8__tone_1k.png                       |   Bin 0 -> 245599 bytes
+ .../analysis/d8__tone_1k.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/d8__tone_1k_ctcss.png                 |   Bin 0 -> 252588 bytes
+ .../analysis/drive-metrics.csv                     |    41 +
+ .../analysis/drive-metrics.json                    |  1397 +
+ .../analysis/e8__carrier.png                       |   Bin 0 -> 235236 bytes
+ .../analysis/e8__carrier.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/f2__carrier.png                       |   Bin 0 -> 234821 bytes
+ .../analysis/f2__carrier.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/g4__carrier.png                       |   Bin 0 -> 236112 bytes
+ .../analysis/g4__carrier.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/h8__carrier.png                       |   Bin 0 -> 234546 bytes
+ .../analysis/h8__carrier.wav                       |   Bin 0 -> 576044 bytes
+ .../analysis/health.json                           |   442 +
+ .../analysis/requirements.txt                      |     3 +
+ .../analysis/summary.json                          | 12558 ++++
+ .../analyze.py                                     |    54 +
+ .../build_tools.py                                 |    31 +
+ .../build_tx_probe.py                              |    13 +
+ .../capture_tap.c                                  |    75 +
+ .../captures-a8.tar.gz                             |   Bin 0 -> 84702089 bytes
+ .../captures-b4.tar.gz                             |   Bin 0 -> 82755504 bytes
+ .../captures-c2.tar.gz                             |   Bin 0 -> 81818966 bytes
+ .../captures-confirmation.tar.gz                   |   Bin 0 -> 30973112 bytes
+ .../captures-d8.tar.gz                             |   Bin 0 -> 81100292 bytes
+ .../compare_drives.py                              |    91 +
+ .../confirmation-measurements.json                 |  6434 +++
+ .../confirmation-plan.json                         |    58 +
+ .../decode_iq.c                                    |    23 +
+ .../drive_probe.c                                  |    53 +
+ .../measurements.json                              | 57858 +++++++++++++++++++
+ .../package_evidence.py                            |    35 +
+ .../20261122-pi0-whistle-reference-drive/plan.json |   410 +
+ .../radio_helper.py                                |   107 +
+ .../route_probe.c                                  |    23 +
+ .../run_confirmation.py                            |    86 +
+ .../run_measurements.py                            |    86 +
+ .../rx-a8__carrier-ready.json                      |    45 +
+ .../rx-a8__carrier_2m-ready.json                   |    45 +
+ .../rx-a8__carrier_rx_minus5k-ready.json           |    45 +
+ .../rx-a8__carrier_rx_plus5k-ready.json            |    45 +
+ .../rx-a8__ctcss_only_rx_off-ready.json            |    45 +
+ .../rx-a8__ctcss_only_rx_on-ready.json             |    45 +
+ .../rx-a8__no_tx-ready.json                        |    45 +
+ .../rx-a8__tone_1k-ready.json                      |    45 +
+ .../rx-a8__tone_1k_ctcss-ready.json                |    45 +
+ .../rx-b4__carrier-ready.json                      |    45 +
+ .../rx-b4__carrier_2m-ready.json                   |    45 +
+ .../rx-b4__carrier_rx_minus5k-ready.json           |    45 +
+ .../rx-b4__carrier_rx_plus5k-ready.json            |    45 +
+ .../rx-b4__ctcss_only_rx_off-ready.json            |    45 +
+ .../rx-b4__ctcss_only_rx_on-ready.json             |    45 +
+ .../rx-b4__no_tx-ready.json                        |    45 +
+ .../rx-b4__tone_1k-ready.json                      |    45 +
+ .../rx-b4__tone_1k_ctcss-ready.json                |    45 +
+ .../rx-c2__carrier-ready.json                      |    45 +
+ .../rx-c2__carrier_2m-ready.json                   |    45 +
+ .../rx-c2__carrier_rx_minus5k-ready.json           |    45 +
+ .../rx-c2__carrier_rx_plus5k-ready.json            |    45 +
+ .../rx-c2__ctcss_only_rx_off-ready.json            |    45 +
+ .../rx-c2__ctcss_only_rx_on-ready.json             |    45 +
+ .../rx-c2__no_tx-ready.json                        |    45 +
+ .../rx-c2__tone_1k-ready.json                      |    45 +
+ .../rx-c2__tone_1k_ctcss-ready.json                |    45 +
+ .../rx-d8__carrier-ready.json                      |    45 +
+ .../rx-d8__carrier_2m-ready.json                   |    45 +
+ .../rx-d8__carrier_rx_minus5k-ready.json           |    45 +
+ .../rx-d8__carrier_rx_plus5k-ready.json            |    45 +
+ .../rx-d8__ctcss_only_rx_off-ready.json            |    45 +
+ .../rx-d8__ctcss_only_rx_on-ready.json             |    45 +
+ .../rx-d8__no_tx-ready.json                        |    45 +
+ .../rx-d8__tone_1k-ready.json                      |    45 +
+ .../rx-d8__tone_1k_ctcss-ready.json                |    45 +
+ .../rx-e8__carrier-ready.json                      |    45 +
+ .../rx-f2__carrier-ready.json                      |    45 +
+ .../rx-g4__carrier-ready.json                      |    45 +
+ .../rx-h8__carrier-ready.json                      |    45 +
+ .../shutdown-check.json                            |    22 +
+ .../software-version.json                          |    20 +
+ .../test_drive_probe.c                             |    26 +
+ .../tx-build.json                                  |     4 +
+ .../tx-confirmation-tx-session-ready.json          |    44 +
+ .../tx-session.tar.gz                              |   Bin 0 -> 401649 bytes
+ .../tx-tx-session-ready.json                       |    44 +
+ .../verified-settings.json                         |   456 +
+ .../verify_measurements.py                         |    38 +
+ .../20261122-pi0-whistle-reversed/README.md        |   147 +
+ .../20261122-pi0-whistle-reversed/SHA256SUMS       |    57 +
+ .../analysis/carrier.png                           |   Bin 0 -> 237430 bytes
+ .../analysis/carrier.wav                           |   Bin 0 -> 576044 bytes
+ .../analysis/carrier_2m.png                        |   Bin 0 -> 227990 bytes
+ .../analysis/carrier_rx_minus5k.png                |   Bin 0 -> 231976 bytes
+ .../analysis/carrier_rx_plus5k.png                 |   Bin 0 -> 229905 bytes
+ .../analysis/comparison.png                        |   Bin 0 -> 310442 bytes
+ .../analysis/ctcss_only_rx_off.png                 |   Bin 0 -> 242808 bytes
+ .../analysis/ctcss_only_rx_on.png                  |   Bin 0 -> 242829 bytes
+ .../analysis/ctcss_only_rx_on.wav                  |   Bin 0 -> 576044 bytes
+ .../analysis/health.json                           |   101 +
+ .../analysis/localization.csv                      |     4 +
+ .../analysis/localization.json                     |    29 +
+ .../analysis/localization.png                      |   Bin 0 -> 300091 bytes
+ .../analysis/no_tx.png                             |   Bin 0 -> 267219 bytes
+ .../analysis/receiver-comparison.png               |   Bin 0 -> 259070 bytes
+ .../analysis/requirements.txt                      |     3 +
+ .../analysis/summary.json                          |  2793 +
+ .../analysis/tone_1k.png                           |   Bin 0 -> 239309 bytes
+ .../analysis/tone_1k.wav                           |   Bin 0 -> 576044 bytes
+ .../analysis/tone_1k_ctcss.png                     |   Bin 0 -> 250405 bytes
+ .../20261122-pi0-whistle-reversed/analyze.py       |    58 +
+ .../build_tx_probe.py                              |    13 +
+ .../20261122-pi0-whistle-reversed/capture_tap.c    |    73 +
+ .../20261122-pi0-whistle-reversed/captures.tar.gz  |   Bin 0 -> 81060684 bytes
+ .../compare_receivers.py                           |    22 +
+ .../20261122-pi0-whistle-reversed/decode_iq.c      |    23 +
+ .../measurements.json                              | 13863 +++++
+ .../20261122-pi0-whistle-reversed/pilot.json       |   750 +
+ .../20261122-pi0-whistle-reversed/plan.json        |    87 +
+ .../20261122-pi0-whistle-reversed/radio_helper.py  |    89 +
+ .../rsp2pro-observation.json                       |    17 +
+ .../run_measurements.py                            |   101 +
+ .../rx-carrier-ready.json                          |    44 +
+ .../rx-carrier_2m-ready.json                       |    44 +
+ .../rx-carrier_rx_minus5k-ready.json               |    44 +
+ .../rx-carrier_rx_plus5k-ready.json                |    44 +
+ .../rx-ctcss_only_rx_off-ready.json                |    44 +
+ .../rx-ctcss_only_rx_on-ready.json                 |    44 +
+ .../rx-no_tx-ready.json                            |    44 +
+ .../rx-tone_1k-ready.json                          |    44 +
+ .../rx-tone_1k_ctcss-ready.json                    |    44 +
+ .../shutdown-check.json                            |   377 +
+ .../source-check.json                              |   374 +
+ .../20261122-pi0-whistle-reversed/summarize.py     |    44 +
+ .../tx-tx-session-ready.json                       |    43 +
+ .../tx_timing_probe.c                              |   130 +
+ docs/baselines/20261122-pi0-whistle-s1g/README.md  |   109 +
+ docs/baselines/20261122-pi0-whistle-s1g/SHA256SUMS |    46 +
+ .../20261122-pi0-whistle-s1g/analysis/carrier.png  |   Bin 0 -> 233091 bytes
+ .../20261122-pi0-whistle-s1g/analysis/carrier.wav  |   Bin 0 -> 576044 bytes
+ .../analysis/carrier_2m.png                        |   Bin 0 -> 228480 bytes
+ .../analysis/carrier_rx_minus5k.png                |   Bin 0 -> 238397 bytes
+ .../analysis/carrier_rx_plus5k.png                 |   Bin 0 -> 238153 bytes
+ .../analysis/channel-comparison.json               |    22 +
+ .../analysis/channel-comparison.png                |   Bin 0 -> 239484 bytes
+ .../analysis/comparison.png                        |   Bin 0 -> 294721 bytes
+ .../analysis/ctcss_only_rx_off.png                 |   Bin 0 -> 230535 bytes
+ .../analysis/ctcss_only_rx_on.png                  |   Bin 0 -> 233305 bytes
+ .../analysis/ctcss_only_rx_on.wav                  |   Bin 0 -> 576044 bytes
+ .../20261122-pi0-whistle-s1g/analysis/health.json  |   101 +
+ .../analysis/localization.csv                      |     4 +
+ .../analysis/localization.json                     |    29 +
+ .../analysis/localization.png                      |   Bin 0 -> 271787 bytes
+ .../20261122-pi0-whistle-s1g/analysis/no_tx.png    |   Bin 0 -> 265134 bytes
+ .../analysis/requirements.txt                      |     3 +
+ .../20261122-pi0-whistle-s1g/analysis/summary.json |  2769 +
+ .../20261122-pi0-whistle-s1g/analysis/tone_1k.png  |   Bin 0 -> 227495 bytes
+ .../20261122-pi0-whistle-s1g/analysis/tone_1k.wav  |   Bin 0 -> 576044 bytes
+ .../analysis/tone_1k_ctcss.png                     |   Bin 0 -> 242600 bytes
+ docs/baselines/20261122-pi0-whistle-s1g/analyze.py |    58 +
+ .../20261122-pi0-whistle-s1g/build_tx_probe.py     |    13 +
+ .../20261122-pi0-whistle-s1g/capture_tap.c         |    75 +
+ .../20261122-pi0-whistle-s1g/captures.tar.gz       |   Bin 0 -> 63387684 bytes
+ .../20261122-pi0-whistle-s1g/compare_channels.py   |    28 +
+ .../baselines/20261122-pi0-whistle-s1g/decode_iq.c |    23 +
+ .../20261122-pi0-whistle-s1g/measurements.json     | 14259 +++++
+ docs/baselines/20261122-pi0-whistle-s1g/plan.json  |    83 +
+ .../20261122-pi0-whistle-s1g/radio_helper.py       |    87 +
+ .../20261122-pi0-whistle-s1g/run_measurements.py   |    82 +
+ .../20261122-pi0-whistle-s1g/rx-carrier-ready.json |    44 +
+ .../rx-carrier_2m-ready.json                       |    44 +
+ .../rx-carrier_rx_minus5k-ready.json               |    44 +
+ .../rx-carrier_rx_plus5k-ready.json                |    44 +
+ .../rx-ctcss_only_rx_off-ready.json                |    44 +
+ .../rx-ctcss_only_rx_on-ready.json                 |    44 +
+ .../20261122-pi0-whistle-s1g/rx-no_tx-ready.json   |    44 +
+ .../20261122-pi0-whistle-s1g/rx-tone_1k-ready.json |    44 +
+ .../rx-tone_1k_ctcss-ready.json                    |    44 +
+ .../20261122-pi0-whistle-s1g/shutdown-check.json   |    10 +
+ .../20261122-pi0-whistle-s1g/software-version.json |     7 +
+ .../20261122-pi0-whistle-s1g/summarize.py          |    41 +
+ .../20261122-pi0-whistle-s1g/tx-build.json         |     4 +
+ .../tx-tx-session-ready.json                       |    43 +
+ docs/baselines/20261122-pi0-whistle/README.md      |   141 +
+ docs/baselines/20261122-pi0-whistle/SHA256SUMS     |    50 +
+ .../20261122-pi0-whistle/analysis/carrier.png      |   Bin 0 -> 231960 bytes
+ .../20261122-pi0-whistle/analysis/carrier.wav      |   Bin 0 -> 576044 bytes
+ .../20261122-pi0-whistle/analysis/carrier_2m.png   |   Bin 0 -> 229835 bytes
+ .../analysis/carrier_rx_minus5k.png                |   Bin 0 -> 229927 bytes
+ .../analysis/carrier_rx_plus5k.png                 |   Bin 0 -> 229181 bytes
+ .../20261122-pi0-whistle/analysis/comparison.png   |   Bin 0 -> 311621 bytes
+ .../analysis/ctcss_only_rx_off.png                 |   Bin 0 -> 240606 bytes
+ .../analysis/ctcss_only_rx_on.png                  |   Bin 0 -> 242118 bytes
+ .../analysis/ctcss_only_rx_on.wav                  |   Bin 0 -> 576044 bytes
+ .../20261122-pi0-whistle/analysis/health.json      |   101 +
+ .../20261122-pi0-whistle/analysis/localization.csv |     4 +
+ .../analysis/localization.json                     |    29 +
+ .../20261122-pi0-whistle/analysis/localization.png |   Bin 0 -> 298074 bytes
+ .../20261122-pi0-whistle/analysis/no_tx.png        |   Bin 0 -> 264859 bytes
+ .../20261122-pi0-whistle/analysis/requirements.txt |     3 +
+ .../20261122-pi0-whistle/analysis/summary.json     |  2785 +
+ .../20261122-pi0-whistle/analysis/tone_1k.png      |   Bin 0 -> 242245 bytes
+ .../20261122-pi0-whistle/analysis/tone_1k.wav      |   Bin 0 -> 576044 bytes
+ .../analysis/tone_1k_ctcss.png                     |   Bin 0 -> 250734 bytes
+ docs/baselines/20261122-pi0-whistle/analyze.py     |    58 +
+ .../20261122-pi0-whistle/build_tx_probe.py         |    13 +
+ docs/baselines/20261122-pi0-whistle/capture_tap.c  |    73 +
+ .../baselines/20261122-pi0-whistle/captures.tar.gz |   Bin 0 -> 77952937 bytes
+ docs/baselines/20261122-pi0-whistle/decode_iq.c    |    23 +
+ .../20261122-pi0-whistle/measurements.json         | 13863 +++++
+ docs/baselines/20261122-pi0-whistle/plan.json      |    82 +
+ .../baselines/20261122-pi0-whistle/radio_helper.py |    87 +
+ .../20261122-pi0-whistle/run_measurements.py       |    82 +
+ .../20261122-pi0-whistle/rx-carrier-ready.json     |    40 +
+ .../20261122-pi0-whistle/rx-carrier_2m-ready.json  |    40 +
+ .../rx-carrier_rx_minus5k-ready.json               |    40 +
+ .../rx-carrier_rx_plus5k-ready.json                |    40 +
+ .../rx-ctcss_only_rx_off-ready.json                |    40 +
+ .../rx-ctcss_only_rx_on-ready.json                 |    40 +
+ .../20261122-pi0-whistle/rx-no_tx-ready.json       |    40 +
+ .../20261122-pi0-whistle/rx-tone_1k-ready.json     |    40 +
+ .../rx-tone_1k_ctcss-ready.json                    |    40 +
+ docs/baselines/20261122-pi0-whistle/summarize.py   |    44 +
+ .../20261122-pi0-whistle/tx-tx-session-ready.json  |    39 +
+ .../COMPARISON.md                                  |   140 +
+ .../README.md                                      |    15 +
+ .../REPORT.md                                      |   166 +
+ .../REPORT.txt                                     |    25 +
+ .../SHA256SUMS                                     |    48 +
+ .../SOURCE-SHA256SUMS                              |    18 +
+ .../analysis/SHA256SUMS                            |    14 +
+ .../analysis/analysis-summary.json                 |   160 +
+ .../analysis/analyze_sweep.py                      |   244 +
+ .../analysis/environment.txt                       |     3 +
+ .../analysis/frequency-overview.png                |   Bin 0 -> 436265 bytes
+ .../analysis/frequency-overview.svg                |  6234 ++
+ .../analysis/frequency-rate-heatmaps.png           |   Bin 0 -> 118609 bytes
+ .../analysis/frequency-rate-heatmaps.svg           |   705 +
+ .../analysis/path-boundary-zooms.png               |   Bin 0 -> 268871 bytes
+ .../analysis/path-boundary-zooms.svg               |  1450 +
+ .../analysis/rate-profiles.png                     |   Bin 0 -> 175380 bytes
+ .../analysis/rate-profiles.svg                     |   998 +
+ .../analysis/rate-summary.csv                      |     9 +
+ .../analysis/requirements.txt                      |     2 +
+ .../comparison/SHA256SUMS                          |     8 +
+ .../comparison/analyze_comparison.py               |   217 +
+ .../comparison/direction-differences.png           |   Bin 0 -> 113549 bytes
+ .../comparison/direction-differences.svg           |   539 +
+ .../comparison/paired-results.csv                  |  1377 +
+ .../comparison/summary.json                        |   118 +
+ .../comparison/three-links-1msps.png               |   Bin 0 -> 397901 bytes
+ .../comparison/three-links-1msps.svg               |  2577 +
+ .../controller.log                                 |  1389 +
+ .../finalize_sweep.py                              |    82 +
+ .../matrix-verification.json                       |    27 +
+ .../paired-snapshots.jsonl.gz                      |   Bin 0 -> 30817124 bytes
+ .../plan.json                                      | 12032 ++++
+ .../progress.json                                  |    10 +
+ .../radio_helper.py                                |   203 +
+ .../results.csv                                    |  1385 +
+ .../results.jsonl                                  |  1384 +
+ .../run_sweep.py                                   |   160 +
+ .../rx-final-processes.txt                         |   172 +
+ .../rx-host-artifacts.tar.gz                       |   Bin 0 -> 24245989 bytes
+ .../rx-session1-helper.log                         |     0
+ .../rx-session1-ready.json                         |    71 +
+ .../telemetry.jsonl                                |   110 +
+ .../tx-final-processes.txt                         |   173 +
+ .../tx-host-artifacts.tar.gz                       |   Bin 0 -> 24227663 bytes
+ .../tx-session1-helper.log                         |     0
+ .../tx-session1-ready.json                         |    63 +
+ .../verification.json                              |    14 +
+ .../verify_matrix.py                               |   164 +
+ .../README.md                                      |    13 +
+ .../REPORT.md                                      |   198 +
+ .../REPORT.txt                                     |   128 +
+ .../SHA256SUMS                                     |    79 +
+ .../SOURCE-SHA256SUMS                              |    58 +
+ .../analysis/SHA256SUMS                            |    14 +
+ .../analysis/analysis-summary.json                 |   160 +
+ .../analysis/analyze_sweep.py                      |   243 +
+ .../analysis/environment.txt                       |     3 +
+ .../analysis/frequency-overview.png                |   Bin 0 -> 453184 bytes
+ .../analysis/frequency-overview.svg                |  6261 ++
+ .../analysis/frequency-rate-heatmaps.png           |   Bin 0 -> 113876 bytes
+ .../analysis/frequency-rate-heatmaps.svg           |   675 +
+ .../analysis/path-boundary-zooms.png               |   Bin 0 -> 300909 bytes
+ .../analysis/path-boundary-zooms.svg               |  1419 +
+ .../analysis/rate-profiles.png                     |   Bin 0 -> 177084 bytes
+ .../analysis/rate-profiles.svg                     |   878 +
+ .../analysis/rate-summary.csv                      |     9 +
+ .../analysis/requirements.txt                      |     2 +
+ .../controller.log                                 |  1429 +
+ .../finalize_sweep.py                              |    82 +
+ .../matrix-verification.json                       |   246 +
+ .../paired-snapshots.jsonl.gz                      |   Bin 0 -> 31267351 bytes
+ .../plan.json                                      | 12034 ++++
+ .../progress.json                                  |   110 +
+ .../radio_helper.py                                |   203 +
+ .../results.csv                                    |  1385 +
+ .../results.jsonl                                  |  1384 +
+ .../run_sweep.py                                   |   159 +
+ .../rx-final-processes.txt                         |   171 +
+ .../rx-host-artifacts.tar.gz                       |   Bin 0 -> 24381428 bytes
+ .../rx-resume1005-2-helper.log                     |     0
+ .../rx-resume1005-2-ready.json                     |    71 +
+ .../rx-resume103-2-helper.log                      |     0
+ .../rx-resume103-2-ready.json                      |    71 +
+ .../rx-resume1037-2-helper.log                     |     0
+ .../rx-resume1037-2-ready.json                     |    71 +
+ .../rx-resume1079-2-helper.log                     |     0
+ .../rx-resume1079-2-ready.json                     |    71 +
+ .../rx-resume260-2-helper.log                      |     0
+ .../rx-resume260-2-ready.json                      |    71 +
+ .../rx-resume302-2-helper.log                      |     0
+ .../rx-resume302-2-ready.json                      |    71 +
+ .../rx-resume506-2-helper.log                      |     0
+ .../rx-resume506-2-ready.json                      |    71 +
+ .../rx-resume559-2-helper.log                      |     0
+ .../rx-resume559-2-ready.json                      |    71 +
+ .../rx-resume565-2-helper.log                      |     0
+ .../rx-resume565-2-ready.json                      |    71 +
+ .../rx-resume868-2-helper.log                      |     0
+ .../rx-resume868-2-ready.json                      |    71 +
+ .../rx-session1-helper.log                         |     0
+ .../rx-session1-ready.json                         |    71 +
+ .../telemetry.jsonl                                |   110 +
+ .../tx-final-processes.txt                         |   171 +
+ .../tx-host-artifacts.tar.gz                       |   Bin 0 -> 24445000 bytes
+ .../tx-resume1005-2-helper.log                     |     0
+ .../tx-resume1005-2-ready.json                     |    63 +
+ .../tx-resume103-2-helper.log                      |     0
+ .../tx-resume103-2-ready.json                      |    63 +
+ .../tx-resume1037-2-helper.log                     |     0
+ .../tx-resume1037-2-ready.json                     |    63 +
+ .../tx-resume1079-2-helper.log                     |     0
+ .../tx-resume1079-2-ready.json                     |    63 +
+ .../tx-resume260-2-helper.log                      |     0
+ .../tx-resume260-2-ready.json                      |    63 +
+ .../tx-resume302-2-helper.log                      |     0
+ .../tx-resume302-2-ready.json                      |    63 +
+ .../tx-resume506-2-helper.log                      |     0
+ .../tx-resume506-2-ready.json                      |    63 +
+ .../tx-resume559-2-helper.log                      |     0
+ .../tx-resume559-2-ready.json                      |    63 +
+ .../tx-resume565-2-helper.log                      |     0
+ .../tx-resume565-2-ready.json                      |    63 +
+ .../tx-resume868-2-helper.log                      |     0
+ .../tx-resume868-2-ready.json                      |    63 +
+ .../tx-session1-helper.log                         |     0
+ .../tx-session1-ready.json                         |    63 +
+ .../verification.json                              |    14 +
+ .../verify_matrix.py                               |   164 +
+ .../20261124-pi0b-tx-startup-recovery/REPORT.txt   |    67 +
+ .../20261124-pi0b-tx-startup-recovery/SHA256SUMS   |     6 +
+ .../acquire_startup_test.py                        |    95 +
+ .../host-artifacts.tar.gz                          |   Bin 0 -> 333062 bytes
+ .../20261124-pi0b-tx-startup-recovery/release.json |     9 +
+ .../20261124-pi0b-tx-startup-recovery/summary.json |    93 +
+ .../verify_evidence.py                             |    81 +
+ .../20261125-pi0-demodulated-audio/.gitattributes  |     1 +
+ .../20261125-pi0-demodulated-audio/.gitignore      |     3 +
+ .../20261125-pi0-demodulated-audio/REPORT.txt      |   188 +
+ .../20261125-pi0-demodulated-audio/SHA256SUMS      |   121 +
+ .../analysis/atx_brx_183933_carrier.png            |   Bin 0 -> 304271 bytes
+ .../analysis/atx_brx_183933_carrier_end.png        |   Bin 0 -> 300523 bytes
+ .../analysis/atx_brx_183933_noise.png              |   Bin 0 -> 368137 bytes
+ .../analysis/atx_brx_183933_tone_a.png             |   Bin 0 -> 301455 bytes
+ .../analysis/atx_brx_183933_tone_b.png             |   Bin 0 -> 300784 bytes
+ .../analysis/atx_brx_184521_offset_m5k.png         |   Bin 0 -> 284603 bytes
+ .../analysis/atx_brx_184521_offset_p5k.png         |   Bin 0 -> 303676 bytes
+ .../analysis/atx_brx_190138_carrier_probe.png      |   Bin 0 -> 304490 bytes
+ .../analysis/atx_brx_190138_tone_probe.png         |   Bin 0 -> 299164 bytes
+ .../analysis/atx_brx_190235_carrier_probe.png      |   Bin 0 -> 309350 bytes
+ .../analysis/atx_brx_190235_tone_probe.png         |   Bin 0 -> 302581 bytes
+ .../analysis/atx_brx_190325_carrier_probe.png      |   Bin 0 -> 301726 bytes
+ .../analysis/atx_brx_190325_tone_probe.png         |   Bin 0 -> 304508 bytes
+ .../analysis/btx_arx_183422_carrier.png            |   Bin 0 -> 306697 bytes
+ .../analysis/btx_arx_183422_carrier_end.png        |   Bin 0 -> 300317 bytes
+ .../analysis/btx_arx_183422_noise.png              |   Bin 0 -> 377037 bytes
+ .../analysis/btx_arx_183422_tone_a.png             |   Bin 0 -> 317600 bytes
+ .../analysis/btx_arx_183422_tone_b.png             |   Bin 0 -> 299903 bytes
+ .../analysis/direction-comparison.png              |   Bin 0 -> 303148 bytes
+ .../analysis/direction-comparison.svg              | 38270 ++++++++++++
+ .../analysis/modulation-correlation.json           |    42 +
+ .../analysis/receiver-offset-localization.png      |   Bin 0 -> 258678 bytes
+ .../analysis/receiver-offset-localization.svg      | 32664 +++++++++++
+ .../analysis/summary.json                          |  3290 ++
+ .../analysis/tx-if-aba-comparison.png              |   Bin 0 -> 256718 bytes
+ .../analysis/tx-if-aba-comparison.svg              | 37026 ++++++++++++
+ .../20261125-pi0-demodulated-audio/analyze.py      |   195 +
+ .../analyze_modulation.py                          |    33 +
+ .../atx_brx_183933-rx-host.tar.gz                  |   Bin 0 -> 92830146 bytes
+ .../atx_brx_183933/measurements.json               |  7771 +++
+ .../atx_brx_183933/plan.json                       |    39 +
+ .../atx_brx_183933/sessions.json                   |   530 +
+ .../atx_brx_184521-rx-host.tar.gz                  |   Bin 0 -> 44356558 bytes
+ .../atx_brx_184521/measurements.json               |  3166 +
+ .../atx_brx_184521/plan.json                       |    26 +
+ .../atx_brx_184521/sessions.json                   |   266 +
+ .../atx_brx_190138-rx-host.tar.gz                  |   Bin 0 -> 40588847 bytes
+ .../atx_brx_190138/measurements.json               |  3166 +
+ .../atx_brx_190138/plan.json                       |    27 +
+ .../atx_brx_190138/sessions.json                   |   269 +
+ .../atx_brx_190235-rx-host.tar.gz                  |   Bin 0 -> 39030961 bytes
+ .../atx_brx_190235/measurements.json               |  3166 +
+ .../atx_brx_190235/plan.json                       |    27 +
+ .../atx_brx_190235/sessions.json                   |   270 +
+ .../atx_brx_190325-rx-host.tar.gz                  |   Bin 0 -> 40220249 bytes
+ .../atx_brx_190325/measurements.json               |  3166 +
+ .../atx_brx_190325/plan.json                       |    27 +
+ .../atx_brx_190325/sessions.json                   |   269 +
+ .../audio/atx_brx_183933_carrier.wav               |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_183933_carrier_end.wav           |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_183933_noise.wav                 |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_183933_tone_a.wav                |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_183933_tone_b.wav                |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_184521_offset_m5k.wav            |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_184521_offset_p5k.wav            |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_190138_carrier_probe.wav         |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_190138_tone_probe.wav            |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_190235_carrier_probe.wav         |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_190235_tone_probe.wav            |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_190325_carrier_probe.wav         |   Bin 0 -> 768044 bytes
+ .../audio/atx_brx_190325_tone_probe.wav            |   Bin 0 -> 768044 bytes
+ .../audio/btx_arx_183422_carrier.wav               |   Bin 0 -> 768044 bytes
+ .../audio/btx_arx_183422_carrier_end.wav           |   Bin 0 -> 768044 bytes
+ .../audio/btx_arx_183422_noise.wav                 |   Bin 0 -> 768044 bytes
+ .../audio/btx_arx_183422_tone_a.wav                |   Bin 0 -> 768044 bytes
+ .../audio/btx_arx_183422_tone_b.wav                |   Bin 0 -> 768044 bytes
+ .../btx_arx_183422-rx-host.tar.gz                  |   Bin 0 -> 90120006 bytes
+ .../btx_arx_183422/measurements.json               |  7771 +++
+ .../btx_arx_183422/plan.json                       |    39 +
+ .../btx_arx_183422/sessions.json                   |   530 +
+ .../20261125-pi0-demodulated-audio/build_decode.py |    13 +
+ .../20261125-pi0-demodulated-audio/build_tools.py  |    21 +
+ .../capture-sha256.json                            |   434 +
+ .../20261125-pi0-demodulated-audio/capture.c       |   105 +
+ .../20261125-pi0-demodulated-audio/decode_iq.c     |    36 +
+ .../decoder-test.json                              |    17 +
+ .../20261125-pi0-demodulated-audio/environment.txt |     5 +
+ .../if-control-verification.json                   |    56 +
+ .../if-controls-tx-host.tar.gz                     |   Bin 0 -> 74631 bytes
+ .../20261125-pi0-demodulated-audio/if_probe.c      |    21 +
+ .../offset-tx-host.tar.gz                          |   Bin 0 -> 24965 bytes
+ .../pi0a-tx-host.tar.gz                            |   Bin 0 -> 50790 bytes
+ .../pi0b-tx-host.tar.gz                            |   Bin 0 -> 50910 bytes
+ .../20261125-pi0-demodulated-audio/radio_helper.py |   111 +
+ .../20261125-pi0-demodulated-audio/release.json    |    26 +
+ .../replay-provenance.json                         |    23 +
+ .../requirements.txt                               |     3 +
+ .../run_direction.py                               |    90 +
+ .../20261125-pi0-demodulated-audio/test_capture.py |    51 +
+ .../20261125-pi0-demodulated-audio/test_decoder.py |    21 +
+ .../test_if_probe.py                               |    24 +
+ .../20261125-pi0-demodulated-audio/unpack.py       |     9 +
+ .../verification.json                              |    14 +
+ .../20261125-pi0-demodulated-audio/verify.py       |    82 +
+ .../20261125-pi0-physical-separation/.gitignore    |     2 +
+ .../20261125-pi0-physical-separation/REPORT.txt    |    70 +
+ .../20261125-pi0-physical-separation/SHA256SUMS    |    36 +
+ .../analysis/atx_brx_195343_carrier.png            |   Bin 0 -> 309512 bytes
+ .../analysis/atx_brx_195343_carrier_end.png        |   Bin 0 -> 303205 bytes
+ .../analysis/atx_brx_195343_noise.png              |   Bin 0 -> 365201 bytes
+ .../analysis/atx_brx_195343_tone_a.png             |   Bin 0 -> 285223 bytes
+ .../analysis/atx_brx_195343_tone_b.png             |   Bin 0 -> 286550 bytes
+ .../analysis/summary.json                          |   903 +
+ .../20261125-pi0-physical-separation/analyze.py    |   195 +
+ .../atx_brx_195343/measurements.json               |  7776 +++
+ .../atx_brx_195343/plan.json                       |    45 +
+ .../atx_brx_195343/sessions.json                   |   536 +
+ .../build_decode.py                                |    13 +
+ .../capture-sha256.json                            |    22 +
+ .../20261125-pi0-physical-separation/capture.c     |   105 +
+ .../20261125-pi0-physical-separation/compare.py    |    31 +
+ .../comparison.json                                |    42 +
+ .../20261125-pi0-physical-separation/decode_iq.c   |    36 +
+ .../first-three-rx-host.tar.gz                     |   Bin 0 -> 49804507 bytes
+ .../20261125-pi0-physical-separation/if_probe.c    |    21 +
+ .../last-two-rx-host.tar.gz                        |   Bin 0 -> 37410027 bytes
+ .../radio_helper.py                                |   111 +
+ .../20261125-pi0-physical-separation/release.json  |     4 +
+ .../replay-build.json                              |    11 +
+ .../requirements.txt                               |     3 +
+ .../run_direction.py                               |    90 +
+ .../20261125-pi0-physical-separation/setup.json    |     7 +
+ .../tx-host.tar.gz                                 |   Bin 0 -> 50036 bytes
+ .../20261125-pi0-physical-separation/unpack.py     |     9 +
+ .../verification.json                              |    10 +
+ .../.gitattributes                                 |     1 +
+ .../20261125-pi4f-sdrpp-auto-bandwidth/REPORT.txt  |    66 +
+ .../20261125-pi4f-sdrpp-auto-bandwidth/SHA256SUMS  |    12 +
+ .../20261125-pi4f-sdrpp-auto-bandwidth/build.json  |    53 +
+ .../build_module.py                                |    19 +
+ .../deployment.tar.gz                              |   Bin 0 -> 102858 bytes
+ .../install_module.py                              |    14 +
+ .../installation.json                              |     8 +
+ .../sdrpp-auto-bandwidth.patch                     |    14 +
+ .../server-test.json                               |    49 +
+ .../server-verification.json                       |    14 +
+ .../test_auto_bandwidth.py                         |    52 +
+ .../test_server.py                                 |    97 +
+ .../4MSPS-FOLLOWUP.txt                             |    53 +
+ .../4m-passive-observation.json                    |    74 +
+ .../4msps-followup.tar.gz                          |   Bin 0 -> 14637 bytes
+ .../REPORT.txt                                     |   123 +
+ .../SHA256SUMS                                     |    25 +
+ .../before-rates.json                              |    85 +
+ .../build.json                                     |   110 +
+ .../build_candidate.py                             |    24 +
+ .../bw-before.cpp                                  |    24 +
+ .../bw-fixed.cpp                                   |    24 +
+ .../candidate-rates.json                           |    85 +
+ .../check_hardware.py                              |    39 +
+ .../check_rates.cpp                                |    47 +
+ .../check_transport.py                             |    13 +
+ .../fix-deployment.tar.gz                          |   Bin 0 -> 335141 bytes
+ .../garbled-server-stacks.txt                      |   235 +
+ .../initial-server-stacks.txt                      |   212 +
+ .../install_candidate.py                           |    20 +
+ .../installation.json                              |    10 +
+ .../mock-tests.json                                |     6 +
+ .../observe_stream.py                              |    29 +
+ .../probe_server.py                                |    71 +
+ .../run_mock_tests.py                              |    13 +
+ .../server-baseline.tar.gz                         |   Bin 0 -> 3045 bytes
+ .../server-verification.json                       |    13 +
+ .../stalled-server-stacks.txt                      |   224 +
+ docs/cdcss.md                                      |   198 +
+ docs/ctcss.md                                      |   206 +
+ docs/radio-control.md                              |     7 +-
+ docs/rx-audio-levels.md                            |    23 +
+ .../soapy-sample-rate-investigation-2026-11-25.txt |    70 +
+ docs/testing.md                                    |    21 +
+ docs/tx-voice-dynamics.md                          |   142 +
+ software/libcariboulite/src/audio_mod.h            |    11 +
+ software/libcariboulite/src/cdcss.h                |   156 +
+ software/libcariboulite/src/ctcss.h                |    98 +
+ software/libcariboulite/src/demod_worker.c         |    36 +-
+ software/libcariboulite/src/demod_worker.h         |     6 +
+ software/libcariboulite/src/mod_worker.c           |    10 +
+ software/libcariboulite/src/nbfm_mod.c             |    59 +-
+ software/libcariboulite/src/rx_pipeline.c          |     9 +
+ software/libcariboulite/src/rx_pipeline.h          |     3 +
+ .../libcariboulite/src/soapy_api/Cariboulite.cpp   |     2 +-
+ software/libcariboulite/src/tx_dynamics.h          |   127 +
+ software/libcariboulite/src/tx_pipeline.c          |    40 +-
+ software/libcariboulite/src/tx_pipeline.h          |    10 +
+ software/libcariboulite/tests/test_cdcss.c         |   152 +
+ software/libcariboulite/tests/test_cdcss.py        |    15 +
+ .../libcariboulite/tests/test_cdcss_backend.py     |    93 +
+ software/libcariboulite/tests/test_ctcss.c         |   143 +
+ software/libcariboulite/tests/test_ctcss.py        |    14 +
+ .../libcariboulite/tests/test_ctcss_backend.py     |    77 +
+ software/libcariboulite/tests/test_ctcss_sinad.c   |    55 +
+ software/libcariboulite/tests/test_ctcss_sinad.py  |    24 +
+ software/libcariboulite/tests/test_soapy_rates.cpp |    66 +
+ software/libcariboulite/tests/test_soapy_rates.py  |    17 +
+ software/libcariboulite/tests/test_squelch.c       |    47 +-
+ software/libcariboulite/tests/test_tx_dynamics.c   |    73 +
+ software/libcariboulite/tests/test_tx_dynamics.py  |    14 +
+ .../tests/test_tx_dynamics_backend.py              |   120 +
+ .../libcariboulite/tests/test_tx_worker_parking.c  |    24 +
+ .../libcariboulite/tests/test_tx_worker_parking.py |     2 +
+ .../tools/cariboulite_radio_monitor.py             |    29 +
+ .../libcariboulite/tools/radio_backend/Makefile    |    13 +-
+ .../tools/radio_backend/command_protocol.c         |    55 +-
+ .../tools/radio_backend/command_protocol.h         |    13 +
+ software/libcariboulite/tools/radio_backend/main.c |   159 +-
+ .../tools/radio_backend/radio_controller.c         |    60 +-
+ 710 files changed, 405252 insertions(+), 59 deletions(-)
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/README.md
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/REPORT.md
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/REPORT.txt
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/SHA256SUMS
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/SOURCE-SHA256SUMS
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/SHA256SUMS
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/analysis-summary.json
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/analyze_sweep.py
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/environment.txt
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/frequency-overview.png
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/frequency-overview.svg
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/frequency-rate-heatmaps.png
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/frequency-rate-heatmaps.svg
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/path-boundary-zooms.png
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/path-boundary-zooms.svg
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/rate-profiles.png
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/rate-profiles.svg
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/rate-summary.csv
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/analysis/requirements.txt
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/draft-plan.json
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/finalize_sweep.py
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/paired-snapshots.jsonl.gz
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/plan.json
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/progress.json
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/radio_helper.py
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/results.csv
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/results.jsonl
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/run_sweep.py
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/rx-final-processes.txt
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/rx-host-artifacts.tar.gz
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/rx-session1-ready.json
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/telemetry.jsonl
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/tx-final-processes.txt
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/tx-host-artifacts.tar.gz
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/tx-session1-ready.json
+ create mode 100644 docs/baselines/20261121-pi0-board1-frequency-rate-sweep/verification.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/README.md
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/SHA256SUMS
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/carrier_2m.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/carrier_rx_minus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/carrier_rx_plus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/channel-comparison.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/channel-comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/ctcss_only_rx_off.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/ctcss_only_rx_on.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/ctcss_only_rx_on.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/health.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/localization.csv
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/localization.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/localization.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/no_tx.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/requirements.txt
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/summary.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/tone_1k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/tone_1k.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analysis/tone_1k_ctcss.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/analyze.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/build_tx_probe.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/capture_tap.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/captures.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/check_routes.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/compare_channels.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/decode_iq.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/measurements.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/plan.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/radio_helper.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/route-verification.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/route_probe.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/run_measurements.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/rx-carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/rx-carrier_2m-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/rx-carrier_rx_minus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/rx-carrier_rx_plus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/rx-ctcss_only_rx_off-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/rx-ctcss_only_rx_on-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/rx-no_tx-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/rx-tone_1k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/rx-tone_1k_ctcss-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/shutdown-check.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/software-version.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/summarize.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/tx-build.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-hif-bypass/tx-tx-session-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/README.md
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/SHA256SUMS
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__carrier_2m.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__carrier_rx_minus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__carrier_rx_plus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__ctcss_only_rx_off.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__ctcss_only_rx_on.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__ctcss_only_rx_on.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__no_tx.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__tone_1k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__tone_1k.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/a8__tone_1k_ctcss.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__carrier_2m.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__carrier_rx_minus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__carrier_rx_plus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__ctcss_only_rx_off.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__ctcss_only_rx_on.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__ctcss_only_rx_on.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__no_tx.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__tone_1k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__tone_1k.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/b4__tone_1k_ctcss.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__carrier_2m.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__carrier_rx_minus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__carrier_rx_plus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__ctcss_only_rx_off.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__ctcss_only_rx_on.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__ctcss_only_rx_on.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__no_tx.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__tone_1k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__tone_1k.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/c2__tone_1k_ctcss.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/carrier-drive-comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/carrier_2m-drive-comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/carrier_rx_minus5k-drive-comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/carrier_rx_plus5k-drive-comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/confirmation-drive-comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__carrier_2m.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__carrier_rx_minus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__carrier_rx_plus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__ctcss_only_rx_off.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__ctcss_only_rx_on.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__ctcss_only_rx_on.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__no_tx.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__tone_1k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__tone_1k.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/d8__tone_1k_ctcss.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/drive-metrics.csv
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/drive-metrics.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/e8__carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/e8__carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/f2__carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/f2__carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/g4__carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/g4__carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/h8__carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/h8__carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/health.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/requirements.txt
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/summary.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/analyze.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/build_tools.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/build_tx_probe.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/capture_tap.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/captures-a8.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/captures-b4.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/captures-c2.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/captures-confirmation.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/captures-d8.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/compare_drives.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/confirmation-measurements.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/confirmation-plan.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/decode_iq.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/drive_probe.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/measurements.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/package_evidence.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/plan.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/radio_helper.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/route_probe.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/run_confirmation.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/run_measurements.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-a8__carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-a8__carrier_2m-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-a8__carrier_rx_minus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-a8__carrier_rx_plus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-a8__ctcss_only_rx_off-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-a8__ctcss_only_rx_on-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-a8__no_tx-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-a8__tone_1k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-a8__tone_1k_ctcss-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-b4__carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-b4__carrier_2m-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-b4__carrier_rx_minus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-b4__carrier_rx_plus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-b4__ctcss_only_rx_off-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-b4__ctcss_only_rx_on-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-b4__no_tx-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-b4__tone_1k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-b4__tone_1k_ctcss-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-c2__carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-c2__carrier_2m-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-c2__carrier_rx_minus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-c2__carrier_rx_plus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-c2__ctcss_only_rx_off-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-c2__ctcss_only_rx_on-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-c2__no_tx-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-c2__tone_1k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-c2__tone_1k_ctcss-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-d8__carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-d8__carrier_2m-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-d8__carrier_rx_minus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-d8__carrier_rx_plus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-d8__ctcss_only_rx_off-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-d8__ctcss_only_rx_on-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-d8__no_tx-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-d8__tone_1k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-d8__tone_1k_ctcss-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-e8__carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-f2__carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-g4__carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/rx-h8__carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/shutdown-check.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/software-version.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/test_drive_probe.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/tx-build.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/tx-confirmation-tx-session-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/tx-session.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/tx-tx-session-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/verified-settings.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reference-drive/verify_measurements.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/README.md
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/SHA256SUMS
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/carrier_2m.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/carrier_rx_minus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/carrier_rx_plus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/ctcss_only_rx_off.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/ctcss_only_rx_on.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/ctcss_only_rx_on.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/health.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/localization.csv
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/localization.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/localization.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/no_tx.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/receiver-comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/requirements.txt
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/summary.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/tone_1k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/tone_1k.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analysis/tone_1k_ctcss.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/analyze.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/build_tx_probe.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/capture_tap.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/captures.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/compare_receivers.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/decode_iq.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/measurements.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/pilot.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/plan.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/radio_helper.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rsp2pro-observation.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/run_measurements.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rx-carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rx-carrier_2m-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rx-carrier_rx_minus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rx-carrier_rx_plus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rx-ctcss_only_rx_off-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rx-ctcss_only_rx_on-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rx-no_tx-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rx-tone_1k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/rx-tone_1k_ctcss-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/shutdown-check.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/source-check.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/summarize.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/tx-tx-session-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-reversed/tx_timing_probe.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/README.md
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/SHA256SUMS
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/carrier_2m.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/carrier_rx_minus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/carrier_rx_plus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/channel-comparison.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/channel-comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/ctcss_only_rx_off.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/ctcss_only_rx_on.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/ctcss_only_rx_on.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/health.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/localization.csv
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/localization.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/localization.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/no_tx.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/requirements.txt
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/summary.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/tone_1k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/tone_1k.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analysis/tone_1k_ctcss.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/analyze.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/build_tx_probe.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/capture_tap.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/captures.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/compare_channels.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/decode_iq.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/measurements.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/plan.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/radio_helper.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/run_measurements.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/rx-carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/rx-carrier_2m-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/rx-carrier_rx_minus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/rx-carrier_rx_plus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/rx-ctcss_only_rx_off-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/rx-ctcss_only_rx_on-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/rx-no_tx-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/rx-tone_1k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/rx-tone_1k_ctcss-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/shutdown-check.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/software-version.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/summarize.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/tx-build.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle-s1g/tx-tx-session-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/README.md
+ create mode 100644 docs/baselines/20261122-pi0-whistle/SHA256SUMS
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/carrier.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/carrier.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/carrier_2m.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/carrier_rx_minus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/carrier_rx_plus5k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/comparison.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/ctcss_only_rx_off.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/ctcss_only_rx_on.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/ctcss_only_rx_on.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/health.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/localization.csv
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/localization.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/localization.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/no_tx.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/requirements.txt
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/summary.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/tone_1k.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/tone_1k.wav
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analysis/tone_1k_ctcss.png
+ create mode 100644 docs/baselines/20261122-pi0-whistle/analyze.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle/build_tx_probe.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle/capture_tap.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle/captures.tar.gz
+ create mode 100644 docs/baselines/20261122-pi0-whistle/decode_iq.c
+ create mode 100644 docs/baselines/20261122-pi0-whistle/measurements.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/plan.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/radio_helper.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle/run_measurements.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle/rx-carrier-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/rx-carrier_2m-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/rx-carrier_rx_minus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/rx-carrier_rx_plus5k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/rx-ctcss_only_rx_off-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/rx-ctcss_only_rx_on-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/rx-no_tx-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/rx-tone_1k-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/rx-tone_1k_ctcss-ready.json
+ create mode 100644 docs/baselines/20261122-pi0-whistle/summarize.py
+ create mode 100644 docs/baselines/20261122-pi0-whistle/tx-tx-session-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/COMPARISON.md
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/README.md
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/REPORT.md
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/REPORT.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/SHA256SUMS
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/SOURCE-SHA256SUMS
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/SHA256SUMS
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/analysis-summary.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/analyze_sweep.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/environment.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/frequency-overview.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/frequency-overview.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/frequency-rate-heatmaps.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/frequency-rate-heatmaps.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/path-boundary-zooms.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/path-boundary-zooms.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/rate-profiles.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/rate-profiles.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/rate-summary.csv
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/analysis/requirements.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/comparison/SHA256SUMS
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/comparison/analyze_comparison.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/comparison/direction-differences.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/comparison/direction-differences.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/comparison/paired-results.csv
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/comparison/summary.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/comparison/three-links-1msps.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/comparison/three-links-1msps.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/controller.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/finalize_sweep.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/matrix-verification.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/paired-snapshots.jsonl.gz
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/plan.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/progress.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/radio_helper.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/results.csv
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/results.jsonl
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/run_sweep.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/rx-final-processes.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/rx-host-artifacts.tar.gz
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/rx-session1-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/rx-session1-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/telemetry.jsonl
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/tx-final-processes.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/tx-host-artifacts.tar.gz
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/tx-session1-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/tx-session1-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/verification.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/verify_matrix.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/README.md
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/REPORT.md
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/REPORT.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/SHA256SUMS
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/SOURCE-SHA256SUMS
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/SHA256SUMS
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/analysis-summary.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/analyze_sweep.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/environment.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/frequency-overview.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/frequency-overview.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/frequency-rate-heatmaps.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/frequency-rate-heatmaps.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/path-boundary-zooms.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/path-boundary-zooms.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/rate-profiles.png
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/rate-profiles.svg
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/rate-summary.csv
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/analysis/requirements.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/controller.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/finalize_sweep.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/matrix-verification.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/paired-snapshots.jsonl.gz
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/plan.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/progress.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/radio_helper.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/results.csv
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/results.jsonl
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/run_sweep.py
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-final-processes.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-host-artifacts.tar.gz
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume1005-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume1005-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume103-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume103-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume1037-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume1037-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume1079-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume1079-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume260-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume260-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume302-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume302-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume506-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume506-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume559-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume559-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume565-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume565-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume868-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-resume868-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-session1-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/rx-session1-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/telemetry.jsonl
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-final-processes.txt
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-host-artifacts.tar.gz
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume1005-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume1005-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume103-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume103-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume1037-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume1037-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume1079-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume1079-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume260-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume260-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume302-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume302-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume506-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume506-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume559-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume559-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume565-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume565-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume868-2-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-resume868-2-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-session1-helper.log
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/tx-session1-ready.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/verification.json
+ create mode 100644 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/verify_matrix.py
+ create mode 100644 docs/baselines/20261124-pi0b-tx-startup-recovery/REPORT.txt
+ create mode 100644 docs/baselines/20261124-pi0b-tx-startup-recovery/SHA256SUMS
+ create mode 100644 docs/baselines/20261124-pi0b-tx-startup-recovery/acquire_startup_test.py
+ create mode 100644 docs/baselines/20261124-pi0b-tx-startup-recovery/host-artifacts.tar.gz
+ create mode 100644 docs/baselines/20261124-pi0b-tx-startup-recovery/release.json
+ create mode 100644 docs/baselines/20261124-pi0b-tx-startup-recovery/summary.json
+ create mode 100644 docs/baselines/20261124-pi0b-tx-startup-recovery/verify_evidence.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/.gitattributes
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/.gitignore
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/REPORT.txt
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/SHA256SUMS
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_183933_carrier.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_183933_carrier_end.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_183933_noise.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_183933_tone_a.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_183933_tone_b.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_184521_offset_m5k.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_184521_offset_p5k.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_190138_carrier_probe.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_190138_tone_probe.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_190235_carrier_probe.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_190235_tone_probe.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_190325_carrier_probe.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/atx_brx_190325_tone_probe.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/btx_arx_183422_carrier.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/btx_arx_183422_carrier_end.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/btx_arx_183422_noise.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/btx_arx_183422_tone_a.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/btx_arx_183422_tone_b.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/direction-comparison.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/direction-comparison.svg
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/modulation-correlation.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/receiver-offset-localization.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/receiver-offset-localization.svg
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/summary.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/tx-if-aba-comparison.png
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analysis/tx-if-aba-comparison.svg
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analyze.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/analyze_modulation.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_183933-rx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_183933/measurements.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_183933/plan.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_183933/sessions.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_184521-rx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_184521/measurements.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_184521/plan.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_184521/sessions.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190138-rx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190138/measurements.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190138/plan.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190138/sessions.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190235-rx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190235/measurements.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190235/plan.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190235/sessions.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190325-rx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190325/measurements.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190325/plan.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/atx_brx_190325/sessions.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_183933_carrier.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_183933_carrier_end.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_183933_noise.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_183933_tone_a.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_183933_tone_b.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_184521_offset_m5k.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_184521_offset_p5k.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_190138_carrier_probe.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_190138_tone_probe.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_190235_carrier_probe.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_190235_tone_probe.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_190325_carrier_probe.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/atx_brx_190325_tone_probe.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/btx_arx_183422_carrier.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/btx_arx_183422_carrier_end.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/btx_arx_183422_noise.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/btx_arx_183422_tone_a.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/audio/btx_arx_183422_tone_b.wav
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/btx_arx_183422-rx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/btx_arx_183422/measurements.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/btx_arx_183422/plan.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/btx_arx_183422/sessions.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/build_decode.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/build_tools.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/capture-sha256.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/capture.c
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/decode_iq.c
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/decoder-test.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/environment.txt
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/if-control-verification.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/if-controls-tx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/if_probe.c
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/offset-tx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/pi0a-tx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/pi0b-tx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/radio_helper.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/release.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/replay-provenance.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/requirements.txt
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/run_direction.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/test_capture.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/test_decoder.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/test_if_probe.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/unpack.py
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/verification.json
+ create mode 100644 docs/baselines/20261125-pi0-demodulated-audio/verify.py
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/.gitignore
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/REPORT.txt
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/SHA256SUMS
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/analysis/atx_brx_195343_carrier.png
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/analysis/atx_brx_195343_carrier_end.png
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/analysis/atx_brx_195343_noise.png
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/analysis/atx_brx_195343_tone_a.png
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/analysis/atx_brx_195343_tone_b.png
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/analysis/summary.json
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/analyze.py
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/atx_brx_195343/measurements.json
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/atx_brx_195343/plan.json
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/atx_brx_195343/sessions.json
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/build_decode.py
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/capture-sha256.json
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/capture.c
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/compare.py
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/comparison.json
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/decode_iq.c
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/first-three-rx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/if_probe.c
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/last-two-rx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/radio_helper.py
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/release.json
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/replay-build.json
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/requirements.txt
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/run_direction.py
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/setup.json
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/tx-host.tar.gz
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/unpack.py
+ create mode 100644 docs/baselines/20261125-pi0-physical-separation/verification.json
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/.gitattributes
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/REPORT.txt
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/SHA256SUMS
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/build.json
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/build_module.py
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/deployment.tar.gz
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/install_module.py
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/installation.json
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/sdrpp-auto-bandwidth.patch
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/server-test.json
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/server-verification.json
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/test_auto_bandwidth.py
+ create mode 100644 docs/baselines/20261125-pi4f-sdrpp-auto-bandwidth/test_server.py
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/4MSPS-FOLLOWUP.txt
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/4m-passive-observation.json
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/4msps-followup.tar.gz
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/REPORT.txt
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/SHA256SUMS
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/before-rates.json
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/build.json
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/build_candidate.py
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/bw-before.cpp
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/bw-fixed.cpp
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/candidate-rates.json
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/check_hardware.py
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/check_rates.cpp
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/check_transport.py
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/fix-deployment.tar.gz
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/garbled-server-stacks.txt
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/initial-server-stacks.txt
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/install_candidate.py
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/installation.json
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/mock-tests.json
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/observe_stream.py
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/probe_server.py
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/run_mock_tests.py
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/server-baseline.tar.gz
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/server-verification.json
+ create mode 100644 docs/baselines/20261125-pi4f-soapy-rate-investigation/stalled-server-stacks.txt
+ create mode 100644 docs/cdcss.md
+ create mode 100644 docs/ctcss.md
+ create mode 100644 docs/soapy-sample-rate-investigation-2026-11-25.txt
+ create mode 100644 docs/tx-voice-dynamics.md
+ create mode 100644 software/libcariboulite/src/cdcss.h
+ create mode 100644 software/libcariboulite/src/ctcss.h
+ create mode 100644 software/libcariboulite/src/tx_dynamics.h
+ create mode 100644 software/libcariboulite/tests/test_cdcss.c
+ create mode 100644 software/libcariboulite/tests/test_cdcss.py
+ create mode 100644 software/libcariboulite/tests/test_cdcss_backend.py
+ create mode 100644 software/libcariboulite/tests/test_ctcss.c
+ create mode 100644 software/libcariboulite/tests/test_ctcss.py
+ create mode 100644 software/libcariboulite/tests/test_ctcss_backend.py
+ create mode 100644 software/libcariboulite/tests/test_ctcss_sinad.c
+ create mode 100644 software/libcariboulite/tests/test_ctcss_sinad.py
+ create mode 100644 software/libcariboulite/tests/test_soapy_rates.cpp
+ create mode 100644 software/libcariboulite/tests/test_soapy_rates.py
+ create mode 100644 software/libcariboulite/tests/test_tx_dynamics.c
+ create mode 100644 software/libcariboulite/tests/test_tx_dynamics.py
+ create mode 100644 software/libcariboulite/tests/test_tx_dynamics_backend.py
+-- The C compiler identification is GNU 14.2.0
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+CMake Deprecation Warning at src/iir/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+CMake Deprecation Warning at src/iir/test/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+CMake Deprecation Warning at src/iir/demo/CMakeLists.txt:3 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+-- Found Curses: /usr/lib/aarch64-linux-gnu/libcurses.so
+-- Found ALSA: /usr/lib/aarch64-linux-gnu/libasound.so (found version "1.2.14")
+-- Performing Test HAS_STD_CXX11
+-- Performing Test HAS_STD_CXX11 - Success
+bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8): No such file or directory
+[INFO] SoapyCaribouliteSession, sessionCount: 0
+11-27 09:09:49.244  2577  2577 I [0;36mFPGA caribou_fpga_program_to_fpga@caribou_fpga.c:211 FPGA already operational - not programming (use 'force_prog=true' to force update)[0;37m
+-- Module SoapyCariboulite configured with version: 1.2.0
+-- Configuring done (3.1s)
+-- Generating done (0.2s)
+-- Build files have been written to: /home/pi/src/cariboulite/build/github-latest-20261127
+[  4%] Building C object src/zf_log/CMakeFiles/zf_log.dir/zf_log.c.o
+[  4%] Building C object src/caribou_fpga/CMakeFiles/caribou_fpga.dir/caribou_fpga.c.o
+[  4%] Building C object src/datatypes/CMakeFiles/datatypes.dir/tsqueue.c.o
+[  4%] Building C object src/caribou_programming/CMakeFiles/caribou_prog.dir/caribou_prog.c.o
+[  4%] Building C object src/datatypes/CMakeFiles/datatypes.dir/tiny_list.c.o
+[  5%] Linking C static library libcaribou_prog.a
+[  6%] Building CXX object src/datatypes/CMakeFiles/datatypes.dir/circular_buffer.cpp.o
+[  8%] Linking C static library libzf_log.a
+[  8%] Built target caribou_prog
+[  9%] Building C object src/at86rf215/CMakeFiles/at86rf215.dir/at86rf215.c.o
+[  9%] Built target zf_log
+[ 10%] Building C object src/datatypes/CMakeFiles/datatypes.dir/entropy.c.o
+[ 12%] Linking C static library libcaribou_fpga.a
+[ 13%] Building C object src/caribou_smi/CMakeFiles/caribou_smi.dir/smi_rx_stream.c.o
+[ 13%] Built target caribou_fpga
+[ 14%] Building C object src/caribou_smi/CMakeFiles/caribou_smi.dir/caribou_smi.c.o
+[ 14%] Building C object src/at86rf215/CMakeFiles/at86rf215.dir/at86rf215_events.c.o
+[ 16%] Building C object src/at86rf215/CMakeFiles/at86rf215.dir/at86rf215_radio.c.o
+[ 16%] Linking CXX static library libdatatypes.a
+[ 16%] Built target datatypes
+[ 17%] Building C object src/at86rf215/CMakeFiles/at86rf215.dir/at86rf215_baseband.c.o
+[ 17%] Building C object src/caribou_smi/CMakeFiles/caribou_smi.dir/smi_utils.c.o
+[ 18%] Building C object src/io_utils/CMakeFiles/io_utils.dir/io_utils.c.o
+[ 18%] Linking C static library libat86rf215.a
+[ 18%] Built target at86rf215
+[ 18%] Building C object src/io_utils/CMakeFiles/io_utils.dir/io_utils_spi.c.o
+[ 20%] Building C object src/caribou_smi/CMakeFiles/caribou_smi.dir/caribou_smi_modules.c.o
+[ 20%] Building C object src/rffc507x/CMakeFiles/rffc507x.dir/rffc507x.c.o
+[ 21%] Building C object src/hat/CMakeFiles/hat.dir/hat.c.o
+[ 22%] Linking C static library librffc507x.a
+[ 24%] Building C object src/io_utils/CMakeFiles/io_utils.dir/io_utils_sys_info.c.o
+[ 25%] Linking C static library libcaribou_smi.a
+[ 25%] Built target rffc507x
+[ 26%] Building C object src/hat/CMakeFiles/hat.dir/eeprom_utils.c.o
+[ 26%] Built target caribou_smi
+[ 28%] Building C object src/production_utils/CMakeFiles/production_utils.dir/production_utils.c.o
+[ 29%] Building C object src/io_utils/CMakeFiles/io_utils.dir/io_utils_fs.c.o
+[ 30%] Building C object src/production_utils/CMakeFiles/production_utils.dir/hat_powermon.c.o
+[ 30%] Building C object src/production_utils/CMakeFiles/production_utils.dir/lcd.c.o
+[ 30%] Linking C static library libhat.a
+[ 30%] Building C object src/io_utils/CMakeFiles/io_utils.dir/io_utils_i2c.c.o
+[ 32%] Building C object src/production_utils/CMakeFiles/production_utils.dir/production_testing.c.o
+[ 32%] Built target hat
+[ 33%] Building CXX object src/iir/CMakeFiles/iir.dir/iir/Biquad.cpp.o
+[ 34%] Building C object src/io_utils/CMakeFiles/io_utils.dir/rpi/rpi.c.o
+[ 36%] Building CXX object src/iir/CMakeFiles/iir.dir/iir/Butterworth.cpp.o
+[ 37%] Linking C static library libproduction_utils.a
+[ 37%] Built target production_utils
+[ 38%] Building C object src/io_utils/CMakeFiles/io_utils.dir/spidev/spi.c.o
+[ 40%] Building C object CMakeFiles/nbfm_memory_demo.dir/tools/nbfm_memory_demo.c.o
+[ 40%] Linking C static library libio_utils.a
+[ 40%] Built target io_utils
+[ 41%] Building C object CMakeFiles/nbfm_memory_demo.dir/src/memory_audio.c.o
+[ 42%] Building C object CMakeFiles/cariboulite.dir/src/cariboulite.c.o
+[ 42%] Building C object CMakeFiles/nbfm_memory_demo.dir/src/tone_source.c.o
+[ 42%] Building C object CMakeFiles/cariboulite.dir/src/cariboulite_setup.c.o
+[ 42%] Building CXX object src/iir/CMakeFiles/iir.dir/iir/Cascade.cpp.o
+[ 44%] Building CXX object src/iir/CMakeFiles/iir.dir/iir/ChebyshevI.cpp.o
+[ 45%] Building C object CMakeFiles/nbfm_memory_demo.dir/src/nbfm_mod.c.o
+[ 46%] Building C object CMakeFiles/cariboulite.dir/src/cariboulite_events.c.o
+[ 48%] Building C object CMakeFiles/cariboulite.dir/src/cariboulite_radio.c.o
+[ 49%] Building C object CMakeFiles/nbfm_memory_demo.dir/src/nbfm_demod.c.o
+[ 49%] Building C object CMakeFiles/cariboulite.dir/src/cariboulite_sys_storage.c.o
+[ 50%] Building CXX object src/iir/CMakeFiles/iir.dir/iir/ChebyshevII.cpp.o
+[ 50%] Building C object CMakeFiles/nbfm_memory_demo.dir/src/nbfm_demod_dsp.c.o
+[ 52%] Building C object CMakeFiles/nbfm_memory_demo.dir/src/wbfm_demod.c.o
+[ 53%] Building C object CMakeFiles/cariboulite.dir/src/cariboulite_sys_accessor.c.o
+[ 54%] Building C object CMakeFiles/nbfm_memory_demo.dir/src/am_demod.c.o
+[ 56%] Building CXX object CMakeFiles/cariboulite.dir/src/CaribouLiteCpp.cpp.o
+[ 56%] Building CXX object CMakeFiles/cariboulite.dir/src/CaribouLiteRadioCpp.cpp.o
+[ 56%] Building CXX object src/iir/CMakeFiles/iir.dir/iir/Custom.cpp.o
+[ 56%] Linking C executable nbfm_memory_demo
+[ 56%] Built target nbfm_memory_demo
+[ 57%] Building C object CMakeFiles/cariboulite_shared.dir/src/cariboulite.c.o
+[ 57%] Building C object CMakeFiles/cariboulite_shared.dir/src/cariboulite_setup.c.o
+[ 58%] Building CXX object src/iir/CMakeFiles/iir.dir/iir/PoleFilter.cpp.o
+[ 60%] Building C object CMakeFiles/cariboulite_shared.dir/src/cariboulite_events.c.o
+[ 61%] Building CXX object src/iir/CMakeFiles/iir.dir/iir/RBJ.cpp.o
+[ 62%] Building C object CMakeFiles/cariboulite_shared.dir/src/cariboulite_radio.c.o
+[ 64%] Linking CXX static library libcariboulite_static.a
+[ 64%] Building C object CMakeFiles/cariboulite_shared.dir/src/cariboulite_sys_storage.c.o
+[ 65%] Building C object CMakeFiles/cariboulite_shared.dir/src/cariboulite_sys_accessor.c.o
+[ 66%] Building CXX object CMakeFiles/cariboulite_shared.dir/src/CaribouLiteCpp.cpp.o
+[ 66%] Building CXX object CMakeFiles/cariboulite_shared.dir/src/CaribouLiteRadioCpp.cpp.o
+[ 66%] Linking CXX shared library libiir.so
+[ 66%] Built target cariboulite
+[ 66%] Built target iir
+[ 68%] Building C object CMakeFiles/caribou_programmer.dir/test/caribou_programmer.c.o
+[ 69%] Building C object CMakeFiles/fpgacomm.dir/test/fpga_comm_test.c.o
+[ 69%] Building CXX object CMakeFiles/SoapyCariboulite.dir/src/soapy_api/SoapyCariboulite.cpp.o
+[ 69%] Linking CXX executable test/caribou_programmer
+[ 69%] Linking CXX executable test/fpgacomm
+[ 70%] Linking CXX shared library libcariboulite.so
+[ 70%] Built target fpgacomm
+[ 70%] Built target caribou_programmer
+[ 73%] Building CXX object CMakeFiles/SoapyCariboulite.dir/src/soapy_api/Cariboulite.cpp.o
+[ 73%] Building CXX object CMakeFiles/SoapyCariboulite.dir/src/soapy_api/CaribouliteStreamFunctions.cpp.o
+[ 73%] Built target cariboulite_shared
+[ 73%] Building CXX object CMakeFiles/SoapyCariboulite.dir/src/soapy_api/CaribouliteStream.cpp.o
+[ 74%] Building C object CMakeFiles/cariboulite_test_app.dir/src/cariboulite_test_app.c.o
+[ 74%] Building C object CMakeFiles/cariboulite_test_app.dir/src/app_menu.c.o
+[ 76%] Building C object CMakeFiles/cariboulite_test_app.dir/src/radio_profile.c.o
+[ 76%] Building C object CMakeFiles/cariboulite_util.dir/src/cariboulite_util.c.o
+[ 77%] Linking CXX executable cariboulite_util
+[ 77%] Built target cariboulite_util
+[ 78%] Building CXX object CMakeFiles/SoapyCariboulite.dir/src/soapy_api/CaribouliteSession.cpp.o
+[ 80%] Building CXX object CMakeFiles/SoapyCariboulite.dir/src/soapy_api/CaribouliteSensors.cpp.o
+[ 81%] Building C object CMakeFiles/cariboulite_test_app.dir/src/modem_snapshot.c.o
+[ 81%] Building C object CMakeFiles/cariboulite_test_app.dir/src/tone_source.c.o
+[ 82%] Building C object CMakeFiles/cariboulite_test_app.dir/src/nbfm_mod.c.o
+[ 84%] Building C object CMakeFiles/cariboulite_test_app.dir/src/nbfm_demod.c.o
+[ 85%] Building C object CMakeFiles/cariboulite_test_app.dir/src/nbfm_demod_dsp.c.o
+[ 85%] Building CXX object CMakeFiles/SoapyCariboulite.dir/Version.cpp.o
+[ 85%] Building C object CMakeFiles/cariboulite_test_app.dir/src/wbfm_demod.c.o
+[ 86%] Building C object CMakeFiles/cariboulite_test_app.dir/src/am_demod.c.o
+[ 88%] Building C object CMakeFiles/cariboulite_test_app.dir/src/demod_worker.c.o
+[ 89%] Linking CXX shared module libSoapyCariboulite.so
+[ 89%] Built target SoapyCariboulite
+[ 89%] Building C object CMakeFiles/cariboulite_test_app.dir/src/noise_squelch.c.o
+[ 90%] Building C object CMakeFiles/cariboulite_test_app.dir/src/carrier_squelch.c.o
+[ 92%] Building C object CMakeFiles/cariboulite_test_app.dir/src/pipeline_transport.c.o
+[ 92%] Building C object CMakeFiles/cariboulite_test_app.dir/src/pipeline_runtime.c.o
+[ 93%] Building C object CMakeFiles/cariboulite_test_app.dir/src/mod_worker.c.o
+[ 94%] Building C object CMakeFiles/cariboulite_test_app.dir/src/tx_pipeline.c.o
+[ 94%] Building C object CMakeFiles/cariboulite_test_app.dir/src/tx_audio_buffer.c.o
+[ 96%] Building C object CMakeFiles/cariboulite_test_app.dir/src/rx_pipeline.c.o
+[ 97%] Building C object CMakeFiles/cariboulite_test_app.dir/src/modem_selftest.c.o
+[ 97%] Building C object CMakeFiles/cariboulite_test_app.dir/src/alsa_source.c.o
+[ 98%] Building C object CMakeFiles/cariboulite_test_app.dir/src/alsa_sink.c.o
+[100%] Linking CXX executable cariboulite_test_app
+[100%] Built target cariboulite_test_app
+make: Entering directory '/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend'
+cc -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -I/home/pi/src/cariboulite/software/libcariboulite/src -I/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend -std=c11 -O3 -g -Wall -Wextra -Wno-unused-parameter -Wno-missing-braces -ffast-math -fno-math-errno -funroll-loops -MMD -MP -c "/home/pi/src/cariboulite/software/libcariboulite/src/rx_pipeline.c" -o "/home/pi/src/cariboulite/build/radio-backend/rx_pipeline.o"
+cc -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -I/home/pi/src/cariboulite/software/libcariboulite/src -I/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend -std=c11 -O3 -g -Wall -Wextra -Wno-unused-parameter -Wno-missing-braces -ffast-math -fno-math-errno -funroll-loops -MMD -MP -c "/home/pi/src/cariboulite/software/libcariboulite/src/demod_worker.c" -o "/home/pi/src/cariboulite/build/radio-backend/demod_worker.o"
+cc -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -I/home/pi/src/cariboulite/software/libcariboulite/src -I/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend -std=c11 -O3 -g -Wall -Wextra -Wno-unused-parameter -Wno-missing-braces -ffast-math -fno-math-errno -funroll-loops -MMD -MP -c "/home/pi/src/cariboulite/software/libcariboulite/src/tx_pipeline.c" -o "/home/pi/src/cariboulite/build/radio-backend/tx_pipeline.o"
+cc -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -I/home/pi/src/cariboulite/software/libcariboulite/src -I/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend -std=c11 -O3 -g -Wall -Wextra -Wno-unused-parameter -Wno-missing-braces -ffast-math -fno-math-errno -funroll-loops -MMD -MP -c "/home/pi/src/cariboulite/software/libcariboulite/src/mod_worker.c" -o "/home/pi/src/cariboulite/build/radio-backend/mod_worker.o"
+cc -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -I/home/pi/src/cariboulite/software/libcariboulite/src -I/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend -std=c11 -O3 -g -Wall -Wextra -Wno-unused-parameter -Wno-missing-braces -ffast-math -fno-math-errno -funroll-loops -MMD -MP -c "/home/pi/src/cariboulite/software/libcariboulite/src/nbfm_mod.c" -o "/home/pi/src/cariboulite/build/radio-backend/nbfm_mod.o"
+cc -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -I/home/pi/src/cariboulite/software/libcariboulite/src -I/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend -std=c11 -O3 -g -Wall -Wextra -Wno-unused-parameter -Wno-missing-braces -MMD -MP -c "/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend/main.c" -o "/home/pi/src/cariboulite/build/radio-backend/main.o"
+cc -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -I/home/pi/src/cariboulite/software/libcariboulite/src -I/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend -std=c11 -O3 -g -Wall -Wextra -Wno-unused-parameter -Wno-missing-braces -MMD -MP -c "/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend/command_protocol.c" -o "/home/pi/src/cariboulite/build/radio-backend/command_protocol.o"
+cc -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -I/home/pi/src/cariboulite/software/libcariboulite/src -I/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend -std=c11 -O3 -g -Wall -Wextra -Wno-unused-parameter -Wno-missing-braces -MMD -MP -c "/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend/control_server.c" -o "/home/pi/src/cariboulite/build/radio-backend/control_server.o"
+cc -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -I/home/pi/src/cariboulite/software/libcariboulite/src -I/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend -std=c11 -O3 -g -Wall -Wextra -Wno-unused-parameter -Wno-missing-braces /home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend/radio_controller.c /home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend/command_protocol.c -lm -o "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_controller.tmp"
+cc /home/pi/src/cariboulite/build/radio-backend/radio_profile.o /home/pi/src/cariboulite/build/radio-backend/rx_pipeline.o /home/pi/src/cariboulite/build/radio-backend/pipeline_transport.o /home/pi/src/cariboulite/build/radio-backend/pipeline_runtime.o /home/pi/src/cariboulite/build/radio-backend/nbfm_demod.o /home/pi/src/cariboulite/build/radio-backend/nbfm_demod_dsp.o /home/pi/src/cariboulite/build/radio-backend/demod_worker.o /home/pi/src/cariboulite/build/radio-backend/wbfm_demod.o /home/pi/src/cariboulite/build/radio-backend/am_demod.o /home/pi/src/cariboulite/build/radio-backend/noise_squelch.o /home/pi/src/cariboulite/build/radio-backend/carrier_squelch.o /home/pi/src/cariboulite/build/radio-backend/alsa_sink.o /home/pi/src/cariboulite/build/radio-backend/tx_pipeline.o /home/pi/src/cariboulite/build/radio-backend/tx_audio_buffer.o /home/pi/src/cariboulite/build/radio-backend/mod_worker.o /home/pi/src/cariboulite/build/radio-backend/nbfm_mod.o /home/pi/src/cariboulite/build/radio-backend/alsa_source.o /home/pi/src/cariboulite/build/radio-backend/tone_source.o /home/pi/src/cariboulite/build/radio-backend/main.o /home/pi/src/cariboulite/build/radio-backend/status_publisher.o /home/pi/src/cariboulite/build/radio-backend/command_protocol.o /home/pi/src/cariboulite/build/radio-backend/control_server.o /home/pi/src/cariboulite/build/radio-backend/modem_snapshot_shared.o -L/home/pi/src/cariboulite/build/github-latest-20261127 -Wl,-rpath,/home/pi/src/cariboulite/build/github-latest-20261127 -lcariboulite -lasound -lpthread -lm -o "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend.tmp"
+mv "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend.tmp" "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_backend"
+mv "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_controller.tmp" "/home/pi/src/cariboulite/build/radio-backend/cariboulite_radio_controller"
+make: Leaving directory '/home/pi/src/cariboulite/software/libcariboulite/tools/radio_backend'
+-- Install configuration: "Release"
+-- Installing: /usr/local/lib/SoapySDR/modules0.8-3/libSoapyCariboulite.so
+-- Set non-toolchain portion of runtime path of "/usr/local/lib/SoapySDR/modules0.8-3/libSoapyCariboulite.so" to ""
+-- Installing: /usr/local/lib/libcariboulite_static.a
+-- Up-to-date: /usr/local/include/cariboulite.h
+-- Up-to-date: /usr/local/include/cariboulite_radio.h
+-- Up-to-date: /usr/local/include/CaribouLite.hpp
+-- Installing: /usr/local/lib/libcariboulite.so
+-- Up-to-date: /usr/local/include/cariboulite.h
+-- Up-to-date: /usr/local/include/cariboulite_radio.h
+-- Up-to-date: /usr/local/include/CaribouLite.hpp
+-- Installing: /usr/local/lib/pkgconfig/cariboulite.pc
+-- Installing: /usr/local/bin/cariboulite_util
+-- Set non-toolchain portion of runtime path of "/usr/local/bin/cariboulite_util" to ""
+UPDATE_COMPLETE a997ec4b92e28fc79fe38b320654d334dae61619

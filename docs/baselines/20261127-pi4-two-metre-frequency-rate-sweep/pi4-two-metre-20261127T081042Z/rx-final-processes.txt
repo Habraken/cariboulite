@@ -1,0 +1,189 @@
+    PID COMMAND
+      1 /sbin/init splash
+      2 [kthreadd]
+      3 [pool_workqueue_release]
+      4 [kworker/R-rcu_gp]
+      5 [kworker/R-sync_wq]
+      6 [kworker/R-kvfree_rcu_reclaim]
+      7 [kworker/R-slub_flushwq]
+      8 [kworker/R-netns]
+     13 [kworker/R-mm_percpu_wq]
+     14 [ksoftirqd/0]
+     15 [rcu_preempt]
+     16 [rcu_exp_par_gp_kthread_worker/0]
+     17 [rcu_exp_gp_kthread_worker]
+     18 [migration/0]
+     19 [cpuhp/0]
+     20 [cpuhp/1]
+     21 [migration/1]
+     22 [ksoftirqd/1]
+     25 [cpuhp/2]
+     26 [migration/2]
+     27 [ksoftirqd/2]
+     30 [cpuhp/3]
+     31 [migration/3]
+     32 [ksoftirqd/3]
+     34 [kworker/3:0H-kblockd]
+     35 [kdevtmpfs]
+     36 [kworker/R-inet_frag_wq]
+     37 [rcu_tasks_kthread]
+     38 [rcu_tasks_rude_kthread]
+     39 [rcu_tasks_trace_kthread]
+     40 [kauditd]
+     42 [khungtaskd]
+     43 [oom_reaper]
+     45 [kworker/R-writeback]
+     46 [kcompactd0]
+     47 [kcompactd1]
+     48 [kworker/R-kblockd]
+     49 [kworker/R-blkcg_punt_bio]
+     50 [kworker/R-kintegrityd]
+     53 [watchdogd]
+     55 [kworker/R-quota_events_unbound]
+     57 [kworker/1:1H-kblockd]
+     59 [kworker/R-rpciod]
+     60 [kworker/R-xprtiod]
+     61 [kswapd0]
+     62 [kswapd1]
+     63 [kworker/R-nfsiod]
+     64 [kworker/R-kthrotld]
+     66 [kworker/u17:0]
+     77 [irq/28-aerdrv]
+     80 [hwrng]
+     81 [kworker/R-iscsi_conn_cleanup]
+     82 [kworker/R-nvme-wq]
+     83 [kworker/R-nvme-reset-wq]
+     84 [kworker/R-nvme-delete-wq]
+     86 [kworker/R-DWC Notification WorkQ]
+     87 [kworker/R-uas]
+     88 [vchiq-slot/0]
+     89 [vchiq-recy/0]
+     90 [vchiq-sync/0]
+     91 [kworker/R-kstrp]
+     94 [kworker/R-sdhci]
+     95 [irq/40-mmc0]
+    138 [kworker/R-mmc_complete]
+    152 [kworker/R-v3d_bin]
+    153 [kworker/R-v3d_render]
+    154 [kworker/R-v3d_tfu]
+    155 [kworker/R-v3d_csd]
+    156 [kworker/R-v3d_cache_clean]
+    157 [kworker/R-v3d_cpu]
+    158 [irq/44-vc4 hdmi hpd connected]
+    159 [irq/45-vc4 hdmi hpd disconnected]
+    160 [cec-vc4-hdmi-0]
+    161 [irq/46-vc4 hdmi cec rx]
+    162 [irq/47-vc4 hdmi cec tx]
+    163 [irq/48-vc4 hdmi hpd connected]
+    164 [irq/49-vc4 hdmi hpd disconnected]
+    165 [cec-vc4-hdmi-1]
+    166 [irq/50-vc4 hdmi cec rx]
+    167 [irq/51-vc4 hdmi cec tx]
+    168 [card1-crtc0]
+    169 [card1-crtc1]
+    170 [card1-crtc2]
+    171 [card1-crtc3]
+    172 [card1-crtc4]
+    173 [card1-crtc5]
+    199 [jbd2/mmcblk0p2-8]
+    200 [kworker/R-ext4-rsv-conversion]
+    219 [kworker/R-mld]
+    220 [kworker/R-ipv6_addrconf]
+    329 /usr/lib/systemd/systemd-journald
+    373 /usr/lib/systemd/systemd-timesyncd
+    383 /usr/lib/systemd/systemd-udevd
+    488 [spi1]
+    507 [vchiq-keep/0]
+    562 [SMIO]
+    570 [irq/58-feb00000.codec]
+    573 [kworker/2:2H-kblockd]
+    576 [kworker/R-mmal-vchiq]
+    585 [kworker/R-mmal-vchiq]
+    587 [kworker/R-mmal-vchiq]
+    588 [kworker/R-mmal-vchiq]
+    589 [kworker/R-mmal-vchiq]
+    604 [kworker/R-mmal-vchiq]
+    620 [kworker/R-mmal-vchiq]
+    673 /usr/sbin/rpcbind -f -w
+    701 /usr/sbin/blkmapd
+    730 /usr/libexec/accounts-daemon
+    732 avahi-daemon: running [pi4f-trixie.local]
+    733 /usr/sbin/cron -f
+    734 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+    738 /usr/lib/polkit-1/polkitd --no-debug --log-level=notice
+    742 /usr/lib/systemd/systemd-logind
+    744 avahi-daemon: chroot helper
+    745 /usr/libexec/udisks2/udisksd
+    842 /usr/sbin/NetworkManager --no-daemon
+    843 /usr/sbin/wpa_supplicant -u -s -O DIR=/run/wpa_supplicant GROUP=netdev
+    879 /usr/sbin/ModemManager
+   1202 /usr/sbin/cupsd -l
+   1210 /usr/sbin/lightdm
+   1213 /usr/lib/systemd/systemd --user
+   1215 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+   1223 (sd-pam)
+   1234 login -- pi
+   1235 lightdm --session-child 10 14
+   1256 /usr/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+   1257 /usr/bin/pipewire
+   1258 /usr/bin/pipewire -c filter-chain.conf
+   1260 /usr/bin/wireplumber
+   1261 /usr/bin/pipewire-pulse
+   1262 /usr/bin/mpris-proxy
+   1263 /usr/bin/rpi-connectd -socket /run/user/1000/rpi-connect-wayvnc.sock
+   1267 /usr/bin/labwc -m
+   1327 /usr/bin/ssh-agent /usr/bin/labwc-pi
+   1387 /usr/libexec/xdg-permission-store
+   1397 /usr/sbin/cups-browsed
+   1429 /bin/sh /usr/bin/lwrespawn /usr/bin/pcmanfm-pi
+   1430 /bin/sh /usr/bin/lwrespawn /usr/bin/wf-panel-pi
+   1431 /usr/bin/kanshi
+   1449 /usr/libexec/polkit-mate-authentication-agent-1
+   1453 systemd-inhibit --what=handle-power-key rpi-gui-nop
+   1454 -bash
+   1482 /bin/bash /usr/bin/pcmanfm-pi
+   1484 rpi-gui-nop
+   1486 /usr/bin/wf-panel-pi
+   1495 pcmanfm --desktop
+   1514 /usr/libexec/gvfsd
+   1525 /usr/libexec/gvfsd-fuse /run/user/1000/gvfs -f
+   1548 /usr/libexec/xdg-desktop-portal
+   1550 /usr/bin/wayvnc --config /etc/rpi-connect/wayvnc.config --render-cursor --unix-socket --socket=/run/user/1000/rpi-connect-wayvnc-ctl.sock /run/user/1000/rpi-connect-wayvnc.sock
+   1555 /usr/libexec/xdg-document-portal
+   1556 /usr/libexec/gvfs-udisks2-volume-monitor
+   1562 fusermount3 -o rw,nosuid,nodev,fsname=portal,auto_unmount,subtype=portal -- /run/user/1000/doc
+   1567 /usr/libexec/xdg-desktop-portal-gtk
+   1573 /usr/libexec/gvfs-mtp-volume-monitor
+   1583 /usr/libexec/gvfs-goa-volume-monitor
+   1592 /usr/libexec/gvfs-afc-volume-monitor
+   1599 /usr/libexec/gvfs-gphoto2-volume-monitor
+   1602 /usr/libexec/xdg-desktop-portal-wlr
+   1609 /usr/libexec/gvfsd-trash --spawner :1.20 /org/gtk/gvfs/exec_spaw/0
+   1619 /usr/lib/menu-cache/menu-cached /run/user/1000/menu-cached-:0
+   1652 [kworker/R-cfg80211]
+   2387 python3 -u /home/pi/src/cariboulite/build/pi4-two-metre-sweep-20261127/upgrade_and_sweep.py
+   2415 [kworker/0:2H-mmc_complete]
+   3843 /usr/bin/python3 /home/pi/src/cariboulite/build/pi4-two-metre-sweep-20261127/run_and_finalize.py
+   6114 [kworker/u16:1-events_unbound]
+   8615 [kworker/u16:3-kvfree_rcu_reclaim]
+   9637 [kworker/u16:2-kvfree_rcu_reclaim]
+   9669 [kworker/2:1-events]
+   9774 [kworker/0:0-events_power_efficient]
+   9892 [kworker/1:0-mm_percpu_wq]
+  10246 [kworker/3:0-mm_percpu_wq]
+  10247 [kworker/2:2-events]
+  10286 [kworker/3:1H]
+  10342 [kworker/2:0H]
+  10399 [kworker/0:2-events]
+  10403 [kworker/1:2-mm_percpu_wq]
+  10404 [kworker/0:0H]
+  10414 [kworker/3:2-mm_percpu_wq]
+  10418 [kworker/1:2H]
+  10506 [kworker/2:0-mm_percpu_wq]
+  10533 [kworker/u16:0-kvfree_rcu_reclaim]
+  10543 [kworker/3:2H]
+  10567 [kworker/0:1H]
+  10568 [kworker/0:1-events_power_efficient]
+  10575 [kworker/3:1-events_freezable]
+  10631 /usr/bin/python3 -u /home/pi/src/cariboulite/build/pi4-two-metre-sweep-20261127/finalize_sweep.py
+  10637 ps -eo pid,args

@@ -66,6 +66,9 @@ retain their original revision and test conditions. See the
 
 ## Recorded investigations and measurements
 
+- [Two-metre Pi 4 forward sweep: 30 MHz to 6 GHz at all rates](baselines/20261127-pi4-two-metre-frequency-rate-sweep/pi4-two-metre-20261127T081042Z/REPORT.md)
+- [Reciprocal Pi 4 sweep and direction comparison, including recovered TX-start failures](baselines/20261127-pi4-two-metre-reverse-frequency-rate-sweep/pi4-two-metre-reverse-20261127T120321Z/REPORT.md)
+
 - [SDR++ Auto-bandwidth fix for 4 MS/s on pi4f](baselines/20261125-pi4f-sdrpp-auto-bandwidth/REPORT.txt)
 - [Pi4f Soapy sample-rate mismatch and deployed pitch fix](baselines/20261125-pi4f-soapy-rate-investigation/REPORT.txt)
 - [Two-Pi demodulated audio and IF/LO coupling investigation](baselines/20261125-pi0-demodulated-audio/REPORT.txt)

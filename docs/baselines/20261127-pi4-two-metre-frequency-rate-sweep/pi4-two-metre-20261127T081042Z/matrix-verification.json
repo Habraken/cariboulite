@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "errors": [],
+  "matrix_points": 1376,
+  "host_audits": {
+    "rx": [
+      {
+        "path": "pi4-two-metre-20261127T081042Z/session1/rx/metadata.json",
+        "binary_sha256": "9670fd4f33b75dc45238a2cb3e3f7876a9511a0e265950450569000ee73ff7b9",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      }
+    ],
+    "tx": [
+      {
+        "path": "pi4-two-metre-20261127T081042Z/session1/tx/metadata.json",
+        "binary_sha256": "9670fd4f33b75dc45238a2cb3e3f7876a9511a0e265950450569000ee73ff7b9",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      }
+    ]
+  },
+  "planned_points": 1376,
+  "total_result_rows": 1384,
+  "raw_paired_snapshots": 32989,
+  "transport_flagged": [],
+  "recovered_setup_failures": []
+}

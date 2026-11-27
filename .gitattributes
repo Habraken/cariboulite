@@ -21,3 +21,8 @@ docs/baselines/20261118-board1-laptop-distant-frequency-sweep/*.csv whitespace=c
 docs/baselines/20261122-pi0-whistle-reference-drive/analysis/*.csv whitespace=cr-at-eol
 docs/baselines/20261123-pi0-board2-tx-frequency-rate-sweep/*.csv whitespace=cr-at-eol
 docs/baselines/20261123-pi0-board2-rx-frequency-rate-sweep/*.csv whitespace=cr-at-eol
+
+# Preserve original CSV and plot bytes in the 27 November reciprocal sweeps.
+docs/baselines/20261127-pi4-two-metre-frequency-rate-sweep/pi4-two-metre-20261127T081042Z/results.csv whitespace=cr-at-eol
+docs/baselines/20261127-pi4-two-metre-reverse-frequency-rate-sweep/pi4-two-metre-reverse-20261127T120321Z/results.csv whitespace=cr-at-eol
+docs/baselines/20261127-pi4-two-metre-reverse-frequency-rate-sweep/pi4-two-metre-reverse-20261127T120321Z/analysis/reciprocal-1msps.svg whitespace=-blank-at-eol,-blank-at-eof

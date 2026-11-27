@@ -1,0 +1,162 @@
+Pi 4 / repaired device #2 TX conducted NBFM frequency and sample-rate sweep
+Run: pi4-two-metre-reverse-20261127T120321Z
+State: complete_with_failures
+TX: pi4f-trixie, repaired device #2; RX only: pi4g-trixie, original reference.
+Nominal attenuators: 90 dB; added 2 m RG179; approximately 2 m device separation.
+Requested TX power: 0 dBm; total link loss uncalibrated and frequency dependent.
+Signal: 1 kHz tone, amplitude 0.4; NBFM deviation setting 2500 Hz.
+Matched TX/RX sample rates; 2 s settling, 5 s measurement per point.
+Frequency grid: 172 points, 30 MHz to 5999.999 MHz; 6 GHz is exclusive.
+SINAD is the backend estimate over 300-3000 Hz; unavailable values remain blank.
+Transport-clean flags mean no counter increases/resets within the measurement window.
+Measurements describe the complete TX / attenuator / RX link, not calibrated receiver sensitivity.
+
+Completed matrix points: 1376 / 1376
+Independent raw-snapshot verification: PASS
+Receiver TX commands found: 0
+
+Rate Hz | points | points with numeric SINAD | transport flagged | RSSI mean range dBm | SINAD mean range dB
+4000000 | 172 | 163 | 0 | -94.46 to -58.00 | 1.30 to 26.33
+2000000 | 172 | 163 | 0 | -103.42 to -58.13 | 1.30 to 26.38
+1333333 | 172 | 163 | 0 | -115.42 to -58.04 | 1.29 to 27.21
+1000000 | 172 | 163 | 0 | -114.00 to -58.08 | 1.31 to 26.69
+800000 | 172 | 163 | 0 | -114.50 to -58.00 | 1.33 to 27.31
+666667 | 172 | 163 | 0 | -113.21 to -58.00 | 1.32 to 27.21
+500000 | 172 | 163 | 0 | -114.04 to -58.00 | 1.32 to 26.94
+400000 | 172 | 163 | 0 | -113.50 to -58.00 | 1.33 to 27.54
+
+Recovered setup attempts:
+[
+  {
+    "point": 4,
+    "frequency_hz": 40690000,
+    "sample_rate_hz": 4000000,
+    "frequency_reason": "band-anchor",
+    "bands": [
+      "ISM-40MHz"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 62, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 12, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 7,
+    "frequency_hz": 51000000,
+    "sample_rate_hz": 4000000,
+    "frequency_reason": "band-anchor",
+    "bands": [
+      "amateur-6m"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 21, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 4, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 90,
+    "frequency_hz": 2450000000,
+    "sample_rate_hz": 4000000,
+    "frequency_reason": "base-grid",
+    "bands": [
+      "amateur-13cm",
+      "ISM-2p4GHz"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 421, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 84, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 324,
+    "frequency_hz": 5200000000,
+    "sample_rate_hz": 2000000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 1177, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 235, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 583,
+    "frequency_hz": 1800000000,
+    "sample_rate_hz": 1000000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 1303, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 260, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 607,
+    "frequency_hz": 2494900000,
+    "sample_rate_hz": 1000000,
+    "frequency_reason": "RF-path-boundary",
+    "bands": [
+      "ISM-2p4GHz"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 125, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 25, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 694,
+    "frequency_hz": 50100000,
+    "sample_rate_hz": 800000,
+    "frequency_reason": "band-anchor",
+    "bands": [
+      "amateur-6m"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 441, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 88, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 802,
+    "frequency_hz": 3400100000,
+    "sample_rate_hz": 800000,
+    "frequency_reason": "band-anchor",
+    "bands": [
+      "amateur-9cm"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 546, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 109, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 912,
+    "frequency_hz": 1200000000,
+    "sample_rate_hz": 666667,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 557, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 111, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 1046,
+    "frequency_hz": 145000000,
+    "sample_rate_hz": 500000,
+    "frequency_reason": "band-anchor",
+    "bands": [
+      "amateur-2m"
+    ],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 677, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 135, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 1081,
+    "frequency_hz": 1050000000,
+    "sample_rate_hz": 500000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 181, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 36, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 1277,
+    "frequency_hz": 2100000000,
+    "sample_rate_hz": 400000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 987, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 197, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  },
+  {
+    "point": 1343,
+    "frequency_hz": 4550000000,
+    "sample_rate_hz": 400000,
+    "frequency_reason": "base-grid",
+    "bands": [],
+    "attempt": 1,
+    "error": "{'ok': False, 'error': 'Radio fault {\"config_generation\": 336, \"pipeline_generation\": 0, \"rx_requested\": false, \"state\": \"FAULT\", \"tx_pipeline_generation\": 67, \"tx_requested\": false, \"rx_resume\": false, \"transition\": false} TX_PIPELINE_START'}"
+  }
+]

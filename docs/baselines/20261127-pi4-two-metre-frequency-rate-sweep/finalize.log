@@ -1,0 +1,53 @@
+Pi 4 / repaired device #2 RX conducted NBFM frequency and sample-rate sweep
+Run: pi4-two-metre-20261127T081042Z
+State: complete
+TX: pi4g-trixie, original reference; RX only: pi4f-trixie, repaired device #2.
+Nominal attenuators: 90 dB; added 2 m RG179; approximately 2 m device separation.
+Requested TX power: 0 dBm; total link loss uncalibrated and frequency dependent.
+Signal: 1 kHz tone, amplitude 0.4; NBFM deviation setting 2500 Hz.
+Matched TX/RX sample rates; 2 s settling, 5 s measurement per point.
+Frequency grid: 172 points, 30 MHz to 5999.999 MHz; 6 GHz is exclusive.
+SINAD is the backend estimate over 300-3000 Hz; unavailable values remain blank.
+Transport-clean flags mean no counter increases/resets within the measurement window.
+Measurements describe the complete TX / attenuator / RX link, not calibrated receiver sensitivity.
+
+Completed matrix points: 1376 / 1376
+Independent raw-snapshot verification: PASS
+Receiver TX commands found: 0
+
+Rate Hz | points | points with numeric SINAD | transport flagged | RSSI mean range dBm | SINAD mean range dB
+4000000 | 172 | 166 | 0 | -92.21 to -56.62 | 1.15 to 26.08
+2000000 | 172 | 166 | 0 | -101.33 to -56.58 | 1.05 to 26.26
+1333333 | 172 | 166 | 0 | -116.35 to -56.29 | 1.20 to 27.11
+1000000 | 172 | 166 | 0 | -115.96 to -56.42 | 1.13 to 26.50
+800000 | 172 | 166 | 0 | -116.88 to -56.33 | 1.19 to 27.16
+666667 | 172 | 166 | 0 | -117.21 to -56.17 | 1.16 to 27.18
+500000 | 172 | 166 | 0 | -117.33 to -56.25 | 1.13 to 26.74
+400000 | 172 | 166 | 0 | -119.00 to -56.38 | 1.09 to 27.58
+{
+  "passed": true,
+  "errors": [],
+  "matrix_points": 1376,
+  "host_audits": {
+    "rx": [
+      {
+        "path": "pi4-two-metre-20261127T081042Z/session1/rx/metadata.json",
+        "binary_sha256": "9670fd4f33b75dc45238a2cb3e3f7876a9511a0e265950450569000ee73ff7b9",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b",
+        "led_restoration_verified": true
+      }
+    ],
+    "tx": [
+      {
+        "path": "pi4-two-metre-20261127T081042Z/session1/tx/metadata.json",
+        "binary_sha256": "9670fd4f33b75dc45238a2cb3e3f7876a9511a0e265950450569000ee73ff7b9",
+        "library_sha256": "cfeb3a7788165213bd7f1d2f3bcb4cc6c436596f5ef6b292cb27f439e045e06b"
+      }
+    ]
+  },
+  "planned_points": 1376,
+  "total_result_rows": 1384,
+  "raw_paired_snapshots": 32989,
+  "transport_flagged": [],
+  "recovered_setup_failures": []
+}
