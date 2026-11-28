@@ -1051,3 +1051,7 @@ The updated parser retains 17-field v1, 30/33-field v2 and 35-field LED replies.
 Use the updated controller for this command; no older command gains this tail.
 The FPGA bitstream and existing public library structures are unchanged; the
 library adds a separate readback API. Dry-run snapshots are explicitly simulated.
+
+## Manual CW input
+
+See [CW keying and listening](cw.md) for the USB key interface, straight/iambic/ultimatic/cootie settings, practice mode, native-CW receive filters and automatic TX/RX operation. These controls are confined to the standalone backend/controller/monitor.

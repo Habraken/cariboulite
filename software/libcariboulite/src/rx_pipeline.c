@@ -232,7 +232,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     unsigned playback_buffer = (unsigned)(2 * burst_audio + 1440);
     if (playback_buffer < 2400) playback_buffer = 2400;
     if (playback_buffer > 48000) goto fail;
-    p->demod.sink = alsa_sink_open_buffered(par->pcm_dev, 48000, playback_buffer);
+    p->demod.sink = par->playback_sink ? par->playback_sink : alsa_sink_open_buffered(par->pcm_dev, 48000, playback_buffer);
     if (!p->demod.sink) {
         error = -2;
         goto fail;
@@ -282,7 +282,7 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     p->am_rf_attenuation_db = par->am_rf_attenuation_db;
     p->demod.pcm_gain          = par->pcm_gain;
     p->demod.pcm_total_frames  = 0;
-    p->demod.pcm_channels      = alsa_sink_channels(p->demod.sink);
+    p->demod.pcm_channels      = par->playback_sink ? 1 : alsa_sink_channels(p->demod.sink);
     p->demod.pcm_rate          = p->demod.sink->sample_rate;
 
     audio_demod_config_t dsp_config = {
@@ -290,6 +290,9 @@ int rx_pipeline_init(rx_pipeline_t* p, sys_st* sys,
     };
     p->demod.dsp = audio_demod_create(par->mode, &dsp_config);
     if (!p->demod.dsp) { error = -4; goto fail; }
+    if(par->mode==AUDIO_DEMOD_CW && audio_demod_set_cw(p->demod.dsp,
+        par->cw_bandwidth_hz?par->cw_bandwidth_hz:500,par->cw_pitch_hz?par->cw_pitch_hz:600,
+        p->am_mix_hz,p->ssb_spectrum_inverted)!=0){error=-4;goto fail;}
     if (par->mode == AUDIO_DEMOD_AM &&
         (audio_demod_set_am_agc(p->demod.dsp, !par->am_agc_disabled) != 0 ||
          audio_demod_set_am_offset(p->demod.dsp,p->am_mix_hz) != 0)) { error = -4; goto fail; }

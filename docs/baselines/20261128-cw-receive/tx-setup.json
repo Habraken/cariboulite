@@ -1,0 +1,377 @@
+{
+  "pid": 23970,
+  "uuid": "36b67ac4-b313-4369-99bd-4b3e09caabfa",
+  "args": [
+    "/home/pi/src/cariboulite/build/cw-development-20261127/source/build/radio-backend/cariboulite_radio_backend",
+    "--socket",
+    "/tmp/cariboulite-cw-link-20261128/status.sock",
+    "--rx-mode",
+    "cw",
+    "--tx-mode",
+    "cw",
+    "--rx-frequency",
+    "430100000",
+    "--tx-frequency",
+    "430100000",
+    "--tx-power",
+    "-12",
+    "--status-hz",
+    "20",
+    "--cw-device",
+    "/dev/input/by-id/usb-Seeed_Seeed_XIAO_M0_E44256EE5154315432202020FF0B1C0B-if02-event-kbd",
+    "--rx-playback",
+    "plughw:CARD=USB,DEV=0"
+  ],
+  "replies": [
+    {
+      "command": "get",
+      "reply": "v2 1 OK OK 1 0 live IDLE RF24 430100000 430100000.50219727 1000000 cw 0 0 0.200000003 0.300000012 0 430100000 0 1000000 -12 -2147483648 0 600 0.400000006 2500 0 0 0 cw 0.800000012 6\n"
+    },
+    {
+      "command": "cw_rx 500 600",
+      "reply": "v2 2 OK OK 2 0 live IDLE RF24 430100000 430100000.50219727 1000000 cw 0 0 0.200000003 0.300000012 0 430100000 0 1000000 -12 -2147483648 0 600 0.400000006 2500 0 0 0 cw 0.800000012 6\n"
+    },
+    {
+      "command": "cw_setup iambic 12 1 1 250 5",
+      "reply": "v2 3 OK OK 3 0 live IDLE RF24 430100000 430100000.50219727 1000000 cw 0 0 0.200000003 0.300000012 0 430100000 0 1000000 -12 -2147483648 0 600 0.400000006 2500 0 0 0 cw 0.800000012 6\n"
+    },
+    {
+      "command": "cw_enable 1",
+      "reply": "v2 4 OK OK 4 0 live IDLE RF24 430100000 430100000.50219727 1000000 cw 0 0 0.200000003 0.300000012 0 430100000 0 1000000 -12 -2147483648 1 600 0.400000006 2500 0 0 0 cw 0.800000012 6\n"
+    }
+  ],
+  "snapshot": {
+    "cw": {
+      "available": true,
+      "enabled": true,
+      "connected": true,
+      "practice": true,
+      "busy": false,
+      "requested": false,
+      "key_type": "iambic",
+      "wpm": 12,
+      "swap": true,
+      "contacts": 0,
+      "hang_ms": 250,
+      "ramp_ms": 5.0,
+      "error": 0,
+      "rx_bandwidth_hz": 500,
+      "rx_pitch_hz": 600.0
+    },
+    "version": 1,
+    "session": "radio-23970-59495077401951",
+    "sequence": 5,
+    "monotonic_s": 59495.143913622,
+    "realtime_s": 1795824775.062976,
+    "hardware_monotonic_s": 59495.143865641,
+    "source": {
+      "kind": "live",
+      "label": "C radio backend"
+    },
+    "owner_pid": 23970,
+    "channel": "RF24",
+    "state": "IDLE",
+    "rx_mode": "CW",
+    "config": {
+      "sample_rate_hz": 1000000,
+      "rx_frequency_hz": 430100000.502,
+      "requested_frequency_hz": 430100000.0,
+      "rx_bandwidth_hz": 160000,
+      "tx_bandwidth_hz": 1000000,
+      "playback": "plughw:CARD=USB,DEV=0",
+      "pcm_gain": 8000.0,
+      "deemphasis_us": 0.0,
+      "am_offset_tuning_enabled": false,
+      "am_agc_enabled": false,
+      "am_rf_gain_db": 63,
+      "am_voice_low_hz": 300,
+      "am_voice_high_hz": 3000,
+      "rx_deviation_hz": 2500.0,
+      "tx_frequency_hz": 430100000.0,
+      "tx_actual_frequency_hz": null,
+      "tx_power_dbm": -12,
+      "tx_actual_power_dbm": null,
+      "tx_sample_rate_hz": 1000000,
+      "tx_source": "tone",
+      "tx_mode": "cw",
+      "tx_am_depth": 0.8,
+      "tx_am_backoff_db": 6.0,
+      "tx_am_dac_shaping": false,
+      "tx_am_carrier_fraction": 0.5,
+      "tx_tone_hz": 600.0,
+      "tx_tone_amp": 0.4,
+      "tx_deviation_hz": 2500.0,
+      "cdcss": {
+        "rx_code": "off",
+        "tx_code": "off",
+        "tx_deviation_hz": 250.0,
+        "rx_enabled": false,
+        "tx_enabled": false,
+        "valid": false,
+        "detected": null,
+        "turnoff": false,
+        "bit_errors": null
+      },
+      "ctcss": {
+        "rx_frequency_hz": 0.0,
+        "tx_frequency_hz": 0.0,
+        "tx_deviation_hz": 500.0,
+        "rx_enabled": false,
+        "tx_enabled": false,
+        "valid": false,
+        "detected": null,
+        "coherence": 0.0
+      },
+      "tx_compressor": {
+        "enabled": true,
+        "input_db": 0.0,
+        "threshold_dbfs": -24.0,
+        "ratio": 3.0,
+        "knee_db": 6.0,
+        "attack_ms": 5.0,
+        "release_ms": 200.0,
+        "makeup_db": 6.0,
+        "ceiling_dbfs": -1.0,
+        "lookahead_ms": 1,
+        "microphone_only": true
+      },
+      "profile": {
+        "rx": {
+          "sample_rate_hz": 1000000,
+          "analog_bandwidth_hz": 160000,
+          "digital_cutoff_hz": 125000
+        },
+        "tx": {
+          "sample_rate_hz": 1000000,
+          "analog_bandwidth_hz": 80000,
+          "digital_cutoff_hz": 125000,
+          "sample_gap": 3
+        }
+      },
+      "observed": {
+        "rx": {
+          "sample_rate_hz": 4000000.0,
+          "analog_bandwidth_hz": 2000000.0,
+          "digital_cutoff_hz": 2000000.0
+        },
+        "tx": {
+          "sample_rate_hz": 4000000.0,
+          "analog_bandwidth_hz": 1000000.0,
+          "digital_cutoff_hz": 2000000.0
+        }
+      }
+    },
+    "rx": {
+      "running": false,
+      "queue": null,
+      "noise_enabled": false,
+      "carrier_enabled": false,
+      "carrier_open_dbm": -97,
+      "carrier_close_dbm": -102,
+      "gate_open": null,
+      "noise": {
+        "valid": false,
+        "detector_open": null,
+        "rms": null,
+        "open_rms": 0.2,
+        "close_rms": 0.3
+      },
+      "alignment": {
+        "acquisitions": 0,
+        "failures": 0,
+        "ambiguous": 0,
+        "invalid_frames": 0,
+        "discarded_bytes": 0,
+        "emitted_samples": 0,
+        "stream_resets": 11
+      },
+      "sinad": {
+        "enabled": false,
+        "db": null,
+        "tone_hz": 1000,
+        "low_hz": 300,
+        "high_hz": 3000
+      },
+      "audio_output": {
+        "calibrated": true,
+        "volume_db": 0.0,
+        "muted": false,
+        "valid": false,
+        "rms_dbfs": null,
+        "peak_dbfs": null,
+        "clipped_samples": 0,
+        "window_ms": 100,
+        "reference_hz": 1000,
+        "reference_modulation": 0.5,
+        "reference_rms_dbfs": -12
+      },
+      "audio_queue": null,
+      "playback": {
+        "valid": false
+      },
+      "reader": null,
+      "workers": {
+        "reader": {
+          "created": false,
+          "alive": false,
+          "last_error": 0,
+          "scheduling": {
+            "valid": false
+          }
+        },
+        "demod": {
+          "created": false,
+          "alive": false,
+          "last_error": 0,
+          "scheduling": {
+            "valid": false
+          }
+        },
+        "audio": {
+          "created": false,
+          "alive": false,
+          "last_error": 0,
+          "scheduling": {
+            "valid": false
+          }
+        }
+      }
+    },
+    "tx": {
+      "running": false,
+      "requested": false,
+      "initialized": false,
+      "generation": 0,
+      "queue": null,
+      "writer": null,
+      "capture": {
+        "valid": false
+      },
+      "hardware_paced": null,
+      "driver": {
+        "valid": false
+      },
+      "audio_buffer": {
+        "valid": false
+      },
+      "smi_timing": {
+        "valid": false
+      },
+      "workers": {
+        "producer": {
+          "created": false,
+          "alive": false,
+          "last_error": 0,
+          "scheduling": {
+            "valid": false
+          }
+        },
+        "writer": {
+          "created": false,
+          "alive": false,
+          "last_error": 0,
+          "scheduling": {
+            "valid": false
+          }
+        },
+        "capture": {
+          "created": false,
+          "alive": false,
+          "last_error": 0,
+          "scheduling": {
+            "valid": false
+          }
+        }
+      },
+      "fault": null
+    },
+    "hardware": {
+      "common": {
+        "registers": {
+          "RST": 0,
+          "CFG": 8,
+          "CLKO": 26,
+          "BMDVC": 34,
+          "XOC": 16,
+          "IQIFC0": 50,
+          "IQIFC1": 18,
+          "IQIFC2": null,
+          "PN": 52,
+          "VN": 3
+        }
+      },
+      "rf24": {
+        "registers": {
+          "IRQS": null,
+          "IRQM": 63,
+          "AUXS": 14,
+          "STATE": 2,
+          "CMD": 2,
+          "CS": 1,
+          "CCF0L": 246,
+          "CCF0H": 4,
+          "CNL": 39,
+          "CNM": 192,
+          "RXBWC": 27,
+          "RXDFE": 129,
+          "AGCC": 129,
+          "AGCS": 119,
+          "RSSI": 127,
+          "EDC": 0,
+          "EDD": 65,
+          "EDV": 127,
+          "RNDV": 235,
+          "TXCUTC": 139,
+          "TXDFE": 129,
+          "PAC": 114,
+          "PADFE": 64,
+          "PLL": 8,
+          "PLLCF": 5,
+          "TXCI": 23,
+          "TXCQ": 35,
+          "TXDACI": 0,
+          "TXDACQ": 0
+        }
+      },
+      "rf09": {
+        "valid": false
+      },
+      "register_poll": {
+        "read_blocks": 6,
+        "failed_blocks": 0,
+        "polls": 5,
+        "spi_transactions": 30,
+        "spi_failures": 0,
+        "read_duration_s": 0.000146572
+      }
+    },
+    "loopback": {
+      "armed": false,
+      "active": false,
+      "samples": 0,
+      "timeouts": 0
+    },
+    "control": {
+      "config_generation": 4,
+      "pipeline_generation": 0,
+      "rx_requested": false,
+      "state": "IDLE",
+      "tx_pipeline_generation": 0,
+      "tx_requested": false,
+      "rx_resume": false,
+      "transition": false
+    },
+    "publisher": {
+      "status_hz": 20.0,
+      "spi_blocks": 6,
+      "spi_failed_blocks": 0,
+      "spi_read_ms": 0.146572,
+      "spi_transactions": 30,
+      "spi_failures": 0,
+      "clients": 0,
+      "packets_sent": 0,
+      "packets_skipped": 0,
+      "clients_rejected": 0
+    }
+  }
+}

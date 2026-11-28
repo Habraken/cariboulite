@@ -1,0 +1,13 @@
+{
+  "status_packets": 2367,
+  "keyed_level_samples": 120,
+  "median_keyed_rms_dbfs": -24.115,
+  "keyed_rms_range_dbfs": [
+    -25.273,
+    -24.038
+  ],
+  "max_clipped_samples": 0,
+  "operator_feedback": "Pitch and volume are comfortable now.",
+  "feedback_date": "2026-11-28",
+  "limitation": "Level samples deduplicated by RMS/peak pair; key-down inferred from level and crest, not synchronized paddle contacts."
+}

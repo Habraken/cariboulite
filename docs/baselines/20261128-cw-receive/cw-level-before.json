@@ -1,0 +1,98 @@
+{
+  "snapshots": 317,
+  "keyed_windows": 0,
+  "keyed_median_dbfs": null,
+  "rms_min_dbfs": -52.706,
+  "rms_max_dbfs": -49.996,
+  "clipped_samples": 0,
+  "config": {
+    "sample_rate_hz": 1000000,
+    "rx_frequency_hz": 430100000.502,
+    "requested_frequency_hz": 430100000.0,
+    "rx_bandwidth_hz": 160000,
+    "tx_bandwidth_hz": 1000000,
+    "playback": "plughw:CARD=H650e,DEV=0",
+    "pcm_gain": 252982.219,
+    "deemphasis_us": 0.0,
+    "am_offset_tuning_enabled": false,
+    "am_agc_enabled": false,
+    "am_rf_gain_db": 63,
+    "am_voice_low_hz": 300,
+    "am_voice_high_hz": 3000,
+    "rx_deviation_hz": 2500.0,
+    "tx_frequency_hz": 430100000.0,
+    "tx_actual_frequency_hz": null,
+    "tx_power_dbm": -12,
+    "tx_actual_power_dbm": null,
+    "tx_sample_rate_hz": 1000000,
+    "tx_source": "mic",
+    "tx_mode": "cw",
+    "tx_am_depth": 0.8,
+    "tx_am_backoff_db": 6.0,
+    "tx_am_dac_shaping": false,
+    "tx_am_carrier_fraction": 0.5,
+    "tx_tone_hz": 600.0,
+    "tx_tone_amp": 0.4,
+    "tx_deviation_hz": 2500.0,
+    "cdcss": {
+      "rx_code": "off",
+      "tx_code": "off",
+      "tx_deviation_hz": 250.0,
+      "rx_enabled": false,
+      "tx_enabled": false,
+      "valid": false,
+      "detected": null,
+      "turnoff": false,
+      "bit_errors": null
+    },
+    "ctcss": {
+      "rx_frequency_hz": 0.0,
+      "tx_frequency_hz": 0.0,
+      "tx_deviation_hz": 500.0,
+      "rx_enabled": false,
+      "tx_enabled": false,
+      "valid": false,
+      "detected": null,
+      "coherence": 0.0
+    },
+    "tx_compressor": {
+      "enabled": true,
+      "input_db": 0.0,
+      "threshold_dbfs": -24.0,
+      "ratio": 3.0,
+      "knee_db": 6.0,
+      "attack_ms": 5.0,
+      "release_ms": 200.0,
+      "makeup_db": 6.0,
+      "ceiling_dbfs": -1.0,
+      "lookahead_ms": 1,
+      "microphone_only": true
+    },
+    "profile": {
+      "rx": {
+        "sample_rate_hz": 1000000,
+        "analog_bandwidth_hz": 160000,
+        "digital_cutoff_hz": 125000
+      },
+      "tx": {
+        "sample_rate_hz": 1000000,
+        "analog_bandwidth_hz": 80000,
+        "digital_cutoff_hz": 125000,
+        "sample_gap": 3
+      }
+    },
+    "observed": {
+      "rx": {
+        "sample_rate_hz": 1000000.0,
+        "analog_bandwidth_hz": 160000.0,
+        "digital_cutoff_hz": 125000.0
+      },
+      "tx": {
+        "sample_rate_hz": 4000000.0,
+        "analog_bandwidth_hz": 1000000.0,
+        "digital_cutoff_hz": 2000000.0
+      }
+    }
+  },
+  "volume_db": 12.0
+}

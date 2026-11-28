@@ -106,9 +106,9 @@ audio_sink_t* alsa_sink_open(const char* device, unsigned sample_rate)
     return alsa_sink_open_buffered(device, sample_rate, 2400);
 }
 
-audio_sink_t* alsa_sink_open_buffered(const char* device, unsigned sample_rate, unsigned buffer_frames)
+static audio_sink_t* alsa_sink_open_configured(const char* device, unsigned sample_rate, unsigned buffer_frames,unsigned period_frames)
 {
-    if (sample_rate != 48000 || buffer_frames < 960 || buffer_frames > 48000) { errno = EINVAL; return NULL; }
+    if (sample_rate != 48000 || buffer_frames < 2*period_frames || buffer_frames > 48000) { errno = EINVAL; return NULL; }
     alsa_sink_t* s = calloc(1, sizeof(*s));
     if (!s) return NULL;
     init_stats(s);
@@ -131,7 +131,7 @@ audio_sink_t* alsa_sink_open_buffered(const char* device, unsigned sample_rate, 
         s->channels = 2;
         CHECK(snd_pcm_hw_params_set_channels(s->pcm, hw, 2));
     }
-    snd_pcm_uframes_t period = 480, buffer = buffer_frames;
+    snd_pcm_uframes_t period = period_frames, buffer = buffer_frames;
     CHECK(snd_pcm_hw_params_set_period_size_near(s->pcm, hw, &period, NULL));
     CHECK(snd_pcm_hw_params_set_buffer_size_near(s->pcm, hw, &buffer));
     CHECK(snd_pcm_hw_params(s->pcm, hw));
@@ -157,3 +157,8 @@ fail:
     return NULL;
 #undef CHECK
 }
+
+audio_sink_t* alsa_sink_open_buffered(const char* device,unsigned rate,unsigned frames)
+{ return alsa_sink_open_configured(device,rate,frames,480); }
+audio_sink_t* alsa_sink_open_low_latency(const char* device)
+{ return alsa_sink_open_configured(device,48000,480,120); }

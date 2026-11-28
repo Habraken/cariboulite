@@ -199,6 +199,9 @@ static int fetch_audio(nbfm_mod_t* m) {
     if (x>1) x=1; 
     else if (x<-1) x=-1;
     
+    if (m->mode == AUDIO_MOD_CW) {
+        m->dphi_next=fmaxf(0,x);return 1;
+    }
     if (m->mode != AUDIO_MOD_NBFM) {
         x=voice_filter(&m->voice[0],x);
         x=voice_filter(&m->voice[2],voice_filter(&m->voice[1],x));
@@ -264,6 +267,10 @@ static size_t generate_iq(nbfm_mod_t* m, iq16_t* dst, size_t N, size_t* held)
             double q = m->ssb.q_cur + (m->ssb.q_next - m->ssb.q_cur) * frac;
             dst[out++] = (iq16_t){(int16_t)lrint(dphi * m->out_scale),
                                   (int16_t)lrint(q * m->out_scale)};
+            continue;
+        }
+        if (m->mode == AUDIO_MOD_CW) {
+            dst[out++]=(iq16_t){(int16_t)lrint(fmax(0,fmin(1,dphi))*m->out_scale),0};
             continue;
         }
         if (m->mode == AUDIO_MOD_AM) {

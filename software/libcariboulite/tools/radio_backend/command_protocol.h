@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "audio_demod.h"
 #include "audio_mod.h"
+#include "cw_keyer.h"
 #include "tx_dynamics.h"
 #include <stddef.h>
 #include <stdint.h>
@@ -13,6 +14,7 @@
 
 typedef enum control_command {
     CONTROL_GET,
+    CONTROL_CW_ENABLE, CONTROL_CW_SETUP, CONTROL_CW_RX, CONTROL_CW_TEST,
     CONTROL_RX_VOLUME,
     CONTROL_START,
     CONTROL_STOP,
@@ -75,6 +77,10 @@ typedef struct control_request {
     float tx_am_backoff_db;
     float tx_tone_hz;
     float tx_tone_amp;
+    bool cw_enabled,cw_swap,cw_practice;
+    cw_key_type_t cw_type;
+    int cw_wpm,cw_hang,cw_contacts,cw_bandwidth;
+    float cw_ramp,cw_pitch;
     char tx_comp_parameter[16];
     float tx_comp_value;
     float ctcss_hz, ctcss_deviation_hz;

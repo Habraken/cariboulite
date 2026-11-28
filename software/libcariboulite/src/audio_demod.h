@@ -11,7 +11,7 @@
 typedef struct nbfm_demod audio_demod_t;
 typedef enum {
     AUDIO_DEMOD_NBFM = 0, AUDIO_DEMOD_WBFM, AUDIO_DEMOD_AM,
-    AUDIO_DEMOD_USB, AUDIO_DEMOD_LSB
+    AUDIO_DEMOD_USB, AUDIO_DEMOD_LSB, AUDIO_DEMOD_CW
 } audio_demod_mode_t;
 static inline bool audio_demod_is_ssb(audio_demod_mode_t mode)
 {
@@ -19,7 +19,7 @@ static inline bool audio_demod_is_ssb(audio_demod_mode_t mode)
 }
 static inline bool audio_demod_uses_offset(audio_demod_mode_t mode, bool am_enabled)
 {
-    return audio_demod_is_ssb(mode) || (mode == AUDIO_DEMOD_AM && am_enabled);
+    return mode == AUDIO_DEMOD_CW || audio_demod_is_ssb(mode) || (mode == AUDIO_DEMOD_AM && am_enabled);
 }
 static inline const char* audio_demod_mode_name(audio_demod_mode_t mode)
 {
@@ -29,6 +29,7 @@ static inline const char* audio_demod_mode_name(audio_demod_mode_t mode)
     case AUDIO_DEMOD_AM: return "am";
     case AUDIO_DEMOD_USB: return "usb";
     case AUDIO_DEMOD_LSB: return "lsb";
+    case AUDIO_DEMOD_CW: return "cw";
     default: return "unknown";
     }
 }
@@ -40,12 +41,13 @@ static inline const char* audio_demod_mode_label(audio_demod_mode_t mode)
     case AUDIO_DEMOD_AM: return "AM voice";
     case AUDIO_DEMOD_USB: return "USB";
     case AUDIO_DEMOD_LSB: return "LSB";
+    case AUDIO_DEMOD_CW: return "CW";
     default: return "Unknown";
     }
 }
 static inline bool audio_demod_mode_parse(const char* name, audio_demod_mode_t* mode)
 {
-    for (int candidate = AUDIO_DEMOD_NBFM; candidate <= AUDIO_DEMOD_LSB; ++candidate) {
+    for (int candidate = AUDIO_DEMOD_NBFM; candidate <= AUDIO_DEMOD_CW; ++candidate) {
         audio_demod_mode_t value = (audio_demod_mode_t)candidate;
         if (strcmp(name, audio_demod_mode_name(value)) == 0) {
             *mode = value;
@@ -115,3 +117,7 @@ audio_demod_result_t audio_demod_process_with_raw(audio_demod_t* dsp,
 
 // AM raw tap is the filtered 300–3000 Hz voice signal before PCM gain;
 // it does not implement the NBFM noise-RMS or SINAD contract.
+
+// CW only: total -3 dB channel width 250/500/1000 Hz; listening pitch 100..2000 Hz.
+int audio_demod_set_cw(audio_demod_t*, unsigned bandwidth_hz, float pitch_hz,
+                       int offset_hz, bool inverted);

@@ -212,6 +212,22 @@ int control_request_parse(const char *packet, size_t bytes,
         return protocol_error();
     if (!strcmp(tokens[2], "get") && count == 3)
         request->command = CONTROL_GET;
+    else if(request->protocol_version==2 && !strcmp(tokens[2],"cw_enable") && count==4 &&
+            !parse_bool(tokens[3],&request->cw_enabled))request->command=CONTROL_CW_ENABLE;
+    else if(request->protocol_version==2 && !strcmp(tokens[2],"cw_setup") && count==9 &&
+            cw_key_type_parse(tokens[3],&request->cw_type) && !parse_int(tokens[4],&request->cw_wpm) &&
+            request->cw_wpm>=5 && request->cw_wpm<=30 && !parse_bool(tokens[5],&request->cw_swap) &&
+            !parse_bool(tokens[6],&request->cw_practice) && !parse_int(tokens[7],&request->cw_hang) &&
+            request->cw_hang>=0 && request->cw_hang<=5000 && !parse_float(tokens[8],&request->cw_ramp) &&
+            request->cw_ramp>=1 && request->cw_ramp<=20)request->command=CONTROL_CW_SETUP;
+    else if(request->protocol_version==2 && !strcmp(tokens[2],"cw_rx") && count==5 &&
+            !parse_int(tokens[3],&request->cw_bandwidth) &&
+            (request->cw_bandwidth==250||request->cw_bandwidth==500||request->cw_bandwidth==1000) &&
+            !parse_float(tokens[4],&request->cw_pitch) && request->cw_pitch>=100 && request->cw_pitch<=2000)
+        request->command=CONTROL_CW_RX;
+    else if(request->protocol_version==2 && !strcmp(tokens[2],"cw_test") && count==4 &&
+            !parse_int(tokens[3],&request->cw_contacts) && request->cw_contacts>=0 && request->cw_contacts<=3)
+        request->command=CONTROL_CW_TEST;
     else if (request->protocol_version==2 && !strcmp(tokens[2], "rx_volume") && count==4 &&
              !parse_float(tokens[3], &request->volume_db) && rx_audio_volume_valid(request->volume_db))
         request->command=CONTROL_RX_VOLUME;
@@ -320,6 +336,8 @@ int control_request_parse(const char *packet, size_t bytes,
 static int valid_code(const char *code)
 {
     static const char *const codes[] = {
+        "KEY_BUSY", "CW_DEVICE_REQUIRED", "CW_MODE_REQUIRED", "CW_INPUT",
+        "CW_DISABLED", "CW_OWNS_TX", "SIMULATED_ONLY", "CW_NOISE",
         "OK", "BUSY", "PROTOCOL", "RX_RUNNING", "INVALID", "FREQ_RANGE",
         "HARDWARE", "FAULT", "WBFM_NOISE", "AM_NOISE", "SSB_NOISE", "ACCEPTED", "TRANSITION",
         "TX_RUNNING", "LOOPBACK", "TX_FAILED", "FIRMWARE_FILE", "FPGA_REQUIRED", "CONFLICT"
@@ -594,6 +612,19 @@ int control_request_format(const control_request_t *request,
             version,request->id,request->tx_comp_parameter,(double)request->tx_comp_value);
         break;
     }
+    case CONTROL_CW_ENABLE:
+        if(version!=2)break;
+        bytes = snprintf(packet,capacity,"v2 %" PRIu64 " cw_enable %u\n",request->id,request->cw_enabled);break;
+    case CONTROL_CW_SETUP:
+        if(version!=2)break;
+        bytes = snprintf(packet,capacity,"v2 %" PRIu64 " cw_setup %s %d %u %u %d %.3f\n",request->id,
+            cw_key_type_name(request->cw_type),request->cw_wpm,request->cw_swap,request->cw_practice,request->cw_hang,(double)request->cw_ramp);break;
+    case CONTROL_CW_RX:
+        if(version!=2)break;
+        bytes = snprintf(packet,capacity,"v2 %" PRIu64 " cw_rx %d %.3f\n",request->id,request->cw_bandwidth,(double)request->cw_pitch);break;
+    case CONTROL_CW_TEST:
+        if(version!=2)break;
+        bytes = snprintf(packet,capacity,"v2 %" PRIu64 " cw_test %d\n",request->id,request->cw_contacts);break;
     case CONTROL_TX_TONE:
         bytes = snprintf(packet, capacity, "v%u %" PRIu64 " tx_tone %.9g %.9g\n",
                          version, request->id, (double)request->tx_tone_hz,

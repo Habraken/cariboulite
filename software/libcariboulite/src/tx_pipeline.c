@@ -518,7 +518,10 @@ int tx_pipeline_init(tx_pipeline_t* p, sys_st* sys,
     p->tx_ctrl.active         = true;
     p->tx_ctrl.radio          = radio;
     p->tx_ctrl.fifo           = &p->txq;
-    p->tx_ctrl.live_from_mic  = (par->mic_dev && *par->mic_dev);
+    p->tx_ctrl.cw = par->cw;
+    p->tx_ctrl.cw_render = par->cw_render;
+    if(par->cw&&!par->cw_render)goto fail;
+    p->tx_ctrl.live_from_mic  = !par->cw && (par->mic_dev && *par->mic_dev);
     p->tx_ctrl.mic            = NULL;            // (open later if needed)
     p->tx_ctrl.tone_mode      = par->tone_mode;
     p->tx_ctrl.tone_hz        = par->tone_hz;
@@ -768,7 +771,7 @@ int tx_pipeline_start(tx_pipeline_t* p)
     tx_dynamics_reset(&p->tx_ctrl.dynamics);
     audio_mod_reset_ctcss(p->tx_ctrl.fm);
     audio_mod_reset_cdcss(p->tx_ctrl.fm);
-    const unsigned lead_frames=p->tx_ctrl.cdcss_enabled ? 80 : p->tx_ctrl.ctcss_enabled ? 60 : 10;
+    const unsigned lead_frames=p->tx_ctrl.cw ? 1 : p->tx_ctrl.cdcss_enabled ? 80 : p->tx_ctrl.ctcss_enabled ? 60 : 10;
 
     // Disable RX if it was on and arm TX chain
     if (nbfm_rx_active) {
@@ -866,7 +869,8 @@ int tx_pipeline_start(tx_pipeline_t* p)
     
     // --- Quindar "start" tone: 2525 Hz for 250 ms with 5 frames of padding ---
     bool cue_ok;
-    if (p->tx_ctrl.hardware_paced) {
+    if(p->tx_ctrl.cw)cue_ok=true;
+    else if (p->tx_ctrl.hardware_paced) {
         const uint64_t deadline = mono_ns() + (lead_frames+90)*10000000ULL;
         cue_ok = tx_wait_injection(p, deadline) &&
             tx_inject_frames(p, 2525.0f, 25, deadline, false) &&
@@ -924,7 +928,9 @@ void tx_pipeline_stop(tx_pipeline_t* p)
     p->tx_ctrl.inj.ctcss_mute = true;
     pthread_mutex_unlock(&g_tx_injection_lock);
     tx_audio_buffer_set_cue(p->tx_ctrl.audio_buffer, true);
-    if (tx_inject_tone_with_zeros(p, 2475.0f, 250, 5,
+    if(p->tx_ctrl.cw){
+        /* CW hang is generated on the shared key timeline; no Quindar cue. */
+    } else if (tx_inject_tone_with_zeros(p, 2475.0f, 250, 5,
                                 p->tx_ctrl.tail_padding_frames + (p->tx_ctrl.cdcss_enabled ? 18 : 0), true)) {
         pthread_mutex_lock(&g_tx_injection_lock);
         uint64_t sequence = p->tx_ctrl.inj.last_sequence;

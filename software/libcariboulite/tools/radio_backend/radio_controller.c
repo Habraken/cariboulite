@@ -73,11 +73,11 @@ static void command_help(void)
     puts("Commands:\n"
          "  status | get          read current settings\n"
          "  frequency MHz         set RX and TX frequency while both are stopped\n"
-         "  mode nbfm|wbfm|am|usb|lsb        set RX mode while both are stopped\n"
+         "  mode nbfm|wbfm|am|usb|lsb|cw        set RX mode while both are stopped\n"
          "  rate MS/s            set RX and TX native sample rate in MS/s while stopped\n"
          "  rx start | rx stop    start/stop reception\n"
          "  rx frequency MHz      saved RX frequency, for example 430.125\n"
-         "  rx mode nbfm|wbfm|am|usb|lsb     WBFM is mono\n"
+         "  rx mode nbfm|wbfm|am|usb|lsb|cw     WBFM is mono\n"
          "  rx volume DB|mute    live playback volume: -60..+12 dB; 0 = calibrated default\n"
          "  rx rate [MS/s]       no value opens divider menu; RX: .4/.5/.666667/.8/1/1.333333/2/4\n"
          "  rx divider KEY       hexadecimal rate key: 1/2/3/4/5/6/8/A\n"
@@ -90,7 +90,12 @@ static void command_help(void)
          "  tx frequency MHz      saved TX frequency, for example 430.125\n"
          "  tx power DBM          integer -14..14; backend applies channel limits\n"
          "  tx rate [MS/s]       no value opens divider menu; TX: .4/.5/.666667/.8/1/1.333333/2/4\n"
-         "  tx mode nbfm|am|usb|lsb   saved TX modulation (change while TX is stopped)\n"
+         "  cw enable on|off        exclusively arm/release the configured USB key device\n"
+         "  cw setup TYPE WPM SWAP PRACTICE HANG_MS RAMP_MS\n"
+         "                         straight|iambic|ultimatic|cootie; flags 0/1; stopped key only\n"
+         "  cw rx BANDWIDTH PITCH   250/500/1000 Hz, 100..2000 Hz; RX stopped\n"
+         "  cw test CONTACTS        dry-run only: raw contact bits 0..3\n"
+         "  tx mode nbfm|am|usb|lsb|cw   saved TX modulation (change while TX is stopped)\n"
          "  tx am-backoff DB      extra AM IQ backoff: 0..18 dB, TX stopped\n"
          "  tx am-depth VALUE     nominal AM modulation 0..1, default 0.8\n"
          "  rx cdcss CODE[N|I]|off  NBFM code squelch; three octal digits, RX stopped\n"
@@ -155,7 +160,7 @@ static int parse_command(const char *input, ui_command_t *command)
     if (strlen(input) >= 512) return -1;
     char text[512];
     strcpy(text, input);
-    char *words[5], *save = NULL;
+    char *words[12], *save = NULL;
     size_t count = 0;
     for (char *word = strtok_r(text, " \t\r\n", &save); word;
          word = strtok_r(NULL, " \t\r\n", &save)) {
@@ -335,6 +340,19 @@ static int parse_command(const char *input, ui_command_t *command)
         if (!divider || fabs(rate * 1000000 - hz) > .5) return -1;
         command->request.command = CONTROL_TX_SAMPLE_RATE;
         command->request.tx_sample_rate_hz = radio_rate_label(divider);
+    } else if(count==3 && !strcmp(name,"cw") && !strcmp(tokens[1],"enable") &&
+            (!strcmp(tokens[2],"on")||!strcmp(tokens[2],"off"))){
+        command->request.command=CONTROL_CW_ENABLE;command->request.cw_enabled=!strcmp(tokens[2],"on");
+    } else if(count==8 && !strcmp(name,"cw") && !strcmp(tokens[1],"setup")){
+        char packet[512];
+        int n=snprintf(packet,sizeof(packet),"v2 1 cw_setup %s %s %s %s %s %s",tokens[2],tokens[3],tokens[4],tokens[5],tokens[6],tokens[7]);
+        if(n<0||n>=(int)sizeof(packet)||control_request_parse(packet,n,&command->request))return -1;
+    } else if(count==4 && !strcmp(name,"cw") && !strcmp(tokens[1],"rx")){
+        char packet[256];int n=snprintf(packet,sizeof(packet),"v2 1 cw_rx %s %s",tokens[2],tokens[3]);
+        if(n<0||n>=(int)sizeof(packet)||control_request_parse(packet,n,&command->request))return -1;
+    } else if(count==3 && !strcmp(name,"cw") && !strcmp(tokens[1],"test")){
+        char packet[128];int n=snprintf(packet,sizeof(packet),"v2 1 cw_test %s",tokens[2]);
+        if(n<0||n>=(int)sizeof(packet)||control_request_parse(packet,n,&command->request))return -1;
     } else if (count==3 && !strcmp(name,"tx") && !strcmp(tokens[1],"mode") &&
                audio_mod_mode_parse(tokens[2], &command->request.tx_mode)) {
         command->request.command=CONTROL_TX_MODE;
@@ -574,6 +592,7 @@ static void print_state(const controller_t *controller)
                "Frequency", state->tx_requested_frequency_hz / 1e6,
                "Power", state->tx_requested_power_dbm,
                "Mode", !state->tx_settings_valid ? "Unknown (older backend)" :
+                   state->tx_mode == AUDIO_MOD_CW ? "CW" :
                    state->tx_mode == AUDIO_MOD_AM ? "AM" :
                    state->tx_mode == AUDIO_MOD_USB ? "USB" :
                    state->tx_mode == AUDIO_MOD_LSB ? "LSB" : "NBFM",

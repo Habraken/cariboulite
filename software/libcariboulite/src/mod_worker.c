@@ -252,6 +252,16 @@ void* nbfm_mod_thread(void* arg)
          * and finite stop padding retain their original levels and timing. */
         if (inj_left <= 0 && !hold_silence && !ctrl->tx->tone_mode && ctrl->tx->mic)
             tx_dynamics_process(&ctrl->tx->dynamics, ctrl->tx->a48k, 480);
+        if(ctrl->tx->cw && inj_left<=0 && !hold_silence){
+            float envelope[480];
+            int rc=ctrl->tx->cw_render(ctrl->tx->cw,envelope,480);
+            if(rc){atomic_store(&ctrl->last_error,rc);tx_worker_fail(ctrl->tx,rc);tx_worker_end(ctrl->tx,true);continue;}
+            if(ctrl->tx->mode==AUDIO_MOD_CW)memcpy(ctrl->tx->a48k,envelope,sizeof(envelope));
+            else {
+                fill_tone_48k(ctrl->tx,ctrl->tx->a48k,480);
+                for(unsigned i=0;i<480;++i)ctrl->tx->a48k[i]*=envelope[i];
+            }
+        }
         audio_mod_mute_ctcss(ctrl->tx->fm,ctcss_muted);
         audio_mod_cdcss_tail(ctrl->tx->fm,cdcss_tail);
         rf10_frame_t frm;

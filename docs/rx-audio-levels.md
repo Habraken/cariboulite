@@ -67,13 +67,25 @@ TX power. The backend reported −11 dBm for the selected PA setting.
 | AM | +18 dB |
 | USB | +35.5 dB |
 | LSB | +35.5 dB |
+| CW | +35.5 dB (2026-11-28 reference below) |
 | WBFM | 0 dB |
+
+Native CW was measured separately on 2026-11-28 with pi4f transmitting a
+full keyed carrier to pi4g, nominal 90 dB attenuation plus the 2 m RG179
+cable, at 1 MS/s and requested −12 dBm TX power. The receiver used a 500 Hz
+CW filter and 600 Hz listening pitch. A roughly +812 Hz relative carrier
+offset required receiver fine tuning to 430.100812 MHz while TX remained
+430.100000 MHz. With the carrier centred, the +35.5 dB trim targets
+−24 dBFS RMS during steady key-down at 0 dB volume. This excludes silent
+gaps and does not calibrate the reverse direction or arbitrary signal
+strengths. See [recording and analysis](baselines/20261128-cw-receive/README.md).
 
 For a custom profile, add a repeatable `--rx-mode-gain MODE=DB` option for
 each mode you want to trim. For example,
 `--rx-gain-profile matched --rx-mode-gain usb=20` uses the bench preset
 with a +20 dB USB trim. Put overrides after the preset. Each trim can range
-from −60 to +30 dB. With neither option, every trim defaults to 0 dB.
+from −60 to +30 dB; the measured CW/SSB presets exceed that custom-option
+limit. With neither option, every trim defaults to 0 dB.
 
 The selected trim multiplies the base `--rx-gain` and follows `rx mode`
 automatically. Status JSON reports the resulting linear trim in

@@ -360,6 +360,15 @@ def format_snapshot(snapshot, now=None, rates=None, register_view="auto"):
                      f"  bit errors={_label(cdcss.get('bit_errors'))}  turn-off={_on(cdcss.get('turnoff'))}"
                      f"  TX={'enabled' if cdcss.get('tx_enabled') else 'bypassed'} {_label(cdcss.get('tx_code'))}"
                      f"  deviation={_formatted(cdcss.get('tx_deviation_hz'), '.0f')} Hz")
+    cw = _mapping(snapshot.get("cw"))
+    if cw.get("available"):
+        lines.append(f"CW keyer: {cw.get('key_type')} {cw.get('wpm')} WPM"
+                     f"  {'ARMED' if cw.get('enabled') else 'DISARMED'}"
+                     f"  {'PRACTICE' if cw.get('practice') else 'RF'}"
+                     f"  hang={cw.get('hang_ms')} ms  error={cw.get('error')}")
+    if snapshot.get("rx_mode") == "CW":
+        lines.append(f"CW receive: width={cw.get('rx_bandwidth_hz')} Hz"
+                     f"  pitch={cw.get('rx_pitch_hz')} Hz; display is RF carrier frequency")
     ctcss = _mapping(config.get("ctcss"))
     if ctcss:
         lines.append(f"CTCSS: RX={'enabled' if ctcss.get('rx_enabled') else 'bypassed'}"

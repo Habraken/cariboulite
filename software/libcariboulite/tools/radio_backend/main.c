@@ -6,6 +6,7 @@
 #include "rx_pipeline.h"
 #include "rx_audio_output.h"
 #include "tx_pipeline.h"
+#include "cw_session.h"
 #include "nbfm_mod.h"
 #include "pipeline_runtime.h"
 #include "noise_squelch.h"
@@ -37,7 +38,7 @@ typedef struct {
     double frequency, seconds, status_hz;
     rx_params_t rx;
     float rx_base_gain;
-    float rx_mode_gain_db[AUDIO_DEMOD_LSB + 1];
+    float rx_mode_gain_db[AUDIO_DEMOD_CW + 1];
     tx_params_t tx;
     bool dry_run, start_stopped;
     bool rx_requested, control_fault, fpga_needs_programming;
@@ -48,11 +49,18 @@ typedef struct {
     double actual_rx_frequency, actual_tx_frequency;
     int actual_tx_power;
     const char *tx_error;
+    const char *cw_device;
+    cw_session_t* cw;
+    cw_status_t cw_status; // owner-cached snapshot, no runtime calls in serializer
+    bool cw_saved_tone;
 } options_t;
 
-/* 2026-11-21 bench profile at 430.100 MHz, 1 MS/s and requested -12 dBm TX. */
-static const float matched_rx_gain_db[AUDIO_DEMOD_LSB + 1] = {
+/* Bench profile at 430.100 MHz, 1 MS/s and requested -12 dBm TX.
+ * Voice modes: 2026-11-21; centred native CW: 2026-11-28.
+ * See docs/rx-audio-levels.md for the different reference setups. */
+static const float matched_rx_gain_db[AUDIO_DEMOD_CW + 1] = {
     [AUDIO_DEMOD_NBFM] = -10, [AUDIO_DEMOD_AM] = 18,
+    [AUDIO_DEMOD_CW] = 35.5f,
     [AUDIO_DEMOD_USB] = 35.5f, [AUDIO_DEMOD_LSB] = 35.5f,
 };
 
@@ -117,12 +125,13 @@ static void usage(FILE *out, const char *program)
         "  --status-hz HZ            0.5..20, default 5\n"
         "  --dry-run                 exercise status IPC without hardware or audio\n"
         "  --help                    show this help\n"
+        "  --cw-device PATH         exclusive USB evdev key input (armed by controller)\n"
         "Receive options:\n"
         "  --rx-sinad                enable 1 kHz NBFM SINAD estimate (300-3000 Hz)\n"
         "  --rx-start                start reception after initialization\n"
         "  --rx-frequency HZ         default 430125000\n"
         "  --rx-sample-rate HZ       400000/500000/666667/800000/1000000/1333333/2000000/4000000\n"
-        "  --rx-mode nbfm|wbfm|am|usb|lsb   RX mode, default nbfm\n"
+        "  --rx-mode nbfm|wbfm|am|usb|lsb|cw   RX mode, default nbfm\n"
         "  --rx-deviation HZ         NBFM audio normalization 1..24000 (default %.0f)\n"
         "  --rx-playback DEVICE      default plughw:Loopback,0,0\n"
         "  --rx-no-noise-squelch      bypass noise squelch\n"
@@ -142,7 +151,7 @@ static void usage(FILE *out, const char *program)
         "Transmit options:\n"
         "  --tx-frequency HZ         default 430125000\n"
         "  --tx-power DBM            default -12; RF24 -12..14, RF09 -14..14\n"
-        "  --tx-mode nbfm|am|usb|lsb   TX mode, default nbfm\n"
+        "  --tx-mode nbfm|am|usb|lsb|cw   TX mode, default nbfm\n"
         "  --tx-am-dac-shaping on|off  experimental AM DAC error feedback, default off\n"
         "  --tx-am-backoff DB       extra AM IQ backoff: 0..18 dB, default 6\n"
         "  --tx-am-depth DEPTH      modulation at unit audio: 0..1, default 0.8\n"
@@ -202,7 +211,7 @@ static int parse_options(int argc, char **argv, options_t *o)
     o->tx.dynamics=tx_dynamics_defaults();
     o->tx.ctcss_deviation_hz=500;
     o->tx.cdcss_deviation_hz=CDCSS_DEFAULT_DEVIATION_HZ;
-    enum { CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
+    enum { CW_DEVICE = 999, CHANNEL = 1000, FREQ, RATE, MODE, PLAYBACK, SOCKET, SECONDS,
         STATUS_HZ, NO_NOISE, CARRIER, NOISE_OPEN, NOISE_CLOSE, GAIN, DEEMPH, DRY_RUN,
         CONTROL_SOCKET, START_STOPPED, MICROPHONE, TX_FREQ, TX_POWER, TX_RATE, TX_SOURCE,
         RX_START, TX_MODE, TX_DEVIATION, RX_DEVIATION, SINAD, AM_AGC, AM_RF_ATTENUATION, RX_VOLUME, TX_AM_DEPTH, TX_AM_BACKOFF, AM_RX_OFFSET, TX_AM_DAC_SHAPING,
@@ -210,6 +219,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         RX_GAIN_PROFILE, RX_MODE_GAIN, TX_COMPRESSOR, TX_COMP_INPUT, TX_COMP_THRESHOLD,
         TX_COMP_RATIO, TX_COMP_KNEE, TX_COMP_ATTACK, TX_COMP_RELEASE, TX_COMP_MAKEUP, TX_COMP_CEILING };
     static const struct option long_options[] = {
+        {"cw-device", required_argument, NULL, CW_DEVICE},
         {"channel", required_argument, NULL, CHANNEL},
         {"rx-sinad", no_argument, NULL, SINAD},
         {"rx-volume", required_argument, NULL, RX_VOLUME},
@@ -433,6 +443,7 @@ static int parse_options(int argc, char **argv, options_t *o)
         case DEEMPH:
             if (number(optarg, &value, 50, 75) || (value != 50 && value != 75)) return -1;
             o->rx.deemph_tau_s = (float)(value * 1e-6); break;
+        case CW_DEVICE: o->cw_device=optarg;break;
         case DRY_RUN: o->dry_run = true; break;
         case 'h': usage(stdout, argv[0]); return 1;
         default: return -1;
@@ -493,6 +504,8 @@ typedef struct {
     double tx_state_deadline, tx_state_next_check;
     control_server_t *server;
     unsigned simulated_fpga_pins;
+    bool cw_owns_tx;
+    double cw_simulated_next;
 } backend_control_t;
 
 static const char *backend_control_state(const options_t *o)
@@ -575,6 +588,7 @@ static int backend_start(backend_control_t *c)
     if (backend_force_idle(c) != 0) return -1;
     if (rx_pipeline_init(c->pipeline, c->sys, c->radio, &o->rx) != 0) goto fail;
     ++o->pipeline_generation;
+    cw_session_receive(o->cw,true);
     /* init's internal tune and start's SMI operation have unchecked results.
      * Verify them here without changing the accepted shared implementation. */
     if (rx_pipeline_set_freq(c->pipeline, o->frequency) != 0
@@ -1120,11 +1134,83 @@ static void backend_poll_lifecycle(backend_control_t *c)
     } else if (!o->tx_requested) c->stop_after_start = false;
 }
 
+static const char* backend_cw_command(backend_control_t* c,const control_request_t* r)
+{
+    options_t* o=c->options;
+    if(r->command==CONTROL_CW_RX){
+        cw_status_t state;cw_session_status(o->cw,&state);
+        if(state.busy||c->lifecycle_active||o->tx_requested)return "KEY_BUSY";
+        if(o->rx_requested)return "RX_RUNNING";
+        o->rx.cw_bandwidth_hz=r->cw_bandwidth;o->rx.cw_pitch_hz=r->cw_pitch;return "OK";
+    }
+    if(!o->cw)return "CW_DEVICE_REQUIRED";
+    cw_status_t status;cw_session_status(o->cw,&status);
+    if(r->command==CONTROL_CW_ENABLE){
+        if(r->cw_enabled){
+            if(status.enabled)return "OK";
+            if(o->control_fault||o->fpga_needs_programming)return "FAULT";
+            if(c->lifecycle_active||o->tx_requested||status.busy)return "KEY_BUSY";
+            if(o->rx.mode!=AUDIO_DEMOD_CW&&o->rx.mode!=AUDIO_DEMOD_NBFM)return "CW_MODE_REQUIRED";
+            if(cw_session_enable(o->cw,true))return "CW_INPUT";
+            o->cw_saved_tone=o->tx.tone_mode;o->tx.tone_mode=true;
+            o->tx.mode=o->rx.mode==AUDIO_DEMOD_CW?AUDIO_MOD_CW:AUDIO_MOD_NBFM;
+            o->tx.cw=o->cw;o->tx.cw_render=cw_session_render;c->tx_configuration_dirty=true;
+        } else cw_session_cancel(o->cw);
+        return "OK";
+    }
+    if(r->command==CONTROL_CW_TEST)
+        return !o->dry_run?"SIMULATED_ONLY":cw_session_test_contacts(o->cw,r->cw_contacts)?"CW_DISABLED":"OK";
+    if(status.busy||c->lifecycle_active||o->tx_requested)return "KEY_BUSY";
+    if(r->command==CONTROL_CW_SETUP)
+        return cw_session_configure(o->cw,r->cw_type,r->cw_wpm,r->cw_swap,r->cw_practice,r->cw_hang,r->cw_ramp)?"INVALID":"OK";
+    return "INVALID";
+}
+static void backend_cw_service(backend_control_t* c,double now)
+{
+    options_t* o=c->options;if(!o->cw)return;
+    cw_status_t status;cw_session_status(o->cw,&status);
+    o->cw_status=status;
+    cw_session_set_audio(o->cw,o->rx.mode==AUDIO_DEMOD_CW ? (o->rx.cw_pitch_hz?o->rx.cw_pitch_hz:600) : o->tx.tone_hz,
+        o->rx.mode==AUDIO_DEMOD_CW ? .4f : o->tx.tone_amp,o->rx.volume_db);
+    cw_session_receive(o->cw,(o->rx_requested&&!c->lifecycle_active)||
+        (c->lifecycle_active&&atomic_load_explicit(&c->lifecycle_phase,memory_order_acquire)==3));
+    if(o->control_fault){cw_session_cancel(o->cw);return;}
+    if(c->lifecycle_active){
+        if(c->cw_owns_tx&&(!status.enabled||status.error)&&c->lifecycle_action==1){
+            c->stop_after_start=true;
+            if(atomic_load_explicit(&c->lifecycle_tx_ready,memory_order_acquire)&&!o->dry_run)
+                tx_pipeline_request_abort(c->tx_pipeline);
+        }
+        return;
+    }
+    if(c->cw_owns_tx&&o->tx_requested){
+        if(o->dry_run&&now>=c->cw_simulated_next){
+            float envelope[480];cw_session_render(o->cw,envelope,480);c->cw_simulated_next=now+.01;
+            cw_session_status(o->cw,&status);
+        }
+        if(!status.requested||!status.enabled){
+            if(backend_launch_lifecycle(c,status.error?3:2)){o->control_fault=true;o->tx_error="CW_STOP";}
+            ++o->config_generation;
+        }
+    } else if(status.enabled&&status.requested&&!status.practice){
+        o->tx.mode=o->rx.mode==AUDIO_DEMOD_CW?AUDIO_MOD_CW:AUDIO_MOD_NBFM;
+        o->rx_resume=true;o->tx.cw=o->cw;o->tx.cw_render=cw_session_render;
+        if(backend_launch_lifecycle(c,1)){cw_session_cancel(o->cw);o->control_fault=true;o->tx_error="CW_START";}
+        else {c->cw_owns_tx=true;c->tx_controller_generation=0;}
+        ++o->config_generation;
+    } else if(!o->tx_requested){
+        c->cw_owns_tx=false;
+        if(!status.enabled&&o->tx.cw){o->tx.cw=NULL;o->tx.tone_mode=o->cw_saved_tone;
+            o->tx.mic_dev=o->tx.tone_mode?NULL:o->microphone;c->tx_configuration_dirty=true;}
+    }
+}
+
 static void backend_control_command(void *opaque, const control_request_t *request,
                                     control_reply_t *reply)
 {
     backend_control_t *c = opaque;
     options_t *o = c->options;
+    if(request->command==CONTROL_STOP||request->command==CONTROL_TX_STOP)cw_session_cancel(o->cw);
     const char *code = "OK";
     bool changed = false;
     bool fpga_regs_present = false;
@@ -1133,11 +1219,20 @@ static void backend_control_command(void *opaque, const control_request_t *reque
     unsigned fpga_io_pins = 0;
     const bool register_command = request->command == CONTROL_FPGA_REGS;
     const bool led_command = request->command == CONTROL_FPGA_LED_GET || request->command == CONTROL_FPGA_LED_SET;
+    cw_status_t cw_status;cw_session_status(o->cw,&cw_status);
+    const bool cw_command=request->command==CONTROL_CW_ENABLE||request->command==CONTROL_CW_SETUP||request->command==CONTROL_CW_RX||request->command==CONTROL_CW_TEST;
     radio_profile_t profile;
     const bool both = request->command == CONTROL_BOTH_FREQUENCY ||
         request->command == CONTROL_BOTH_MODE || request->command == CONTROL_BOTH_SAMPLE_RATE;
     if (request->command == CONTROL_INVALID) code = "PROTOCOL";
     else if (request->command == CONTROL_BUSY) code = "BUSY";
+    else if(cw_command){code=backend_cw_command(c,request);cw_session_status(o->cw,&o->cw_status);changed=!strcmp(code,"OK");}
+    else if(cw_status.busy && request->command!=CONTROL_GET && request->command!=CONTROL_RX_VOLUME &&
+            request->command!=CONTROL_TX_STOP && request->command!=CONTROL_STOP)code="KEY_BUSY";
+    else if(cw_status.enabled && (request->command==CONTROL_MODE||request->command==CONTROL_BOTH_MODE) &&
+            request->mode!=AUDIO_DEMOD_CW&&request->mode!=AUDIO_DEMOD_NBFM)code="CW_MODE_REQUIRED";
+    else if(cw_status.enabled && (request->command==CONTROL_TX_START||request->command==CONTROL_TX_SOURCE||request->command==CONTROL_TX_MODE))code="CW_OWNS_TX";
+    else if(o->tx.mode==AUDIO_MOD_CW && request->command==CONTROL_TX_START)code="CW_DISABLED";
     else if (c->lifecycle_active && request->command != CONTROL_GET) {
         if (request->command == CONTROL_TX_STOP && !backend_lifecycle_fpga(c->lifecycle_action)) {
             if (c->lifecycle_action == 1) c->stop_after_start = true;
@@ -1327,7 +1422,7 @@ static void backend_control_command(void *opaque, const control_request_t *reque
         if (!noise_squelch_pack_levels(request->noise_open_rms, request->noise_close_rms, &levels))
             code = "INVALID";
         else if (o->rx.mode != AUDIO_DEMOD_NBFM && request->noise_enabled)
-            code = audio_demod_is_ssb(o->rx.mode) ? "SSB_NOISE" :
+            code = o->rx.mode==AUDIO_DEMOD_CW ? "CW_NOISE" : audio_demod_is_ssb(o->rx.mode) ? "SSB_NOISE" :
                 o->rx.mode==AUDIO_DEMOD_AM ? "AM_NOISE" : "WBFM_NOISE";
         else {
             /* Non-FM modes and WBFM have no FM noise detector. The effective flag must
@@ -1896,8 +1991,12 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         dc->enabled ? "true":"false",(double)dc->input_db,(double)dc->threshold_db,
         (double)dc->ratio,(double)dc->knee_db,(double)dc->attack_ms,(double)dc->release_ms,
         (double)dc->makeup_db,(double)dc->ceiling_db);
+    cw_status_t cw=o->cw_status;
+    char cw_json[768];
+    snprintf(cw_json,sizeof(cw_json),"{\"available\":%s,\"enabled\":%s,\"connected\":%s,\"practice\":%s,\"busy\":%s,\"requested\":%s,\"key_type\":\"%s\",\"wpm\":%u,\"swap\":%s,\"contacts\":%u,\"hang_ms\":%u,\"ramp_ms\":%.3f,\"error\":%d,\"rx_bandwidth_hz\":%u,\"rx_pitch_hz\":%.3f}",
+        o->cw?"true":"false",cw.enabled?"true":"false",cw.connected?"true":"false",cw.practice?"true":"false",cw.busy?"true":"false",cw.requested?"true":"false",cw_key_type_name(cw.type),cw.wpm,cw.swap?"true":"false",cw.contacts,cw.hang_ms,(double)cw.ramp_ms,cw.error,o->rx.cw_bandwidth_hz?o->rx.cw_bandwidth_hz:500,(double)(o->rx.cw_pitch_hz?o->rx.cw_pitch_hz:600));
     int result = snprintf(out, capacity,
-        "{\"version\":1,\"session\":\"%s\",\"sequence\":%" PRIu64 ","
+        "{\"cw\":%s,\"version\":1,\"session\":\"%s\",\"sequence\":%" PRIu64 ","
         "\"monotonic_s\":%.9f,\"realtime_s\":%.6f,\"hardware_monotonic_s\":%.9f,"
         "\"source\":{\"kind\":\"%s\",\"label\":\"C radio backend%s\"},"
         "\"owner_pid\":%ld,\"channel\":\"%s\",\"state\":\"%s\",\"rx_mode\":\"%s\","
@@ -1925,11 +2024,11 @@ static int make_snapshot(char *out, size_t capacity, const options_t *o,
         "\"spi_read_ms\":%.6f,\"spi_transactions\":%" PRIu64 ",\"spi_failures\":%" PRIu64 ","
         "\"clients\":%u,\"packets_sent\":%" PRIu64 ",\"packets_skipped\":%" PRIu64 ","
         "\"clients_rejected\":%" PRIu64 "}}",
-        session, sequence, clock_seconds(CLOCK_MONOTONIC), clock_seconds(CLOCK_REALTIME),
+        cw_json,session, sequence, clock_seconds(CLOCK_MONOTONIC), clock_seconds(CLOCK_REALTIME),
         modem->monotonic_s, o->dry_run ? "simulated" : "live", o->dry_run ? " transport-only dry run" : "",
         (long)getpid(), o->channel, state, audio_demod_mode_label(o->rx.mode),
         (double)o->rx.fs_rf, actual_freq, o->frequency, bandwidth, tx_bandwidth, playback,
-        (double)o->rx.pcm_gain, (o->rx.mode==AUDIO_DEMOD_AM || audio_demod_is_ssb(o->rx.mode)) ? 0.0 : o->rx.deemph_tau_s * 1e6,
+        (double)o->rx.pcm_gain, (o->rx.mode==AUDIO_DEMOD_CW || o->rx.mode==AUDIO_DEMOD_AM || audio_demod_is_ssb(o->rx.mode)) ? 0.0 : o->rx.deemph_tau_s * 1e6,
         o->rx.mode==AUDIO_DEMOD_AM && o->rx.am_offset_tuning_enabled ? "true":"false",
         o->rx.mode==AUDIO_DEMOD_AM && !o->rx.am_agc_disabled ? "true" : "false",
         63 - o->rx.am_rf_attenuation_db,
@@ -2004,6 +2103,11 @@ int main(int argc, char **argv)
     sigaddset(&blocked, SIGINT); sigaddset(&blocked, SIGTERM);
     sigaddset(&blocked, SIGHUP); sigaddset(&blocked, SIGQUIT);
 
+    if(options.cw_device||options.dry_run){
+        options.cw=cw_session_create(options.cw_device,options.playback,options.dry_run);
+        if(!options.cw){perror("CW audio session");goto cleanup;}
+        options.rx.playback_sink=cw_session_rx_sink(options.cw);
+    }
     if (!options.dry_run) {
         /* Driver init installs its own handlers. Defer routine stop signals
          * until our override is installed, then unwind through normal cleanup. */
@@ -2055,6 +2159,7 @@ int main(int argc, char **argv)
         double now = clock_seconds(CLOCK_MONOTONIC);
         if (options.seconds && now - started >= options.seconds) break;
         backend_poll_lifecycle(&control);
+        backend_cw_service(&control,now);
         if (control_server_service(&control_server, backend_control_command, &control) != 0) {
             fprintf(stderr, "Control socket service failed.\n"); result = 1; break;
         }
@@ -2130,7 +2235,7 @@ int main(int argc, char **argv)
             }
             next_update = clock_seconds(CLOCK_MONOTONIC) + 1 / options.status_hz;
         }
-        double wait = fmin(0.05, fmax(0, next_update - clock_seconds(CLOCK_MONOTONIC)));
+        double wait = fmin(options.cw ? 0.005 : 0.05, fmax(0, next_update - clock_seconds(CLOCK_MONOTONIC)));
         if (options.tx_requested && !control.lifecycle_active && control.tx_state_deadline)
             wait = fmin(wait, fmax(0, control.tx_state_next_check - clock_seconds(CLOCK_MONOTONIC)));
         struct timespec delay = {.tv_nsec = (long)(wait * 1e9)};
@@ -2138,6 +2243,8 @@ int main(int argc, char **argv)
     }
     /* Stop an in-flight opening cue first, then use the normal closing cue.
      * Routine shutdown never resumes RX and never leaves the carrier keyed. */
+    cw_session_cancel(options.cw);
+    cw_session_status(options.cw,&options.cw_status);
     control.shutdown = true;
     if (control.lifecycle_active)
         atomic_store_explicit(&control.lifecycle_no_resume, true, memory_order_release);
@@ -2174,6 +2281,7 @@ int main(int argc, char **argv)
 cleanup:
     tx_pipeline_destroy(&tx_pipeline);
     rx_pipeline_destroy(&pipeline);
+    cw_session_destroy(options.cw);
     if (driver_ready || sys.ownership_claimed) cariboulite_release_driver(&sys);
     control_server_close(&control_server);
     status_publisher_close(&publisher);

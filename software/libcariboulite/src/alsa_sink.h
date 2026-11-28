@@ -9,3 +9,6 @@ unsigned alsa_sink_channels(const audio_sink_t* sink);
 
 // Buffer includes startup prefill; use enough frames for burst-delivered RF.
 audio_sink_t* alsa_sink_open_buffered(const char* device, unsigned sample_rate, unsigned buffer_frames);
+
+// CW mixer only: request 2.5 ms periods / 10 ms buffer; actual ALSA values are logged.
+audio_sink_t* alsa_sink_open_low_latency(const char* device);

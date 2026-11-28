@@ -370,6 +370,11 @@ physical acceptance of this addition is pending.
   - [ ] Complete remaining AM route/operational qualification; add broadcast AM
     RX later as requested. Aviation-inspired processing is a deferred refinement,
     not a substitute for underlying signal-path acceptance.
+  - [x] Implement [manual CW and keyed NBFM audio](docs/cw.md) in the backend,
+    controller and monitor, with offline keyer/DSP/session tests. Physical USB,
+    practice sidetone, both TX paths and native RX passed subjective testing
+    at 12 WPM. Quantitative sidetone latency, RF envelope and TX/RX timing
+    acceptance remain pending.
   - [ ] Implement and accept USB/LSB RX/TX and CW, retaining explicit per-mode
     contracts, software tests and physical checkpoints.
 - [ ] Add BPSK/QPSK after defining symbol rates, filtering, synchronization and

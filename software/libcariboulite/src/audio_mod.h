@@ -16,11 +16,12 @@ typedef enum {
     AUDIO_MOD_AM,
     AUDIO_MOD_USB,
     AUDIO_MOD_LSB,
+    AUDIO_MOD_CW,
 } audio_mod_mode_t;
 
 static inline bool audio_mod_mode_valid(audio_mod_mode_t mode)
 {
-    return mode >= AUDIO_MOD_NBFM && mode <= AUDIO_MOD_LSB;
+    return mode >= AUDIO_MOD_NBFM && mode <= AUDIO_MOD_CW;
 }
 
 static inline const char* audio_mod_mode_name(audio_mod_mode_t mode)
@@ -30,13 +31,14 @@ static inline const char* audio_mod_mode_name(audio_mod_mode_t mode)
     case AUDIO_MOD_AM: return "am";
     case AUDIO_MOD_USB: return "usb";
     case AUDIO_MOD_LSB: return "lsb";
+    case AUDIO_MOD_CW: return "cw";
     }
     return "unknown";
 }
 
 static inline bool audio_mod_mode_parse(const char* name, audio_mod_mode_t* mode)
 {
-    for (int candidate = AUDIO_MOD_NBFM; candidate <= AUDIO_MOD_LSB; ++candidate) {
+    for (int candidate = AUDIO_MOD_NBFM; candidate <= AUDIO_MOD_CW; ++candidate) {
         if (strcmp(name, audio_mod_mode_name(candidate)) == 0) {
             *mode = candidate;
             return true;

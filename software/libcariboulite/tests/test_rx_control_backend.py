@@ -497,6 +497,7 @@ class RxControlBackendTests(unittest.TestCase):
              "-Wno-unused-parameter", "-Wno-missing-braces", "-ffunction-sections",
              "-fdata-sections", "-I" + str(src), "-I" + str(backend), str(fixture),
              str(src / "noise_squelch.c"), str(src / "radio_profile.c"),
+             str(src / "cw_session.c"), str(src / "cw_keyer.c"),
              "-Wl,--gc-sections", "-pthread", "-lm",
              "-o", str(binary)], capture_output=True, timeout=15)
         self.assertEqual(compilation.returncode, 0, compilation.stderr.decode())

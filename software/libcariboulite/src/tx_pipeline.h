@@ -9,6 +9,7 @@
 #include "pipeline_runtime.h"
 #include "tx_audio_buffer.h"
 #include "tx_dynamics.h"
+typedef struct cw_session cw_session_t;
 #include <stdatomic.h>
 
 // Internal application handles. One control owner serializes lifecycle calls.
@@ -49,6 +50,8 @@ typedef struct {
     audio_source_t* mic;     // ALSA handle
     tx_audio_buffer_t* audio_buffer; // Independent capture and clock adaptation
     audio_mod_t*    fm;      // 48 kHz audio -> configured RF IQ rate
+    int (*cw_render)(cw_session_t*,float*,size_t);
+    cw_session_t* cw; // borrowed; key envelope timeline, NULL for ordinary audio
     audio_mod_mode_t mode;
     tx_dynamics_t dynamics; // producer-owned microphone processing
     bool cdcss_enabled; // immutable; enables code acquisition lead-in
@@ -92,6 +95,8 @@ typedef enum {
 } tx_pacing_mode_t;
 
 typedef struct {
+    int (*cw_render)(cw_session_t*,float*,size_t);
+    cw_session_t* cw; // borrowed from backend; never used by test_app
     // Radio
     double freq_hz;             // e.g., 430.1e6
     int    tx_power_dbm;        // e.g., -3

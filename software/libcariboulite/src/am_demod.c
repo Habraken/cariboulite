@@ -22,7 +22,10 @@ typedef struct {
     unsigned ssb_head;
     float ssb_coeff[SSB_DELAY / 2], ssb_i[SSB_TAPS], ssb_q[2 * SSB_TAPS];
     float carrier,carrier_alpha,gain;
-    am_biquad_t hp,lp[2];
+    am_biquad_t hp,lp[2],cw[2][2];
+    unsigned cw_bandwidth;
+    float cw_pitch;
+    double cw_phase;
     float previous,current;
     double phase;
 } am_state_t;
@@ -52,7 +55,7 @@ static float biquad_run(am_biquad_t* b,float x)
 }
 int voice_demod_set_audio(nbfm_demod_t* dsp,float tau,float gain)
 {
-    if(!dsp||(dsp->mode!=AUDIO_DEMOD_AM && !audio_demod_is_ssb(dsp->mode))||!finite_float(tau)||tau<0||
+    if(!dsp||(dsp->mode!=AUDIO_DEMOD_CW && dsp->mode!=AUDIO_DEMOD_AM && !audio_demod_is_ssb(dsp->mode))||!finite_float(tau)||tau<0||
        !finite_float(gain)||gain<0)return -EINVAL;
     // FM de-emphasis is deliberately bypassed for AM.
     ((am_state_t*)dsp)->gain=gain;return 0;
@@ -83,6 +86,26 @@ int audio_demod_set_ssb_tuning(audio_demod_t* dsp, int hz, bool inverted)
     return rc;
 }
 
+int audio_demod_set_cw(audio_demod_t* dsp,unsigned bandwidth,float pitch,int offset,bool inverted)
+{
+    if(!dsp||dsp->mode!=AUDIO_DEMOD_CW||
+       (bandwidth!=250&&bandwidth!=500&&bandwidth!=1000)||
+       !finite_float(pitch)||pitch<100||pitch>2000||
+       (offset!=0&&offset!=12500&&offset!=-12500))return -EINVAL;
+    am_state_t* s=(am_state_t*)dsp;
+    if(s->cw_bandwidth!=bandwidth){
+        const double qs[]={.541196100146197,1.306562964876377};
+        for(unsigned a=0;a<2;++a)for(unsigned b=0;b<2;++b){
+            /* Complex-channel Butterworth at 50 kS/s, before the BFO. */
+            double w=2*M_PI*(bandwidth*.5)/50000,c=cos(w),alpha=sin(w)/(2*qs[b]),d=1+alpha;
+            s->cw[a][b]=(am_biquad_t){.b0=(1-c)/(2*d),.b1=(1-c)/d,.b2=(1-c)/(2*d),.a1=-2*c/d,.a2=(1-alpha)/d};
+        }
+        s->cw_bandwidth=bandwidth;
+    }
+    s->cw_pitch=pitch;s->ssb_inverted=inverted;
+    return voice_set_offset(s,offset);
+}
+
 static float ssb_detect(am_state_t* s, float i, float q)
 {
     s->ssb_head = s->ssb_head ? s->ssb_head - 1 : SSB_TAPS - 1;
@@ -108,6 +131,8 @@ void voice_demod_reset(nbfm_demod_t* dsp)
     nbfm_channel_filter_reset(&s->frontend);
     memset(s->i,0,sizeof(s->i));memset(s->q,0,sizeof(s->q));
     s->mix_phase=0;
+    s->cw_phase=0;
+    for(unsigned a=0;a<2;++a)for(unsigned b=0;b<2;++b)s->cw[a][b].z1=s->cw[a][b].z2=0;
     s->ssb_head = 0;
     memset(s->ssb_i, 0, sizeof(s->ssb_i));
     memset(s->ssb_q, 0, sizeof(s->ssb_q));
@@ -148,6 +173,7 @@ nbfm_demod_t* voice_demod_create(audio_demod_mode_t mode, const nbfm_demod_confi
             s->ssb_coeff[tap] = (float)(2 * window / (M_PI * offset));
         }
     }
+    if(mode==AUDIO_DEMOD_CW)audio_demod_set_cw(&s->base,500,600,0,false);
     voice_demod_reset(&s->base);return &s->base;
 }
 audio_demod_result_t voice_demod_process_with_raw(nbfm_demod_t* dsp,
@@ -174,7 +200,14 @@ audio_demod_result_t voice_demod_process_with_raw(nbfm_demod_t* dsp,
         float fi=0,fq=0;
         for(unsigned j=0;j<AM_CHANNEL_TAPS;++j){fi+=s->coeff[j]*hi[j];fq+=s->coeff[j]*hq[j];}
         s->previous = s->current;
-        if (audio_demod_is_ssb(s->base.mode))
+        if(s->base.mode==AUDIO_DEMOD_CW){
+            float ci=biquad_run(&s->cw[0][1],biquad_run(&s->cw[0][0],fi));
+            float cq=biquad_run(&s->cw[1][1],biquad_run(&s->cw[1][0],fq));
+            if(s->ssb_inverted)cq=-cq;
+            s->current=(ci*cos(s->cw_phase)-cq*sin(s->cw_phase))/4096.f;
+            s->cw_phase+=2*M_PI*s->cw_pitch/50000;
+            if(s->cw_phase>=2*M_PI)s->cw_phase-=2*M_PI;
+        } else if (audio_demod_is_ssb(s->base.mode))
             s->current = ssb_detect(s, fi, fq);
         else {
             float envelope=sqrtf(fi*fi+fq*fq);
@@ -194,8 +227,10 @@ audio_demod_result_t voice_demod_process_with_raw(nbfm_demod_t* dsp,
         double r=(48000./50000)*(1+correction);s->phase+=r;
         if(s->phase>=1){
             float v=s->current+(float)((s->phase-1)/r)*(s->previous-s->current);
-            v=biquad_run(&s->hp,v);
-            v=biquad_run(&s->lp[1],biquad_run(&s->lp[0],v));
+            if(s->base.mode!=AUDIO_DEMOD_CW){
+                v=biquad_run(&s->hp,v);
+                v=biquad_run(&s->lp[1],biquad_run(&s->lp[0],v));
+            }
             if(raw)raw[result.produced]=v;
             if(s->base.filtered_audio)s->base.filtered_audio[result.produced]=v;
             float pcm=fmaxf(-32768.f,fminf(32767.f,v*s->gain));

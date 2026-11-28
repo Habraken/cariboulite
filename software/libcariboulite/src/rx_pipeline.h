@@ -36,6 +36,9 @@ typedef struct {
     // Radio
     double freq_hz;             // e.g., 430.1e6
 
+    audio_sink_t* playback_sink; // optional borrowed mixer sink, destroy is a no-op
+    unsigned cw_bandwidth_hz; // zero selects 500 Hz
+    float cw_pitch_hz; // zero selects 600 Hz
     // Demod/audio
     const char* pcm_dev;        // ALSA playback device ("plughw:3,0" etc.)
     float  deemph_tau_s;        // 50e-6 (EU) or 75e-6 (NA)

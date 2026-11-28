@@ -14,6 +14,7 @@ retain their original revision and test conditions. See the
 - [Examples](../examples/README.md)
 - [Hardware-free tests and physical validation entry points](testing.md)
 - [Standalone backend, controller and radio commands](radio-control.md)
+- [Manual CW, USB key input and keyed NBFM audio](cw.md)
 - [TX microphone compressor and limiter](tx-voice-dynamics.md)
 - [CTCSS TX tone and RX tone squelch](ctcss.md)
 - [CDCSS TX encoding and RX code squelch](cdcss.md)

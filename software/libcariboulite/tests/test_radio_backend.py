@@ -167,7 +167,7 @@ class RadioBackendTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
 
         for mode, db in (("lsb", 35.5), ("nbfm", -10), ("am", 18), ("usb", 20),
-                         ("wbfm", 0), ("lsb", 35.5)):
+                         ("wbfm", 0), ("cw", 35.5), ("lsb", 35.5)):
             with self.subTest(mode=mode):
                 command(f"rx mode {mode}")
                 snap = self.once()

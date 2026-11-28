@@ -42,6 +42,7 @@ static inline double rx_audio_biquad(double hz, double q, bool high)
 // Compensate the audio filters at 1 kHz, preserving their frequency response.
 static inline float rx_audio_calibration(audio_demod_mode_t mode, float tau)
 {
+    if(mode==AUDIO_DEMOD_CW)return 11642.f;
     double response;
     const double w=2*M_PI*1000/48000;
     if (mode==AUDIO_DEMOD_AM || audio_demod_is_ssb(mode)) {

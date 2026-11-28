@@ -1,0 +1,27 @@
+{
+  "state": "RX",
+  "cw": {
+    "available": true,
+    "enabled": true,
+    "connected": true,
+    "practice": false,
+    "busy": false,
+    "requested": false,
+    "key_type": "iambic",
+    "wpm": 12,
+    "swap": true,
+    "contacts": 0,
+    "hang_ms": 250,
+    "ramp_ms": 5.0,
+    "error": 0,
+    "rx_bandwidth_hz": 500,
+    "rx_pitch_hz": 600.0
+  },
+  "config": {
+    "requested_frequency_hz": 430100000.0,
+    "tx_frequency_hz": 430100000.0,
+    "tx_power_dbm": -12,
+    "tx_actual_power_dbm": -11,
+    "playback": "plughw:CARD=USB,DEV=0"
+  }
+}
