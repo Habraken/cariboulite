@@ -107,7 +107,7 @@ class RadioControlTests(unittest.TestCase):
         subprocess.run([
             "cc", "-D_GNU_SOURCE", "-D_POSIX_C_SOURCE=200809L", "-std=c11",
             "-O2", "-Wall", "-Wextra", "-Werror", "-I", str(SOURCE), "-I", str(ROOT/"software/libcariboulite/src"),
-            str(SOURCE / "radio_controller.c"), str(SOURCE / "command_protocol.c"),
+            str(SOURCE / "radio_controller.c"), str(SOURCE / "headset_ptt.c"), str(SOURCE / "command_protocol.c"),
             "-lm", "-o", str(cls.binary),
         ], check=True)
 

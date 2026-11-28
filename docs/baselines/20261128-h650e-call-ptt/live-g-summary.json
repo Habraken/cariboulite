@@ -1,0 +1,25 @@
+{
+  "final_state": "RX",
+  "final_tx_requested": false,
+  "controller_pid": 17698,
+  "controller_alive": true,
+  "operator_feedback": "Voice and TX/RX switching both work",
+  "status_packets": 2965,
+  "states": [
+    "RX",
+    "RX_STARTING",
+    "TX",
+    "TX_STARTING",
+    "TX_STOPPING"
+  ],
+  "tx_click_requests": 4,
+  "rx_click_requests": 4,
+  "max_writer_errors": 0,
+  "max_capture_errors": 0,
+  "max_capture_overruns": 0,
+  "max_driver_underrun_periods": 0,
+  "max_rx_reader_errors": 0,
+  "max_playback_underruns": 0,
+  "max_rx_clipped_samples": 0,
+  "faults": []
+}

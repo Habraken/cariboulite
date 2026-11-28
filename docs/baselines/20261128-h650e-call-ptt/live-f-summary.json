@@ -1,0 +1,20 @@
+{
+  "operator_feedback": "Voice and TX/RX switching both work",
+  "status_packets": 2958,
+  "states": [
+    "RX"
+  ],
+  "final_state": "RX",
+  "final_tx_requested": false,
+  "controller_restarted_to_finish_in_rx": false,
+  "tx_click_requests": 0,
+  "rx_click_requests": 0,
+  "max_writer_errors": 0,
+  "max_capture_errors": 0,
+  "max_capture_overruns": 0,
+  "max_rx_reader_errors": 0,
+  "max_playback_underruns": 0,
+  "max_rx_clipped_samples": 0,
+  "driver_latest": null,
+  "faults": []
+}

@@ -375,6 +375,10 @@ physical acceptance of this addition is pending.
     practice sidetone, both TX paths and native RX passed subjective testing
     at 12 WPM. Quantitative sidetone latency, RF envelope and TX/RX timing
     acceptance remain pending.
+  - [x] Add [uniform USB HID call-button PTT](docs/radio-control.md#usb-hid-call-button-ptt):
+    call toggles TX, disconnect only stops TX, and the previous RX state is
+    restored. Descriptor-based discovery and H650e/Jabra adapters passed
+    software tests and live NBFM checks; other models need qualification.
   - [ ] Implement and accept USB/LSB RX/TX and CW, retaining explicit per-mode
     contracts, software tests and physical checkpoints.
 - [ ] Add BPSK/QPSK after defining symbol rates, filtering, synchronization and

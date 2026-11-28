@@ -7,9 +7,12 @@
 #include "carrier_squelch.h"
 #include "rx_audio_output.h"
 #include "radio_rates.h"
+#include "headset_ptt.h"
 
 #include <errno.h>
+#include <fcntl.h>
 #include <getopt.h>
+#include <glob.h>
 #include <inttypes.h>
 #include <math.h>
 #include <poll.h>
@@ -22,6 +25,11 @@
 #include <sys/un.h>
 #include <time.h>
 #include <unistd.h>
+#ifdef __linux__
+#include <linux/hidraw.h>
+#include <linux/input.h>
+#include <sys/ioctl.h>
+#endif
 
 typedef struct {
     int socket;
@@ -65,6 +73,8 @@ static void usage(FILE *out, const char *program)
         "  --socket PATH      default /tmp/cariboulite-monitor-<UID>/control.sock\n"
         "  --timeout SECONDS  reply timeout, default 2 (maximum 60)\n"
         "  --command COMMAND  execute once, then disconnect\n"
+        "  --headset-ptt PATH|auto  USB HID call toggles TX; disconnect stops TX\n"
+        "  --headset-observe PATH|auto  report actions without changing TX\n"
         "  --help             show this help\n", program);
 }
 
@@ -727,6 +737,143 @@ static int execute_command(controller_t *controller, ui_command_t *command)
     return result;
 }
 
+typedef struct {
+    int fd;
+    headset_ptt_t decoder;
+    uint8_t saved_output[HEADSET_REPORT_MAX+1];
+    size_t saved_bytes;
+    bool output_changed;
+    char path[256];
+} headset_device_t;
+
+static void close_headset(headset_device_t* device)
+{
+    if(device->fd<0)return;
+    if(device->output_changed &&
+       write(device->fd,device->saved_output,device->saved_bytes)!=(ssize_t)device->saved_bytes)
+        fputs("Could not restore headset call indicator (device may be unplugged).\n",stderr);
+    close(device->fd);device->fd=-1;
+}
+static int open_headset_path(const char* path,headset_device_t* device)
+{
+#ifdef __linux__
+    int fd = open(path, O_RDWR | O_NONBLOCK | O_CLOEXEC);
+    if (fd < 0) return -1;
+    struct hidraw_devinfo info = {0};
+    int size=0;
+    struct hidraw_report_descriptor descriptor={0};
+    if (strlen(path)>=sizeof(device->path) || ioctl(fd,HIDIOCGRAWINFO,&info)<0 ||
+        info.bustype!=BUS_USB || ioctl(fd,HIDIOCGRDESCSIZE,&size)<0 ||
+        size<=0 || size>HEADSET_REPORT_MAX) { close(fd);errno=ENODEV;return -1; }
+    descriptor.size=(unsigned)size;
+    if(ioctl(fd,HIDIOCGRDESC,&descriptor)<0 ||
+       headset_ptt_init(&device->decoder,descriptor.value,descriptor.size,
+                        (uint16_t)info.vendor,(uint16_t)info.product)) {
+        close(fd);errno=ENOTSUP;return -1;
+    }
+    device->fd=fd;strcpy(device->path,path);return 0;
+#else
+    (void)path;(void)device;errno=ENOTSUP;return -1;
+#endif
+}
+static int open_headset(const char* path,headset_device_t* device)
+{
+    if(strcmp(path,"auto"))return open_headset_path(path,device);
+    glob_t paths={0};unsigned found=0;
+    if(glob("/dev/hidraw*",0,NULL,&paths)) { errno=ENODEV;return -1; }
+    for(size_t i=0;i<paths.gl_pathc;++i) {
+        headset_device_t candidate={.fd=-1};
+        if(open_headset_path(paths.gl_pathv[i],&candidate))continue;
+        if(!found++)*device=candidate;else close_headset(&candidate);
+    }
+    globfree(&paths);
+    if(found!=1) {
+        close_headset(device);
+        if(found>1)fputs("Multiple compatible call interfaces; select an explicit hidraw path.\n",stderr);
+        errno=found ? EEXIST : ENODEV;return -1;
+    }
+    return 0;
+}
+
+static int prepare_headset(headset_device_t* device)
+{
+#ifdef __linux__
+    headset_ptt_t* s=&device->decoder;
+    size_t bytes=headset_ptt_feedback_size(s);
+    if(bytes) {
+        uint8_t report[HEADSET_REPORT_MAX+1]={0};report[0]=(uint8_t)s->feedback_id;
+        int n=ioctl(device->fd,HIDIOCGOUTPUT(bytes),report);
+        device->saved_output[0]=(uint8_t)s->feedback_id;
+        if(n==(int)bytes && report[0]==s->feedback_id)
+            memcpy(device->saved_output,report,bytes);
+        else if(n==(int)bytes-1)memcpy(device->saved_output+1,report,bytes-1);
+        else {
+            if(s->profile==HEADSET_JABRA510)return -1;
+            fputs("Call indicator cannot be preserved; leaving it unchanged.\n",stderr);
+            bytes=0;
+        }
+        if(bytes) {
+            device->saved_bytes=bytes;memcpy(report,device->saved_output,bytes);
+            if(headset_ptt_feedback(s,report,bytes,true))return -1;
+            device->output_changed=true;
+            if(write(device->fd,report,bytes)!=(ssize_t)bytes)return -1;
+        }
+    }
+    /* Initial GETs prime absolute switch states, never generate actions. */
+    bool queried[256]={false};
+    if(s->profile==HEADSET_GENERIC)for(unsigned i=0;i<s->count;++i) {
+        unsigned id=s->fields[i].id;if(queried[id])continue;queried[id]=true;
+        size_t count=1+(s->input_bits[id]+7)/8;
+        uint8_t report[HEADSET_REPORT_MAX+1]={0},normalized[HEADSET_REPORT_MAX+1];
+        report[0]=(uint8_t)id;
+        int n=ioctl(device->fd,HIDIOCGINPUT(count),report);
+        if(n==(int)count && report[0]==id)memcpy(normalized,report,count);
+        else if(n==(int)count-1) { normalized[0]=(uint8_t)id;memcpy(normalized+1,report,count-1); }
+        else continue;
+        headset_ptt_prime(s,normalized+(s->numbered?0:1),count-(s->numbered?0:1));
+    }
+    /* Firmware may echo call state after the LED write. Drain that startup
+     * feedback for one second, without turning it into a button press. */
+    if(device->output_changed) {
+        double end=monotonic_seconds()+1;
+        while(!interrupted && monotonic_seconds()<end) {
+            struct pollfd p={.fd=device->fd,.events=POLLIN};
+            int result=poll(&p,1,50);
+            if(result<0 && errno==EINTR)continue;
+            if(result<0 || (p.revents&(POLLHUP|POLLERR|POLLNVAL)))return -1;
+            if(p.revents&POLLIN) {
+                uint8_t report[HEADSET_REPORT_MAX+1];ssize_t n=read(device->fd,report,sizeof(report));
+                if(n<=0)return -1;
+                headset_ptt_prime(s,report,(size_t)n);
+            }
+        }
+    }
+    return interrupted ? -1 : 0;
+#else
+    (void)device;errno=ENOTSUP;return -1;
+#endif
+}
+
+/* Use current requested state, including an in-progress TX start. Never
+ * retry an uncertain command. Disconnect releases this controller's TX. */
+static int headset_action(controller_t* controller, headset_action_t action,bool observe)
+{
+    if(action==HEADSET_NONE)return 0;
+    if (observe) {
+        printf("Headset %s (observe only; RF unchanged).\n",action==HEADSET_OFF ? "disconnect" : "call toggle");
+        fflush(stdout);return 0;
+    }
+    if (refresh_state(controller)) return -1;
+    if(action==HEADSET_OFF && !controller->state.tx_requested)return 0;
+    control_request_t request = { .command = action==HEADSET_OFF || controller->state.tx_requested ?
+        CONTROL_TX_STOP : CONTROL_TX_START };
+    int result = exchange(controller, &request);
+    if (!result) printf("Headset PTT: TX %s requested (previous RX state is restored when TX stops).\n",
+        request.command == CONTROL_TX_START ? "on" : "off");
+    print_state(controller); fflush(stdout);
+    return result < 0 ? -1 : 0;
+}
+
 int main(int argc, char **argv)
 {
     char default_path[sizeof(((struct sockaddr_un *)0)->sun_path)];
@@ -734,10 +881,14 @@ int main(int argc, char **argv)
              (unsigned long)geteuid());
     controller_t controller = { .socket = -1, .path = default_path, .timeout = 2 };
     const char *once = NULL;
+    const char *headset_path = NULL;
+    bool headset_observe = false;
     static const struct option options[] = {
         {"socket", required_argument, NULL, 's'},
         {"timeout", required_argument, NULL, 't'},
         {"command", required_argument, NULL, 'c'},
+        {"headset-ptt", required_argument, NULL, 'p'},
+        {"headset-observe", required_argument, NULL, 'o'},
         {"help", no_argument, NULL, 'h'},
         {NULL, 0, NULL, 0},
     };
@@ -751,10 +902,19 @@ int main(int argc, char **argv)
                 return 2;
             }
         } else if (option == 'c') once = optarg;
+        else if (option == 'p' || option == 'o') {
+            if (headset_path) { fputs("Select one headset option.\n", stderr); return 2; }
+            headset_path = optarg; headset_observe = option == 'o';
+        }
         else if (option == 'h') { usage(stdout, argv[0]); command_help(); return 0; }
         else { usage(stderr, argv[0]); return 2; }
     }
     if (optind != argc) { usage(stderr, argv[0]); return 2; }
+    if (headset_path && once) { fputs("Headset PTT requires a persistent controller; omit --command.\n", stderr); return 2; }
+    headset_device_t headset = {.fd=-1};
+    if (headset_path && open_headset(headset_path,&headset)) {
+        perror("Cannot open compatible USB HID Telephony interface"); return 1;
+    }
     ui_command_t initial_command;
     if (once) {
         int result = parse_command(once, &initial_command);
@@ -771,6 +931,7 @@ int main(int argc, char **argv)
     sigemptyset(&action.sa_mask);
     if (sigaction(SIGINT, &action, NULL) || sigaction(SIGTERM, &action, NULL)) {
         perror("Cannot install signal handlers");
+        close_headset(&headset);
         return 1;
     }
     setvbuf(stdin, NULL, _IONBF, 0);
@@ -781,6 +942,9 @@ int main(int argc, char **argv)
              "q disconnects and unkeys any owned TX.");
     }
     int startup = refresh_state(&controller);
+    if (headset_path && (startup || prepare_headset(&headset))) {
+        disconnect_controller(&controller);close_headset(&headset);return 1;
+    }
     if (once) {
         int result = startup;
         if (!startup) {
@@ -791,22 +955,47 @@ int main(int argc, char **argv)
         return result ? 1 : 0;
     }
     print_state(&controller);
+    if (headset_path) {
+        printf("%s on %s: %s. Disconnect button only turns TX off.\n",
+            headset_ptt_profile_name(&headset.decoder),headset.path,
+            headset_observe ? "observe only" : "call toggles TX");
+        fflush(stdout);
+    }
+    int input_fd = STDIN_FILENO;
     if (terminal) { fputs("radio> ", stdout); fflush(stdout); }
     while (!interrupted) {
+        if(headset.fd>=0 && headset_action(&controller,
+            headset_ptt_poll(&headset.decoder,monotonic_seconds()),headset_observe))break;
         struct pollfd descriptors[] = {
-            { .fd = STDIN_FILENO, .events = POLLIN },
+            { .fd = input_fd, .events = POLLIN },
             { .fd = controller.socket, .events = POLLIN },
+            { .fd = headset.fd, .events = POLLIN },
         };
-        int result = poll(descriptors, 2, -1);
+        int timeout=headset.fd<0 ? -1 : headset_ptt_wait_ms(&headset.decoder,monotonic_seconds());
+        int result = poll(descriptors, 3, timeout);
         if (result < 0 && errno == EINTR) continue;
         if (result < 0) { perror("Input wait failed"); break; }
         if (controller.socket >= 0 && descriptors[1].revents) {
             fprintf(stderr, "Backend connection closed or sent an unexpected packet. Enter status to reconnect.\n");
             disconnect_controller(&controller);
+            if (headset.fd >= 0) break;
+        }
+        if (headset.fd >= 0 && descriptors[2].revents) {
+            uint8_t report[HEADSET_REPORT_MAX+1];
+            ssize_t bytes = read(headset.fd, report, sizeof(report));
+            if (bytes < 0 && (errno == EAGAIN || errno == EINTR) &&
+                !(descriptors[2].revents & (POLLHUP | POLLERR | POLLNVAL))) continue;
+            if (bytes <= 0 || (descriptors[2].revents & (POLLHUP | POLLERR | POLLNVAL))) {
+                fputs("Headset disconnected; releasing owned TX.\n", stderr); break;
+            }
+            headset_ptt_feed(&headset.decoder,report,(size_t)bytes,monotonic_seconds());
         }
         if (!(descriptors[0].revents & (POLLIN | POLLHUP))) continue;
         char line[512];
-        if (!fgets(line, sizeof(line), stdin)) break;
+        if (!fgets(line, sizeof(line), stdin)) {
+            if (headset.fd >= 0) { input_fd = -1; continue; }
+            break;
+        }
         if (!strchr(line, '\n') && !feof(stdin)) {
             int character;
             while ((character = fgetc(stdin)) != '\n' && character != EOF && !interrupted) {}
@@ -823,6 +1012,7 @@ int main(int argc, char **argv)
         if (terminal) { fputs("radio> ", stdout); fflush(stdout); }
     }
     disconnect_controller(&controller);
+    close_headset(&headset);
     if (terminal) puts("\nController disconnected; owned TX is released and prior RX resumes.");
     return 0;
 }

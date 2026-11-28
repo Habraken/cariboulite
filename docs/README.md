@@ -67,6 +67,7 @@ retain their original revision and test conditions. See the
 
 ## Recorded investigations and measurements
 
+- [Uniform USB HID PTT: H650e and Jabra, toggle/disconnect and RX-state restoration](baselines/20261128-usb-hid-ptt/README.md)
 - [Two-metre Pi 4 forward sweep: 30 MHz to 6 GHz at all rates](baselines/20261127-pi4-two-metre-frequency-rate-sweep/pi4-two-metre-20261127T081042Z/REPORT.md)
 - [Reciprocal Pi 4 sweep and direction comparison, including recovered TX-start failures](baselines/20261127-pi4-two-metre-reverse-frequency-rate-sweep/pi4-two-metre-reverse-20261127T120321Z/REPORT.md)
 

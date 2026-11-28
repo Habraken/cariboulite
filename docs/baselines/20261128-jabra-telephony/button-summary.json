@@ -1,0 +1,106 @@
+{
+  "connect_test_completed": true,
+  "disconnect_phase_start_realtime_s": 1795860251.794349,
+  "connect_reports": [
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030100",
+      "elapsed_s": 38.783907,
+      "realtime_s": 1795860227.3332698
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030000",
+      "elapsed_s": 40.784551,
+      "realtime_s": 1795860229.3339097
+    }
+  ],
+  "capture_switch_changes": [
+    {
+      "type": "capture_switch",
+      "state": "on",
+      "elapsed_s": 0.109314,
+      "realtime_s": 1795860188.6586607
+    }
+  ],
+  "disconnect_test_completed": true,
+  "disconnect_reports": [],
+  "mute_phase_start_realtime_s": 1795860288.4277227,
+  "mute_test_completed": true,
+  "idle_mute_reports": [],
+  "prior_output_report_hex": "000000",
+  "get_output_result": 2,
+  "active_indicator": {
+    "start_realtime_s": 1795860397.8171973,
+    "active_output_hex": "030100",
+    "restore_output_hex": "030000",
+    "write_result": 3
+  },
+  "active_disconnect_reports": [
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "040200",
+      "elapsed_s": 209.270877,
+      "realtime_s": 1795860397.8202248
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030300",
+      "elapsed_s": 209.769957,
+      "realtime_s": 1795860398.319308
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030300",
+      "elapsed_s": 227.489495,
+      "realtime_s": 1795860416.0388517
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030200",
+      "elapsed_s": 227.490449,
+      "realtime_s": 1795860416.0397892
+    }
+  ],
+  "active_mute_phase_start_realtime_s": 1795860450.6486778,
+  "active_mute_reports": [
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "031200",
+      "elapsed_s": 295.092026,
+      "realtime_s": 1795860483.641385
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030200",
+      "elapsed_s": 295.092951,
+      "realtime_s": 1795860483.6422899
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "040000",
+      "elapsed_s": 299.313729,
+      "realtime_s": 1795860487.8631299
+    }
+  ],
+  "indicator_final": {
+    "start_realtime_s": 1795860397.8171973,
+    "active_output_hex": "030100",
+    "restore_output_hex": "030000",
+    "write_result": 3,
+    "restore_result": 3,
+    "restored_realtime_s": 1795860487.863411
+  },
+  "operator_confirmed_sequence": true,
+  "radio_state": "RX",
+  "tx_requested": false
+}

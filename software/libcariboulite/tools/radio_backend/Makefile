@@ -25,8 +25,8 @@ $(OUT)/cariboulite_radio_backend: $(OBJECTS) $(LIBDIR)/libcariboulite.so
 	$(CC) $(OBJECTS) -L$(LIBDIR) -Wl,-rpath,$(LIBDIR) -lcariboulite -lasound -lpthread -lm -o "$@.tmp"
 	mv "$@.tmp" "$@"
 
-$(OUT)/cariboulite_radio_controller: $(HERE)/radio_controller.c $(HERE)/command_protocol.c $(HERE)/command_protocol.h $(FPGA_REGS_HEADER) $(CARRIER_SQUELCH_HEADER) $(SRC)/audio_mod.h $(SRC)/tx_dynamics.h $(SRC)/ctcss.h $(SRC)/cdcss.h | $(OUT)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(HERE)/radio_controller.c $(HERE)/command_protocol.c -lm -o "$@.tmp"
+$(OUT)/cariboulite_radio_controller: $(HERE)/radio_controller.c $(HERE)/headset_ptt.c $(HERE)/headset_ptt.h $(HERE)/command_protocol.c $(HERE)/command_protocol.h $(FPGA_REGS_HEADER) $(CARRIER_SQUELCH_HEADER) $(SRC)/audio_mod.h $(SRC)/tx_dynamics.h $(SRC)/ctcss.h $(SRC)/cdcss.h | $(OUT)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(HERE)/radio_controller.c $(HERE)/headset_ptt.c $(HERE)/command_protocol.c -lm -o "$@.tmp"
 	mv "$@.tmp" "$@"
 
 # Python resolves the source symlink before importing the adjacent register decoder.
@@ -96,5 +96,7 @@ test: all $(OUT)/test_sinad $(OUT)/test_status_publisher $(OUT)/test_modem_snaps
 	python3 "$(ROOT)/software/libcariboulite/tests/test_cw.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_cw_session.py"
 	python3 "$(ROOT)/software/libcariboulite/tests/test_cw_backend.py"
+	python3 "$(ROOT)/software/libcariboulite/tests/test_headset_ptt.py"
+	python3 "$(ROOT)/software/libcariboulite/tests/test_headset_decoder.py"
 
 -include $(OBJECTS:.o=.d)

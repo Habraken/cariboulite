@@ -1,0 +1,85 @@
+{
+  "green_reports": [
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030300",
+      "elapsed_s": 0.483211,
+      "realtime_s": 1795861208.6728735
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "032300",
+      "elapsed_s": 28.218834,
+      "realtime_s": 1795861236.4084992
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030300",
+      "elapsed_s": 28.21916,
+      "realtime_s": 1795861236.4088109
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "032300",
+      "elapsed_s": 32.99578,
+      "realtime_s": 1795861241.1854515
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030300",
+      "elapsed_s": 32.996686,
+      "realtime_s": 1795861241.1863365
+    }
+  ],
+  "red_start_realtime_s": 1795861258.7172563,
+  "red_and_green_reports": [
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030300",
+      "elapsed_s": 101.12942,
+      "realtime_s": 1795861309.3191133
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030200",
+      "elapsed_s": 101.130331,
+      "realtime_s": 1795861309.3199825
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030300",
+      "elapsed_s": 106.547176,
+      "realtime_s": 1795861314.7368438
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030200",
+      "elapsed_s": 106.548088,
+      "realtime_s": 1795861314.7377403
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "032200",
+      "elapsed_s": 119.781035,
+      "realtime_s": 1795861327.970704
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw1",
+      "hex": "030200",
+      "elapsed_s": 119.781986,
+      "realtime_s": 1795861327.9716394
+    }
+  ],
+  "indicator_restored_realtime_s": 1795861355.5697172
+}

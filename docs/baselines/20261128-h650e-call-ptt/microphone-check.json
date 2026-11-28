@@ -1,0 +1,18 @@
+{
+  "call_clicks": 1,
+  "click_time_from_log_mtime": 1795859673.9718392,
+  "before": {
+    "windows": 27,
+    "median_rms_dbfs": -23.7466797438093,
+    "max_peak_dbfs": -3.0850225470117816,
+    "zero_windows": 0
+  },
+  "after": {
+    "windows": 28,
+    "median_rms_dbfs": -22.872563851974647,
+    "max_peak_dbfs": -1.2766467858677935,
+    "zero_windows": 0
+  },
+  "observe_tail": "CaribouLite radio controller\nType help for commands; status refreshes the display.\nq disconnects and unkeys any owned TX.\n\n  LIVE | RF24 | RX\n  ------------------------------------------------------------\n  Receive\n    Frequency        430.100812 MHz\n    Mode             CW\n    Sample rate      1 MS/s\n    Noise squelch    Not Applicable\n    Carrier squelch  Off\n\n  Transmit\n    Frequency        430.100000 MHz\n    Power            -12 dBm\n    Mode             CW\n    Sample rate      1 MS/s\n    Audio source     Microphone\n\nH650e call button: observe only. Unplug or controller exit releases owned TX.\nHeadset call click (observe only; RF unchanged).\n",
+  "capture_errors": ""
+}

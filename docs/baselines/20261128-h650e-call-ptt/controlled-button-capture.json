@@ -1,0 +1,56 @@
+{
+  "hostname": "pi4g-trixie",
+  "headset": "Logitech Stereo H650e",
+  "usb_id": "046d:0a46",
+  "operator_confirmed_separate_five_second_holds": true,
+  "mute_reports": [
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw0",
+      "hex": "0802",
+      "elapsed_s": 20.714789,
+      "realtime_s": 1795859164.3148685
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw0",
+      "hex": "0803",
+      "elapsed_s": 20.716347,
+      "realtime_s": 1795859164.3164017
+    }
+  ],
+  "call_reports": [
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw0",
+      "hex": "0801",
+      "elapsed_s": 72.017261,
+      "realtime_s": 1795859215.6173146
+    },
+    {
+      "type": "hidraw",
+      "device": "/dev/hidraw0",
+      "hex": "0803",
+      "elapsed_s": 72.018137,
+      "realtime_s": 1795859215.6181903
+    }
+  ],
+  "capture_switch_changes": [
+    {
+      "type": "capture_switch",
+      "state": "on",
+      "elapsed_s": 0.109202,
+      "realtime_s": 1795859143.7092633
+    }
+  ],
+  "findings": [
+    "Mute button: report 08 02 followed by 08 03.",
+    "Call button: report 08 01 followed by 08 03.",
+    "Neither controlled hold produced a sustained five-second state in these raw input reports.",
+    "Click-to-toggle PTT is feasible from the distinct pulse patterns. Hold-to-talk is not established with this interface.",
+    "Microphone audio was not recorded; internal audio muting remains unverified."
+  ],
+  "radio_state": "RX",
+  "tx_requested": false,
+  "tx_running": false
+}

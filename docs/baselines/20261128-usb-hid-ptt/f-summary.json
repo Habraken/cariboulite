@@ -1,0 +1,47 @@
+{
+  "hostname": "pi4f-trixie",
+  "controller_pid": 30195,
+  "final_state": "RX",
+  "final_tx_requested": false,
+  "status_packets": 5927,
+  "states": [
+    "RX",
+    "RX_STARTING",
+    "TX",
+    "TX_STARTING",
+    "TX_STOPPING"
+  ],
+  "tx_on_requests": 5,
+  "tx_off_requests": 5,
+  "max_writer_errors": 0,
+  "max_capture_errors": 0,
+  "max_capture_overruns": 0,
+  "max_driver_underrun_periods": 0,
+  "max_rx_reader_errors": 0,
+  "max_playback_underruns": 0,
+  "max_rx_clipped_samples": 0,
+  "faults": [],
+  "operator_feedback": "Jabra green toggle and voice passed; red stops TX and repeated red leaves TX off; H650e toggle and voice passed.",
+  "source_sha256": {
+    "radio_controller.c": "4ef986e7f578582cb52fd215ddb73bcd0453d57d103e41e781012376ff6b35db",
+    "headset_ptt.c": "dccd1771d9004d95f6a99f6695db55f891f4297842b038bd79eb5bd0823e694e",
+    "headset_ptt.h": "6e72446617af71e14c021fca9488c83dc437cf98052d7c92130b55f0af380ba9"
+  },
+  "binary_sha256": "43843a8b5d4620c1e16dd89a6e38f891695ca6a263f919031ad63dc6fe9cc2b5",
+  "tests": {
+    "decoder": "HID decoder: captured H650e/Jabra gestures, generic capabilities, startup, disconnect precedence, feedback preservation and malformed descriptors PASS\nHID decoder: captured H650e/Jabra gestures, generic capabilities, startup, disconnect precedence, feedback preservation and malformed descriptors PASS\n",
+    "integration": "Headset PTT: H650e/Jabra uniform toggles, red never starts TX, RX/idle restoration, disconnect cleanup and CW interlocks PASS\n",
+    "controller": ".....................................\n----------------------------------------------------------------------\nRan 37 tests in 16.580s\n\nOK\n"
+  },
+  "red_test_phases": {
+    "red_test_start_realtime_s": 1795862180.1138153,
+    "before_state": "RX",
+    "before_tx_on_requests": 3,
+    "before_tx_off_requests": 3,
+    "after_red_state": "RX",
+    "after_red_tx_on_requests": 4,
+    "after_red_tx_off_requests": 4,
+    "operator_red_feedback": "Red stops TX and repeated red leaves TX off",
+    "red_test_end_realtime_s": 1795862244.336309
+  }
+}

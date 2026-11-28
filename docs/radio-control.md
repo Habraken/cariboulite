@@ -1055,3 +1055,66 @@ library adds a separate readback API. Dry-run snapshots are explicitly simulated
 ## Manual CW input
 
 See [CW keying and listening](cw.md) for the USB key interface, straight/iambic/ultimatic/cootie settings, practice mode, native-CW receive filters and automatic TX/RX operation. These controls are confined to the standalone backend/controller/monitor.
+
+## USB HID call-button PTT
+
+The controller discovers USB HID Telephony capabilities from report
+descriptors, so compatible standard interfaces do not require a vendor-ID
+allowlist. The same radio actions apply to every supported device:
+
+- Green/call/answer toggles TX on or off.
+- Disconnect/hang-up only turns TX off; while TX is off it does nothing.
+- Mute and volume remain outside the PTT mapping.
+- Starting TX remembers whether RX was active. Either way of stopping TX
+  restores that previous state: RX returns to RX; idle returns to idle.
+
+```sh
+sudo build/radio-backend/cariboulite_radio_controller \
+  --socket /tmp/cariboulite-cw-link-20261128/control.sock \
+  --headset-ptt auto
+```
+
+`auto` requires exactly one compatible USB hidraw interface. If multiple
+interfaces match, choose an explicit path such as `--headset-ptt /dev/hidraw1`.
+Numbering can change after USB reconnection. No USB sound-card selection or
+radio setting is inferred from the button interface: configure the matching
+microphone with the backend's `--tx-microphone` option. The passive monitor
+continues to show the existing TX/RX state.
+
+The descriptor decoder supports scalar variable Hook Switch, Flash and Drop
+controls, arbitrary report IDs, padding/bit offsets, usage lists/ranges and
+Global Push/Pop. Only complete reports matching the declared layout are
+accepted. Unknown opaque vendor reports, array-based call controls and
+ambiguous or unsupported layouts need an adapter; this does not promise
+compatibility with every USB audio product. Absolute input state is primed
+without transmitting, with the first received state serving as a baseline
+if a device cannot supply it through GET_REPORT.
+
+The measured H650e (`046d:0a46`) adapter handles its active-low call pulse.
+The Jabra SPEAK 510 (`0b0e:0420`) adapter handles telephony fields marked
+Constant, maps the green button's Flash pulse to the shared toggle action,
+and ignores its red button's preliminary Hook=1 report. Only the final
+hang-up state requests TX off, even if the preliminary/final pair is delayed.
+Mute and reset reports do not toggle TX. Call toggles are debounced for
+250 ms; explicit disconnect is not blocked by that debounce.
+
+For devices exposing an Off-Hook output indicator, the controller preserves
+its existing output report and activates the indicator while the call-control
+session is ready. This keeps the Jabra's buttons available in both RX and TX;
+the indicator represents the control session. Startup state feedback is
+consumed without keying RF, and the saved indicator report is restored on
+normal exit. H650e does not need that handshake. A generic device whose
+indicator cannot be preserved is used without changing it; Jabra requires
+its tested handshake to succeed.
+
+`--headset-observe PATH|auto` decodes actions without issuing PTT commands;
+the device handshake still runs. Only one controller may be connected to a
+backend. With a headset option, standard-input EOF leaves headset control
+running; `q`, SIGINT/SIGTERM, headset removal, or backend connection loss ends
+the session and releases its owned TX. Reconnection requires starting a new
+controller session. The backend's existing CW ownership/practice and
+native-CW manual-TX interlocks remain in force.
+
+See the [initial H650e test](baselines/20261128-h650e-call-ptt/README.md),
+[Jabra report inspection](baselines/20261128-jabra-telephony/README.md) and
+[uniform HID PTT validation](baselines/20261128-usb-hid-ptt/README.md).
